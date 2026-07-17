@@ -50,6 +50,7 @@ Instead, the player:
 - Equips synergistic items
 - Places district cards
 - Triggers limited interventions
+- Manually collects optional coin clusters for a small streak bonus
 - Decides whether to continue or extract
 
 The game should feel like operating a dangerous little combat machine.
@@ -79,10 +80,10 @@ The final fantasy is a busy neon street where:
 
 - Crew members automatically fight gangs
 - Enemies are knocked into walls and objects
-- Coins and equipment burst from defeated enemies
+- Clickable coin clusters and equipment burst from defeated enemies
 - The player clicks environmental objects at decisive moments
 - Build synergies visibly alter combat
-- Heat steadily increases the danger
+- Heat changes the immediate district alert while irreversible Night Pressure steadily escalates the run
 - The player chooses whether to push deeper or escape safely
 
 ---
@@ -95,11 +96,17 @@ The player’s choices should visibly alter what happens during combat.
 
 Equipment, synergies, route cards, and interventions must produce observable changes rather than invisible statistical improvements only.
 
-### 4.2 Frequent Meaningful Decisions
+### 4.2 Frequent Interaction at Multiple Scales
 
 The game may contain automatic action, but the player should not feel passive.
 
-During an active run, the player should receive a meaningful decision or interaction approximately every 20–40 seconds.
+During an active run, interaction should occur at three distinct cadences:
+
+- **Ambient optional interactions:** approximately every 10–20 seconds
+- **Meaningful strategic decisions:** approximately every 30–60 seconds
+- **Major risk decisions:** approximately every 2–3 minutes
+
+Ambient interactions must be quick, optional, and safe to ignore. Coin clusters are the initial example. Strategic and risk decisions may pause or redirect the run and must not be diluted into constant clicking.
 
 Examples:
 
@@ -131,7 +138,7 @@ Combat should emphasize:
 
 Each run should become busier, more dangerous, and more rewarding over time.
 
-The player should understand that remaining in the district is profitable but increasingly risky.
+Heat communicates immediate tactical danger and may be manipulated. Night Pressure communicates irreversible run escalation. The player should understand that remaining in the district is profitable but always becomes riskier even when Heat is reduced.
 
 ### 4.5 Readable Systems
 
@@ -140,12 +147,15 @@ The player should be able to understand why something happened.
 Tooltips, icons, status indicators, and debug tools must expose:
 
 - Current Heat
+- Current Night Pressure and progress toward the next major threshold
+- Current run seed in development tools and the run summary
 - Current synergies
 - Equipment effects
 - Active status effects
 - Encounter difficulty
 - Intervention cooldowns
 - Extraction reward multiplier
+- Coin collection streak and its capped bonus when active
 
 ### 4.6 Small Number of Strong Interactions
 
@@ -214,11 +224,14 @@ The vertical slice must contain:
 - One elite enemy
 - One boss
 - Three interventions
-- Six equipment items
+- At least nine equipment items
 - Three synergy categories
 - Four district cards
 - One shop interaction
 - One complete run summary
+- One optional ambient interaction loop based on coin clusters
+- Separate tactical Heat and irreversible Night Pressure escalation
+- One authoritative run seed with isolated deterministic named random streams
 - Placeholder or prototype-quality art and audio where final assets are unavailable
 
 ---
@@ -237,11 +250,34 @@ The vertical slice must contain:
 The player should have:
 
 - Continuous visual action
-- At least one optional clickable interaction approximately every 10–20 seconds
-- One substantial choice approximately every 30–60 seconds
+- One ambient optional interaction approximately every 10–20 seconds
+- One meaningful strategic decision approximately every 30–60 seconds
 - One major risk decision approximately every 2–3 minutes
 
-### 7.3 Desired Emotional Arc
+These categories are not interchangeable. Ambient interactions support engagement without carrying the consequence or interruption of a strategic choice.
+
+Cadence is measured during eligible active play. Time spent paused, in modal reward or shop choices, or in non-interactive introductions does not count toward the 10–20 second ambient target.
+
+### 7.3 Ambient Interaction: Coin Clusters
+
+Coin clusters are the first ambient optional interaction system.
+
+- Each coin-rewarding defeated enemy's award is represented by one clickable cluster rather than individual precision targets. Explicitly rewardless enemies do not create a cluster.
+- A cluster automatically collects after approximately 2.5 seconds.
+- Clicking a cluster collects it immediately.
+- Ignoring a cluster never loses the base coin reward.
+- Click and auto-collection are mutually exclusive resolutions: the base award is credited exactly once even if input and timeout occur together.
+- Only successful manual collections advance the collection streak. Auto-collected clusters grant no manual bonus and do not advance it.
+- Consecutive successful manual collections within approximately 3 seconds of the previous manual collection build a streak; otherwise the streak resets before the new manual collection is counted.
+- The streak grants a small coin bonus capped at 10% of that cluster's base value.
+- Timing windows and bonus values must be data-driven prototype tuning, not hard-coded balance commitments.
+- Manual collection should feel beneficial but never mandatory.
+- Collection must not interrupt combat or require excessive pointer precision.
+- A mostly passive player must not be heavily penalized.
+
+Future ambient interactions may include breakable containers, civilian events, temporary opportunities, and environmental objects. They must follow the same principle: optional attention may provide a modest benefit, while ignoring them does not undermine the core auto-battler experience.
+
+### 7.4 Desired Emotional Arc
 
 **Start:** Quiet, understandable, controlled  
 **Middle:** Busy, increasingly powerful, increasingly risky  
@@ -252,22 +288,22 @@ The player should have:
 
 ## 8. Core Gameplay Loop
 
-1. Start a run at the crew hideout.
+1. Start a run at the crew hideout with an authoritative integer seed, optionally supplied by the player or development tools.
 2. Select one starting crew member.
 3. Enter the district with one basic equipment item.
 4. Crew automatically follows the patrol route.
 5. Enemies spawn as scheduled encounters.
 6. Crew automatically targets and fights enemies.
-7. Defeated enemies drop coins and may generate rewards.
-8. Heat rises over time and through dangerous actions.
+7. Defeated enemies drop coin clusters that may be clicked immediately or auto-collected for their full base value.
+8. Heat changes with tactical actions while Night Pressure irreversibly rises through elapsed time and completed encounters.
 9. At reward moments, the player chooses upgrades or cards.
 10. The player may activate interventions during combat.
 11. The player may add crew members and equipment during the run.
 12. At extraction windows, the player may leave with secured rewards.
-13. If the player continues, enemy strength and rewards increase.
-14. At maximum progression, the boss encounter begins.
+13. If the player continues, Night Pressure, enemy strength, and rewards increase regardless of later Heat reduction.
+14. At the configured Night Pressure progression threshold, the boss encounter becomes unavoidable.
 15. The run ends in victory, extraction, or defeat.
-16. A run summary displays the result and earned unlock currency.
+16. A run summary displays the result, run seed, escalation reached, and earned unlock currency.
 17. The player may immediately begin another run.
 
 ---
@@ -278,7 +314,7 @@ The vertical slice is designed primarily for mouse and keyboard.
 
 ### Mouse
 
-- Left click: select buttons, cards, upgrades, and environmental objects
+- Left click: select buttons, cards, upgrades, environmental objects, and coin clusters
 - Left click and drag: drag district cards to valid route slots
 - Right click: cancel current card drag or close a tooltip
 - Mouse wheel: optional UI scrolling where needed
@@ -316,12 +352,15 @@ The primary screen must use a single large side-view street canvas framed by com
 - Heat meter
 - Current Heat percentage
 - Current Heat tier
+- Current Night Pressure
+- Progress toward the next extraction or boss threshold
 - Run timer
 - Current night label
 
 **Top-right**
 
 - Coins
+- Current coin collection streak when active
 - Scrap
 - Intervention charges
 - Compact crew status portraits
@@ -343,12 +382,14 @@ The primary screen must use a single large side-view street canvas framed by com
 - Environmental objects
 - Combat effects
 - Loot
+- Clickable coin clusters
 - Damage numbers
 
 **Right side**
 
 - Equipment and synergy summary
 - Active synergy thresholds
+- Progress toward alternative synergy paths
 - Short effect descriptions
 
 **Bottom-centre**
@@ -589,7 +630,7 @@ Required first:
 - Hit flash
 - Damage numbers
 - Death reaction
-- Coin drop
+- Coin-cluster drop, manual collection, and full-value auto-collection feedback
 - Strong sound feedback
 
 ### 16.2 Damage Resolution
@@ -740,17 +781,18 @@ The boss must have:
 
 ## 18. Encounter System
 
-The `RunDirector` schedules encounters using encounter definitions.
+The `RunDirector` schedules encounters using encounter definitions and the run-scoped `encounters` random stream.
 
 Each encounter definition contains:
 
 - ID
 - Display name
-- Spawn budget
+- Base spawn budget
 - Allowed enemy types
 - Spawn positions
 - Maximum concurrent enemies
 - Heat requirement
+- Night Pressure requirement or progression band
 - Reward table
 - Completion condition
 - Elite flag
@@ -766,40 +808,54 @@ A standard encounter is complete when:
 After completion:
 
 - Crew resumes patrol
-- Rewards are generated
+- Night Pressure increases by a data-driven amount
+- Rewards are generated through their named deterministic stream
 - The next route node becomes active
 
 ---
 
-## 19. Heat System
+## 19. Escalation Systems: Heat and Night Pressure
 
-Heat represents escalating danger and reward.
+Heat and Night Pressure serve different purposes and must not be treated as aliases.
 
-### 19.1 Heat Range
+- **Heat** is tactical, partially player-manipulable district alert.
+- **Night Pressure** is irreversible run progression.
+
+Reducing Heat may make the next encounter safer, but it never reverses the overall escalation of the run.
+
+### 19.1 Heat Range and Responsibility
 
 - Minimum: 0
 - Maximum: 100
 
-### 19.2 Heat Gain
+Heat controls:
 
-Heat increases through:
+- Encounter composition
+- Elite availability
+- Immediate danger
+- Reward quality
+- District alert level
 
-- Passage of time
+### 19.2 Heat Changes
+
+Heat may increase through:
+
 - Completing fights
 - Playing dangerous district cards
 - Triggering elite encounters
 - Remaining after an extraction window
-
-### 19.3 Heat Reduction
+- Other explicitly defined encounter, shop, card, or limited intervention effects
 
 Heat may decrease through:
 
-- Convenience store card
-- Specific shop purchase
-- Subway reroute
+- Convenience store or cooling cards
+- Limited shop purchases
+- Finite-use Subway Reroute charges
 - Extraction
 
-### 19.4 Heat Tiers
+Shop-based Heat reduction must be constrained through cost, availability, or per-run purchase limits. Cooling effects provide tactical relief only and cannot reduce Night Pressure.
+
+### 19.3 Heat Tiers
 
 #### Tier 0: 0–19
 
@@ -830,20 +886,55 @@ Heat may decrease through:
 
 #### Tier 5: 100
 
-- Boss encounter begins
-- Extraction unavailable until the boss encounter resolves
+- Maximum district alert
+- Highest immediate ordinary encounter danger and reward quality
+- Does not by itself begin the boss encounter or reverse Night Pressure progression
 
-### 19.5 Initial Tuning
+### 19.4 Night Pressure
 
-Starting values may use:
+Night Pressure is a non-negative, monotonically increasing value. Its final range and threshold spacing are data-driven.
 
-- Passive Heat gain: 1 point every 6 seconds
+Night Pressure must:
+
+- Increase through elapsed time
+- Increase through encounters completed
+- Never decrease during a run
+- Gradually increase enemy health
+- Gradually increase enemy damage
+- Gradually increase encounter spawn budget
+- Control major run progression
+- Control extraction-window progression
+- Eventually force the boss encounter
+- Prevent indefinite farming even if Heat is repeatedly reduced
+
+Only ending or restarting a run resets Night Pressure. Cards, shops, interventions, reroutes, and extraction decisions may alter Heat or the route but cannot rewind Night Pressure already earned.
+
+Elapsed-time gain uses authoritative active simulation time. Paused states, modal reward and shop choices, and non-interactive introductions do not advance it. Encounter-completion gains are applied exactly once by `RunDirector` after an authoritative encounter result.
+
+Extraction and boss thresholds are latched when first crossed and never reopen or clear because Heat later falls. If the boss threshold is crossed while an immediate transition would be unsafe, `RunDirector` queues the boss and starts it at the next valid transition boundary. When an extraction threshold and the boss threshold are reached by the same authoritative update, the boss takes precedence unless extraction was already confirmed before that update.
+
+### 19.5 Initial Data-Driven Tuning
+
+Prototype Heat values may use:
+
 - Standard encounter completion: +4 Heat
 - Elite encounter completion: +8 Heat
 - Dangerous card: +10 to +20 Heat
 - Cooling card: -10 to -20 Heat
 
-All Heat values must be data-driven.
+Prototype Night Pressure scaling may begin with:
+
+```text
+enemy_health_multiplier = 1.0 + night_pressure × 0.01
+enemy_damage_multiplier = 1.0 + night_pressure × 0.005
+spawn_budget_multiplier = 1.0 + night_pressure × 0.0125
+```
+
+These formulas are initial tuning examples, not permanent balance values. Night Pressure gain rates, thresholds, multipliers, clamps, and boss timing must be data-driven and tuned through playtests. Spawn-budget conversion uses a documented deterministic rounding rule and still respects encounter and global concurrency caps, including the vertical-slice limit of 30 active ordinary enemies.
+
+### 19.6 Anti-Farming Requirement
+
+Lowering Heat must create temporary tactical relief without enabling an endless high-reward loop. Night Pressure continues to advance during eligible active play while the player cools the district, and its configured boss threshold eventually makes the boss unavoidable. No combination of cooling cards, shop purchases, or Subway Reroutes may indefinitely postpone major progression. Cooling never unlatches an extraction threshold, clears a queued boss, or reopens a spent progression window.
 
 ---
 
@@ -887,6 +978,10 @@ Interventions are limited player-triggered abilities that affect active combat.
 - Reduce Heat
 - Move crew to the next route node
 - Cannot skip an active boss encounter
+- Consumes a finite charge or explicit consumable resource
+- Cannot reduce Night Pressure or bypass its boss threshold
+
+Subway Reroute must not be an infinitely repeatable cooling ability. Charge count, acquisition, per-run acquisition cap, and Heat reduction are data-driven. Charges do not regenerate merely through elapsed time, and an activation request at zero charges is rejected without changing Heat, route state, or Night Pressure.
 
 ### 20.4 Intervention Requirements
 
@@ -908,13 +1003,13 @@ Equipment is represented by data-driven Resource definitions.
 
 ### 21.1 Equipment Slots
 
-Each crew member has:
+The long-term slot model is:
 
 - Weapon slot
 - Gear slot
 - Tech slot
 
-The vertical slice may simplify this to any three generic slots during early milestones.
+The vertical slice uses three generic equipment slots so any two distinct catalogue items can form a valid two-item synergy combination. Category-locked slots may be reconsidered later only if the required build combinations remain valid.
 
 ### 21.2 Initial Equipment
 
@@ -955,6 +1050,23 @@ The vertical slice may simplify this to any three generic slots during early mil
 - Increased Bleed stack limit
 - Increased damage against bleeding targets
 
+#### Magnetic Flail
+
+- Tags: `TECH`, `KNOCKBACK`
+- Improves environmental interaction or pulls enemies into knockback chains
+
+#### Voltaic Blade
+
+- Tags: `TECH`, `BLEED`
+- Applies Bleed and improves Shock interactions
+
+#### Chain Sneakers
+
+- Tags: `FAST`, `KNOCKBACK`
+- Improves movement or attack speed and knockback follow-up
+
+Exact numerical balance remains provisional.
+
 ### 21.3 Equipment Rules
 
 - Effects must be defined in Resources where practical.
@@ -962,6 +1074,8 @@ The vertical slice may simplify this to any three generic slots during early mil
 - Replacing equipment must immediately recalculate synergies.
 - Equipment must not directly manipulate UI nodes.
 - Equipment triggers must use shared effect interfaces rather than item-specific combat branches where practical.
+- Equipment choices must create tradeoffs between completing the current synergy and opening a second possible build.
+- The vertical-slice catalogue must contain at least nine items and no large rarity or crafting system.
 
 ---
 
@@ -996,6 +1110,11 @@ The system must:
 - Display current progress in the UI
 - Support future thresholds such as 2, 4, and 6
 - Avoid hard-coding checks for individual equipment IDs
+- Give every primary vertical-slice synergy at least three valid two-item activation combinations
+- Include at least two equipment items that bridge different primary synergy categories
+- Preview both immediately activated synergies and progress toward alternative synergies in the UI
+
+With the initial nine-item catalogue, Knockback, Bleed, and Tech each satisfy the three-combination requirement. `Spiked Bat`, `Magnetic Flail`, and `Voltaic Blade` create cross-category build decisions.
 
 ---
 
@@ -1015,7 +1134,7 @@ District cards modify future route nodes or run rules.
 
 - Adds a shop or recovery node
 - Heat change: -10
-- Allows one purchase
+- Allows one purchase, keeping shop-based cooling finite
 
 #### Gang Hideout
 
@@ -1028,7 +1147,7 @@ District cards modify future route nodes or run rules.
 - Reroutes the next route segment
 - Heat change: -15
 - Skips one standard encounter
-- Cannot skip boss progression requirements
+- Cannot reduce Night Pressure or skip its extraction and boss progression requirements
 
 ### Card Flow
 
@@ -1059,6 +1178,12 @@ The route may contain a fixed number of empty modification slots rather than ful
 - Intervention charge
 - Temporary run modifier
 
+### Coin Reward Delivery
+
+Enemy coin rewards are delivered as clusters using the ambient interaction rules in section 7.3. Every coin-rewarding enemy resolves to one cluster. Auto-collection always grants the full base value. Manual collection may add only the capped streak bonus; it may never determine whether the base reward is kept. Each cluster has one authoritative resolution so simultaneous click and timeout cannot double-credit it.
+
+When a coin cluster's base value is randomized, it and general reward selection use `rewards`; equipment choices use `equipment`; and card choices use `cards`. Presentation timing or cosmetic burst patterns use `cosmetic` and must not consume gameplay reward randomness. Milestone 1 uses fixed authored base values so coin-cluster behavior can be validated before the named-stream infrastructure arrives with the complete run structure in Milestone 3.
+
 ### Choice Presentation
 
 A reward choice should usually display three options.
@@ -1071,6 +1196,7 @@ Each option must include:
 - Relevant tags
 - Numerical values where useful
 - Current synergy impact preview
+- Immediate synergy activations and progress toward alternative synergy paths
 
 The run pauses during major reward selection.
 
@@ -1089,6 +1215,18 @@ Used during the current run for:
 
 Coins are lost at the end of the run unless explicitly converted.
 
+Coin collection rules:
+
+- Each coin-rewarding defeated enemy produces one clickable cluster rather than many precision targets.
+- Clusters auto-collect after approximately 2.5 seconds for the full base reward.
+- Clicking collects immediately and, only when it succeeds before auto-collection, advances a roughly 3-second manual collection streak.
+- The streak window is measured from the previous successful manual collection and resets when that interval expires; auto-collection neither advances nor receives the streak bonus.
+- The streak bonus is small, data-driven, and capped at 10% of the current cluster's base value.
+- Click and timeout can resolve a cluster only once, so its base value cannot be duplicated.
+- Missing or ignoring a cluster never loses its base value.
+
+Shop purchases that reduce Heat must have meaningful cost and finite stock or an explicit per-run purchase limit; increasing price alone is not a sufficient anti-farming limit. Coins must not enable unlimited cooling.
+
 ### Scrap
 
 Represents secured progression currency.
@@ -1096,10 +1234,13 @@ Represents secured progression currency.
 Scrap is awarded based on:
 
 - Encounters completed
-- Heat reached
+- Maximum Heat reached
+- Night Pressure reached
 - Elites defeated
 - Boss victory
 - Extraction timing
+
+Heat may improve immediate ordinary reward quality, while secured progression rewards may also account for the maximum Heat and Night Pressure reached. Reducing current Heat cannot erase Night Pressure-based escalation or recreate already-consumed high-tier rewards.
 
 The vertical slice may display Scrap totals without implementing a large permanent upgrade system.
 
@@ -1114,8 +1255,8 @@ Extraction is the central risk-versus-reward decision.
 Extraction becomes available:
 
 - At a designated route node
-- After selected milestone encounters
-- Before maximum Heat
+- At configured Night Pressure progression thresholds
+- After selected milestone encounters when the next pressure threshold permits it
 
 ### Extraction Behaviour
 
@@ -1133,14 +1274,15 @@ When extraction is available:
 
 If the player declines extraction:
 
-- Heat increases
+- Heat may increase
+- Night Pressure remains irreversible and continues to rise
 - Reward multiplier increases
 - Future encounters become harder
-- The next extraction opportunity occurs later
+- The next extraction opportunity occurs at a later Night Pressure threshold
 
 ### Boss Restriction
 
-At Heat 100 or during the boss encounter, extraction is unavailable.
+When Night Pressure reaches the configured boss threshold, the boss encounter becomes unavoidable and extraction closes until the boss encounter resolves. Heat 100 alone does not start the boss or permanently close extraction.
 
 ---
 
@@ -1175,11 +1317,14 @@ The run summary must display:
 
 - Result: Victory, Extracted, or Defeated
 - Run duration
+- Run seed
 - Maximum Heat reached
+- Final Night Pressure reached
 - Enemies defeated
 - Elites defeated
 - Boss defeated
 - Coins collected
+- Manual coin clusters collected and maximum collection streak
 - Scrap secured
 - Highest combo
 - Equipment build
@@ -1202,6 +1347,8 @@ Allowed persistent unlocks:
 - Unlock one additional equipment item
 - Unlock one additional district card
 
+The equipment unlock may gate one entry from the required at-least-nine-item catalogue; it does not imply an undocumented tenth required item. Development and test profiles must be able to access all nine catalogue entries for build-combination validation.
+
 The game must remain completable without permanent statistical bonuses.
 
 Large permanent stat trees are deferred.
@@ -1217,6 +1364,7 @@ Large permanent stat trees are deferred.
 - Text may use a pixel-inspired font but must remain legible.
 - Tooltips should appear after a short hover delay.
 - Important values should not depend on colour alone.
+- Ambient interactions must use generous hit areas and remain safe to ignore.
 - Pausing must stop gameplay logic.
 
 ### 30.2 Health Bars
@@ -1236,9 +1384,20 @@ The Heat meter must show:
 - Tier
 - Direction of recent change
 - Upcoming threshold
-- Boss warning near maximum
+- District alert implications at the current tier
 
-### 30.4 Card UI
+### 30.4 Night Pressure Meter
+
+Night Pressure must be visually distinct from Heat and show:
+
+- Current irreversible pressure
+- Progress toward the next extraction window or major run threshold
+- Enemy scaling trend
+- Clear warning as the unavoidable boss threshold approaches
+
+Cooling feedback must never imply that Night Pressure decreased.
+
+### 30.5 Card UI
 
 Cards must show:
 
@@ -1246,11 +1405,12 @@ Cards must show:
 - Art or placeholder
 - Cost
 - Heat effect
+- Night Pressure or major-progression implications when relevant
 - Node effect
 - Tags
 - Valid placement feedback
 
-### 30.5 Synergy UI
+### 30.6 Synergy UI
 
 The synergy panel must show:
 
@@ -1259,6 +1419,18 @@ The synergy panel must show:
 - Required threshold
 - Active effect
 - Active or inactive state
+- Synergies activated immediately by a choice
+- Progress opened toward alternative synergies
+
+### 30.7 Coin Cluster UI
+
+Coin clusters must:
+
+- Use a generous clickable area
+- Show that base value will auto-collect
+- Communicate the remaining auto-collection delay without demanding attention
+- Show the active manual collection streak and capped bonus
+- Avoid obscuring combat or requiring precision clicking
 
 ---
 
@@ -1325,10 +1497,12 @@ Placeholders must:
 - Heavy hit
 - Knockback
 - Environmental collision
-- Coin pickup
+- Coin cluster auto-collection and manual collection
+- Coin collection streak increase
 - Card placement
 - Intervention activation
 - Heat tier increase
+- Night Pressure threshold warning
 - Extraction available
 - Boss introduction
 - Victory
@@ -1360,6 +1534,7 @@ Audio assets may be placeholders during early implementation.
 - Keep scene responsibilities narrow.
 - Do not hard-code content IDs into unrelated systems.
 - Separate deterministic calculations from presentation.
+- Route all gameplay randomness through run-scoped deterministic named streams.
 - Make important state inspectable in debug tools.
 
 ### 33.2 Recommended Autoloads
@@ -1381,6 +1556,28 @@ No other Autoload should be added without documenting the reason.
 
 The run itself must not be managed as a global singleton.
 
+### 33.3 Run-Scoped Deterministic Randomness
+
+Every run has one authoritative integer seed owned by `RunDirector`. A run may be started with a supplied seed; otherwise `RunDirector` generates and records one before any gameplay random draw occurs. Automatic seed creation is an initialization boundary and may use platform entropy or time; once the integer seed is committed, every gameplay random choice comes only from its deterministic named streams.
+
+`RunDirector` owns a run-scoped `RunRandomStreams` component. This component is not an Autoload. It derives stable sub-seeds from the authoritative run seed, a versioned, platform-stable derivation algorithm, and these stream names:
+
+- `encounters`
+- `spawns`
+- `rewards`
+- `equipment`
+- `cards`
+- `enemy_variants`
+- `cosmetic`
+
+Gameplay systems receive or request only the stream appropriate to their responsibility. They must not use unseeded global random calls such as `randi()`, `randf()`, `randomize()`, `Array.shuffle()`, or `Array.pick_random()`, and they must not all consume one fragile shared random sequence. Seed derivation must not depend on a process- or platform-unstable hash; the algorithm and `random_schema_version` are part of the reproducibility contract.
+
+Before a gameplay stream chooses among content, the candidate set must be filtered deterministically and sorted by stable content ID. Scene-tree insertion order, dictionary iteration order, and presentation order must not decide gameplay outcomes.
+
+The `cosmetic` stream is isolated from gameplay streams. Adding or changing cosmetic draws must not alter encounter, spawn, reward, equipment, card, or enemy-variant outcomes. Systems may introduce more narrowly scoped deterministic substreams later when ordering within one named domain would otherwise become fragile, but the derivation contract must remain documented and testable.
+
+Within the same supported build, content revision, and random-schema version, starting with the same seed and making the same gameplay-relevant decisions at the same authoritative timing points must produce the same gameplay outcomes. This requirement does not promise cross-version or bitwise-identical physics replay. Development bug reports must include the run seed, build/content/schema versions, and enough ordered decision and timing context to reproduce the sequence.
+
 ---
 
 ## 34. Core Runtime Systems
@@ -1392,12 +1589,27 @@ Owns:
 - Run state
 - Run timer
 - Heat
+- Night Pressure
 - Route progression
 - Encounter scheduling
 - Extraction
 - Boss trigger
 - Win and loss conditions
 - Reward multiplier
+- Authoritative run seed
+- Run-scoped deterministic named random streams
+
+### RunRandomStreams
+
+Owns:
+
+- Stable, versioned derivation of named sub-seeds from the authoritative run seed
+- One deterministic generator state per documented stream
+- Stream access by declared `StringName`
+- Development-only draw counts or state identifiers for diagnostics
+- Serialization hooks required by any future replay or mid-run save format
+
+It does not choose gameplay content, own presentation, or exist outside the lifetime of its run.
 
 ### PatrolController
 
@@ -1419,6 +1631,7 @@ Owns:
 - Encounter completion
 - Target coordination
 - Reward request after combat
+- Deterministic spawn and enemy-variant stream usage
 
 ### ActorController
 
@@ -1440,6 +1653,10 @@ Owns:
 - Choice generation
 - Reward presentation request
 - Applying selected rewards
+- Authoritative coin ledger, cluster collection resolution, and collection-streak bonus
+- Deterministic reward and equipment stream usage
+
+Milestone 1 introduces only the narrow coin-ledger, single-resolution cluster, and manual-streak responsibilities needed for the Combat Lab. Shops, broad reward-choice systems, and later economy features remain in their assigned milestones.
 
 ### CardSystem
 
@@ -1450,6 +1667,7 @@ Owns:
 - Discard pile
 - Placement validation
 - Card resolution
+- Deterministic card stream usage
 
 ### SynergySystem
 
@@ -1478,6 +1696,7 @@ The HUD must not own authoritative gameplay state.
 ```text
 GameRun
 ├── RunDirector
+│   └── RunRandomStreams
 ├── PatrolController
 ├── CombatDirector
 ├── RewardDirector
@@ -1666,12 +1885,48 @@ effect_definition: CardEffectDefinition
 id: StringName
 display_name: String
 minimum_heat: int
+minimum_night_pressure: float
+base_spawn_budget: int
 spawn_entries: Array[SpawnEntry]
 maximum_concurrent_enemies: int
 reward_table: RewardTable
 elite: bool
 boss: bool
 ```
+
+### RunEscalationDefinition
+
+```text
+passive_pressure_per_second: float
+pressure_per_standard_encounter: float
+pressure_per_elite_encounter: float
+extraction_pressure_thresholds: PackedFloat32Array
+boss_pressure_threshold: float
+health_multiplier_per_pressure: float
+damage_multiplier_per_pressure: float
+spawn_budget_multiplier_per_pressure: float
+```
+
+### RunRandomSchemaDefinition
+
+```text
+schema_version: int
+derivation_algorithm_id: StringName
+declared_stream_names: Array[StringName]
+```
+
+The initial declared stream names are the seven names in section 33.3. A schema-version change is required when seed derivation or draw semantics change in a way that invalidates prior reproduction metadata.
+
+### CoinClusterTuning
+
+```text
+auto_collect_delay: float
+manual_streak_window: float
+manual_bonus_curve: Curve
+maximum_manual_bonus: float
+```
+
+The prototype maximum manual bonus is 0.10. Award rounding and click-versus-timeout resolution must use one documented deterministic rule.
 
 ### SynergyDefinition
 
@@ -1693,10 +1948,13 @@ Suggested cross-system signals:
 
 ```text
 run_state_changed(previous_state, new_state)
-run_started()
+run_started(seed)
 run_completed(result)
 heat_changed(previous_value, new_value)
 heat_tier_changed(previous_tier, new_tier)
+night_pressure_changed(previous_value, new_value)
+night_pressure_threshold_reached(threshold_id, value)
+boss_queued()
 route_node_entered(route_node)
 encounter_started(encounter_definition)
 encounter_completed(encounter_definition)
@@ -1704,6 +1962,8 @@ actor_spawned(actor)
 actor_incapacitated(actor)
 actor_died(actor)
 enemy_defeated(enemy, killer)
+coin_cluster_spawned(cluster, base_value)
+coin_cluster_collected(cluster, manual, base_value, bonus_value, streak_count)
 damage_dealt(source, target, amount, hit_result)
 combo_changed(value)
 reward_choice_requested(options)
@@ -1744,12 +2004,28 @@ Avoid a single untyped global event bus unless a specific need is documented.
 
 Active run state does not need mid-run saving for the vertical slice.
 
+The run seed, random-schema version, content/build version, and gameplay-relevant decision trace should be captured in development bug reports. The seed is sufficient to restart a run from the beginning, but it is not sufficient to resume an already-consumed random sequence.
+
 ### Save Requirements
 
 - Save files must be versioned.
 - Missing optional fields must receive defaults.
 - Corrupt saves must fail safely.
 - Development builds should include a reset-save option.
+
+### Replay and Future Mid-Run Save Considerations
+
+Any future mid-run save or replay format must preserve:
+
+- Authoritative run seed
+- Random-schema and content/build versions
+- State or draw position for every named random stream
+- Authoritative Heat, Night Pressure, route, encounter, actor, and reward state
+- Ordered player decisions, including authoritative simulation timing where timing affects outcomes
+
+Determinism is guaranteed only within a supported build/content/schema version given the same seed and gameplay-relevant decisions. Cross-version or bitwise-identical physics replay is not implied.
+
+Optional supplied seeds support future daily-run design, but daily scheduling, shared rules, leaderboards, and rewards remain deferred.
 
 ---
 
@@ -1760,8 +2036,11 @@ A development build must include a toggleable debug overlay.
 The overlay should display:
 
 - Current run state
+- Run seed and random-schema version
 - Run time
 - Heat and tier
+- Night Pressure, next extraction threshold, and boss threshold
+- Boss queued state
 - Current route node
 - Active encounter ID
 - Crew state and target
@@ -1771,6 +2050,10 @@ The overlay should display:
 - Active status effects
 - Active synergies
 - Spawn budget
+- Per-stream draw count or state identifier
+- Active coin clusters and collection streak
+- Remaining Subway Reroute charges
+- Remaining shop cooling purchases
 - Frames per second
 
 ### Debug Controls
@@ -1779,6 +2062,8 @@ Development-only controls may include:
 
 - Add 10 Heat
 - Reduce 10 Heat
+- Add Night Pressure
+- Advance to the next Night Pressure threshold
 - Spawn basic enemy
 - Spawn elite
 - Start boss
@@ -1787,6 +2072,10 @@ Development-only controls may include:
 - Draw card
 - Force extraction window
 - Restart run
+- Restart with the same seed
+- Copy seed and bug-report metadata
+
+Debug tools must not provide an ordinary “Reduce Night Pressure” control. A forced boss threshold must queue the boss through the same safe transition boundary as normal progression.
 
 Debug features must be disabled or hidden in release builds.
 
@@ -1799,13 +2088,26 @@ Debug features must be disabled or hidden in release builds.
 Required deterministic test coverage:
 
 - Heat tier calculation
+- Night Pressure never decreases and advances only through eligible active time and exactly-once encounter completion
+- Night Pressure scaling, deterministic spawn-budget rounding, concurrency caps, and latched extraction and boss thresholds
+- Boss-threshold precedence and safe-boundary queueing
 - Damage calculation
 - Synergy threshold activation
 - Equipment modifier aggregation
+- The nine-item equipment matrix provides at least three valid two-item combinations per primary synergy and at least two bridge items
 - Card placement validation
 - Reward table selection
+- Coin cluster click and timeout each grant the full base value exactly once
+- A click-versus-timeout race cannot duplicate a coin award
+- Only successful manual collections advance the approximately three-second streak
+- Auto-collection grants no manual bonus, and every per-cluster manual bonus is at most 10% of that cluster's base value
 - Target validity
 - Save-data migration or defaulting
+- Identical seed and identical decisions produce identical reward selections
+- Identical seed and identical decisions produce identical encounter selections
+- Extra `cosmetic` draws do not change encounter, reward, equipment, card, spawn, or enemy-variant outcomes
+- Different seeds produce meaningfully different run sequences across a documented sample rather than relying on one possibly coincidental comparison
+- Candidate ordering remains stable when source containers are inserted in a different order
 
 ### Integration Tests
 
@@ -1814,7 +2116,13 @@ Required integration scenarios:
 - Crew acquires and defeats an enemy
 - Encounter completes after all enemies are defeated
 - Heat reaches a new tier
+- Lowering Heat creates tactical relief without decreasing Night Pressure, reopening a spent extraction threshold, or clearing a queued boss
+- Paused, modal-choice, and introduction time does not advance Night Pressure
+- Finite shop cooling and Subway Reroute charges cannot postpone the boss indefinitely
+- A supplied seed is displayed, recorded in the summary, and reproduced by a same-seed restart
 - Equipment change activates a synergy
+- Equipment choice previews immediate activations and progress toward alternative synergy paths
+- Coin clusters auto-collect for full base value, accept generous manual input, and are removed or recycled after either resolution
 - Fire hydrant damages and knocks back valid enemies
 - Extraction ends the run
 - All crew incapacitated triggers defeat
@@ -1825,6 +2133,10 @@ Required integration scenarios:
 Every milestone must include a short manual verification checklist.
 
 Visual features require screenshots or recorded evidence during development.
+
+Manual cadence checks must distinguish eligible active play from pauses, modal choices, and introductions. They should verify that ambient opportunities occur approximately every 10–20 active seconds without manufacturing extra strategic prompts, that strategic decisions remain approximately 30–60 active seconds apart, and that major risk decisions remain approximately 2–3 active minutes apart.
+
+The Milestone 1 Human Validation Gate in section 44 is a separate owner-recorded qualitative gate. Automated tests, coding agents, and implementation-team observations cannot satisfy it.
 
 ---
 
@@ -1838,7 +2150,7 @@ Target:
 - Reuse frequently spawned effects through pooling where beneficial
 - Avoid per-frame full-scene searches
 - Avoid unnecessary allocations in `_process` and `_physics_process`
-- Remove or recycle expired damage numbers, projectiles, and effects
+- Remove or recycle resolved coin clusters, expired damage numbers, projectiles, and effects
 
 Performance optimization should follow profiling. Do not prematurely build complex pooling systems before a measurable need exists.
 
@@ -1905,7 +2217,13 @@ Important information must not rely on colour alone.
 - Hit-stop
 - Damage numbers
 - Enemy death
-- Coin drop
+- Coin-rewarding enemy creates one clickable coin cluster
+- Fixed authored base coin values; randomized reward generation remains deferred to Milestone 3
+- Approximately 2.5-second full-value auto-collection
+- Immediate manual collection with an approximately 3-second streak and per-cluster bonus capped at 10%
+- At-most-once coin-award resolution
+- A repeatable Combat Lab sequence that can be observed for at least 60 seconds
+- Sufficient placeholder audio and visual feedback to evaluate hit timing and readability
 
 ### Acceptance Criteria
 
@@ -1917,10 +2235,53 @@ Important information must not rely on colour alone.
 - Dead enemies cannot remain targeted.
 - Repeated enemy spawning works without runtime errors.
 - Combat remains understandable with five enemies present.
+- Every coin-rewarding enemy creates one cluster; explicitly rewardless enemies create none.
+- Ignoring a cluster grants its full base value after approximately 2.5 seconds.
+- Manual collection is immediate, uses a generous target, and never interrupts combat.
+- Only successful manual collections advance the approximately 3-second streak, and the bonus never exceeds 10% of the current cluster's base value.
+- Click and auto-collection races can credit a cluster only once.
+- The Combat Lab runs repeatably for at least 60 seconds without requiring coin clicks or direct character control.
+
+---
+
+## Milestone 1 Human Validation Gate — Owner Recorded
+
+This mandatory qualitative gate occurs only after all technical Milestone 1 acceptance criteria pass and before any Milestone 2 implementation begins. It tests the central hypothesis that automatic combat is entertaining to watch without direct character control.
+
+### Procedure
+
+- The project owner recruits at least five people who were not involved in implementation.
+- The owner designates a five-person scored cohort before observation; any additional testers are supplemental and do not replace a failed scored observation.
+- Each tester receives only: “Watch this fight and tell me when you feel ready to stop.”
+- The intended build systems, future features, and desired conclusions are not explained beforehand.
+- The owner records observation duration and concise, unattributed notes for each tester.
+- Coin clicking is allowed if discovered naturally, but engagement with coin clusters is not evidence by itself that passive combat is entertaining.
+
+### Go/No-Go Criteria
+
+The gate passes only when the owner records all of the following:
+
+- At least four of five testers voluntarily watch for 60 seconds.
+- At least three testers express curiosity about what happens next or request another encounter.
+- Most testers can identify who is attacking whom.
+- Most testers identify at least one satisfying hit, reaction, or combat moment.
+- Combat is not broadly described as confusing, lifeless, or visually difficult to follow.
+
+For this five-person check, “most” means at least three testers.
+
+Five testers are not statistically significant market research. This is an early go/no-go check intended to expose an obviously weak combat foundation.
+
+### Failure and Authority
+
+If any criterion fails, Milestone 2 is blocked even when technical tests pass. Improve the relevant attack timing, animation, sound, hit reactions, targeting readability, enemy density, pacing, or visual effects, then repeat the full gate after revisions.
+
+Only the project owner may record this gate as passed. Codex, another coding agent, automated tests, and members of the implementation team must never claim or infer a pass.
 
 ---
 
 ## Milestone 2 — Player Intervention
+
+**Entry condition:** the project owner has recorded a passing Milestone 1 Human Validation Gate.
 
 ### Deliverables
 
@@ -1955,6 +2316,11 @@ Important information must not rely on colour alone.
 - Encounter scheduling
 - Heat
 - Heat tiers
+- Irreversible Night Pressure with active-time and encounter gains
+- Night Pressure enemy and spawn-budget scaling
+- Latched extraction progression and unavoidable boss threshold
+- Finite Subway Reroute charges and finite shop-based Heat cooling
+- Authoritative integer run seed, optional supplied seed, and run-scoped named random streams
 - Standard rewards
 - Extraction window
 - Defeat state
@@ -1964,11 +2330,16 @@ Important information must not rely on colour alone.
 ### Acceptance Criteria
 
 - A run begins, escalates, and ends.
-- Heat visibly changes difficulty.
+- Heat visibly changes immediate encounter conditions and can be reduced for limited tactical relief.
+- Night Pressure never decreases, advances major progression, and eventually queues the boss despite Heat reduction.
+- Paused and modal time does not advance Night Pressure.
+- Shop and Subway cooling are finite and cannot reopen progression thresholds.
 - Player can extract.
 - Player can lose.
 - Player can reach the boss.
 - Summary accurately reports the result.
+- Debug overlay and summary show the authoritative seed; same-seed restart reproduces gameplay selections for identical decisions within the same build/content/schema version.
+- Cosmetic draws do not change gameplay-stream outcomes.
 - Restart begins a new clean run.
 
 ---
@@ -1977,7 +2348,7 @@ Important information must not rely on colour alone.
 
 ### Deliverables
 
-- Six equipment items
+- At least nine equipment items, including Magnetic Flail, Voltaic Blade, and Chain Sneakers
 - Equipment UI
 - Tag aggregation
 - Knockback synergy
@@ -1985,12 +2356,15 @@ Important information must not rely on colour alone.
 - Tech synergy
 - Equipment reward choice
 - Recalculation when equipment changes
+- Immediate activation and alternative-path synergy previews
 
 ### Acceptance Criteria
 
 - At least three visibly distinct builds are possible.
+- Each primary synergy has at least three valid two-item activation combinations.
+- At least two items bridge different primary synergy categories and create a visible build tradeoff.
 - Synergies activate at the correct threshold.
-- The UI previews whether an item activates a synergy.
+- The UI previews both whether an item activates a synergy immediately and what alternative synergy progress it opens.
 - Removing an item can deactivate a synergy.
 - No equipment item requires UI-specific gameplay logic.
 
@@ -2038,13 +2412,14 @@ Important information must not rely on colour alone.
 - Settings
 - Persistent unlocks
 - Final run summary
+- Tuned ambient optional interaction cadence
 
 ### Acceptance Criteria
 
 - The game supports a complete 8–12 minute run.
 - Each crew member feels distinct.
 - At least three build strategies are viable.
-- The player receives regular decisions.
+- Ambient optional interactions occur approximately every 10–20 eligible active seconds, meaningful strategic decisions every 30–60 seconds, and major risk decisions every 2–3 minutes.
 - The boss is readable and defeatable.
 - Extraction is strategically meaningful.
 - The game can be restarted repeatedly without state leakage.
@@ -2060,17 +2435,21 @@ The vertical slice is complete only when all of the following are true:
 2. A complete run can end in victory, extraction, or defeat.
 3. Automatic combat is understandable and visually satisfying.
 4. The player has a meaningful intervention during combat.
-5. Heat creates observable escalation.
-6. Equipment choices visibly change combat.
-7. At least one synergy creates an exciting interaction.
-8. District cards alter future encounters.
-9. The extraction decision creates real tension.
-10. The boss provides a clear final test.
-11. Run restart is fast and reliable.
-12. No critical gameplay system depends on placeholder debug input.
-13. The project architecture is documented.
-14. Deterministic logic has automated test coverage.
-15. The game remains stable over repeated runs.
+5. Optional coin clusters meet their active-play cadence, preserve the full passive base reward, and cap manual bonuses at 10% per cluster.
+6. Heat creates observable tactical escalation and finite cooling creates only temporary relief.
+7. Night Pressure irreversibly advances extraction progression and eventually forces the boss.
+8. At least nine equipment items create genuine tradeoffs, with at least three two-item combinations per primary synergy and at least two bridge items.
+9. Equipment choices visibly change combat.
+10. At least one synergy creates an exciting interaction.
+11. District cards alter future encounters.
+12. The extraction decision creates real tension.
+13. The boss provides a clear final test.
+14. Run restart is fast and reliable.
+15. No critical gameplay system depends on placeholder debug input.
+16. The project architecture is documented.
+17. Deterministic logic has automated test coverage, including named-stream isolation and same-seed selection reproducibility.
+18. The project owner has manually recorded a passing Milestone 1 Human Validation Gate before any Milestone 2 work.
+19. The game remains stable over repeated runs.
 
 ---
 
@@ -2096,6 +2475,8 @@ Do not implement these until the vertical slice is complete:
 - Controller support
 - Localization
 - Console ports
+
+The run-seed and named-stream infrastructure is required for the vertical slice and is not deferred. Only the daily schedule, shared daily seed/rules, comparison services, leaderboards, and daily rewards are deferred.
 
 ---
 
@@ -2123,6 +2504,9 @@ When implementing this project:
 18. Preserve existing working behaviour unless the task explicitly changes it.
 19. Stop and report architectural conflicts rather than silently bypassing them.
 20. Never attempt to build all deferred features in one pass.
+21. Never use unseeded global randomness for gameplay; use the documented run-scoped named stream and deterministic candidate ordering.
+22. Never claim the Milestone 1 Human Validation Gate passed; only report the project owner's recorded result.
+23. Do not begin Milestone 2 until that owner-recorded gate passes.
 
 ---
 
@@ -2133,7 +2517,7 @@ Use the following as the first implementation request after this file is added t
 ```text
 Create the Milestone 0 technical foundation for Neon Loop.
 
-Read GameSpecifications.md in full.
+Read the repository's canonical `GameSpecifications.md` in full.
 
 Goal:
 Create a clean Godot 4.x project foundation for the Neon Loop vertical slice.
@@ -2184,6 +2568,9 @@ After each milestone, answer these questions through playtesting:
 ### Interaction
 
 - Does the player have enough to do?
+- Do ambient optional opportunities occur every 10–20 eligible active seconds without becoming mandatory busywork?
+- Does ignoring coin clusters preserve the full base reward while manual collection remains modestly satisfying?
+- Are strategic and major risk decisions still distinct from ambient clicks?
 - Are interventions meaningful rather than cosmetic?
 - Is the player making decisions or only clicking cooldowns?
 
@@ -2192,13 +2579,22 @@ After each milestone, answer these questions through playtesting:
 - Do equipment choices visibly change behaviour?
 - Can the player recognize an emerging build?
 - Are synergy thresholds understandable?
+- Do bridge items create a real tradeoff between completing one synergy and opening another?
+- Does the UI explain both immediate activation and alternative-path progress?
 
 ### Run Structure
 
 - Does Heat create tension?
+- Does lowering Heat feel useful without appearing to rewind Night Pressure?
+- Does Night Pressure communicate irreversible progress toward extraction windows and the boss?
 - Is extraction a legitimate strategic choice?
 - Does the run escalate quickly enough?
 - Does the boss feel like the conclusion of the run?
+
+### Reproducibility
+
+- Can a tester copy the seed and reproduce gameplay selections with the same decisions in the same build/content/schema version?
+- Can presentation randomness change without altering gameplay outcomes?
 
 ### Scope
 

@@ -1,0 +1,42 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/run/game_run.gd" id="1_game"]
+[ext_resource type="PackedScene" path="res://scenes/stages/downtown_loop.tscn" id="2_stage"]
+[ext_resource type="Script" path="res://scripts/run/run_director.gd" id="3_run"]
+[ext_resource type="Script" path="res://scripts/patrol/patrol_controller.gd" id="4_patrol"]
+[ext_resource type="Script" path="res://scripts/combat/combat_director.gd" id="5_combat"]
+[ext_resource type="Script" path="res://scripts/rewards/reward_director.gd" id="6_reward"]
+[ext_resource type="Script" path="res://scripts/cards/card_system.gd" id="7_cards"]
+[ext_resource type="Script" path="res://scripts/synergies/synergy_system.gd" id="8_synergy"]
+[ext_resource type="PackedScene" path="res://scenes/ui/game_hud.tscn" id="9_hud"]
+[ext_resource type="PackedScene" path="res://scenes/debug/debug_overlay.tscn" id="10_debug"]
+
+[node name="GameRun" type="Node"]
+script = ExtResource("1_game")
+
+[node name="RunDirector" type="Node" parent="."]
+script = ExtResource("3_run")
+
+[node name="PatrolController" type="Node" parent="."]
+script = ExtResource("4_patrol")
+
+[node name="CombatDirector" type="Node" parent="."]
+script = ExtResource("5_combat")
+
+[node name="RewardDirector" type="Node" parent="."]
+script = ExtResource("6_reward")
+
+[node name="CardSystem" type="Node" parent="."]
+script = ExtResource("7_cards")
+
+[node name="SynergySystem" type="Node" parent="."]
+script = ExtResource("8_synergy")
+
+[node name="DowntownLoop" parent="." instance=ExtResource("2_stage")]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(320, 180)
+
+[node name="GameHUD" parent="." instance=ExtResource("9_hud")]
+
+[node name="DebugOverlay" parent="." instance=ExtResource("10_debug")]

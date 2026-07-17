@@ -1,0 +1,440 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/game_hud.gd" id="1_hud"]
+
+[sub_resource type="StyleBoxFlat" id="PanelCyan"]
+bg_color = Color(0.018, 0.033, 0.09, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.17, 0.74, 0.88, 0.8)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="PanelMagenta"]
+bg_color = Color(0.035, 0.02, 0.09, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.94, 0.22, 0.69, 0.8)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="PanelAmber"]
+bg_color = Color(0.055, 0.035, 0.07, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.67, 0.25, 0.85)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="MeterBackground"]
+bg_color = Color(0.02, 0.027, 0.065, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.29, 0.48, 1)
+
+[sub_resource type="StyleBoxFlat" id="HeatFill"]
+bg_color = Color(1, 0.22, 0.56, 1)
+
+[sub_resource type="StyleBoxFlat" id="HealthFill"]
+bg_color = Color(0.19, 0.86, 0.86, 1)
+
+[node name="GameHUD" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_hud")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="MinimapPanel" type="Panel" parent="Root"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = 124.0
+offset_bottom = 58.0
+theme_override_styles/panel = SubResource("PanelCyan")
+
+[node name="Title" type="Label" parent="Root/MinimapPanel"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 5.0
+offset_right = 112.0
+offset_bottom = 17.0
+theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 8
+text = "MINIMAP • DOWNTOWN"
+
+[node name="Route" type="Label" parent="Root/MinimapPanel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 23.0
+offset_right = 111.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(1, 0.79, 0.35, 1)
+theme_override_font_sizes/font_size = 10
+text = "●  ·  ◇  ·  □  ·  E"
+horizontal_alignment = 1
+
+[node name="RunStatusPanel" type="Panel" parent="Root"]
+layout_mode = 0
+offset_left = 130.0
+offset_top = 6.0
+offset_right = 504.0
+offset_bottom = 58.0
+theme_override_styles/panel = SubResource("PanelMagenta")
+
+[node name="HeatLabel" type="Label" parent="Root/RunStatusPanel"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 4.0
+offset_right = 200.0
+offset_bottom = 18.0
+theme_override_colors/font_color = Color(1, 0.42, 0.73, 1)
+theme_override_font_sizes/font_size = 9
+text = "HEAT  12%  •  TIER 0"
+
+[node name="NightLabel" type="Label" parent="Root/RunStatusPanel"]
+layout_mode = 0
+offset_left = 205.0
+offset_top = 5.0
+offset_right = 290.0
+offset_bottom = 18.0
+theme_override_colors/font_color = Color(0.65, 0.7, 0.9, 1)
+theme_override_font_sizes/font_size = 8
+text = "NIGHT 01"
+horizontal_alignment = 2
+
+[node name="TimerLabel" type="Label" parent="Root/RunStatusPanel"]
+layout_mode = 0
+offset_left = 294.0
+offset_top = 3.0
+offset_right = 365.0
+offset_bottom = 19.0
+theme_override_colors/font_color = Color(1, 0.86, 0.45, 1)
+theme_override_font_sizes/font_size = 11
+text = "00:00"
+horizontal_alignment = 2
+
+[node name="HeatMeter" type="ProgressBar" parent="Root/RunStatusPanel"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 26.0
+offset_right = 365.0
+offset_bottom = 42.0
+mouse_filter = 2
+theme_override_styles/background = SubResource("MeterBackground")
+theme_override_styles/fill = SubResource("HeatFill")
+value = 12.0
+show_percentage = false
+
+[node name="ResourcesPanel" type="Panel" parent="Root"]
+layout_mode = 0
+offset_left = 510.0
+offset_top = 6.0
+offset_right = 634.0
+offset_bottom = 58.0
+theme_override_styles/panel = SubResource("PanelCyan")
+
+[node name="Title" type="Label" parent="Root/ResourcesPanel"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 5.0
+offset_right = 117.0
+offset_bottom = 16.0
+theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 8
+text = "RUN RESOURCES"
+
+[node name="Values" type="Label" parent="Root/ResourcesPanel"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 22.0
+offset_right = 117.0
+offset_bottom = 43.0
+theme_override_colors/font_color = Color(0.82, 0.87, 1, 1)
+theme_override_font_sizes/font_size = 7
+text = "COINS 000  •  SCRAP 000\nINTERVENTION CHARGES 0"
+
+[node name="CrewPanel" type="Panel" parent="Root"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 64.0
+offset_right = 124.0
+offset_bottom = 270.0
+theme_override_styles/panel = SubResource("PanelCyan")
+
+[node name="Title" type="Label" parent="Root/CrewPanel"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 6.0
+offset_right = 111.0
+offset_bottom = 18.0
+theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 8
+text = "CREW STATUS • AUTO"
+
+[node name="Portrait" type="ColorRect" parent="Root/CrewPanel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 27.0
+offset_right = 42.0
+offset_bottom = 61.0
+mouse_filter = 2
+color = Color(0.08, 0.24, 0.33, 1)
+
+[node name="PortraitGlyph" type="Label" parent="Root/CrewPanel/Portrait"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.32, 0.92, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "JX"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CrewName" type="Label" parent="Root/CrewPanel"]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 29.0
+offset_right = 109.0
+offset_bottom = 42.0
+theme_override_colors/font_color = Color(0.86, 0.94, 1, 1)
+theme_override_font_sizes/font_size = 8
+text = "JAX SLOT"
+
+[node name="CrewState" type="Label" parent="Root/CrewPanel"]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 44.0
+offset_right = 109.0
+offset_bottom = 57.0
+theme_override_colors/font_color = Color(0.42, 0.85, 0.7, 1)
+theme_override_font_sizes/font_size = 7
+text = "READY"
+
+[node name="HealthMeter" type="ProgressBar" parent="Root/CrewPanel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 70.0
+offset_right = 110.0
+offset_bottom = 82.0
+mouse_filter = 2
+theme_override_styles/background = SubResource("MeterBackground")
+theme_override_styles/fill = SubResource("HealthFill")
+value = 100.0
+show_percentage = false
+
+[node name="HealthLabel" type="Label" parent="Root/CrewPanel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 86.0
+offset_right = 110.0
+offset_bottom = 99.0
+theme_override_colors/font_color = Color(0.72, 0.86, 0.94, 1)
+theme_override_font_sizes/font_size = 7
+text = "HEALTH 100 / 100"
+
+[node name="StatusLabel" type="Label" parent="Root/CrewPanel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 111.0
+offset_right = 110.0
+offset_bottom = 171.0
+theme_override_colors/font_color = Color(0.58, 0.66, 0.82, 1)
+theme_override_font_sizes/font_size = 7
+text = "STATUS\n— FOUNDATION PLACEHOLDER\n\nCREW SLOT 2   EMPTY\nCREW SLOT 3   EMPTY"
+
+[node name="DebugHint" type="Label" parent="Root/CrewPanel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 184.0
+offset_right = 110.0
+offset_bottom = 199.0
+theme_override_colors/font_color = Color(1, 0.69, 0.35, 1)
+theme_override_font_sizes/font_size = 7
+text = "DEV  F1 OVERLAY • F2 LANES"
+
+[node name="BuildPanel" type="Panel" parent="Root"]
+layout_mode = 0
+offset_left = 510.0
+offset_top = 64.0
+offset_right = 634.0
+offset_bottom = 229.0
+theme_override_styles/panel = SubResource("PanelMagenta")
+
+[node name="Title" type="Label" parent="Root/BuildPanel"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 6.0
+offset_right = 117.0
+offset_bottom = 18.0
+theme_override_colors/font_color = Color(1, 0.43, 0.76, 1)
+theme_override_font_sizes/font_size = 8
+text = "EQUIPMENT"
+
+[node name="Equipment" type="Label" parent="Root/BuildPanel"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 27.0
+offset_right = 117.0
+offset_bottom = 76.0
+theme_override_colors/font_color = Color(0.76, 0.79, 0.94, 1)
+theme_override_font_sizes/font_size = 7
+text = "[ WEAPON ]  EMPTY\n[ GEAR ]       EMPTY\n[ TECH ]        EMPTY"
+
+[node name="SynergyTitle" type="Label" parent="Root/BuildPanel"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 87.0
+offset_right = 117.0
+offset_bottom = 100.0
+theme_override_colors/font_color = Color(1, 0.43, 0.76, 1)
+theme_override_font_sizes/font_size = 8
+text = "SYNERGIES"
+
+[node name="Synergies" type="Label" parent="Root/BuildPanel"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 108.0
+offset_right = 117.0
+offset_bottom = 154.0
+theme_override_colors/font_color = Color(0.69, 0.64, 0.89, 1)
+theme_override_font_sizes/font_size = 7
+text = "KNOCKBACK   0 / 2\nBLEED             0 / 2\nTECH               0 / 2"
+
+[node name="CardsPanel" type="Panel" parent="Root"]
+layout_mode = 0
+offset_left = 130.0
+offset_top = 278.0
+offset_right = 504.0
+offset_bottom = 354.0
+theme_override_styles/panel = SubResource("PanelCyan")
+
+[node name="Title" type="Label" parent="Root/CardsPanel"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 4.0
+offset_right = 220.0
+offset_bottom = 16.0
+theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 8
+text = "DISTRICT CARDS • ROUTE PROGRESSION"
+
+[node name="Card01" type="Button" parent="Root/CardsPanel"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 23.0
+offset_right = 123.0
+offset_bottom = 66.0
+theme_override_font_sizes/font_size = 7
+disabled = true
+text = "CARD SLOT 01\nEMPTY"
+
+[node name="Card02" type="Button" parent="Root/CardsPanel"]
+layout_mode = 0
+offset_left = 130.0
+offset_top = 23.0
+offset_right = 244.0
+offset_bottom = 66.0
+theme_override_font_sizes/font_size = 7
+disabled = true
+text = "CARD SLOT 02\nEMPTY"
+
+[node name="Card03" type="Button" parent="Root/CardsPanel"]
+layout_mode = 0
+offset_left = 251.0
+offset_top = 23.0
+offset_right = 365.0
+offset_bottom = 66.0
+theme_override_font_sizes/font_size = 7
+disabled = true
+text = "CARD SLOT 03\nEMPTY"
+
+[node name="InterventionsPanel" type="Panel" parent="Root"]
+layout_mode = 0
+offset_left = 510.0
+offset_top = 235.0
+offset_right = 634.0
+offset_bottom = 292.0
+theme_override_styles/panel = SubResource("PanelCyan")
+
+[node name="Title" type="Label" parent="Root/InterventionsPanel"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 4.0
+offset_right = 117.0
+offset_bottom = 16.0
+theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 8
+text = "INTERVENTIONS"
+
+[node name="Slot1" type="Button" parent="Root/InterventionsPanel"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 23.0
+offset_right = 41.0
+offset_bottom = 49.0
+theme_override_font_sizes/font_size = 7
+disabled = true
+text = "1\n—"
+
+[node name="Slot2" type="Button" parent="Root/InterventionsPanel"]
+layout_mode = 0
+offset_left = 44.0
+offset_top = 23.0
+offset_right = 79.0
+offset_bottom = 49.0
+theme_override_font_sizes/font_size = 7
+disabled = true
+text = "2\n—"
+
+[node name="Slot3" type="Button" parent="Root/InterventionsPanel"]
+layout_mode = 0
+offset_left = 82.0
+offset_top = 23.0
+offset_right = 117.0
+offset_bottom = 49.0
+theme_override_font_sizes/font_size = 7
+disabled = true
+text = "3\n—"
+
+[node name="ExtractionPanel" type="Panel" parent="Root"]
+layout_mode = 0
+offset_left = 510.0
+offset_top = 298.0
+offset_right = 634.0
+offset_bottom = 354.0
+theme_override_styles/panel = SubResource("PanelAmber")
+
+[node name="ExtractionButton" type="Button" parent="Root/ExtractionPanel"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = 118.0
+offset_bottom = 50.0
+theme_override_colors/font_disabled_color = Color(1, 0.72, 0.33, 0.8)
+theme_override_font_sizes/font_size = 8
+disabled = true
+text = "EXTRACTION\nUNAVAILABLE  •  ×1.00"
