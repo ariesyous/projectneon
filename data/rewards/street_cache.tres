@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="StandardRewardDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/rewards/standard_reward_definition.gd" id="1_reward"]
+
+[resource]
+script = ExtResource("1_reward")
+id = &"street_cache"
+display_name = "Street Cache"
+quality_tier = 0
+coins = 20
+scrap = 2

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="RunCoolingDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/run/run_cooling_definition.gd" id="1_cooling"]
+
+[resource]
+script = ExtResource("1_cooling")
+initial_subway_reroute_charges = 2
+subway_reroute_acquisition_cap = 2
+subway_heat_reduction = 15
+shop_cooling_purchase_limit = 2
+shop_cooling_coin_cost = 60
+shop_heat_reduction = 18

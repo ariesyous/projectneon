@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/game_hud.gd" id="1_hud"]
 
@@ -67,6 +67,9 @@ bg_color = Color(0.19, 0.86, 0.86, 1)
 [sub_resource type="StyleBoxFlat" id="HydrantFill"]
 bg_color = Color(0.24, 0.85, 0.82, 1)
 
+[sub_resource type="StyleBoxFlat" id="PressureFill"]
+bg_color = Color(0.64, 0.38, 1, 1)
+
 [node name="GameHUD" type="CanvasLayer"]
 layer = 10
 script = ExtResource("1_hud")
@@ -95,8 +98,8 @@ offset_top = 7.0
 offset_right = 112.0
 offset_bottom = 22.0
 theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 10
-text = "MAP • DOWNTOWN"
+theme_override_font_sizes/font_size = 8
+text = "ROUTE • DEPARTING HIDEOUT"
 
 [node name="Route" type="Label" parent="Root/MinimapPanel"]
 layout_mode = 0
@@ -105,8 +108,8 @@ offset_top = 34.0
 offset_right = 111.0
 offset_bottom = 55.0
 theme_override_colors/font_color = Color(1, 0.79, 0.35, 1)
-theme_override_font_sizes/font_size = 12
-text = "●  ·  ◇  ·  □  ·  E"
+theme_override_font_sizes/font_size = 8
+text = "NODE 0  •  00%  •  LOOP 0"
 horizontal_alignment = 1
 
 [node name="RunStatusPanel" type="Panel" parent="Root"]
@@ -122,10 +125,10 @@ layout_mode = 0
 offset_left = 9.0
 offset_top = 6.0
 offset_right = 200.0
-offset_bottom = 23.0
+offset_bottom = 18.0
 theme_override_colors/font_color = Color(1, 0.42, 0.73, 1)
-theme_override_font_sizes/font_size = 11
-text = "COMBAT LAB  •  HEAT 12%"
+theme_override_font_sizes/font_size = 9
+text = "HEAT 000  •  TIER 0  •  LOW ALERT"
 
 [node name="NightLabel" type="Label" parent="Root/RunStatusPanel"]
 layout_mode = 0
@@ -154,14 +157,47 @@ horizontal_alignment = 2
 [node name="HeatMeter" type="ProgressBar" parent="Root/RunStatusPanel"]
 layout_mode = 0
 offset_left = 9.0
-offset_top = 36.0
-offset_right = 365.0
-offset_bottom = 56.0
+offset_top = 19.0
+offset_right = 200.0
+offset_bottom = 28.0
 mouse_filter = 2
 theme_override_styles/background = SubResource("MeterBackground")
 theme_override_styles/fill = SubResource("HeatFill")
-value = 12.0
+value = 0.0
 show_percentage = false
+
+[node name="NightPressureLabel" type="Label" parent="Root/RunStatusPanel"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 31.0
+offset_right = 260.0
+offset_bottom = 43.0
+theme_override_colors/font_color = Color(0.72, 0.56, 1, 1)
+theme_override_font_sizes/font_size = 8
+text = "NIGHT PRESSURE 0.0  •  IRREVERSIBLE"
+
+[node name="NightPressureMeter" type="ProgressBar" parent="Root/RunStatusPanel"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 44.0
+offset_right = 365.0
+offset_bottom = 52.0
+mouse_filter = 2
+theme_override_styles/background = SubResource("MeterBackground")
+theme_override_styles/fill = SubResource("PressureFill")
+max_value = 50.0
+value = 0.0
+show_percentage = false
+
+[node name="ThresholdLabel" type="Label" parent="Root/RunStatusPanel"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 53.0
+offset_right = 365.0
+offset_bottom = 62.0
+theme_override_colors/font_color = Color(0.72, 0.75, 0.92, 1)
+theme_override_font_sizes/font_size = 6
+text = "NEXT 18.0  •  BOSS 50.0"
 
 [node name="ResourcesPanel" type="Panel" parent="Root"]
 layout_mode = 0
@@ -179,7 +215,7 @@ offset_right = 117.0
 offset_bottom = 21.0
 theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 10
-text = "COINS • LAB TOTAL"
+text = "RUN RESOURCES"
 
 [node name="Values" type="Label" parent="Root/ResourcesPanel"]
 layout_mode = 0
@@ -190,8 +226,9 @@ offset_bottom = 61.0
 theme_override_colors/font_color = Color(0.82, 0.87, 1, 1)
 theme_override_colors/font_outline_color = Color(0.02, 0.025, 0.06, 1)
 theme_override_constants/outline_size = 1
-theme_override_font_sizes/font_size = 10
-text = "COINS 000\nSTREAK —\nAUTO = FULL VALUE"
+theme_override_constants/line_spacing = -2
+theme_override_font_sizes/font_size = 9
+text = "COINS 000  SCRAP 00\nSTREAK —\nAUTO • FULL VALUE"
 
 [node name="CrewPanel" type="Panel" parent="Root"]
 layout_mode = 0
@@ -361,7 +398,7 @@ offset_right = 220.0
 offset_bottom = 19.0
 theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 10
-text = "DISTRICT CARDS • FUTURE"
+text = "RUN ACTIONS • INTRO"
 
 [node name="Card01" type="Button" parent="Root/CardsPanel"]
 layout_mode = 0
@@ -371,7 +408,7 @@ offset_right = 123.0
 offset_bottom = 58.0
 theme_override_font_sizes/font_size = 9
 disabled = true
-text = "SLOT 1\nEMPTY"
+text = "RUN STARTING\nSTAND BY"
 
 [node name="Card02" type="Button" parent="Root/CardsPanel"]
 layout_mode = 0
@@ -381,7 +418,7 @@ offset_right = 244.0
 offset_bottom = 58.0
 theme_override_font_sizes/font_size = 9
 disabled = true
-text = "SLOT 2\nEMPTY"
+text = "SUBWAY REROUTE\n2 LEFT • -15 HEAT"
 
 [node name="Card03" type="Button" parent="Root/CardsPanel"]
 layout_mode = 0
@@ -391,7 +428,7 @@ offset_right = 365.0
 offset_bottom = 58.0
 theme_override_font_sizes/font_size = 9
 disabled = true
-text = "SLOT 3\nEMPTY"
+text = "SHOP COOLING\n2 LEFT • 60 COINS"
 
 [node name="InterventionsPanel" type="Panel" parent="Root"]
 layout_mode = 0
@@ -517,7 +554,7 @@ offset_bottom = 18.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.34, 0.91, 1, 1)
 theme_override_font_sizes/font_size = 9
-text = "COMBAT LAB • AUTONOMOUS COMBAT + INTERVENTIONS"
+text = "NEON LOOP • AUTO COMBAT + COMPLETE RUN STRUCTURE"
 
 [node name="AutoHelp" type="Label" parent="Root/HelpPanel"]
 layout_mode = 0
@@ -528,7 +565,7 @@ offset_bottom = 59.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.84, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 8
-text = "JAX FIGHTS AUTOMATICALLY.\nCLICK/TAP COINS: INSTANT + STREAK.\nIGNORE COINS: FULL BASE VALUE."
+text = "JAX FIGHTS AUTOMATICALLY.\nCOINS AUTO FOR FULL BASE VALUE.\nSPACE PAUSES ELIGIBLE RUN TIME."
 
 [node name="InterventionHelp" type="Label" parent="Root/HelpPanel"]
 layout_mode = 0
@@ -539,7 +576,7 @@ offset_bottom = 59.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.84, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 8
-text = "USE HYDRANT: READY + IN RANGE.\nCOINS ARE NOT SPENDABLE HERE.\nFULLSCREEN: USE THE BUTTON."
+text = "COOLING LOWERS HEAT, NEVER PRESSURE.\nE EXTRACTS WHEN A WINDOW OPENS.\nFULLSCREEN: USE THE BUTTON."
 
 [node name="HelpButton" type="Button" parent="Root"]
 layout_mode = 0
@@ -550,7 +587,7 @@ offset_bottom = 320.0
 mouse_default_cursor_shape = 2
 theme_override_font_sizes/font_size = 9
 text = "CLOSE HELP"
-tooltip_text = "Show or hide Combat Lab controls"
+tooltip_text = "Show or hide run controls"
 
 [node name="FullscreenButton" type="Button" parent="Root"]
 layout_mode = 0
@@ -573,7 +610,7 @@ offset_bottom = 354.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.64, 0.72, 0.9, 1)
 theme_override_font_sizes/font_size = 8
-text = "COMBAT LAB\nAUTO FIGHT + INTERVENE"
+text = "COMPLETE RUN\nAUTO FIGHT + DIRECT"
 horizontal_alignment = 1
 
 [node name="AudioUnlockPanel" type="Panel" parent="Root"]
@@ -623,3 +660,109 @@ theme_override_font_sizes/font_size = 10
 text = "LANDSCAPE RECOMMENDED • ROTATE DEVICE"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="RunSummaryPanel" type="Panel" parent="Root"]
+visible = false
+layout_mode = 0
+offset_left = 130.0
+offset_top = 82.0
+offset_right = 504.0
+offset_bottom = 288.0
+mouse_filter = 0
+theme_override_styles/panel = SubResource("PanelHelp")
+
+[node name="Title" type="Label" parent="Root/RunSummaryPanel"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 364.0
+offset_bottom = 34.0
+theme_override_colors/font_color = Color(1, 0.82, 0.34, 1)
+theme_override_font_sizes/font_size = 14
+text = "EXTRACTED • RUN COMPLETE"
+horizontal_alignment = 1
+
+[node name="Details" type="Label" parent="Root/RunSummaryPanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 44.0
+offset_right = 358.0
+offset_bottom = 151.0
+theme_override_colors/font_color = Color(0.82, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "TIME 00:00   SEED 0   SCHEMA 1\nMAX HEAT 0   NIGHT PRESSURE 0.0   ENCOUNTERS 0\nENEMIES 0   ELITES 0   BOSS NO   COMBO 0\nCOINS 0   SCRAP 0   MANUAL 0   STREAK x0\nEQUIPMENT N/A   SYNERGIES N/A"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RestartSameSeed" type="Button" parent="Root/RunSummaryPanel"]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 158.0
+offset_right = 174.0
+offset_bottom = 194.0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 10
+text = "RESTART SAME SEED"
+
+[node name="RestartNewSeed" type="Button" parent="Root/RunSummaryPanel"]
+layout_mode = 0
+offset_left = 200.0
+offset_top = 158.0
+offset_right = 356.0
+offset_bottom = 194.0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 10
+text = "NEW RUN"
+
+[node name="BossTriggerPanel" type="Panel" parent="Root"]
+visible = false
+layout_mode = 0
+offset_left = 130.0
+offset_top = 96.0
+offset_right = 504.0
+offset_bottom = 264.0
+mouse_filter = 0
+theme_override_styles/panel = SubResource("PanelAmber")
+
+[node name="Title" type="Label" parent="Root/BossTriggerPanel"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 362.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(1, 0.36, 0.62, 1)
+theme_override_font_sizes/font_size = 16
+text = "THE VIPER • BOSS TRIGGERED"
+horizontal_alignment = 1
+
+[node name="Details" type="Label" parent="Root/BossTriggerPanel"]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 52.0
+offset_right = 356.0
+offset_bottom = 103.0
+theme_override_colors/font_color = Color(1, 0.86, 0.62, 1)
+theme_override_font_sizes/font_size = 10
+text = "NIGHT PRESSURE MADE THIS ENCOUNTER UNAVOIDABLE.\nFINAL BOSS ACTOR/BEHAVIOUR IS DELIBERATELY DEFERRED."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RestartSameSeed" type="Button" parent="Root/BossTriggerPanel"]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 116.0
+offset_right = 174.0
+offset_bottom = 154.0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 10
+text = "RESTART SAME SEED"
+
+[node name="RestartNewSeed" type="Button" parent="Root/BossTriggerPanel"]
+layout_mode = 0
+offset_left = 200.0
+offset_top = 116.0
+offset_right = 356.0
+offset_bottom = 154.0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 10
+text = "NEW RUN"

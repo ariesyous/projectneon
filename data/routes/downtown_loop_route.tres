@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="PatrolRouteDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/routes/patrol_route_definition.gd" id="1_route"]
+
+[resource]
+script = ExtResource("1_route")
+id = &"downtown_loop_route"
+travel_seconds_per_segment = 4.0
+node_ids = Array[StringName]([&"arcade_corner", &"convenience_store", &"alley_crossing", &"subway_entrance", &"gang_block"])
+node_types = Array[StringName]([&"encounter", &"shop", &"encounter", &"travel", &"encounter"])

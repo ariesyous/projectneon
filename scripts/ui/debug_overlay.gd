@@ -5,6 +5,10 @@ extends CanvasLayer
 ## a presentation-only change to the stage's lane guides.
 
 signal lane_visibility_requested(lanes_are_visible: bool)
+signal add_heat_requested(amount: int)
+signal advance_pressure_requested()
+signal force_defeat_requested()
+signal restart_same_seed_requested()
 
 @onready var fps_label: Label = $Root/Panel/FpsLabel
 @onready var lane_state_label: Label = $Root/Panel/LaneStateLabel
@@ -14,6 +18,10 @@ signal lane_visibility_requested(lanes_are_visible: bool)
 @onready var jax_debug_label: Label = $Root/Panel/JaxDebugLabel
 @onready var enemy_debug_label: Label = $Root/Panel/EnemyDebugLabel
 @onready var reward_debug_label: Label = $Root/Panel/RewardDebugLabel
+@onready var add_heat_button: Button = $Root/Panel/AddHeatButton
+@onready var advance_pressure_button: Button = $Root/Panel/AdvancePressureButton
+@onready var force_defeat_button: Button = $Root/Panel/ForceDefeatButton
+@onready var restart_button: Button = $Root/Panel/RestartButton
 
 var _lanes_visible: bool = true
 var _fps_refresh_remaining: float = 0.0
@@ -27,6 +35,10 @@ func _ready() -> void:
 		return
 
 	lane_toggle_button.pressed.connect(_toggle_lanes)
+	add_heat_button.pressed.connect(_on_add_heat_pressed)
+	advance_pressure_button.pressed.connect(_on_advance_pressure_pressed)
+	force_defeat_button.pressed.connect(_on_force_defeat_pressed)
+	restart_button.pressed.connect(_on_restart_pressed)
 	_refresh_lane_text()
 	_refresh_fps_text()
 
@@ -73,12 +85,43 @@ func present_combat_lab(
 		maxi(0, active_enemy_count),
 		maxi(0, active_cluster_count),
 	]
-	reward_debug_label.text = "REWARDS  COINS %d  |  MANUAL STREAK x%d" % [
-		maxi(0, total_coins),
-		maxi(0, streak_count),
+
+
+func present_run_flow(snapshot: Dictionary) -> void:
+	var run: Dictionary = snapshot.get("run", {})
+	var patrol: Dictionary = snapshot.get("patrol", {})
+	var encounter: Dictionary = snapshot.get("encounter", {})
+	var rewards: Dictionary = snapshot.get("rewards", {})
+	var cooling: Dictionary = snapshot.get("cooling", {})
+	state_label.text = "RUN %s  |  ACTIVE %.1fs  |  SEED %d / SCHEMA %d" % [
+		String(run.get("state_name", "UNKNOWN")),
+		float(run.get("run_elapsed_seconds", 0.0)),
+		int(run.get("run_seed", 0)),
+		int(run.get("random_schema_version", 0)),
 	]
-
-
+	lab_summary_label.text = (
+		"HEAT %d T%d  |  PRESSURE %.2f / BOSS %.1f  |  QUEUED %s\n"
+		+ "ROUTE %s  |  ENCOUNTER %s  |  BUDGET %d / PENDING %d"
+	) % [
+		int(run.get("heat", 0)),
+		int(run.get("heat_tier", 0)),
+		float(run.get("night_pressure", 0.0)),
+		float(run.get("boss_threshold", 0.0)),
+		"YES" if bool(run.get("boss_queued", false)) else "NO",
+		String(patrol.get("route_node_id", &"none")),
+		String(encounter.get("active_encounter_id", &"none")),
+		int(encounter.get("spawn_budget", 0)),
+		int(encounter.get("remaining_to_spawn", 0)),
+	]
+	reward_debug_label.text = (
+		"REWARDS  COINS %d  SCRAP %d  |  STREAK x%d  |  SUBWAY %d  SHOP %d"
+	) % [
+		int(rewards.get("coin_total", 0)),
+		int(rewards.get("scrap_total", 0)),
+		int(rewards.get("streak_count", 0)),
+		int(cooling.get("subway_charges", 0)),
+		int(cooling.get("shop_purchases_remaining", 0)),
+	]
 func present_jax_debug(
 	state_name: StringName,
 	target_name: String,
@@ -115,3 +158,19 @@ func _refresh_lane_text() -> void:
 
 func _refresh_fps_text() -> void:
 	fps_label.text = "FPS: %d" % Engine.get_frames_per_second()
+
+
+func _on_add_heat_pressed() -> void:
+	add_heat_requested.emit(10)
+
+
+func _on_advance_pressure_pressed() -> void:
+	advance_pressure_requested.emit()
+
+
+func _on_force_defeat_pressed() -> void:
+	force_defeat_requested.emit()
+
+
+func _on_restart_pressed() -> void:
+	restart_same_seed_requested.emit()

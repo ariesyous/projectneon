@@ -31,9 +31,9 @@ mouse_filter = 2
 [node name="Panel" type="Panel" parent="Root"]
 layout_mode = 0
 offset_left = 104.0
-offset_top = 20.0
+offset_top = 10.0
 offset_right = 536.0
-offset_bottom = 340.0
+offset_bottom = 350.0
 mouse_filter = 1
 theme_override_styles/panel = SubResource("DebugPanel")
 
@@ -62,7 +62,7 @@ layout_mode = 0
 offset_left = 8.0
 offset_top = 61.0
 offset_right = 424.0
-offset_bottom = 79.0
+offset_bottom = 91.0
 theme_override_colors/font_color = Color(0.75, 0.82, 0.96, 1)
 theme_override_font_sizes/font_size = 11
 text = "ACTORS  JAX 1 / ENEMIES 0    CLUSTERS 0"
@@ -70,9 +70,9 @@ text = "ACTORS  JAX 1 / ENEMIES 0    CLUSTERS 0"
 [node name="LaneStateLabel" type="Label" parent="Root/Panel"]
 layout_mode = 0
 offset_left = 8.0
-offset_top = 85.0
+offset_top = 93.0
 offset_right = 260.0
-offset_bottom = 103.0
+offset_bottom = 111.0
 theme_override_colors/font_color = Color(0.42, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 11
 text = "COMBAT LANES: VISIBLE"
@@ -80,29 +80,29 @@ text = "COMBAT LANES: VISIBLE"
 [node name="FpsLabel" type="Label" parent="Root/Panel"]
 layout_mode = 0
 offset_left = 8.0
-offset_top = 285.0
+offset_top = 316.0
 offset_right = 110.0
-offset_bottom = 308.0
+offset_bottom = 337.0
 theme_override_colors/font_color = Color(0.55, 0.92, 0.67, 1)
 theme_override_font_sizes/font_size = 12
 text = "FPS: 60"
 
 [node name="LaneToggleButton" type="Button" parent="Root/Panel"]
 layout_mode = 0
-offset_left = 274.0
-offset_top = 280.0
+offset_left = 350.0
+offset_top = 278.0
 offset_right = 424.0
 offset_bottom = 311.0
 mouse_filter = 0
-theme_override_font_sizes/font_size = 11
-text = "F2  HIDE LANES"
+theme_override_font_sizes/font_size = 8
+text = "F2 LANES"
 
 [node name="JaxDebugLabel" type="Label" parent="Root/Panel"]
 layout_mode = 0
 offset_left = 8.0
-offset_top = 109.0
+offset_top = 115.0
 offset_right = 424.0
-offset_bottom = 143.0
+offset_bottom = 149.0
 theme_override_colors/font_color = Color(0.31, 0.92, 1, 1)
 theme_override_font_sizes/font_size = 11
 text = "JAX  STATE IDLE\nTARGET NONE  |  LANE 1  |  SLOT NONE"
@@ -110,9 +110,9 @@ text = "JAX  STATE IDLE\nTARGET NONE  |  LANE 1  |  SLOT NONE"
 [node name="EnemyDebugLabel" type="Label" parent="Root/Panel"]
 layout_mode = 0
 offset_left = 8.0
-offset_top = 151.0
+offset_top = 153.0
 offset_right = 424.0
-offset_bottom = 247.0
+offset_bottom = 231.0
 theme_override_colors/font_color = Color(1, 0.46, 0.75, 1)
 theme_override_font_sizes/font_size = 9
 text = "ENEMIES\nNONE"
@@ -121,9 +121,45 @@ clip_text = true
 [node name="RewardDebugLabel" type="Label" parent="Root/Panel"]
 layout_mode = 0
 offset_left = 8.0
-offset_top = 254.0
+offset_top = 235.0
 offset_right = 424.0
-offset_bottom = 273.0
+offset_bottom = 253.0
 theme_override_colors/font_color = Color(1, 0.84, 0.37, 1)
 theme_override_font_sizes/font_size = 11
 text = "REWARDS  COINS 0  |  MANUAL STREAK x0"
+
+[node name="AddHeatButton" type="Button" parent="Root/Panel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 278.0
+offset_right = 76.0
+offset_bottom = 311.0
+theme_override_font_sizes/font_size = 8
+text = "+10 HEAT"
+
+[node name="AdvancePressureButton" type="Button" parent="Root/Panel"]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 278.0
+offset_right = 170.0
+offset_bottom = 311.0
+theme_override_font_sizes/font_size = 8
+text = "NEXT PRESSURE"
+
+[node name="ForceDefeatButton" type="Button" parent="Root/Panel"]
+layout_mode = 0
+offset_left = 174.0
+offset_top = 278.0
+offset_right = 246.0
+offset_bottom = 311.0
+theme_override_font_sizes/font_size = 8
+text = "DEFEAT"
+
+[node name="RestartButton" type="Button" parent="Root/Panel"]
+layout_mode = 0
+offset_left = 250.0
+offset_top = 278.0
+offset_right = 346.0
+offset_bottom = 311.0
+theme_override_font_sizes/font_size = 8
+text = "SAME SEED"

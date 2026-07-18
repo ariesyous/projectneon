@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=30 format=3]
 
 [ext_resource type="Script" path="res://scripts/run/game_run.gd" id="1_game"]
 [ext_resource type="PackedScene" path="res://scenes/stages/downtown_loop.tscn" id="2_stage"]
@@ -10,13 +10,25 @@
 [ext_resource type="Script" path="res://scripts/synergies/synergy_system.gd" id="8_synergy"]
 [ext_resource type="PackedScene" path="res://scenes/ui/game_hud.tscn" id="9_hud"]
 [ext_resource type="PackedScene" path="res://scenes/debug/debug_overlay.tscn" id="10_debug"]
-[ext_resource type="Script" path="res://scripts/run/combat_lab_controller.gd" id="11_lab"]
+[ext_resource type="Script" path="res://scripts/encounters/run_encounter_controller.gd" id="11_encounters"]
 [ext_resource type="PackedScene" path="res://scenes/actors/jax.tscn" id="12_jax"]
 [ext_resource type="PackedScene" path="res://scenes/actors/street_punk.tscn" id="13_punk"]
 [ext_resource type="PackedScene" path="res://scenes/interactables/coin_cluster.tscn" id="14_coin"]
 [ext_resource type="Script" path="res://scripts/interventions/fire_hydrant_controller.gd" id="15_hydrant_controller"]
 [ext_resource type="Resource" path="res://data/interventions/milestone_2_fire_hydrant_tuning.tres" id="16_hydrant_tuning"]
 [ext_resource type="Script" path="res://scripts/ui/display_controller.gd" id="17_display"]
+[ext_resource type="Script" path="res://scripts/run/run_random_streams.gd" id="18_random"]
+[ext_resource type="Resource" path="res://data/run/milestone_3_random_schema.tres" id="19_schema"]
+[ext_resource type="Script" path="res://scripts/run/run_cooling_controller.gd" id="20_cooling"]
+[ext_resource type="Resource" path="res://data/run/milestone_3_cooling.tres" id="21_cooling_tuning"]
+[ext_resource type="Script" path="res://scripts/run/run_flow_controller.gd" id="22_flow"]
+[ext_resource type="Resource" path="res://data/encounters/alley_scuffle.tres" id="23_encounter"]
+[ext_resource type="Resource" path="res://data/encounters/arcade_ambush.tres" id="24_encounter"]
+[ext_resource type="Resource" path="res://data/encounters/viper_signal.tres" id="25_encounter"]
+[ext_resource type="Resource" path="res://data/rewards/street_cache.tres" id="26_reward"]
+[ext_resource type="Resource" path="res://data/rewards/neon_stash.tres" id="27_reward"]
+[ext_resource type="Resource" path="res://data/rewards/viper_cache.tres" id="28_reward"]
+[ext_resource type="Resource" path="res://data/routes/downtown_loop_route.tres" id="29_route"]
 
 [node name="GameRun" type="Node"]
 script = ExtResource("1_game")
@@ -24,24 +36,38 @@ script = ExtResource("1_game")
 [node name="RunDirector" type="Node" parent="."]
 script = ExtResource("3_run")
 
+[node name="RunRandomStreams" type="Node" parent="RunDirector"]
+script = ExtResource("18_random")
+schema_definition = ExtResource("19_schema")
+
 [node name="PatrolController" type="Node" parent="."]
 script = ExtResource("4_patrol")
+route_definition = ExtResource("29_route")
 
 [node name="CombatDirector" type="Node" parent="."]
 script = ExtResource("5_combat")
 
 [node name="RewardDirector" type="Node" parent="."]
 script = ExtResource("6_reward")
+standard_rewards = [ExtResource("26_reward"), ExtResource("27_reward"), ExtResource("28_reward")]
 
 [node name="FireHydrantController" type="Node" parent="."]
 script = ExtResource("15_hydrant_controller")
 tuning = ExtResource("16_hydrant_tuning")
 
-[node name="CombatLabController" type="Node" parent="."]
-script = ExtResource("11_lab")
+[node name="RunCoolingController" type="Node" parent="."]
+script = ExtResource("20_cooling")
+tuning = ExtResource("21_cooling_tuning")
+
+[node name="RunEncounterController" type="Node" parent="."]
+script = ExtResource("11_encounters")
 jax_scene = ExtResource("12_jax")
 street_punk_scene = ExtResource("13_punk")
 coin_cluster_scene = ExtResource("14_coin")
+
+[node name="RunFlowController" type="Node" parent="."]
+script = ExtResource("22_flow")
+encounter_candidates = [ExtResource("23_encounter"), ExtResource("24_encounter"), ExtResource("25_encounter")]
 
 [node name="CardSystem" type="Node" parent="."]
 script = ExtResource("7_cards")

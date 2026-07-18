@@ -7,6 +7,12 @@ extends CanvasLayer
 signal hydrant_activation_requested()
 signal hydrant_preview_requested(is_visible: bool)
 signal fullscreen_requested()
+signal primary_action_requested()
+signal extraction_requested()
+signal subway_reroute_requested()
+signal shop_cooling_requested()
+signal restart_same_seed_requested()
+signal restart_new_seed_requested()
 
 enum HydrantPresentationState {
 	AVAILABLE,
@@ -28,6 +34,13 @@ const HYDRANT_UNAVAILABLE_COLOR: Color = Color("ffbf69")
 const HYDRANT_COOLDOWN_COLOR: Color = Color("a987ff")
 
 @onready var timer_label: Label = $Root/RunStatusPanel/TimerLabel
+@onready var heat_label: Label = $Root/RunStatusPanel/HeatLabel
+@onready var heat_meter: ProgressBar = $Root/RunStatusPanel/HeatMeter
+@onready var night_pressure_label: Label = $Root/RunStatusPanel/NightPressureLabel
+@onready var night_pressure_meter: ProgressBar = $Root/RunStatusPanel/NightPressureMeter
+@onready var threshold_label: Label = $Root/RunStatusPanel/ThresholdLabel
+@onready var route_title: Label = $Root/MinimapPanel/Title
+@onready var route_label: Label = $Root/MinimapPanel/Route
 @onready var resource_values: Label = $Root/ResourcesPanel/Values
 @onready var crew_state_label: Label = $Root/CrewPanel/CrewState
 @onready var health_meter: ProgressBar = $Root/CrewPanel/HealthMeter
@@ -48,6 +61,19 @@ const HYDRANT_COOLDOWN_COLOR: Color = Color("a987ff")
 @onready var audio_unlock_panel: Panel = $Root/AudioUnlockPanel
 @onready var audio_unlock_label: Label = $Root/AudioUnlockPanel/Label
 @onready var landscape_panel: Panel = $Root/LandscapePanel
+@onready var run_actions_title: Label = $Root/CardsPanel/Title
+@onready var primary_action_button: Button = $Root/CardsPanel/Card01
+@onready var subway_reroute_button: Button = $Root/CardsPanel/Card02
+@onready var shop_cooling_button: Button = $Root/CardsPanel/Card03
+@onready var extraction_button: Button = $Root/ExtractionPanel/ExtractionButton
+@onready var summary_panel: Panel = $Root/RunSummaryPanel
+@onready var summary_title: Label = $Root/RunSummaryPanel/Title
+@onready var summary_details: Label = $Root/RunSummaryPanel/Details
+@onready var summary_same_seed_button: Button = $Root/RunSummaryPanel/RestartSameSeed
+@onready var summary_new_seed_button: Button = $Root/RunSummaryPanel/RestartNewSeed
+@onready var boss_trigger_panel: Panel = $Root/BossTriggerPanel
+@onready var boss_same_seed_button: Button = $Root/BossTriggerPanel/RestartSameSeed
+@onready var boss_new_seed_button: Button = $Root/BossTriggerPanel/RestartNewSeed
 
 var _onboarding_remaining: float = ONBOARDING_EXPANDED_SECONDS
 var _hydrant_state: int = HydrantPresentationState.UNAVAILABLE
@@ -59,6 +85,8 @@ var _fullscreen_active: bool = false
 var _audio_unlock_completed: bool = false
 var _pending_safe_area: Rect2i = Rect2i()
 var _pending_window_size: Vector2i = Vector2i.ZERO
+var _scrap_total: int = 0
+var _last_run_snapshot: Dictionary = {}
 
 
 func _ready() -> void:
@@ -69,7 +97,17 @@ func _ready() -> void:
 	hydrant_button.focus_exited.connect(_on_hydrant_preview_exited)
 	help_button.pressed.connect(_toggle_help)
 	fullscreen_button.pressed.connect(_on_fullscreen_button_pressed)
+	primary_action_button.pressed.connect(_on_primary_action_pressed)
+	subway_reroute_button.pressed.connect(_on_subway_reroute_pressed)
+	shop_cooling_button.pressed.connect(_on_shop_cooling_pressed)
+	extraction_button.pressed.connect(_on_extraction_pressed)
+	summary_same_seed_button.pressed.connect(_on_restart_same_seed_pressed)
+	summary_new_seed_button.pressed.connect(_on_restart_new_seed_pressed)
+	boss_same_seed_button.pressed.connect(_on_restart_same_seed_pressed)
+	boss_new_seed_button.pressed.connect(_on_restart_new_seed_pressed)
 	help_panel.visible = true
+	summary_panel.visible = false
+	boss_trigger_panel.visible = false
 	audio_unlock_panel.visible = false
 	landscape_panel.visible = false
 	_refresh_hydrant_presentation()
@@ -111,8 +149,119 @@ func present_jax_status(
 
 func present_coin_status(total_coins: int, streak_count: int, status_message: String) -> void:
 	var streak_text: String = "x%d MANUAL" % streak_count if streak_count > 0 else "—"
-	var message: String = status_message if not status_message.is_empty() else "AUTO = FULL VALUE"
-	resource_values.text = "COINS %03d\nSTREAK %s\n%s" % [maxi(0, total_coins), streak_text, message]
+	var message: String = status_message if not status_message.is_empty() else "AUTO • FULL VALUE"
+	resource_values.text = "COINS %03d  SCRAP %02d\nSTREAK %s\n%s" % [
+		maxi(0, total_coins),
+		maxi(0, _scrap_total),
+		streak_text,
+		message,
+	]
+
+
+func present_scrap_total(total_scrap: int) -> void:
+	_scrap_total = maxi(total_scrap, 0)
+	var current_coins: int = int(_last_run_snapshot.get("coins", 0))
+	var streak_count: int = int(_last_run_snapshot.get("streak_count", 0))
+	present_coin_status(current_coins, streak_count, "RUN REWARDS SECURED")
+
+
+func present_flow_snapshot(snapshot: Dictionary) -> void:
+	var run: Dictionary = snapshot.get("run", {})
+	var patrol: Dictionary = snapshot.get("patrol", {})
+	var encounter: Dictionary = snapshot.get("encounter", {})
+	var rewards: Dictionary = snapshot.get("rewards", {})
+	var cooling: Dictionary = snapshot.get("cooling", {})
+	_last_run_snapshot = {
+		"coins": int(rewards.get("coin_total", 0)),
+		"streak_count": int(rewards.get("streak_count", 0)),
+	}
+	_scrap_total = int(rewards.get("scrap_total", 0))
+	present_lab_elapsed(float(run.get("run_elapsed_seconds", 0.0)))
+	present_coin_status(
+		int(rewards.get("coin_total", 0)),
+		int(rewards.get("streak_count", 0)),
+		"AUTO • FULL VALUE"
+	)
+
+	var heat_value: int = int(run.get("heat", 0))
+	var heat_tier: int = int(run.get("heat_tier", 0))
+	heat_label.text = "HEAT %03d  •  TIER %d  •  %s" % [
+		heat_value,
+		heat_tier,
+		_heat_implication(heat_tier),
+	]
+	heat_meter.value = heat_value
+	var pressure: float = float(run.get("night_pressure", 0.0))
+	var boss_threshold: float = maxf(float(run.get("boss_threshold", 1.0)), 0.001)
+	night_pressure_meter.max_value = boss_threshold
+	night_pressure_meter.value = pressure
+	night_pressure_label.text = "NIGHT PRESSURE %.1f  •  IRREVERSIBLE" % pressure
+	threshold_label.text = "NEXT %.1f  •  BOSS %.1f%s" % [
+		float(run.get("next_major_threshold", boss_threshold)),
+		boss_threshold,
+		"  •  QUEUED" if bool(run.get("boss_queued", false)) else "",
+	]
+
+	var node_id: String = String(patrol.get("route_node_id", &"departing_hideout"))
+	route_title.text = "ROUTE • %s" % node_id.replace("_", " ").to_upper()
+	var route_index: int = int(patrol.get("route_index", -1))
+	var route_progress: float = float(patrol.get("route_progress", 0.0))
+	route_label.text = "NODE %d  •  %02d%%  •  LOOP %d" % [
+		route_index + 1,
+		int(round(route_progress * 100.0)),
+		int(patrol.get("loop_count", 0)),
+	]
+
+	var state: int = int(run.get("state", RunDirector.RunState.INITIALIZING))
+	var encounter_name: String = String(encounter.get("active_encounter_name", "Patrolling"))
+	_refresh_run_actions(state, encounter_name, cooling, rewards)
+	if state == RunDirector.RunState.EXTRACTION_AVAILABLE:
+		extraction_button.text = "EXTRACT NOW\n%d COINS + %d SCRAP  •  x%.2f" % [
+			int(rewards.get("coin_total", 0)),
+			int(rewards.get("scrap_total", 0)),
+			float(run.get("reward_multiplier", 1.0)),
+		]
+	summary_panel.visible = state == RunDirector.RunState.RUN_SUMMARY
+	boss_trigger_panel.visible = state == RunDirector.RunState.BOSS_ACTIVE
+
+
+func present_run_summary(summary: RunSummaryRecord) -> void:
+	if summary == null:
+		return
+	summary_title.text = "%s  •  RUN COMPLETE" % summary.result_label
+	summary_details.text = (
+		"TIME %s   SEED %d   SCHEMA %d\n"
+		+ "MAX HEAT %d   NIGHT PRESSURE %.1f   ENCOUNTERS %d\n"
+		+ "ENEMIES %d   ELITES %d   BOSS %s   COMBO %d\n"
+		+ "COINS %d   SCRAP %d   MANUAL %d   STREAK x%d\n"
+		+ "EQUIPMENT %s   SYNERGIES %s"
+	) % [
+		_format_time(summary.duration_seconds),
+		summary.run_seed,
+		summary.random_schema_version,
+		summary.maximum_heat,
+		summary.final_night_pressure,
+		summary.encounters_completed,
+		summary.enemies_defeated,
+		summary.elites_defeated,
+		"DEFEATED" if summary.boss_defeated else "NO",
+		summary.highest_combo,
+		summary.coins_collected,
+		summary.scrap_secured,
+		summary.manual_clusters_collected,
+		summary.maximum_manual_streak,
+		summary.equipment_build,
+		summary.active_synergies,
+	]
+	summary_panel.visible = true
+	boss_trigger_panel.visible = false
+
+
+func present_action_feedback(message: String) -> void:
+	if message.is_empty():
+		return
+	_hydrant_feedback = message
+	hydrant_feedback_label.text = message
 
 
 ## Presents an authoritative Hydrant snapshot. State values use the local
@@ -304,6 +453,128 @@ func _on_hydrant_preview_exited() -> void:
 
 func _on_fullscreen_button_pressed() -> void:
 	fullscreen_requested.emit()
+
+
+func _on_primary_action_pressed() -> void:
+	primary_action_requested.emit()
+
+
+func _on_subway_reroute_pressed() -> void:
+	subway_reroute_requested.emit()
+
+
+func _on_shop_cooling_pressed() -> void:
+	shop_cooling_requested.emit()
+
+
+func _on_extraction_pressed() -> void:
+	extraction_requested.emit()
+
+
+func _on_restart_same_seed_pressed() -> void:
+	restart_same_seed_requested.emit()
+
+
+func _on_restart_new_seed_pressed() -> void:
+	restart_new_seed_requested.emit()
+
+
+func _refresh_run_actions(
+	state: int,
+	encounter_name: String,
+	cooling: Dictionary,
+	rewards: Dictionary
+) -> void:
+	run_actions_title.text = "RUN ACTIONS • %s" % RunDirector.state_name(state).replace("_", " ")
+	var primary_disabled: bool = true
+	var primary_text: String = "PATROLLING\nAUTOMATIC"
+	match state:
+		RunDirector.RunState.INTRO:
+			primary_text = "RUN STARTING\nSTAND BY"
+		RunDirector.RunState.ENCOUNTER_ACTIVE:
+			primary_text = "%s\nIN PROGRESS" % encounter_name.to_upper()
+		RunDirector.RunState.REWARD_SELECTION:
+			primary_disabled = false
+			primary_text = "CLAIM\nSTANDARD REWARD"
+		RunDirector.RunState.SHOP:
+			primary_disabled = false
+			primary_text = "LEAVE\nSHOP"
+		RunDirector.RunState.EXTRACTION_AVAILABLE:
+			primary_disabled = false
+			primary_text = "CONTINUE\nRUN (+6 HEAT)"
+		RunDirector.RunState.BOSS_INTRO:
+			primary_disabled = false
+			primary_text = "ENTER\nBOSS THRESHOLD"
+		RunDirector.RunState.BOSS_ACTIVE:
+			primary_text = "BOSS TRIGGERED\nCONTENT DEFERRED"
+		RunDirector.RunState.PAUSED:
+			primary_text = "PAUSED\nSPACE TO RESUME"
+		RunDirector.RunState.RUN_SUMMARY:
+			primary_text = "RUN\nCOMPLETE"
+	_present_action_button(primary_action_button, primary_text, primary_disabled)
+
+	var subway_charges: int = int(cooling.get("subway_charges", 0))
+	var subway_disabled: bool = (
+		state != RunDirector.RunState.PATROLLING or subway_charges <= 0
+	)
+	var subway_text: String = "SUBWAY REROUTE\n%d LEFT  •  -%d HEAT" % [
+		subway_charges,
+		int(cooling.get("subway_heat_reduction", 0)),
+	]
+	_present_action_button(subway_reroute_button, subway_text, subway_disabled)
+
+	var shop_remaining: int = int(cooling.get("shop_purchases_remaining", 0))
+	var shop_cost: int = int(cooling.get("shop_coin_cost", 0))
+	var shop_disabled: bool = (
+		state != RunDirector.RunState.SHOP
+		or shop_remaining <= 0
+		or int(rewards.get("coin_total", 0)) < shop_cost
+	)
+	var shop_text: String = "SHOP COOLING\n%d LEFT  •  %d COINS" % [
+		shop_remaining,
+		shop_cost,
+	]
+	_present_action_button(shop_cooling_button, shop_text, shop_disabled)
+
+	var extraction_disabled: bool = state != RunDirector.RunState.EXTRACTION_AVAILABLE
+	var extraction_text: String = (
+		"EXTRACT NOW\nSECURE RUN"
+		if state == RunDirector.RunState.EXTRACTION_AVAILABLE
+		else "EXTRACTION\nUNAVAILABLE"
+	)
+	_present_action_button(extraction_button, extraction_text, extraction_disabled)
+
+
+func _present_action_button(button: Button, text: String, disabled: bool) -> void:
+	## Reassigning `disabled` every frame cancels an in-progress mouse press in
+	## Godot. Only mutate actual presentation changes so one press/release is
+	## always sufficient for reward and route actions.
+	if button.text != text:
+		button.text = text
+	if button.disabled != disabled:
+		button.disabled = disabled
+
+
+func _heat_implication(tier: int) -> String:
+	match tier:
+		0:
+			return "LOW ALERT"
+		1:
+			return "MORE ENEMIES"
+		2:
+			return "AGGRESSIVE"
+		3:
+			return "ELITE ELIGIBLE"
+		4:
+			return "MAX STANDARD"
+		5:
+			return "FULL ALERT"
+	return "UNKNOWN"
+
+
+func _format_time(elapsed_seconds: float) -> String:
+	var safe_seconds: int = maxi(0, int(floor(elapsed_seconds)))
+	return "%02d:%02d" % [safe_seconds / 60, safe_seconds % 60]
 
 
 func _compact_state_name(state_name: StringName) -> String:

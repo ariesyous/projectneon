@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Testing is milestone-scoped. Milestone 0 verifies the project foundation; Milestone 1 verifies the narrow Combat Lab, automatic combat, and coin-cluster accounting; Milestone 2 verifies the Fire Hydrant intervention, combat-safe space, and targeted presentation/usability improvements. Later checklists do not pretend that deferred gameplay systems are implemented.
+Testing is milestone-scoped. Milestone 0 verifies the project foundation; Milestone 1 verifies the narrow Combat Lab, automatic combat, and coin-cluster accounting; Milestone 2 verifies the Fire Hydrant intervention, combat-safe space, and targeted presentation/usability improvements; Milestone 3 verifies the complete run structure, escalation, thresholds, cooling, deterministic streams, standard rewards, outcomes, and restart cleanup. Later checklists do not pretend that deferred gameplay systems are implemented.
 
 ## Error policy
 
@@ -17,7 +17,7 @@ Testing is milestone-scoped. Milestone 0 verifies the project foundation; Milest
 - **Planned** means the test is a downstream acceptance contract only; an unchecked planned item is not evidence that its system exists or works.
 - **Owner-recorded** means only the project owner may enter the result.
 
-Milestone 1 and Milestone 2 technical checks are recorded as executed. Milestone 3 and later suites remain **Planned**; their presence does not start or authorize those milestones. The Milestone 1 Human Validation Gate result is separately labelled as an owner-recorded qualitative decision.
+Milestone 1, Milestone 2, and Milestone 3 technical checks are recorded as executed. Milestone 4 and later suites remain **Planned**; their presence does not start or authorize those milestones. The Milestone 1 Human Validation Gate result remains separately labelled as an owner-recorded qualitative decision.
 
 ## Milestone 0 static checks
 
@@ -233,57 +233,90 @@ Technical limitations recorded without waiving acceptance:
 
 **Milestone 2 technical acceptance result: Passed.** Every technical Milestone 2 criterion was satisfied. This does not constitute, repeat, or reinterpret the owner-recorded Milestone 1 Human Validation Gate.
 
-### Milestone 3 — Heat and Night Pressure
+### Milestone 3 — Complete Run Structure
 
-Status: **Planned — not implemented or executed**
+Status: **Passed — implemented and executed in Godot 4.7**
+
+Automated result:
+
+- Complete project result: **75/75 tests, 1,100 assertions, 0 failures, 0 skips**.
+- Preserved Milestone 1–2 result: **46/46 tests, 694 assertions**.
+- Added Milestone 3 result: **29/29 tests, 406 assertions** across `milestone_3_run_authority_suite.gd` (19 tests) and `milestone_3_randomness_suite.gd` (10 tests).
+
+Run lifecycle and outcomes:
+
+- [x] The complete explicit transition graph covers initializing, intro, patrol, encounter, reward, shop, extraction available/extracting, boss intro/active, victory, defeat, summary, and paused states.
+- [x] Invalid, duplicate, and terminal-state transitions reject without mutating authoritative state.
+- [x] Standard rewards account coins/scrap once and resolve through `RewardDirector` rather than UI.
+- [x] Extraction, defeat, boss-trigger, and victory results produce typed summary records with seed/schema, elapsed time, Heat/Pressure, encounter/enemy counts, and rewards.
+- [x] Same-seed and generated-seed restart paths synchronously clear stale actors, reservations, loot, timers, latches, pending rewards, cooling stock, encounter IDs, and random-stream positions.
 
 Heat separation and tiers:
 
-- [ ] Heat is clamped to 0–100 and maps exactly to tiers 0 at 0–19, 1 at 20–39, 2 at 40–59, 3 at 60–79, 4 at 80–99, and 5 at 100.
-- [ ] Heat changes immediate encounter composition, elite availability, danger, reward quality, and alert presentation without mutating already-earned Night Pressure.
-- [ ] Heat 100 does not itself start the boss or permanently close extraction.
+- [x] Heat is clamped to 0–100 and maps exactly to tiers 0 at 0–19, 1 at 20–39, 2 at 40–59, 3 at 60–79, 4 at 80–99, and 5 at 100.
+- [x] Heat changes immediate spawn additions, enemy damage, elite availability, reward quality/multiplier, and alert presentation without mutating already-earned Night Pressure.
+- [x] Heat 100 does not itself start the boss or permanently close extraction.
 
 Night Pressure invariants and scaling:
 
-- [ ] Night Pressure is non-negative and monotonically increasing throughout a run; cards, shops, interventions, reroutes, extraction decisions, and Heat reduction cannot decrease it.
-- [ ] Only ending or restarting a run resets Night Pressure.
-- [ ] Eligible active simulation time advances Night Pressure according to the data definition; paused states, modal reward choices, modal shop choices, and non-interactive introductions add exactly zero.
-- [ ] Each authoritative encounter completion applies its configured Night Pressure gain exactly once, including duplicate or retried completion notifications.
-- [ ] Enemy health, enemy damage, and spawn budget use the active `RunEscalationDefinition` coefficients, clamps, and a documented deterministic spawn-budget rounding rule.
-- [ ] Scaled spawn budgets respect both encounter concurrency caps and the global limit of 30 active ordinary enemies.
+- [x] Night Pressure is non-negative and monotonically increasing throughout a run; cooling, interventions, reroutes, and extraction decisions cannot decrease it.
+- [x] Only ending or restarting a run resets Night Pressure.
+- [x] Eligible active simulation time advances timer and Pressure at 0.25 per second; paused states, modal reward/shop choices, extraction/boss transitions, terminal states, and non-interactive introduction add exactly zero.
+- [x] Each authoritative encounter completion applies 6 standard or 10 elite-flagged Pressure exactly once; duplicate and retried completion IDs are rejected.
+- [x] Enemy health, enemy damage, and spawn budget use active `RunEscalationDefinition` coefficients of 1%, 0.5%, and 1.25% per Pressure point.
+- [x] Spawn budget uses documented non-negative round-half-up, `floor(scaled + 0.5)`, and respects both per-encounter concurrency and the global limit of 30.
 
 Thresholds and precedence:
 
-- [ ] Tests immediately below, exactly at, and immediately above every configured extraction threshold and the boss threshold produce the expected single transition.
-- [ ] Each extraction or boss threshold latches on first crossing and cannot reopen, clear, or fire twice after Heat reduction, cooling, rerouting, or later updates.
-- [ ] Crossing the boss threshold at an unsafe transition boundary sets `boss_queued` and starts the boss exactly once at the next valid boundary.
-- [ ] When an extraction threshold and the boss threshold are crossed in the same authoritative update, the boss takes precedence unless extraction was already confirmed before that update.
-- [ ] Continued eligible active play and encounter completions eventually reach the boss threshold even when Heat is repeatedly reduced.
+- [x] Tests immediately below, exactly at, and immediately above extraction thresholds 18/36 and boss threshold 50 produce the expected single latch.
+- [x] Each extraction or boss threshold latches once and cannot reopen, clear, or fire twice after cooling, rerouting, or later updates.
+- [x] A boss crossed at an unsafe transition sets `boss_queued` and begins exactly once at the next valid boundary.
+- [x] A same-update extraction/boss crossing gives boss precedence unless extraction was already confirmed before that update.
+- [x] Continued eligible active play and exactly-once encounter completions eventually reach the boss despite repeated Heat cooling.
 
 Finite cooling and anti-farming:
 
-- [ ] Subway Reroute consumes a finite charge or explicit consumable, has data-driven acquisition and per-run caps, and does not regenerate merely through elapsed time.
-- [ ] A zero-charge Subway Reroute request is rejected without changing Heat, Night Pressure, route state, thresholds, or boss queue state.
-- [ ] Shop cooling has meaningful cost plus finite stock or an explicit per-run purchase limit; increasing price alone is not treated as a sufficient finite limit.
-- [ ] Convenience Store permits only its defined purchase opportunity, and all cooling cards and purchases affect Heat only.
-- [ ] Exhausting every cooling card, shop purchase, and reroute can provide temporary tactical relief but cannot postpone the boss indefinitely, reopen a spent extraction window, unlatch a threshold, or clear a queued boss.
+- [x] Subway Reroute consumes one of two per-run charges, removes 15 Heat, advances the authored route, and never regenerates merely through time.
+- [x] A zero-charge Subway request rejects without changing Heat, Night Pressure, route state, thresholds, or boss queue state.
+- [x] Shop cooling costs 60 authoritative run coins, removes 18 Heat, and is limited to two purchases per run.
+- [x] Zero-stock and insufficient-funds requests reject without mutation.
+- [x] Exhausting cooling provides tactical relief but cannot postpone the boss indefinitely, reopen a spent extraction window, unlatch progression, or clear a queued boss.
 
-### Milestone 3 — deterministic seed and named-stream suite
+Deterministic seed and named streams:
 
-Status: **Planned — not implemented or executed**
+- [x] `RunDirector` records one authoritative integer seed, accepts an optional supplied seed, and otherwise generates it before the first gameplay draw.
+- [x] Seed and `random_schema_version` appear in diagnostics and summary; summary exposes same-seed restart.
+- [x] Run-scoped `RunRandomStreams` exposes exactly `encounters`, `spawns`, `rewards`, `equipment`, `cards`, `enemy_variants`, and `cosmetic` as `StringName` values.
+- [x] Locked vectors cover schema 1 `fnv1a32_utf8_v1` for every stream and do not use process/platform-dependent hashes.
+- [x] Gameplay-code static inspection finds no `randi()`, `randf()`, `randomize()`, `Array.shuffle()`, or `Array.pick_random()` calls.
+- [x] Same seed, build/content/schema, decisions, and authoritative timing produce identical encounter, spawn, reward, equipment, card, and enemy-variant selections.
+- [x] Same-seed restart resets every stream; extra draws in any one stream do not perturb another; extra `cosmetic` draws do not alter gameplay outcomes.
+- [x] Empty and duplicate IDs are excluded, remaining candidates are sorted by stable content ID, and source ordering cannot change a choice.
+- [x] A documented multi-seed sample produces sequence variation without relying on one coincidental pair.
+- [x] Reproduction claims are limited to the same supported build, content revision, schema version, seed, ordered decisions, and authoritative timing context; cross-version or bitwise physics replay is not promised.
 
-- [ ] `RunDirector` establishes one authoritative integer seed, accepts an optional supplied seed, and records or generates it before the first gameplay random draw.
-- [ ] The seed and `random_schema_version` appear in development diagnostics; the seed appears in the run summary and same-seed restart path.
-- [ ] `RunRandomStreams` is run-scoped rather than an Autoload and exposes exactly the declared streams `encounters`, `spawns`, `rewards`, `equipment`, `cards`, `enemy_variants`, and `cosmetic` by `StringName`.
-- [ ] Known-vector tests lock the documented, versioned, platform-stable sub-seed derivation for every declared stream and reject dependence on process-unstable hashes.
-- [ ] A static gameplay-code check rejects direct calls to `randi()`, `randf()`, `randomize()`, `Array.shuffle()`, and `Array.pick_random()`.
-- [ ] With the same build, content revision, random-schema version, seed, decisions, and authoritative timing, two runs produce identical encounter, spawn, reward, equipment, card, and enemy-variant selections.
-- [ ] A same-seed restart resets every named stream to its expected initial state rather than continuing previous draw positions.
-- [ ] Extra `cosmetic` draws do not change encounter, spawn, reward, equipment, card, or enemy-variant outcomes.
-- [ ] Extra draws in one named gameplay stream do not perturb the state or outcomes of the other named streams.
-- [ ] Candidate filtering followed by stable content-ID sorting produces the same choice when dictionary insertion, scene-tree insertion, source-container, or presentation order changes.
-- [ ] Different seeds produce meaningfully different sequences across a documented sample; the assertion does not rely on one possibly coincidental pair.
-- [ ] Reproduction reports include seed, build/content/schema versions, ordered gameplay decisions, and authoritative timing context; no test promises cross-version or bitwise physics replay.
+Manual/runtime verification:
+
+- [x] Launched the configured main scene directly as `/GameRun` and inspected fresh editor/game output with no task-introduced parser errors, runtime errors, or warnings.
+- [x] Completed accelerated representative extracted, defeated, and boss-threshold runs; boss threshold crossed during an unsafe encounter queued until the post-reward safe boundary.
+- [x] Repeated shop and Subway cooling to exhaustion; Heat decreased while Night Pressure, latches, and boss queue did not.
+- [x] Held the run in pause and modal shop/reward states and confirmed elapsed run time and Night Pressure did not advance.
+- [x] Restarted a supplied seed with identical decisions and matched encounter/lane selections; 50 extra cosmetic draws left gameplay selections unchanged.
+- [x] Restarted into one clean Jax actor with zero enemies, reservations, loot, thresholds, timer/Pressure/Heat, pending rewards, and stream draws; finite cooling stock reset to authored values.
+- [x] Exercised Fire Hydrant damage/cooldown, manual/full-value coin collection, Help, fullscreen, `F1`, and `F2` during the run lifecycle.
+- [x] After owner playtest feedback, reproduced reward selection and verified one mouse press/release applies the prepared standard reward and continues the run; stable per-frame button presentation also covers Subway, shop, and extraction actions.
+- [x] Re-captured the native 640 x 360 HUD and confirmed the compact `AUTO • FULL VALUE` line remains inside the Run Resources border.
+- [x] Exported local Windows and Web builds. Windows passed headless and hidden-window startup smoke checks. The locally served Web build rendered the live HUD, unlocked audio, toggled Help, entered/exited fullscreen, and had no warning/error console messages.
+- [x] Captured `res://docs/screenshots/milestone_3_complete_run_structure.png`.
+
+Honest limitations:
+
+- The final-boss actor, encounter logic, art/audio, and production victory path belong to later milestone content. Milestone 3 verifies only the required latch, queue, intro, active transition, and typed result seam.
+- The current encounter set reuses Street Punk placeholder presentation; elite availability is data/tier behavior without later Viper Enforcer content.
+- The generated Web shell retains its existing focused-canvas zoom limitation; the exercised fullscreen control remains the presentation-scale alternative.
+- No publication or GitHub Pages redeployment was performed.
+
+**Milestone 3 technical acceptance result: Passed.** Every explicitly authorized technical Milestone 3 criterion is satisfied. No Milestone 4+ system is started by this record.
 
 ### Milestone 4 — nine-item equipment and synergy matrix
 

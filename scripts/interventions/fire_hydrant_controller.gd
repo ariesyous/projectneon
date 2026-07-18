@@ -33,6 +33,7 @@ var _request_in_progress: bool = false
 var _last_emitted_state: int = -1
 var _last_emitted_cooldown: float = -1.0
 var _last_emitted_valid_target_count: int = -1
+var simulation_enabled: bool = true
 
 
 func _ready() -> void:
@@ -42,7 +43,8 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	step_cooldown(delta)
+	if simulation_enabled:
+		step_cooldown(delta)
 
 
 func configure(combat_director: CombatDirector, activation_origin: Vector2) -> void:
@@ -52,6 +54,17 @@ func configure(combat_director: CombatDirector, activation_origin: Vector2) -> v
 	_activation_locked = false
 	_request_in_progress = false
 	_emit_state_if_changed(true)
+
+
+func reset_for_run() -> void:
+	_cooldown_remaining = 0.0
+	_activation_locked = false
+	_request_in_progress = false
+	_emit_state_if_changed(true)
+
+
+func set_simulation_enabled(is_enabled: bool) -> void:
+	simulation_enabled = is_enabled
 
 
 func request_activation() -> bool:

@@ -37,6 +37,7 @@ var _actors: Array[ActorController] = []
 var _reservation_registry: AttackPositionRegistry = null
 var _next_registration_order: int = 0
 var _hit_stop_remaining: float = 0.0
+var simulation_enabled: bool = true
 
 
 func _ready() -> void:
@@ -50,6 +51,8 @@ func _physics_process(delta: float) -> void:
 
 
 func step_simulation(delta: float) -> void:
+	if not simulation_enabled:
+		return
 	var simulation_delta: float = maxf(delta, 0.0)
 	if simulation_delta <= 0.0:
 		return
@@ -201,7 +204,7 @@ func request_attack_hit(
 		return 0
 	var damage: int = DamageCalculator.calculate_damage(
 		attacker.actor_definition.base_damage,
-		attacker.actor_definition.damage_multiplier,
+		attacker.actor_definition.damage_multiplier * attacker.get_runtime_damage_multiplier(),
 		attack.damage_multiplier,
 		target.actor_definition.damage_taken_multiplier
 	)
@@ -337,12 +340,17 @@ func get_hit_stop_remaining() -> float:
 	return _hit_stop_remaining
 
 
+func set_simulation_enabled(is_enabled: bool) -> void:
+	simulation_enabled = is_enabled
+
+
 func clear_all(queue_free_actors: bool = true) -> void:
 	_ensure_reservation_registry()
 	var actors_to_clear: Array[ActorController] = _actors.duplicate()
 	_actors.clear()
 	_reservation_registry.clear_all()
 	_hit_stop_remaining = 0.0
+	_next_registration_order = 0
 	for actor: ActorController in actors_to_clear:
 		if not is_instance_valid(actor):
 			continue

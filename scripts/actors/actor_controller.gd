@@ -43,6 +43,8 @@ var _knockback_velocity_x: float = 0.0
 var _stun_remaining: float = 0.0
 var _cleanup_remaining: float = 0.0
 var _runtime_initialized: bool = false
+var _runtime_health_multiplier: float = 1.0
+var _runtime_damage_multiplier: float = 1.0
 
 
 func _ready() -> void:
@@ -74,7 +76,11 @@ func initialize_runtime() -> void:
 		push_error("ActorController '%s' requires an AttackDefinition." % name)
 		return
 	_runtime_initialized = true
-	health_component.initialize(actor_definition.maximum_health)
+	var scaled_maximum_health: int = maxi(
+		int(floor(float(actor_definition.maximum_health) * _runtime_health_multiplier + 0.5)),
+		1
+	)
+	health_component.initialize(scaled_maximum_health)
 	actor_visual.set_health(health_component.current_health, health_component.maximum_health)
 	actor_visual.set_state(state_machine.current_state)
 	actor_visual.set_facing(facing_direction)
@@ -87,6 +93,17 @@ func configure_combat_space(definition: CombatSpaceDefinition) -> void:
 	if not is_node_ready():
 		return
 	_refresh_lane_from_position()
+
+
+func configure_runtime_scaling(health_multiplier: float, damage_multiplier: float) -> void:
+	if _runtime_initialized:
+		return
+	_runtime_health_multiplier = maxf(health_multiplier, 0.0)
+	_runtime_damage_multiplier = maxf(damage_multiplier, 0.0)
+
+
+func get_runtime_damage_multiplier() -> float:
+	return _runtime_damage_multiplier
 
 
 func get_combat_space() -> CombatSpaceDefinition:
@@ -292,6 +309,8 @@ func get_snapshot() -> Dictionary:
 		"state_name": get_state_name(),
 		"current_health": health_component.current_health,
 		"maximum_health": health_component.maximum_health,
+		"runtime_health_multiplier": _runtime_health_multiplier,
+		"runtime_damage_multiplier": _runtime_damage_multiplier,
 		"lane": lane_index,
 		"target_instance_id": current_target.get_instance_id() if current_target != null else -1,
 		"position": global_position,

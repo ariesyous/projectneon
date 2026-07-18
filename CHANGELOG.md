@@ -4,6 +4,55 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 
 ## [Unreleased]
 
+### 2026-07-18 — Milestone 3: Complete Run Structure (Technical)
+
+#### Added
+
+- A run-scoped `RunDirector` authority with an explicit typed lifecycle covering initialization, introduction, patrol, encounters, reward/shop choices, extraction, boss trigger, victory/defeat, summary, pause, invalid-transition rejection, and clean restart.
+- A data-driven patrol loop and deterministic encounter controller with stable encounter/spawn/lane selection, scaled actor creation, per-encounter concurrency limits, and a global 30-enemy cap.
+- Separate tactical Heat and irreversible Night Pressure authorities. Heat is clamped to 0–100 with exact six-tier boundaries; Night Pressure advances only during eligible active simulation and exactly-once encounter completion.
+- Data Resources for Heat, Night Pressure/scaling/thresholds, cooling, random schema, patrol route, three encounters, and three standard rewards.
+- Latched extraction thresholds at Night Pressure 18 and 36, an unavoidable boss threshold at 50, same-update boss precedence unless extraction was already confirmed, and safe queued boss transition through `BOSS_INTRO` to `BOSS_ACTIVE`.
+- Finite cooling: two Subway Reroute charges removing 15 Heat each and two 60-coin shop purchases removing 18 Heat each, with zero-stock/funds rejection and no time regeneration.
+- One authoritative supplied-or-generated integer run seed and a non-Autoload `RunRandomStreams` child exposing exactly `encounters`, `spawns`, `rewards`, `equipment`, `cards`, `enemy_variants`, and `cosmetic`.
+- Random schema version 1 using platform-stable `fnv1a32_utf8_v1` over canonical UTF-8 input, locked derivation vectors, stable-ID filtering/sorting/deduplication, stream isolation, and same-seed restart.
+- Standard reward accounting, typed run summaries, same-seed/new-seed restart actions, live run HUD/diagnostics, and deterministic Milestone 3 run/randomness suites.
+- Updated visual evidence at `res://docs/screenshots/milestone_3_complete_run_structure.png`.
+
+#### Changed
+
+- `GameRun` now composes run, patrol, encounter, reward, cooling, combat, intervention, HUD, and debug owners while remaining assembly/wiring rather than a second gameplay authority.
+- The former fixed Combat Lab orchestration is replaced in the configured run by scheduled encounters, while existing Jax/Street Punk combat, safe-space movement, damage, feedback, cleanup, coin clusters, and Hydrant behavior are preserved.
+- Heat tier tuning changes immediate spawn additions (0/1/2/3/4/5), enemy damage (1.00/1.05/1.10/1.15/1.20/1.30), reward quality (0/0/1/2/3/4), reward multiplier (1.00/1.05/1.10/1.20/1.35/1.50), and elite availability (tier 3+).
+- Night Pressure applies +1% enemy health, +0.5% enemy damage, and +1.25% spawn budget per point. Spawn budget uses deterministic non-negative round-half-up, `floor(scaled + 0.5)`, before caps.
+- Encounter completion IDs and standard reward IDs are authoritative and at-most-once; duplicate/empty content IDs are excluded before random selection.
+- Restart cleanup is synchronous for run-owned actors and loot, preventing queued stale nodes or reservations from leaking into the next run.
+- Playtest follow-up keeps run-action button enabled/text state stable across frames, so one ordinary press/release claims a reward instead of an intermediate disabled assignment cancelling the click. The same stable presentation path now covers Subway, shop, and extraction buttons.
+- The Run Resources value text uses tighter line spacing, a slightly smaller font, and shorter `AUTO • FULL VALUE` copy so its third line remains inside the panel border.
+
+#### Verification
+
+- Passed **75/75 tests and 1,100 assertions with no failures or skips**. All 46 Milestone 1–2 tests and 694 assertions remain preserved; Milestone 3 adds 29 tests and 406 assertions.
+- Covered the complete state graph and rejection paths, every Heat boundary, Heat/Pressure separation, eligible-time rules, exactly-once completion gains, scaling/rounding/caps, threshold latching/precedence/queueing, finite cooling, seeds, stable ordering, named-stream isolation, rewards, results, summaries, and composed restart cleanup.
+- Launched the configured Godot 4.7 main scene directly into `/GameRun` with clean current game/editor output. Accelerated representative runs reached extracted, defeated, and boss-triggered summaries.
+- Verified repeated Heat cooling never reduced Night Pressure, modal/pause/introduction time added no Pressure, cooling stock exhausted, same-seed selections replayed, and 50 extra cosmetic draws did not change gameplay selections.
+- Exercised Fire Hydrant damage/cooldown, coin collection, Help, fullscreen, `F1`, and `F2` during the new lifecycle.
+- Reproduced `REWARD_SELECTION` after the owner playtest report and verified one physical mouse press/release applied the 20-coin/2-scrap Street Cache and immediately continued the run. A fresh 640 x 360 capture confirmed the Run Resources copy remains inside its panel.
+- Exported local Windows and Web builds successfully. Windows passed headless and hidden-window startup smoke checks. A locally served Web build rendered the live Milestone 3 HUD, unlocked audio, toggled Help, entered/exited fullscreen, and produced no browser-console warnings or errors.
+
+#### Limitations
+
+- Milestone 3 deliberately implements only boss threshold latching, safe queueing, intro, and active transition behavior. The final-boss actor/encounter, presentation, and production victory path remain later content work.
+- Existing Street Punk presentation stands in for the current authored encounter set; elite eligibility is active tuning infrastructure without later Viper Enforcer content.
+- Equipment, synergies, district cards, general shop content, saving/progression, procedural generation, and other Milestone 4+ systems remain unimplemented. The `equipment` and `cards` random streams are compatibility infrastructure only.
+- The generated Web shell retains its existing focused-canvas zoom limitation; the exercised fullscreen control remains the presentation-scale alternative.
+
+#### Scope
+
+- Every explicitly authorized technical Milestone 3 criterion passed. Work stopped before Milestone 4.
+- The owner-recorded Milestone 1 Human Validation Gate and the separate Milestone 2 technical acceptance record were preserved without reopening or reinterpretation.
+- Changes, local exports, and verification evidence were not committed, pushed, merged, published, or deployed. GitHub Pages was not redeployed.
+
 ### 2026-07-18 — Milestone 2: Player Intervention (Technical)
 
 #### Added

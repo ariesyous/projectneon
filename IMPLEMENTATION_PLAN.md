@@ -8,7 +8,9 @@
 
 **Milestone 2 — Player Intervention: technical implementation and verification complete**
 
-The Combat Lab supplies the smallest repeatable automatic-combat proof while preserving the Milestone 0 foundation. Technical Milestone 1 acceptance is complete. On 2026-07-18, the project owner recorded the five-person Human Validation Gate as **PASSED**, satisfying the Milestone 2 entry condition. This owner qualitative decision is distinct from automated tests and coding-agent verification. The authorized Fire Hydrant intervention and targeted presentation/usability work have now passed their separate technical Milestone 2 verification.
+**Milestone 3 — Complete Run Structure: technical implementation and verification complete**
+
+The Combat Lab foundation and Fire Hydrant intervention are preserved inside a complete run lifecycle. Technical Milestone 1 acceptance is complete. On 2026-07-18, the project owner recorded the five-person Human Validation Gate as **PASSED**, satisfying the Milestone 2 entry condition; this owner qualitative decision remains distinct from all automated and coding-agent verification. Milestone 2 and the separately authorized Milestone 3 run structure have now passed their respective technical verification.
 
 ## Milestone 0 implementation
 
@@ -112,9 +114,9 @@ Technical checklist:
 - [x] Captured `res://docs/screenshots/milestone_2_player_intervention.png`
 - [x] Added no gameplay Autoload, unseeded/global randomness, Wet/status/combo system, or Milestone 3+ behavior
 
-**Milestone 2 technical acceptance status: Passed.** This result is an implementation/test record; it neither performs nor reinterprets the separate owner-recorded Milestone 1 Human Validation Gate. Work stops here until a later milestone is explicitly authorized. The verified local Milestone 2 build has not been published or deployed.
+**Milestone 2 technical acceptance status: Passed.** This result is an implementation/test record; it neither performs nor reinterprets the separate owner-recorded Milestone 1 Human Validation Gate. The verified local Milestone 2 build was not republished or redeployed by this work.
 
-#### Future design input — deferred to owning Milestone 3+ work
+#### Historical Milestone 2 design input — deferred to its owning later work
 
 The owner-recorded playtest surfaced interest in the following areas. They are captured for later design work and are deliberately excluded from Milestone 2 implementation:
 
@@ -124,17 +126,47 @@ The owner-recorded playtest surfaced interest in the following areas. They are c
 - How encounters begin, what happens between fights, and how coins are eventually spent
 - Customization and progression
 
-Call Backup, Subway Reroute, patrol progression, encounter scheduling, Heat, Night Pressure, `RunRandomStreams`, equipment, synergies, cards, shops, extraction, saving, bosses, progression, procedural generation, and other Milestone 3+ behavior remain outside the authorized implementation scope.
+At Milestone 2 completion, Call Backup, Subway Reroute, patrol progression, encounter scheduling, Heat, Night Pressure, `RunRandomStreams`, equipment, synergies, cards, shops, extraction, saving, bosses, progression, and procedural generation were outside that milestone's authorized implementation scope. Milestone 3 subsequently implemented only its explicitly authorized run-structure subset.
 
 ### Milestone 3 — Complete Run Structure
 
-Implement actual run states, patrol progression, encounters, timer, rewards, extraction, defeat, boss trigger, and summary while keeping the two escalation authorities distinct:
+**Status: Technical implementation and verification complete.**
+
+Implemented actual run states, patrol progression, encounters, timer, standard rewards, extraction, defeat, boss trigger, summary, and restart while keeping the two escalation authorities distinct:
 
 - **Heat** is tactical, ranges from 0-100, changes immediate encounter danger/reward quality, and may receive finite cooling. Heat 100 does not itself start the boss.
 - **Night Pressure** is non-negative, irreversible during a run, advances through eligible active simulation time and exactly-once encounter completion, scales enemy health/damage/spawn budget, latches extraction progression, and eventually queues the unavoidable boss at a safe transition boundary.
 - Cooling, shops, cards, and finite Subway Reroute charges may reduce Heat but never reduce Night Pressure, clear a queued boss, or reopen a spent threshold.
 
-Add one authoritative integer run seed owned by `RunDirector` and a run-scoped `RunRandomStreams` component, never an Autoload. Use stable, versioned sub-seed derivation and deterministic candidate ordering for the named streams `encounters`, `spawns`, `rewards`, `equipment`, `cards`, `enemy_variants`, and `cosmetic`. Gameplay systems must not use unseeded global random calls or share one fragile random sequence. Test same-seed selection reproducibility, stable candidate ordering, different-seed variation over a documented sample, and isolation such that extra `cosmetic` draws cannot change gameplay-stream outcomes.
+Added one authoritative integer run seed owned by `RunDirector` and a run-scoped `RunRandomStreams` child, never an Autoload. Schema version 1 derives every sub-seed with `fnv1a32_utf8_v1` over the UTF-8 canonical input `neon-loop|schema:<version>|seed:<integer>|stream:<name>`. All candidates are filtered, duplicate/empty stable IDs are excluded, and remaining IDs are sorted before drawing. The isolated named streams are exactly `encounters`, `spawns`, `rewards`, `equipment`, `cards`, `enemy_variants`, and `cosmetic`.
+
+Authored run tuning:
+
+- Heat tiers are exactly 0–19, 20–39, 40–59, 60–79, 80–99, and 100. Their spawn additions are 0/1/2/3/4/5; enemy-damage multipliers are 1.00/1.05/1.10/1.15/1.20/1.30; reward-quality floors are 0/0/1/2/3/4; reward multipliers are 1.00/1.05/1.10/1.20/1.35/1.50; elite eligibility begins at tier 3.
+- Night Pressure gains 0.25 per eligible active second and exactly-once completion gains of 6 for a standard encounter or 10 for an elite-flagged encounter.
+- Each Night Pressure point adds 1% enemy health, 0.5% enemy damage, and 1.25% encounter spawn budget. Spawn budget uses non-negative round-half-up, `floor(scaled + 0.5)`, before encounter/global caps; the global enemy cap is 30.
+- Extraction thresholds are 18 and 36 Night Pressure; the boss threshold is 50. Extraction is latched and spent once; boss queueing is irreversible and wins a same-update crossing unless extraction was already confirmed.
+- Subway Reroute starts with 2 charges and removes 15 Heat per use. Shop cooling allows 2 purchases per run, costs 60 coins each, and removes 18 Heat. Neither stock regenerates through time.
+- The authored route has five nodes with four-second travel segments. Intro is 1.25 seconds and extraction transition is 1.0 second.
+- Standard reward definitions are Street Cache (20 coins, 2 scrap, quality 0), Neon Stash (30 coins, 3 scrap, quality 1), and Viper Cache (45 coins, 5 scrap, quality 3), modified by current Heat reward tuning.
+
+Technical checklist:
+
+- [x] Explicit typed state graph with invalid/duplicate transition rejection, eligible-time pause/modal/introduction rules, extraction, defeat, boss trigger, summary, and restart
+- [x] Authored patrol route, safe transition boundaries, deterministic encounter scheduling, spawn/lane selection, and encounter/global concurrency caps
+- [x] Separate Heat and Night Pressure state with exact tiers, monotonic pressure, exactly-once completion IDs, scaling, deterministic rounding, and visible diagnostics
+- [x] Latched extraction progression, spent-window behavior, unavoidable queued boss, and same-update boss precedence unless extraction was already confirmed
+- [x] Finite player-facing Subway and shop cooling with zero-stock rejection and no Night Pressure/threshold mutation
+- [x] Optional supplied seed, generated recorded seed, schema version, seven run-scoped named streams, locked vectors, stable ordering, same-seed replay, different-seed sample variation, and stream/cosmetic isolation
+- [x] Data-driven route, encounters, Heat, pressure/scaling, cooling, random schema, and standard rewards
+- [x] Standard reward accounting, extracted/defeated/boss-triggered/victory result records, and clean same-seed/new-seed restart
+- [x] Preserved all 46 Milestone 1–2 tests and added 29 Milestone 3 tests: **75/75 tests, 1,100 assertions, no failures or skips**
+- [x] Launched `/GameRun`; exercised representative extracted, defeated, and boss-threshold runs; tested cooling, time eligibility, threshold ordering, same-seed/cosmetic isolation, restart cleanup, Hydrant, coins, Help, fullscreen, `F1`, and `F2`
+- [x] Produced clean local Windows and Web exports, clean Windows startup smoke checks, and a locally served Web smoke with audio unlock, Help, fullscreen, and no browser-console warnings/errors
+- [x] Captured `res://docs/screenshots/milestone_3_complete_run_structure.png`
+- [x] Added no gameplay Autoload and no Milestone 4+ equipment, synergy, district-card, progression, persistence, procedural, or final-boss content
+
+**Milestone 3 technical acceptance status: Passed.** The boss implementation deliberately stops at threshold latching, safe queueing, boss intro, and boss-active transition. Final-boss content belongs to later milestones. The implementation and verification are local only; no commit, push, merge, publication, or deployment was performed.
 
 ### Milestone 4 — Equipment and Synergies
 
@@ -150,4 +182,4 @@ Complete the specified crew, enemies, elite, boss, interventions, presentation, 
 
 ## Scope gate
 
-Procedural generation, additional districts, large rosters, multiplayer, advanced meta-progression, achievements, controller support, localization, and the other deferred features in `GameSpecifications.md` remain out of scope until the vertical slice is proven. Run-seed and named-stream infrastructure is required for the vertical slice and is scheduled for Milestone 3; daily scheduling, shared daily rules, leaderboards, and daily rewards remain deferred.
+Procedural generation, additional districts, large rosters, multiplayer, advanced meta-progression, achievements, controller support, localization, and the other deferred features in `GameSpecifications.md` remain out of scope until the vertical slice is proven. Run-seed and named-stream infrastructure is complete in Milestone 3; daily scheduling, shared daily rules, leaderboards, and daily rewards remain deferred.

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/encounters/encounter_definition.gd" id="1_encounter"]
+
+[resource]
+script = ExtResource("1_encounter")
+id = &"alley_scuffle"
+display_name = "Alley Scuffle"
+minimum_heat_tier = 0
+minimum_night_pressure = 0.0
+base_spawn_budget = 3
+maximum_concurrent_enemies = 3
+allowed_enemy_ids = Array[StringName]([&"street_punk"])
+spawn_position_ids = Array[StringName]([&"lane_0", &"lane_1", &"lane_2"])
+reward_table_ids = Array[StringName]([&"street_cache"])
+completion_condition = &"all_required_defeated"
+heat_gain_on_completion = 4
+elite_eligible = false
+boss = false

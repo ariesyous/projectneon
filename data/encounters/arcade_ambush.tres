@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/encounters/encounter_definition.gd" id="1_encounter"]
+
+[resource]
+script = ExtResource("1_encounter")
+id = &"arcade_ambush"
+display_name = "Arcade Ambush"
+minimum_heat_tier = 1
+minimum_night_pressure = 8.0
+base_spawn_budget = 4
+maximum_concurrent_enemies = 4
+allowed_enemy_ids = Array[StringName]([&"street_punk"])
+spawn_position_ids = Array[StringName]([&"lane_0", &"lane_1", &"lane_2"])
+reward_table_ids = Array[StringName]([&"street_cache", &"neon_stash"])
+completion_condition = &"all_required_defeated"
+heat_gain_on_completion = 4
+elite_eligible = false
+boss = false

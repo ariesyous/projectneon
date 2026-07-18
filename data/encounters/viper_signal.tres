@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/encounters/encounter_definition.gd" id="1_encounter"]
+
+[resource]
+script = ExtResource("1_encounter")
+id = &"viper_signal"
+display_name = "Viper Signal"
+minimum_heat_tier = 3
+minimum_night_pressure = 20.0
+base_spawn_budget = 5
+maximum_concurrent_enemies = 5
+allowed_enemy_ids = Array[StringName]([&"street_punk"])
+spawn_position_ids = Array[StringName]([&"lane_0", &"lane_1", &"lane_2"])
+reward_table_ids = Array[StringName]([&"neon_stash", &"viper_cache"])
+completion_condition = &"all_required_defeated"
+heat_gain_on_completion = 8
+elite_eligible = true
+boss = false
