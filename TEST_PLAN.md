@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Testing is milestone-scoped. Milestone 0 verifies that the Godot project foundation loads cleanly, presents the required placeholder shell, and exposes its development toggles. It does not pretend to test gameplay systems that have not been implemented.
+Testing is milestone-scoped. Milestone 0 verifies the project foundation; Milestone 1 verifies the narrow Combat Lab, automatic combat, and coin-cluster accounting. Later checklists do not pretend that deferred gameplay systems are implemented.
 
 ## Error policy
 
@@ -17,7 +17,7 @@ Testing is milestone-scoped. Milestone 0 verifies that the Godot project foundat
 - **Planned** means the test is a downstream acceptance contract only; an unchecked planned item is not evidence that its system exists or works.
 - **Owner-recorded** means only the project owner may enter the result.
 
-All post-Milestone 0 suites in this document are **Planned**. Their presence does not start a later milestone or authorize post-Milestone 0 gameplay implementation in this documentation revision.
+Milestone 1 technical checks are recorded as executed. Milestone 2 and later suites remain **Planned**; their presence does not start or authorize those milestones.
 
 ## Milestone 0 static checks
 
@@ -64,41 +64,60 @@ Screenshot: `res://docs/screenshots/milestone_0_foundation.png`.
 
 No deterministic gameplay logic exists yet, so Milestone 0 does not require fabricated unit tests. A headless Godot parse/load smoke check may be used when the installed engine supports it. Automated deterministic coverage begins with the first corresponding gameplay calculations.
 
-## Planned downstream suites
+## Milestone suites
 
-The complete unit and integration requirements remain authoritative in `GameSpecifications.md` section 41. The checklists below turn the revised high-risk contracts into executable acceptance targets without claiming implementation.
+The complete unit and integration requirements remain authoritative in `GameSpecifications.md` section 41. The checklists below record implemented coverage and preserve later acceptance targets.
 
 ### Milestone 1 — Combat Lab technical suite
 
-Status: **Planned — not implemented or executed**
+Status: **Passed — technical verification on Godot 4.7, 2026-07-17**
 
 Combat baseline:
 
-- [ ] Deterministic damage calculations never produce negative damage.
-- [ ] Target validity rejects dead, incapacitated, invalid, or unreachable actors as specified.
-- [ ] Jax acquires, approaches, and attacks a valid Street Punk without direct movement or attack input.
-- [ ] Hitboxes are active only during `ATTACK_ACTIVE`; knockback, hit-stop, damage numbers, and death remain readable.
-- [ ] A dead enemy is released as a target, an encounter completes only after all required spawns are resolved, and repeated spawning produces no parser or runtime errors.
-- [ ] The Combat Lab remains understandable with five enemies and runs repeatably for at least 60 seconds without requiring character control or coin clicks.
+- [x] Deterministic damage calculations never produce negative damage.
+- [x] Target validity rejects dead, incapacitated, same-team, unregistered, or otherwise invalid actors.
+- [x] Jax acquires, approaches, and attacks a valid Street Punk without direct movement or attack input.
+- [x] Hitboxes are active only during `ATTACK_ACTIVE`; knockback, hit-stop, damage numbers, and death are visibly distinct.
+- [x] A dead enemy is released as a target, reservations are cleared synchronously, and repeated spawning/cleanup leaves no invalid combat state.
+- [x] The Combat Lab remains understandable with five enemies and runs repeatably for at least 60 seconds without requiring character control or coin clicks.
 
 Coin-cluster ledger and timing:
 
-- [ ] Every coin-rewarding defeated enemy creates exactly one cluster; an explicitly rewardless enemy creates none.
-- [ ] Milestone 1 cluster base values are fixed authored values and do not introduce ad hoc randomness before the Milestone 3 named-stream contract.
-- [ ] Ignoring a cluster grants its full base value once after the configured approximately 2.5-second `auto_collect_delay`.
-- [ ] A successful click before timeout collects immediately through a generous hit area, does not pause or interrupt combat, and grants the same full base value once.
-- [ ] Click-first, timeout-first, and same-authoritative-tick click/timeout races all resolve through one authoritative state transition, emit one collection result, change the coin ledger once, and remove or recycle the cluster once.
-- [ ] A click arriving after auto-collection, a timeout arriving after manual collection, and repeated click events are harmless no-ops with no duplicate base award or bonus.
-- [ ] Only a successful manual collection advances the manual streak. Auto-collection neither advances the streak nor receives a manual bonus.
-- [ ] The streak window is measured from the previous successful manual collection. A manual collection within the configured approximately 3-second window increments it; after expiry, the streak resets before the new successful manual collection is counted.
-- [ ] Auto-collecting another cluster during an otherwise-live manual streak does not itself advance the streak or receive its bonus.
-- [ ] The manual bonus follows the data-driven curve and documented deterministic rounding rule, and is never greater than 10% (`0.10`) of the current cluster's base value.
-- [ ] Missing every cluster still grants every base reward, and the Combat Lab remains playable as a fully passive observer.
-- [ ] The collection signal/record accurately reports cluster identity, manual versus automatic resolution, base value, bonus value, and resulting streak count.
+- [x] Every coin-rewarding defeated enemy creates exactly one cluster; an explicitly rewardless enemy creates none.
+- [x] Milestone 1 cluster base values are fixed authored values and do not introduce ad hoc randomness before the Milestone 3 named-stream contract.
+- [x] Ignoring a cluster grants its full base value once after the configured approximately 2.5-second `auto_collect_delay`.
+- [x] A successful click before timeout collects immediately through a generous hit area, does not pause or interrupt combat, and grants the same full base value once.
+- [x] Click-first, timeout-first, and same-authoritative-tick click/timeout races all resolve through one authoritative state transition, emit one collection result, change the coin ledger once, and remove or recycle the cluster once.
+- [x] A click arriving after auto-collection, a timeout arriving after manual collection, and repeated click events are harmless no-ops with no duplicate base award or bonus.
+- [x] Only a successful manual collection advances the manual streak. Auto-collection neither advances the streak nor receives a manual bonus.
+- [x] The streak window is measured from the previous successful manual collection. A manual collection within the configured approximately 3-second window increments it; after expiry, the streak resets before the new successful manual collection is counted.
+- [x] Auto-collecting another cluster during an otherwise-live manual streak does not itself advance the streak or receive its bonus.
+- [x] The manual bonus follows the data-driven curve and documented deterministic rounding rule, and is never greater than 10% (`0.10`) of the current cluster's base value.
+- [x] Missing every cluster still grants every base reward, and the Combat Lab remains playable as a fully passive observer.
+- [x] The collection signal/record accurately reports cluster identity, manual versus automatic resolution, base value, bonus value, and resulting streak count.
+
+Automated execution:
+
+- `milestone_1_combat`: 8/8 tests, 97 assertions.
+- `milestone_1_combat_director`: 3/3 tests, 175 assertions.
+- `milestone_1_rewards`: 19/19 tests, 76 assertions.
+- Total: **30/30 tests, 348 assertions, 0 failures**.
+- The first editor-only long-loop fixture was rejected after it exercised non-`@tool` placeholder instances and destabilized the editor. It was removed rather than suppressed. Bounded active-instance director tests replaced it; the required 60+ second proof is executed in the configured running game.
+
+Runtime execution:
+
+- Project-main launch resolved directly to `/GameRun` with one Jax and five live Street Punks.
+- Automatic combat was observed beyond 60 seconds with repeated enemy deaths/replacements, fixed lane bounds, visible hit reactions/knockback, and coherent targets/reservations.
+- Ignored clusters awarded exactly the authored 40-coin base per defeat; a successful manual collection advanced the streak while combat continued.
+- `F1` toggled the debug overlay. `F2` hid and restored all lane guides both with the overlay visible and hidden.
+- The post-playtest readability pass was inspected at the native 640 x 360 canvas under the configured 1280 x 720 integer-scaled presentation; enlarged HUD text remained contained and the five-enemy combat canvas remained unobscured.
+- The single-threaded Godot 4.7 Web release was exported locally and served over HTTP; automatic combat, five-enemy presentation, coin spawning and auto-collection, and the enlarged HUD loaded with no browser-console warnings or errors.
+- Fresh game and editor logs were inspected after relaunch; no parser error, runtime error, or task-introduced warning remained.
+- Screenshot: `res://docs/screenshots/milestone_1_combat_lab.png`.
 
 ### Milestone 1 human validation gate — owner recorded
 
-Status: **Planned, not recorded, and blocking Milestone 2**
+Status: **Eligible after technical pass, not recorded, and blocking Milestone 2**
 
 This qualitative gate begins only after every technical Milestone 1 criterion passes. Automated checks, coding agents, and implementation-team observations cannot satisfy it.
 

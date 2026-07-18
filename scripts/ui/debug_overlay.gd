@@ -9,6 +9,11 @@ signal lane_visibility_requested(lanes_are_visible: bool)
 @onready var fps_label: Label = $Root/Panel/FpsLabel
 @onready var lane_state_label: Label = $Root/Panel/LaneStateLabel
 @onready var lane_toggle_button: Button = $Root/Panel/LaneToggleButton
+@onready var state_label: Label = $Root/Panel/StateLabel
+@onready var lab_summary_label: Label = $Root/Panel/LabSummaryLabel
+@onready var jax_debug_label: Label = $Root/Panel/JaxDebugLabel
+@onready var enemy_debug_label: Label = $Root/Panel/EnemyDebugLabel
+@onready var reward_debug_label: Label = $Root/Panel/RewardDebugLabel
 
 var _lanes_visible: bool = true
 var _fps_refresh_remaining: float = 0.0
@@ -54,6 +59,46 @@ func set_lane_visibility(lanes_are_visible: bool) -> void:
 	_lanes_visible = lanes_are_visible
 	if is_node_ready():
 		_refresh_lane_text()
+
+
+func present_combat_lab(
+	elapsed_seconds: float,
+	active_enemy_count: int,
+	active_cluster_count: int,
+	total_coins: int,
+	streak_count: int
+) -> void:
+	state_label.text = "RUN: COMBAT LAB  |  ACTIVE %.1fs" % maxf(0.0, elapsed_seconds)
+	lab_summary_label.text = "ACTORS  JAX 1 / ENEMIES %d    CLUSTERS %d" % [
+		maxi(0, active_enemy_count),
+		maxi(0, active_cluster_count),
+	]
+	reward_debug_label.text = "REWARDS  COINS %d  |  MANUAL STREAK x%d" % [
+		maxi(0, total_coins),
+		maxi(0, streak_count),
+	]
+
+
+func present_jax_debug(
+	state_name: StringName,
+	target_name: String,
+	lane: int,
+	reservation: String
+) -> void:
+	jax_debug_label.text = "JAX  STATE %s\nTARGET %s  |  LANE %d  |  SLOT %s" % [
+		String(state_name),
+		target_name if not target_name.is_empty() else "NONE",
+		lane,
+		reservation if not reservation.is_empty() else "NONE",
+	]
+
+
+## Each line should be a compact presentation snapshot containing enemy name,
+## state, target, lane, and reserved attack position.
+func present_enemy_debug(enemy_lines: PackedStringArray) -> void:
+	enemy_debug_label.text = "ENEMIES\n%s" % (
+		"NONE" if enemy_lines.is_empty() else "\n".join(enemy_lines)
+	)
 
 
 func _toggle_lanes() -> void:

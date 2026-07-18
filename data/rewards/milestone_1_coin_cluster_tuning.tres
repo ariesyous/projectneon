@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="CoinClusterTuning" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/rewards/coin_cluster_tuning.gd" id="1_tuning"]
+
+[resource]
+script = ExtResource("1_tuning")
+auto_collect_delay_msec = 2500
+manual_streak_window_msec = 3000
+manual_bonus_basis_points_by_streak = PackedInt32Array(250, 500, 750, 1000)

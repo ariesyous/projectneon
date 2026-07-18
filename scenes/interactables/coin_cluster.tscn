@@ -1,0 +1,47 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/interactables/coin_cluster.gd" id="1_cluster"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_click"]
+radius = 24.0
+
+[node name="CoinCluster" type="Area2D"]
+z_index = 300
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = false
+script = ExtResource("1_cluster")
+
+[node name="ClickShape" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_click")
+
+[node name="ValueLabel" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = -31.0
+offset_top = -39.0
+offset_right = 31.0
+offset_bottom = -25.0
+theme_override_colors/font_color = Color(1, 0.847059, 0.270588, 1)
+theme_override_colors/font_shadow_color = Color(0.0352941, 0.0196078, 0.0784314, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 9
+text = "0 COINS"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="CountdownLabel" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = -24.0
+offset_top = 22.0
+offset_right = 24.0
+offset_bottom = 35.0
+theme_override_colors/font_color = Color(0.454902, 0.937255, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.0352941, 0.0196078, 0.0784314, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 8
+text = "CLICK"
+horizontal_alignment = 1
+mouse_filter = 2

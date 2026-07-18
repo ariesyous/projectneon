@@ -2,23 +2,31 @@
 
 Neon Loop is a Godot 4.x pixel-art auto-brawler about shaping a crew, influencing automatic street fights, managing escalating risk, and deciding when to extract.
 
+## Play online
+
+Play the current Combat Lab build at **[ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/)**.
+
+Repository: [github.com/ariesyous/projectneon](https://github.com/ariesyous/projectneon)
+
 ## Project status
 
-**Milestone 0 — Project Foundation: complete**
+**Milestone 1 — Combat Lab: technically complete; owner Human Validation Gate pending**
 
-The repository currently contains the verified technical foundation:
+The repository currently contains the verified foundation and automatic-combat proof:
 
 - 640 × 360 internal resolution with pixel-art-friendly scaling
 - `GameRun` composition root
-- Placeholder Downtown Loop nighttime stage
-- Three toggleable development combat lanes and route markers
-- Placeholder HUD and development debug overlay
-- Typed, logic-free runtime system shells
+- Downtown Loop nighttime Combat Lab with three movement lanes
+- Resource-backed Jax and Street Punk actors
+- Typed state, health, targeting, reservations, attack timing, damage, knockback, hit-stop, death, and repeat spawning
+- Fixed-value coin clusters with generous clicking, full-value auto-collection, at-most-once accounting, and a manual streak bonus capped at 10%
+- Enlarged live HUD and development diagnostics
+- Thirty deterministic combat and reward tests
 - Architecture, implementation, testing, content, and decision documentation
 
-Milestone 1 combat has not been implemented. See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for the next scoped task.
+Milestone 2 remains blocked until the project owner records the required five-person Human Validation Gate. See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for the current scope and gate.
 
-![Milestone 0 foundation](docs/screenshots/milestone_0_foundation.png)
+![Milestone 1 Combat Lab](docs/screenshots/milestone_1_combat_lab.png)
 
 ## Running the project
 
@@ -30,6 +38,7 @@ The configured main scene opens directly into `GameRun`.
 
 ### Development controls
 
+- Left click a coin cluster to collect it immediately; ignoring it still grants the full base value
 - <kbd>F1</kbd>: show or hide the debug overlay
 - <kbd>F2</kbd>: show or hide the three debug combat lanes
 
@@ -46,7 +55,7 @@ The configured main scene opens directly into `GameRun`.
 
 ## Development scope
 
-The current implementation stops at Milestone 0. Combat, actors, enemies, targeting, rewards, coin clusters, Night Pressure, seeded random streams, equipment, cards, saving, shops, bosses, and procedural generation remain unimplemented.
+The current implementation stops after technical Milestone 1. Fire Hydrant behavior, Night Pressure runtime, deterministic random streams, equipment, synergies, cards, extraction, shops, saving, bosses, progression, and procedural generation remain unimplemented.
 
 Milestone 2 must not begin until Milestone 1 passes its technical acceptance criteria and the project owner records the required human validation gate.
 

@@ -1,0 +1,56 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/actor_controller.gd" id="1_controller"]
+[ext_resource type="Resource" path="res://data/enemies/street_punk.tres" id="2_definition"]
+[ext_resource type="Resource" path="res://data/attacks/street_punk_basic_punch.tres" id="3_attack"]
+[ext_resource type="Script" path="res://scripts/actors/actor_state_machine.gd" id="4_state"]
+[ext_resource type="Script" path="res://scripts/actors/health_component.gd" id="5_health"]
+[ext_resource type="Script" path="res://scripts/combat/attack_controller.gd" id="6_attack_controller"]
+[ext_resource type="Script" path="res://scripts/actors/actor_visual.gd" id="7_visual"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_hitbox"]
+size = Vector2(32, 20)
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape_hurtbox"]
+radius = 10.0
+height = 44.0
+
+[node name="StreetPunk" type="Node2D"]
+script = ExtResource("1_controller")
+actor_definition = ExtResource("2_definition")
+attack_definition = ExtResource("3_attack")
+team = 1
+initial_lane = 1
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("4_state")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("5_health")
+
+[node name="AttackController" type="Node" parent="."]
+script = ExtResource("6_attack_controller")
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, -22)
+shape = SubResource("CapsuleShape_hurtbox")
+
+[node name="AttackHitbox" type="Area2D" parent="."]
+position = Vector2(18, -26)
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackHitbox"]
+shape = SubResource("RectangleShape_hitbox")
+
+[node name="ActorVisual" type="Node2D" parent="."]
+script = ExtResource("7_visual")
+variant_kind = 1

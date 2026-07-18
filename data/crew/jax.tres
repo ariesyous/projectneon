@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ActorDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/actor_definition.gd" id="1_definition"]
+
+[resource]
+script = ExtResource("1_definition")
+id = &"jax"
+display_name = "Jax"
+maximum_health = 520
+movement_speed = 112.0
+base_damage = 20
+damage_multiplier = 1.0
+damage_taken_multiplier = 1.0
+knockback_resistance = 0.18
+grants_coin_reward = false
+authored_coin_value = 0
+cleanup_delay = 0.0

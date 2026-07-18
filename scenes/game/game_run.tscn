@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scripts/run/game_run.gd" id="1_game"]
 [ext_resource type="PackedScene" path="res://scenes/stages/downtown_loop.tscn" id="2_stage"]
@@ -10,6 +10,10 @@
 [ext_resource type="Script" path="res://scripts/synergies/synergy_system.gd" id="8_synergy"]
 [ext_resource type="PackedScene" path="res://scenes/ui/game_hud.tscn" id="9_hud"]
 [ext_resource type="PackedScene" path="res://scenes/debug/debug_overlay.tscn" id="10_debug"]
+[ext_resource type="Script" path="res://scripts/run/combat_lab_controller.gd" id="11_lab"]
+[ext_resource type="PackedScene" path="res://scenes/actors/jax.tscn" id="12_jax"]
+[ext_resource type="PackedScene" path="res://scenes/actors/street_punk.tscn" id="13_punk"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/coin_cluster.tscn" id="14_coin"]
 
 [node name="GameRun" type="Node"]
 script = ExtResource("1_game")
@@ -25,6 +29,12 @@ script = ExtResource("5_combat")
 
 [node name="RewardDirector" type="Node" parent="."]
 script = ExtResource("6_reward")
+
+[node name="CombatLabController" type="Node" parent="."]
+script = ExtResource("11_lab")
+jax_scene = ExtResource("12_jax")
+street_punk_scene = ExtResource("13_punk")
+coin_cluster_scene = ExtResource("14_coin")
 
 [node name="CardSystem" type="Node" parent="."]
 script = ExtResource("7_cards")
