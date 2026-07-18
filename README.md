@@ -1,37 +1,41 @@
 # Neon Loop
 
-Neon Loop is a Godot 4.x pixel-art auto-brawler about shaping a crew, influencing automatic street fights, managing escalating risk, and deciding when to extract.
+Neon Loop is a Godot 4.x pixel-art auto-brawler about shaping an automatic street fight, managing escalating risk, intervening at decisive moments, and deciding when to extract.
 
 ## Play online
 
-Play the currently published Combat Lab build at **[ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/)**.
+Play the technically verified Milestone 3 build at **[ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/)**.
 
-The verified Milestone 2 changes described below are local to this repository branch and have not been published or redeployed. The public link remains the previously deployed Milestone 1 build until the project owner explicitly requests a new deployment.
+The public build is deployed from `main` at commit `725cd373e2732b0dd6967a24a16e717e21ef8487`.
 
 Repository: [github.com/ariesyous/projectneon](https://github.com/ariesyous/projectneon)
 
 ## Project status
 
-**Milestone 2 — Player Intervention: technically complete**
+**Milestone 3 — Complete Run Structure: technically complete**
 
-The repository currently contains the verified foundation, automatic-combat proof, and first player intervention:
+The current build includes:
 
-- 640 × 360 internal resolution with pixel-art-friendly scaling
-- `GameRun` composition root
-- Downtown Loop nighttime Combat Lab with three movement lanes
-- Resource-backed Jax and Street Punk actors
-- Typed state, health, targeting, reservations, attack timing, damage, knockback, hit-stop, death, and repeat spawning
-- Fixed-value coin clusters with generous clicking, full-value auto-collection, at-most-once accounting, and a manual streak bonus capped at 10%
-- A visible Fire Hydrant with an exact range preview, deterministic area damage, strong knockback, authored cooldown, rejection feedback, and matching HUD state
-- One combat-safe region shared by spawning, movement, reservations, knockback, recovery, replacement cleanup, and lane visualization
-- Clearer click/tap coin feedback, nonmodal Help, Web sound unlock, visible fullscreen controls, and mobile-landscape guidance
-- Enlarged live HUD and development diagnostics
-- Forty-six deterministic tests with 694 assertions and no failures
-- Architecture, implementation, testing, content, and decision documentation
+- A complete explicit run lifecycle from initialization through patrol, encounters, rewards, extraction, defeat, boss triggering, summary, and clean restart
+- Tactical Heat with exact tiers and finite player-facing cooling
+- Irreversible Night Pressure driven only by eligible active time and exactly-once encounter completion
+- Data-driven enemy health, damage, and deterministic spawn-budget scaling
+- Latched extraction windows, an unavoidable queued boss threshold, and safe transition-boundary handling
+- Two finite Subway Reroute charges and two finite shop-cooling purchases per run
+- One authoritative integer run seed with optional supplied seeds
+- Seven isolated run-scoped deterministic streams: `encounters`, `spawns`, `rewards`, `equipment`, `cards`, `enemy_variants`, and `cosmetic`
+- Stable candidate ordering, same-seed reproduction support, and cosmetic-stream isolation
+- Standard reward choices, authoritative coin and scrap accounting, run summaries, and same-seed or new-seed restart
+- Resource-backed Jax and Street Punk automatic combat with typed state, targeting, reservations, damage, knockback, hit-stop, effects, death, and cleanup
+- Full-value automatic coin collection, optional manual streak bonuses, and at-most-once accounting
+- The Fire Hydrant intervention with authoritative range, damage, knockback, rejection, and cooldown behavior
+- Help, Web sound unlock, fullscreen handling, mobile-landscape guidance, and development diagnostics
 
-The project owner recorded the five-person Milestone 1 Human Validation Gate as **PASSED** on 2026-07-18. That qualitative decision belongs to the owner and is distinct from automated and coding-agent verification. The separately executed technical Milestone 2 result is 46/46 tests plus a 315.3046-second combat-boundary soak; see [TEST_PLAN.md](TEST_PLAN.md) for the full evidence and limitations.
+Godot 4.7 verification passed **75/75 tests and 1,100 assertions with no failures or skips**. This preserves all 46 Milestone 1–2 tests and adds 29 Milestone 3 tests. Representative extraction, defeat, boss-threshold, cooling, pause/modal, same-seed, cosmetic-isolation, and clean-restart paths were also exercised in Windows and Web builds.
 
-![Milestone 2 Player Intervention](docs/screenshots/milestone_2_player_intervention.png)
+The project owner recorded the separate five-person Milestone 1 Human Validation Gate as **PASSED** on 2026-07-18. That qualitative decision belongs to the owner and is distinct from automated and coding-agent verification.
+
+![Milestone 3 Complete Run Structure](docs/screenshots/milestone_3_complete_run_structure.png)
 
 ## Running the project
 
@@ -43,10 +47,15 @@ The configured main scene opens directly into `GameRun`.
 
 ### Player controls
 
-- Click or tap a coin cluster to collect it immediately and build a manual streak; ignoring it still grants the full base value
-- Click or tap the Fire Hydrant while it is ready and a Street Punk is inside its preview circle
-- Use the visible **Help** control to reopen the nonmodal Combat Lab guidance
-- Use the visible **Fullscreen** control as the primary desktop/mobile presentation control; Escape exits fullscreen where supported
+- Click or tap a coin cluster to collect immediately and build a manual streak; ignoring it still grants the full base value
+- Click or tap the Fire Hydrant when it is ready and a Street Punk is inside its preview circle
+- Use the visible run-action controls to claim rewards, spend finite Subway or shop cooling, continue, extract, and advance the boss trigger
+- Press <kbd>Space</kbd> to pause or resume eligible run time
+- Press <kbd>E</kbd> to confirm extraction while an extraction window is available
+- Use **Help** to reopen the nonmodal guidance
+- Use **Fullscreen** as the primary desktop and mobile presentation control; Escape exits fullscreen where supported
+
+Reward and run-action buttons respond to one ordinary click or tap.
 
 ### Development controls
 
@@ -55,22 +64,24 @@ The configured main scene opens directly into `GameRun`.
 
 <kbd>F11</kbd> requests fullscreen only when the platform delivers it to the game. Browsers that retain F11 continue to use their normal browser behavior.
 
+## Current scope
+
+Milestone 3 is complete. Its boss scope intentionally ends at threshold latching, safe queueing, `BOSS_INTRO`, and `BOSS_ACTIVE`; final boss content belongs to a later milestone.
+
+**Milestone 4 — Equipment and Synergies is the next authorized development scope, but it is not implemented yet.** It will add the nine-item equipment catalogue, three generic slots, equipment rewards and UI, deterministic tag/modifier aggregation, and the Knockback, Bleed, and Tech synergies with activation and alternative-path previews.
+
+Milestone 5 District Cards, Milestone 6 content/presentation, final boss content, broader progression and persistence, procedural generation, and other deferred systems remain out of scope until separately authorized.
+
 ## Documentation
 
 - [GameSpecifications.md](GameSpecifications.md) — product source of truth
-- [AGENTS.md](AGENTS.md) — repository rules and milestone gates
+- [AGENTS.md](AGENTS.md) — repository rules, verified scope, and milestone gates
 - [ARCHITECTURE.md](ARCHITECTURE.md) — scene and system ownership
 - [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) — milestone status and next work
 - [TEST_PLAN.md](TEST_PLAN.md) — verification history and planned coverage
 - [CONTENT_CATALOG.md](CONTENT_CATALOG.md) — implemented and specified content
 - [CHANGELOG.md](CHANGELOG.md) — project history
 - [ADR 0001](docs/decisions/0001-run-engagement-escalation-and-randomness.md) — engagement, escalation, randomness, and validation decisions
-
-## Development scope
-
-The verified implementation stops after technical Milestone 2. It contains the Fire Hydrant intervention and the targeted Combat Lab presentation/usability improvements authorized after the owner's gate pass. The local Windows and Web verification builds have not been published or deployed.
-
-Night Pressure, deterministic random streams, equipment, synergies, cards, extraction, shops, saving, bosses, progression, procedural generation, and all other Milestone 3+ behavior remain unimplemented and out of scope. Playtester interest in more enemies, weapons, abilities, combat systems, inspection, encounter/run structure, coin spending, customization, and progression is future design input rather than current functionality.
 
 ## License
 

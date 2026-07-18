@@ -18,77 +18,110 @@ This repository is a Godot 4.x project. `GameSpecifications.md` is the product s
 
 If documentation and implementation disagree with the specification, stop and resolve the conflict instead of silently inventing behavior.
 
-## Current scope
+## Current verified state
 
-The currently implemented and technically verified scope is **Milestone 2 — Player Intervention**. It preserves all Milestone 0 and Milestone 1 behavior, including:
+The currently implemented and technically verified scope is **Milestone 3 — Complete Run Structure**. It preserves all Milestone 0–2 behavior and adds:
 
-- Resource-backed Jax and Street Punk actor scenes
-- Typed composed actor state, health, attack timing, and presentation
-- Three-lane automatic movement, target acquisition/invalidation, and attack-position reservations
-- Deterministic damage, visible knockback, hit-stop, damage numbers, death, cleanup, and repeat spawning
-- Fixed authored coin rewards with generous clusters, approximately 2.5-second full-value auto-collection, at-most-once click/timeout resolution, and a manual-only streak bonus capped at 10%
-- Live Combat Lab HUD/debug presentation and sufficient placeholder audiovisual feedback for technical readability checks
-- Deterministic Milestone 1 combat and reward tests
-- One authoritative combat-safe Resource used by spawning, lane movement, attack reservations, knockback, recovery, coin placement, and debug markers
-- A run-scoped Fire Hydrant authority with typed tuning, deterministic circular target validation, area damage, strong fixed-direction knockback, rejection, and cooldown
-- Matching world/HUD Hydrant presentation, nonmodal onboarding, clearer coin affordances, Web sound unlock, fullscreen controls, and mobile-landscape guidance
-- Deterministic Milestone 2 intervention and combat-space tests plus desktop, Web, and five-minute runtime verification
+- `GameRun` as the configured run-scoped composition root
+- An explicit `RunDirector` state graph covering initialization, introduction, patrol, encounters, rewards, shop, extraction, boss trigger, terminal results, summary, pause, and restart
+- Authored patrol-route progression, deterministic encounter scheduling, safe transition boundaries, and encounter/global concurrency limits
+- Tactical Heat clamped to 0–100 with exact tiers and immediate danger/reward effects
+- Separate, irreversible Night Pressure driven only by eligible active time and exactly-once encounter completion
+- Data-driven enemy health, damage, and deterministic round-half-up spawn-budget scaling
+- Latched extraction thresholds, boss precedence, and unavoidable safe-boundary boss queueing
+- Finite Subway Reroute charges and finite shop cooling that reduce Heat without changing Night Pressure or latched progression
+- One authoritative integer run seed, optional supplied seeds, and a run-scoped `RunRandomStreams` child
+- Seven isolated deterministic streams: `encounters`, `spawns`, `rewards`, `equipment`, `cards`, `enemy_variants`, and `cosmetic`
+- Stable-ID candidate ordering, same-seed restart, known derivation vectors, and stream/cosmetic isolation
+- Standard rewards, authoritative coin/scrap accounting, extraction, defeat, boss-trigger results, summaries, and clean restart
+- Preserved automatic Jax/Street Punk combat, coin clusters, Fire Hydrant intervention, Help, audio unlock, fullscreen, mobile-landscape guidance, `F1`, and `F2`
 
-Technical Milestone 1 is complete. On 2026-07-18, the project owner recorded the five-person Human Validation Gate as **PASSED** from the owner's aggregate playtest record. This is an owner qualitative decision, not an automated-test, coding-agent, or implementation-team verification result. The Milestone 2 entry condition is satisfied, and **Milestone 2 — Player Intervention** plus targeted Milestone 1 presentation/usability improvements are explicitly authorized.
+Technical verification on Godot 4.7 passed **75/75 tests and 1,100 assertions with no failures or skips**. This preserves the complete Milestone 1–2 result of 46 tests/694 assertions and adds 29 Milestone 3 tests/406 assertions.
 
-Technical Milestone 2 is also complete. The Godot 4.7 verification record is **46/46 tests and 694 assertions with no failures**, comprising the preserved Milestone 1 result of 30 tests/348 assertions and 16 Milestone 2 tests/346 assertions. A 315.3046-second Combat Lab soak preserved the authored safe space through repeated spawning and cleanup. This technical result does not replace, reinterpret, or claim independent validation of the owner's Milestone 1 gate decision.
+Milestone 3 was committed to and deployed from `main` at `725cd373e2732b0dd6967a24a16e717e21ef8487`. The GitHub Pages build is available at [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/). The deployed build rendered the live Milestone 3 HUD, accepted the sound-unlock gesture, and produced no Web-console warnings or errors during the deployment smoke check.
 
-Do not implement Night Pressure runtime, deterministic random streams, equipment, synergies, cards, extraction, shops, saving, bosses, progression, procedural generation, or other Milestone 3+ systems until their entry conditions and explicit tasks are satisfied. Playtester interest in additional enemy types, weapons, abilities and spells, lifesteal, armour and damage types, inspection, area and damage-over-time attacks, encounter/run transitions, coin spending, customization, and progression is recorded as future Milestone 3+ design input only; it does not expand Milestone 2 scope.
+The Milestone 3 boss scope ends at threshold latching, safe queueing, `BOSS_INTRO`, and `BOSS_ACTIVE`. Final-boss actor behavior, encounter content, art, audio, and the production victory path belong to later work.
+
+## Next authorized scope
+
+The project owner has authorized **Milestone 4 — Equipment and Synergies** as the next development scope. It is authorized but not yet implemented.
+
+Milestone 4 is limited to:
+
+- At least nine data-driven equipment definitions, including Magnetic Flail, Voltaic Blade, and Chain Sneakers
+- Three generic equipment slots
+- Equipment acquisition, replacement, removal, reward choices, and UI
+- Deterministic equipment modifier and tag aggregation
+- Knockback 2, Bleed 2, and Tech 2 synergies
+- Immediate recalculation plus typed activation/deactivation events
+- Immediate-activation and alternative-build-path previews
+- At least three visibly distinct builds
+- At least three valid two-item combinations for each primary synergy
+- At least two cross-primary bridge items
+
+The `equipment` stream exists as Milestone 3 compatibility infrastructure and must own Milestone 4 equipment selection. The current `SynergySystem` is still a typed shell until Milestone 4 implements its specified authority.
+
+Do not begin Milestone 5 District Cards, Milestone 6 content/presentation, final-boss content, broad progression or persistence, procedural generation, or any other later system without separate explicit authorization. Listing future content in documentation is not authorization to implement it.
+
+## Historical Milestone 1 Human Validation Gate
+
+Technical Milestone 1 is complete. On 2026-07-18, the project owner recorded the five-person Human Validation Gate as **PASSED** from the owner's aggregate playtest record. This is an owner qualitative decision, not an automated-test, coding-agent, or implementation-team verification result. Do not repeat, reinterpret, or reopen this decision.
+
+The fixed procedure from `GameSpecifications.md` section 44 was:
+
+1. The project owner recruited at least five people who were not involved in implementation.
+2. The owner designated a five-person scored cohort before observation; additional testers could not replace a failed scored observation.
+3. Each tester received only: “Watch this fight and tell me when you feel ready to stop.”
+4. The intended build systems, future features, and desired conclusions were not explained beforehand.
+5. The owner recorded observation duration and concise, unattributed notes for each tester.
+6. Coin clicking could occur if discovered naturally, but coin-cluster engagement was not evidence that passive combat itself was entertaining.
+
+The owner's passing record states that all five designated testers voluntarily played for more than two minutes, expressed curiosity about future content, found combat relationships readable, identified satisfying hits and sounds, and did not broadly describe combat as confusing, lifeless, or difficult to follow. Only the project owner may change this qualitative record.
 
 ## Engineering rules
 
 - Use typed GDScript for all project scripts. Type parameters, return values, properties, constants, signals, and local variables when their type is not already unambiguous.
 - Prefer small composed nodes and scenes over deep inheritance trees.
-- Keep gameplay state and calculations out of UI scenes. UI may present values and forward player intent; it must not become the authority for run state.
-- Keep scene responsibilities narrow. `GameRun` composes systems; `DowntownLoop` owns stage placeholders; `GameHUD` owns presentation; `DebugOverlay` owns development presentation and debug requests.
-- Use signals or explicit typed methods for future cross-system communication. Do not introduce an untyped global event bus.
-- Do not add gameplay Autoloads without an architectural decision and specification-backed need. `_mcp_game_helper` is existing Godot MCP development tooling, not a Neon Loop gameplay Autoload.
-- Put future tunable gameplay content in custom Resources rather than hard-coded UI or unrelated systems.
-- Preserve working project behavior and existing assets. Do not rewrite `GameSpecifications.md`.
-- Placeholder visuals must be clearly temporary, visually distinct, and replaceable without changing gameplay ownership.
-- Do not suppress parser errors, runtime errors, or warnings to make a check appear clean.
+- Keep gameplay state and calculations out of UI scenes. UI may present values and forward player intent; it must not become an authority.
+- Keep scene responsibilities narrow. `GameRun` composes systems; `DowntownLoop` owns stage presentation; `GameHUD` owns presentation; `DebugOverlay` owns development presentation and debug requests.
+- Use typed signals or explicit typed methods for cross-system communication. Do not introduce an untyped global event bus.
+- Do not add gameplay Autoloads without an architectural decision and specification-backed need. `_mcp_game_helper` is Godot MCP development tooling, not a Neon Loop gameplay Autoload.
+- Put tunable gameplay content in custom Resources rather than hard-coded UI or unrelated systems.
+- Preserve working behavior and existing assets. Do not rewrite `GameSpecifications.md`.
+- Placeholder visuals must remain clearly temporary, visually distinct, and replaceable without changing gameplay ownership.
+- Preserve deterministic stable ordering.
+- Do not suppress parser errors, runtime errors, warnings, skipped tests, or failing tests to make a check appear clean.
 
 ## Deterministic gameplay randomness
 
-These rules apply when their owning later milestone is explicitly authorized. They do not authorize implementing random systems during the current Milestone 2 scope.
+Milestone 3 implements the deterministic randomness contract. All later gameplay must preserve it.
 
-- `RunDirector` owns one authoritative integer run seed and a run-scoped `RunRandomStreams` component. `RunRandomStreams` is never an Autoload.
-- The required named streams are exactly `encounters`, `spawns`, `rewards`, `equipment`, `cards`, `enemy_variants`, and `cosmetic`. A gameplay system may consume only the stream appropriate to its responsibility.
+- `RunDirector` owns one authoritative integer run seed and a run-scoped `RunRandomStreams` child. `RunRandomStreams` is never an Autoload.
+- The named streams are exactly `encounters`, `spawns`, `rewards`, `equipment`, `cards`, `enemy_variants`, and `cosmetic`.
+- A gameplay system may consume only the stream appropriate to its responsibility. Milestone 4 equipment choices use `equipment`.
 - Gameplay code must never call unseeded global randomness such as `randi()`, `randf()`, `randomize()`, `Array.shuffle()`, or `Array.pick_random()`.
-- Do not route every system through one shared random sequence. Named streams must have isolated generator state, and extra `cosmetic` draws must never change gameplay outcomes.
-- Before a gameplay draw, filter candidates deterministically and sort them by stable content ID. Dictionary iteration order, scene-tree insertion order, and presentation order must not determine an outcome.
-- Sub-seed derivation must use a documented, versioned, platform-stable algorithm and `random_schema_version`; it must not use a process- or platform-unstable hash.
-- Reproduction claims are limited to the same supported build, content revision, and random-schema version with the same seed, gameplay decisions, and authoritative timing context.
+- Do not route all systems through one shared random sequence. Extra `cosmetic` draws must never change gameplay outcomes.
+- Before a gameplay draw, filter candidates deterministically and sort them by stable content ID. Dictionary iteration order, scene-tree insertion order, Resource order, and presentation order are not selection contracts.
+- Random schema version 1 uses `fnv1a32_utf8_v1`: FNV-1a 32-bit over the UTF-8 bytes of `neon-loop|schema:<version>|seed:<integer>|stream:<name>`, with unsigned 32-bit wrap after each multiply.
+- Do not change `random_schema_version` unless derivation or draw semantics change incompatibly; document and test any schema change with locked vectors.
+- Reproduction claims are limited to the same supported build, content revision, random-schema version, seed, gameplay decisions, and authoritative timing context.
 
-## Milestone progression gate
+## Current runtime ownership
 
-Milestone 2 is blocked until all technical Milestone 1 acceptance criteria pass and the project owner records a passing five-person human validation gate.
+- `RunDirector`: state graph, eligible time, Heat, Night Pressure, scaling, threshold latches/precedence, seed, outcomes, and summaries
+- `RunRandomStreams`: seven isolated deterministic stream states and stable-ID selection
+- `PatrolController`: route progression, safe boundaries, encounter pauses, and finite reroute movement
+- `RunEncounterController`: encounter identity, deterministic spawning/lanes, scaling, caps, completion, and cleanup
+- `RunCoolingController`: finite Subway and shop-cooling resources
+- `RunFlowController`: typed coordination between run, patrol, encounter, reward, cooling, and presentation intent
+- `CombatDirector`: actors, targeting, reservations, hits, environmental effects, and combat cleanup
+- `RewardDirector`: standard reward selection/accounting, coin ledger, at-most-once clusters, and manual streak
+- `FireHydrantController`: Hydrant validation, area resolution, rejection, and cooldown
+- `DisplayController`: presentation-only fullscreen, landscape, and safe-area integration
+- `CardSystem`: typed Milestone 5 authority shell only
+- `SynergySystem`: typed Milestone 4 authority shell pending implementation
 
-**Recorded status:** The project owner recorded this gate as **PASSED** on 2026-07-18. All five designated testers voluntarily played for more than two minutes; the owner's aggregate feedback records curiosity about future content, readable combat relationships, satisfying hits and sounds, and no broad description of combat as confusing, lifeless, or difficult to understand. Remaining feedback concerns presentation, onboarding, controls, and communicating the Combat Lab's larger purpose. This paragraph transcribes the owner's decision and does not claim independent agent or automated validation.
-
-The gate procedure is fixed by `GameSpecifications.md` section 44:
-
-1. The project owner recruits at least five people who were not involved in implementation.
-2. The owner designates a five-person scored cohort before observation; additional testers are supplemental and cannot replace a failed scored observation.
-3. Each tester receives only: “Watch this fight and tell me when you feel ready to stop.”
-4. The intended build systems, future features, and desired conclusions are not explained beforehand.
-5. The owner records observation duration and concise, unattributed notes for each tester.
-6. Coin clicking may occur if discovered naturally, but coin-cluster engagement is not evidence that passive combat itself is entertaining.
-
-The owner may record a pass only when all of these are true:
-
-- At least four of five testers voluntarily watch for 60 seconds.
-- At least three testers express curiosity about what happens next or request another encounter.
-- Most testers can identify who is attacking whom.
-- Most testers identify at least one satisfying hit, reaction, or combat moment.
-- Combat is not broadly described as confusing, lifeless, or visually difficult to follow.
-
-Only the project owner may record this gate as passed. Coding agents, automated tests, and implementation-team observations must not claim, infer, or mark a pass. If any criterion fails, Milestone 2 remains blocked and the complete gate must be repeated after the relevant Combat Lab improvements.
+The active run remains scene-scoped. No Neon Loop gameplay Autoload owns run state.
 
 ## Repository conventions
 
@@ -100,35 +133,45 @@ Only the project owner may record this gate as passed. Coding agents, automated 
 - Use `snake_case` filenames and `PascalCase` class names.
 - Prefer one primary owner per scene or script.
 
-`res://scripts/stages/` is the narrow owner for the fixed stage's replaceable
-presentation and debug-marker drawing scripts.
+`res://scripts/stages/` is the narrow owner for fixed-stage presentation and debug-marker drawing scripts.
 
-The Milestone 0 system shells live at:
+Primary run-system paths include:
 
 - `res://scripts/run/run_director.gd`
+- `res://scripts/run/run_random_streams.gd`
+- `res://scripts/run/run_flow_controller.gd`
+- `res://scripts/run/run_cooling_controller.gd`
 - `res://scripts/patrol/patrol_controller.gd`
+- `res://scripts/encounters/run_encounter_controller.gd`
 - `res://scripts/combat/combat_director.gd`
 - `res://scripts/rewards/reward_director.gd`
 - `res://scripts/cards/card_system.gd`
 - `res://scripts/synergies/synergy_system.gd`
 
-These classes intentionally contain no runtime gameplay behavior yet.
+Do not describe the implemented Milestone 3 directors as logic-free Milestone 0 shells. Only `CardSystem` and the pre-Milestone-4 `SynergySystem` remain deferred responsibility shells.
 
 ## Verification requirements
 
 Before declaring an implementation task complete:
 
 1. Launch the project through Godot.
-2. Confirm the configured main scene opens directly.
-3. Exercise every input or interaction changed by the task.
-4. Inspect the Godot output and debugger.
-5. Fix all parser and runtime errors introduced by the task.
-6. Record remaining warnings or limitations honestly.
-7. Update `IMPLEMENTATION_PLAN.md`, `TEST_PLAN.md` when test coverage changes, `CONTENT_CATALOG.md` when content changes, and `CHANGELOG.md`.
-8. Capture visual evidence for visual acceptance criteria when tooling supports it.
+2. Confirm the configured main scene opens directly into `/GameRun`.
+3. Exercise every input and interaction changed by the task.
+4. Inspect fresh Godot output and debugger state.
+5. Fix every task-introduced parser error, runtime error, warning, and failing test.
+6. Record remaining warnings and limitations honestly.
+7. Preserve all existing milestone tests and add deterministic coverage for new logic.
+8. Update `ARCHITECTURE.md`, `IMPLEMENTATION_PLAN.md`, `TEST_PLAN.md`, `CONTENT_CATALOG.md`, and `CHANGELOG.md` when their owned facts change.
+9. Capture visual evidence for visual acceptance criteria when tooling supports it.
+10. Verify affected Windows and Web behavior in proportion to the change.
 
-For Milestone 0 specifically, verify the stage and HUD are visible, `F1` toggles the debug overlay, and the three lane guides can be hidden and shown with the overlay button or `F2`.
+For Milestone 4, use the planned matrix and preview coverage in `TEST_PLAN.md`. All nine catalogue entries must be available to development/tests, each primary synergy must retain at least three valid two-item combinations, bridge choices must remain visible, and equipment selection must use the isolated `equipment` stream.
 
-## Milestone 0 verification record
+## Verification records
 
-Milestone 0 passed its Godot 4.7 launch verification on 2026-07-16. The project launched to `/GameRun`; the stage and HUD were visible; repeated `F1` transitions worked; `F2` hid and restored the stage-owned lane markers while the overlay was hidden; and the game/editor logs were clean after relaunch. Visual evidence is stored at `res://docs/screenshots/milestone_0_foundation.png`.
+- **Milestone 0:** Godot 4.7 launched `/GameRun`; stage, HUD, `F1`, and `F2` checks passed. Evidence: `res://docs/screenshots/milestone_0_foundation.png`.
+- **Milestone 1:** 30/30 tests and 348 assertions passed. The separate owner-recorded Human Validation Gate passed on 2026-07-18. Evidence: `res://docs/screenshots/milestone_1_combat_lab.png`.
+- **Milestone 2:** 46/46 cumulative tests and 694 assertions passed. A 315.3046-second soak preserved the combat-safe region and exact reward accounting. Windows and Web checks were clean. Evidence: `res://docs/screenshots/milestone_2_player_intervention.png`.
+- **Milestone 3:** 75/75 cumulative tests and 1,100 assertions passed with no failures or skips. Extraction, defeat, boss threshold, finite cooling, time eligibility, deterministic replay/isolation, and clean restart were exercised in the configured project plus local Windows and Web exports. Evidence: `res://docs/screenshots/milestone_3_complete_run_structure.png`.
+
+Milestone 4 and later test sections remain planned acceptance contracts until their systems are actually implemented and executed.
