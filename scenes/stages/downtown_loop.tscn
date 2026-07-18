@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/stages/downtown_loop.gd" id="1_stage"]
 [ext_resource type="Script" path="res://scripts/stages/downtown_backdrop.gd" id="2_backdrop"]
 [ext_resource type="Script" path="res://scripts/stages/route_markers.gd" id="3_route"]
 [ext_resource type="Script" path="res://scripts/stages/debug_lane_markers.gd" id="4_lanes"]
 [ext_resource type="PackedScene" path="res://scenes/effects/combat_feedback.tscn" id="5_feedback"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/fire_hydrant.tscn" id="6_hydrant"]
 
 [node name="DowntownLoop" type="Node2D"]
 script = ExtResource("1_stage")
@@ -44,9 +45,9 @@ text = "ROUTE NODE PLACEHOLDERS"
 script = ExtResource("4_lanes")
 
 [node name="BackLaneLabel" type="Label" parent="LaneMarkers"]
-offset_left = 136.0
+offset_left = 168.0
 offset_top = 181.0
-offset_right = 184.0
+offset_right = 216.0
 offset_bottom = 193.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.33, 0.84, 1, 0.9)
@@ -54,9 +55,9 @@ theme_override_font_sizes/font_size = 7
 text = "BACK LANE"
 
 [node name="MiddleLaneLabel" type="Label" parent="LaneMarkers"]
-offset_left = 136.0
+offset_left = 168.0
 offset_top = 213.0
-offset_right = 190.0
+offset_right = 222.0
 offset_bottom = 225.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.74, 0.4, 1, 0.9)
@@ -64,9 +65,9 @@ theme_override_font_sizes/font_size = 7
 text = "MIDDLE LANE"
 
 [node name="FrontLaneLabel" type="Label" parent="LaneMarkers"]
-offset_left = 136.0
+offset_left = 168.0
 offset_top = 245.0
-offset_right = 187.0
+offset_right = 219.0
 offset_bottom = 257.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.37, 0.64, 0.9)
@@ -76,33 +77,15 @@ text = "FRONT LANE"
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="LeftSpawn" type="Marker2D" parent="SpawnPoints"]
-position = Vector2(143, 226)
+position = Vector2(164, 226)
 
 [node name="RightSpawn" type="Marker2D" parent="SpawnPoints"]
-position = Vector2(497, 226)
+position = Vector2(456, 226)
 
 [node name="Interactables" type="Node2D" parent="."]
 
-[node name="InteractablePlaceholder" type="Node2D" parent="Interactables"]
-position = Vector2(454, 239)
-
-[node name="Body" type="Polygon2D" parent="Interactables/InteractablePlaceholder"]
-polygon = PackedVector2Array(-5, -10, 5, -10, 6, 8, -6, 8)
-color = Color(1, 0.35, 0.48, 1)
-
-[node name="Cap" type="Polygon2D" parent="Interactables/InteractablePlaceholder"]
-polygon = PackedVector2Array(-7, -11, 7, -11, 5, -7, -5, -7)
-color = Color(1, 0.75, 0.33, 1)
-
-[node name="Label" type="Label" parent="Interactables/InteractablePlaceholder"]
-offset_left = -26.0
-offset_top = 10.0
-offset_right = 30.0
-offset_bottom = 21.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.65, 0.75, 0.9)
-theme_override_font_sizes/font_size = 6
-text = "INTERACTABLE SLOT"
+[node name="FireHydrant" parent="Interactables" instance=ExtResource("6_hydrant")]
+position = Vector2(410, 239)
 
 [node name="CrewContainer" type="Node2D" parent="."]
 

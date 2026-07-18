@@ -17,6 +17,9 @@ const TARGET_ENEMY_COUNT: int = 5
 const ENEMY_RESPAWN_DELAY: float = 0.75
 const CREW_RESET_DELAY: float = 1.5
 const STATUS_REFRESH_INTERVAL: float = 0.20
+const DEFAULT_HYDRANT_INTERACTION_ORIGIN: Vector2 = Vector2(410.0, 239.0)
+const DEFAULT_COIN_INTERACTION_EXCLUSION_RADIUS: float = 76.0
+const COIN_PRESENTATION_OFFSET: Vector2 = Vector2(44.0, -8.0)
 
 @export var jax_scene: PackedScene
 @export var street_punk_scene: PackedScene
@@ -29,6 +32,9 @@ var _enemy_container: Node2D
 var _loot_container: Node2D
 var _left_spawn: Marker2D
 var _right_spawn: Marker2D
+var _combat_space: CombatSpaceDefinition
+var _coin_interaction_exclusion_origin: Vector2 = DEFAULT_HYDRANT_INTERACTION_ORIGIN
+var _coin_interaction_exclusion_radius: float = DEFAULT_COIN_INTERACTION_EXCLUSION_RADIUS
 
 var _started: bool = false
 var _enemy_lane_sequence: Array[int] = [1, 0, 2, 0, 2, 1]
@@ -59,10 +65,16 @@ func configure(
 	_loot_container = loot_container
 	_left_spawn = left_spawn
 	_right_spawn = right_spawn
+	_combat_space = _combat_director.get_combat_space() if _combat_director != null else null
 	if not _combat_director.actor_died.is_connected(_on_actor_died):
 		_combat_director.actor_died.connect(_on_actor_died)
 	if not _combat_director.actor_incapacitated.is_connected(_on_actor_incapacitated):
 		_combat_director.actor_incapacitated.connect(_on_actor_incapacitated)
+
+
+func configure_coin_interaction_exclusion(world_origin: Vector2, exclusion_radius: float) -> void:
+	_coin_interaction_exclusion_origin = world_origin
+	_coin_interaction_exclusion_radius = maxf(exclusion_radius, 0.0)
 
 
 func start_lab() -> bool:
@@ -158,6 +170,7 @@ func _has_required_dependencies() -> bool:
 		and _loot_container != null
 		and _left_spawn != null
 		and _right_spawn != null
+		and _combat_space != null
 		and jax_scene != null
 		and street_punk_scene != null
 		and coin_cluster_scene != null
@@ -171,7 +184,10 @@ func _spawn_jax() -> ActorController:
 		return null
 	actor.name = "Jax"
 	actor.initial_lane = 1
-	actor.position = Vector2(_left_spawn.position.x + 48.0, ActorController.lane_y(1))
+	actor.configure_combat_space(_combat_space)
+	actor.position = _combat_space.clamp_actor_position(
+		Vector2(_left_spawn.position.x + 48.0, _combat_space.lane_y(1))
+	)
 	_crew_container.add_child(actor)
 	_combat_director.register_actor(actor)
 	return actor
@@ -188,10 +204,13 @@ func _spawn_street_punk() -> ActorController:
 	_total_spawned += 1
 	actor.name = "StreetPunk%03d" % _total_spawned
 	actor.initial_lane = lane
+	actor.configure_combat_space(_combat_space)
 	var column_offset: float = float(sequence_index % 2) * 24.0
-	actor.position = Vector2(
-		_right_spawn.position.x - column_offset,
-		ActorController.lane_y(lane)
+	actor.position = _combat_space.clamp_actor_position(
+		Vector2(
+			_right_spawn.position.x - column_offset,
+			_combat_space.lane_y(lane)
+		)
 	)
 	_enemy_container.add_child(actor)
 	_combat_director.register_actor(actor)
@@ -229,12 +248,9 @@ func _spawn_coin_cluster_for(actor: ActorController) -> void:
 	if cluster == null:
 		push_error("Combat Lab could not instantiate a coin cluster.")
 		return
-	# Present the generous click target just outside the melee silhouette so the
-	# 2.5-second choice never masks Jax or the current target.
-	var outward_direction: float = -1.0 if actor.global_position.x < 320.0 else 1.0
-	var world_position: Vector2 = actor.global_position + Vector2(44.0 * outward_direction, -8.0)
-	world_position.x = clampf(world_position.x, 158.0, 482.0)
-	world_position.y = clampf(world_position.y, 190.0, 262.0)
+	# Present the generous click target outside the melee silhouette and the
+	# independently clickable hydrant footprint.
+	var world_position: Vector2 = calculate_coin_presentation_position(actor.global_position)
 	cluster.position = _loot_container.to_local(world_position)
 	_loot_container.add_child(cluster)
 	cluster.bind(
@@ -244,6 +260,41 @@ func _spawn_coin_cluster_for(actor: ActorController) -> void:
 		_reward_director
 	)
 	coin_cluster_presented.emit(cluster)
+
+
+func calculate_coin_presentation_position(defeat_position: Vector2) -> Vector2:
+	if _combat_space == null:
+		return defeat_position
+	var outward_direction: float = -1.0 if defeat_position.x < 320.0 else 1.0
+	var candidate: Vector2 = defeat_position + Vector2(
+		COIN_PRESENTATION_OFFSET.x * outward_direction,
+		COIN_PRESENTATION_OFFSET.y
+	)
+	candidate = _combat_space.clamp_actor_position(candidate)
+	if _is_inside_coin_interaction_exclusion(candidate):
+		candidate = _combat_space.clamp_actor_position(
+			defeat_position + Vector2(-COIN_PRESENTATION_OFFSET.x, COIN_PRESENTATION_OFFSET.y)
+		)
+	if _is_inside_coin_interaction_exclusion(candidate):
+		var vertical_distance: float = absf(candidate.y - _coin_interaction_exclusion_origin.y)
+		var horizontal_clearance: float = 0.0
+		if vertical_distance < _coin_interaction_exclusion_radius:
+			horizontal_clearance = sqrt(
+				_coin_interaction_exclusion_radius * _coin_interaction_exclusion_radius
+				- vertical_distance * vertical_distance
+			)
+		candidate.x = _coin_interaction_exclusion_origin.x - horizontal_clearance
+		candidate = _combat_space.clamp_actor_position(candidate)
+	return candidate
+
+
+func _is_inside_coin_interaction_exclusion(world_position: Vector2) -> bool:
+	if _coin_interaction_exclusion_radius <= 0.0:
+		return false
+	return (
+		world_position.distance_squared_to(_coin_interaction_exclusion_origin)
+		< _coin_interaction_exclusion_radius * _coin_interaction_exclusion_radius
+	)
 
 
 func _restart_round() -> void:

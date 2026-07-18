@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="FireHydrantTuning" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/interventions/fire_hydrant_tuning.gd" id="1_tuning"]
+
+[resource]
+script = ExtResource("1_tuning")
+id = &"fire_hydrant"
+display_name = "Fire Hydrant"
+range_radius = 112.0
+damage = 18
+knockback_force = 300.0
+knockback_duration = 0.3
+knockback_direction_x = -1.0
+cooldown_seconds = 8.0
+water_duration = 0.55
+impact_duration = 0.28
+rejection_duration = 0.5

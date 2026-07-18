@@ -17,9 +17,21 @@ signal hit_landed(
 	hit_stop_duration: float
 )
 signal crew_status_changed(actor: ActorController, current_health: int, maximum_health: int, state: int)
+signal environmental_hit_landed(
+	source_id: StringName,
+	target: ActorController,
+	damage: int,
+	world_position: Vector2,
+	knockback_force: float
+)
 
 const RESPONSIBILITY: String = "Coordinate encounter-level combat state."
 const TARGET_RETALIATION_DISTANCE_MARGIN: float = 18.0
+const DEFAULT_COMBAT_SPACE: CombatSpaceDefinition = preload(
+	"res://data/combat/downtown_loop_combat_space.tres"
+)
+
+@export var combat_space: CombatSpaceDefinition = DEFAULT_COMBAT_SPACE
 
 var _actors: Array[ActorController] = []
 var _reservation_registry: AttackPositionRegistry = null
@@ -28,6 +40,8 @@ var _hit_stop_remaining: float = 0.0
 
 
 func _ready() -> void:
+	if combat_space == null:
+		combat_space = DEFAULT_COMBAT_SPACE
 	_ensure_reservation_registry()
 
 
@@ -65,6 +79,7 @@ func register_actor(actor: ActorController) -> bool:
 	actor.registration_order = _next_registration_order
 	_next_registration_order += 1
 	_actors.append(actor)
+	actor.configure_combat_space(combat_space)
 	if not actor.died.is_connected(_on_actor_died):
 		actor.died.connect(_on_actor_died)
 	if not actor.incapacitated.is_connected(_on_actor_incapacitated):
@@ -203,6 +218,76 @@ func request_attack_hit(
 	return applied_damage
 
 
+func get_live_targets_in_circle(
+	team: int,
+	world_origin: Vector2,
+	range_radius: float
+) -> Array[ActorController]:
+	var result: Array[ActorController] = []
+	if range_radius < 0.0:
+		return result
+	var radius_squared: float = range_radius * range_radius
+	for actor: ActorController in _actors:
+		if actor == null:
+			continue
+		if not is_instance_valid(actor):
+			continue
+		if actor.is_queued_for_deletion():
+			continue
+		if actor.team != team or not actor.can_be_targeted():
+			continue
+		if actor.global_position.distance_squared_to(world_origin) > radius_squared:
+			continue
+		result.append(actor)
+	result.sort_custom(_registration_order_before)
+	return result
+
+
+func request_environmental_hit(
+	source_id: StringName,
+	target: ActorController,
+	world_origin: Vector2,
+	base_damage: int,
+	knockback_force: float,
+	knockback_duration: float,
+	knockback_direction_override_x: float = 0.0
+) -> int:
+	if (
+		target == null
+		or not is_instance_valid(target)
+		or not _actors.has(target)
+		or not target.can_be_targeted()
+		or target.actor_definition == null
+	):
+		return 0
+	var damage: int = DamageCalculator.calculate_damage(
+		base_damage,
+		1.0,
+		1.0,
+		target.actor_definition.damage_taken_multiplier
+	)
+	var hit_position: Vector2 = target.global_position
+	var applied_damage: int = target.receive_damage(damage)
+	if applied_damage <= 0:
+		return 0
+	var hit_direction: float = signf(knockback_direction_override_x)
+	if is_zero_approx(hit_direction):
+		hit_direction = signf(hit_position.x - world_origin.x)
+	if is_zero_approx(hit_direction):
+		# Stable fallback for a source and target sharing the same X coordinate.
+		hit_direction = -1.0
+	if target.can_act():
+		target.apply_knockback(hit_direction, knockback_force, knockback_duration)
+	environmental_hit_landed.emit(
+		source_id,
+		target,
+		applied_damage,
+		hit_position,
+		maxf(knockback_force, 0.0)
+	)
+	return applied_damage
+
+
 func get_live_count(team: int) -> int:
 	var count: int = 0
 	for actor: ActorController in _actors:
@@ -225,6 +310,10 @@ func get_live_actors(team: int) -> Array[ActorController]:
 		if actor.team == team and actor.can_be_targeted():
 			result.append(actor)
 	return result
+
+
+func get_combat_space() -> CombatSpaceDefinition:
+	return combat_space
 
 
 func get_actor_snapshots() -> Array[Dictionary]:
@@ -265,11 +354,11 @@ func clear_all(queue_free_actors: bool = true) -> void:
 
 
 func _ensure_reservation_registry() -> void:
-	if _reservation_registry != null and is_instance_valid(_reservation_registry):
-		return
-	_reservation_registry = AttackPositionRegistry.new()
-	_reservation_registry.name = "AttackPositionRegistry"
-	add_child(_reservation_registry)
+	if _reservation_registry == null or not is_instance_valid(_reservation_registry):
+		_reservation_registry = AttackPositionRegistry.new()
+		_reservation_registry.name = "AttackPositionRegistry"
+		add_child(_reservation_registry)
+	_reservation_registry.configure(combat_space)
 
 
 func _on_actor_died(dead_actor: ActorController) -> void:
@@ -342,3 +431,7 @@ func _disconnect_actor_signals(actor: ActorController) -> void:
 		actor.state_changed.disconnect(_on_actor_state_changed)
 	if actor.target_changed.is_connected(_on_actor_target_changed):
 		actor.target_changed.disconnect(_on_actor_target_changed)
+
+
+func _registration_order_before(left: ActorController, right: ActorController) -> bool:
+	return left.registration_order < right.registration_order

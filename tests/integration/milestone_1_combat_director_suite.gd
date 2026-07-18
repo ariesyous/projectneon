@@ -6,6 +6,8 @@ const STREET_PUNK_DEFINITION: ActorDefinition = preload("res://data/enemies/stre
 const JAX_ATTACK: AttackDefinition = preload("res://data/attacks/jax_basic_punch.tres")
 const STREET_PUNK_ATTACK: AttackDefinition = preload("res://data/attacks/street_punk_basic_punch.tres")
 
+var _combat_space: CombatSpaceDefinition = CombatSpaceDefinition.new()
+
 
 func suite_name() -> String:
 	return "milestone_1_combat_director"
@@ -116,6 +118,7 @@ func test_repeated_registration_cleanup_has_no_stale_target_or_reservation() -> 
 
 func _new_director() -> CombatDirector:
 	var director: CombatDirector = track(CombatDirector.new()) as CombatDirector
+	director.combat_space = _combat_space
 	director._ready()
 	director.set_physics_process(false)
 	return director
@@ -128,7 +131,8 @@ func _new_actor(is_crew: bool, world_x: float, lane: int) -> ActorController:
 	actor.team = ActorController.Team.CREW if is_crew else ActorController.Team.ENEMY
 	actor.initial_lane = lane
 	actor.lane_index = lane
-	actor.position = Vector2(world_x, ActorController.lane_y(lane))
+	actor.configure_combat_space(_combat_space)
+	actor.position = Vector2(world_x, _combat_space.lane_y(lane))
 	actor.state_machine = ActorStateMachine.new()
 	actor.health_component = HealthComponent.new()
 	actor.attack_controller = AttackController.new()

@@ -4,6 +4,69 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 
 ## [Unreleased]
 
+### 2026-07-18 — Milestone 2: Player Intervention (Technical)
+
+#### Added
+
+- A visible Fire Hydrant environmental intervention with a generous pointer/touch target, hover highlight, exact range preview, click/tap activation, available/no-target/cooling/rejection states, concise tooltip, and matching HUD control.
+- A typed `FireHydrantTuning` Resource with a 112-pixel inclusive circle, 18 deterministic area damage, fixed leftward 300-force knockback for 0.30 seconds, an 8.0-second cooldown, and 0.55-second water, 0.28-second impact, and 0.50-second rejection presentation timings.
+- A run-scoped `FireHydrantController` authority that validates live enemies in stable order, locks cooldown before callbacks, rejects unavailable/no-target/repeated input, and applies environmental damage and knockback through existing combat contracts.
+- A typed Downtown Loop combat-safe Resource defining inclusive actor origins X 164–456 and Y 194–258 with lane centers Y 194/226/258.
+- Deterministic Milestone 2 combat-space and intervention suites covering exact boundaries, damage/knockback, invalid/dead exclusion, cooldown, reactivation, same-tick/re-entrant deduplication, preview/HUD mapping, repeated lifecycle cleanup, safe bounds, and coin/Hydrant input separation.
+- Nonmodal re-openable player Help, one-shot Web sound-unlock guidance, visible fullscreen controls, landscape/safe-area presentation, and updated visual evidence at `res://docs/screenshots/milestone_2_player_intervention.png`.
+
+#### Changed
+
+- Spawn, movement, target approach, attack reservations, knockback, recovery, replacement cleanup, coin placement, and debug lane presentation now use the same combat-safe contract, preventing long-running fights from drifting under the left HUD while preserving visible knockback.
+- Coin clusters now advertise click/tap interaction with a pointer, pulse, hover response, and persistent affordance while preserving the full-value timeout, manual-only streak, 10% bonus cap, and authoritative at-most-once accounting.
+- The Combat Lab HUD has clearer hierarchy and containment, a dedicated intervention state area, honest purpose/onboarding copy, a generously sized fullscreen control, and safe-area-aware presentation.
+- The small deterministic Combat Lab PCM set is built before play. Web displays one immediate unobtrusive sound-unlock affordance when a gesture is required and removes it after the first successful unlock without pausing or resetting combat.
+- Local Web and Windows export presets exclude development addon, build, documentation, and test content from the shipped pack. The existing 640 x 360 internal resolution and 16:9 direction remain unchanged.
+
+#### Verification
+
+- Passed **46/46 tests and 694 assertions with no failures**: preserved Milestone 1 coverage is 30 tests/348 assertions, and Milestone 2 coverage is 16 tests/346 assertions.
+- Completed a **315.3046-second** uninterrupted Combat Lab soak with 113 enemies spawned, 98 defeated, five active enemies, six live actors, and six live reservations. All actor origins remained within X 164–456 and Y 194–258, and repeated spawning/cleanup did not drift combat under the HUD.
+- The soak coin ledger ended at **3,920**, exactly 98 rewarding defeats multiplied by the fixed 40-coin base; manual collection and full-value automatic collection also remained correct.
+- Launched the configured project directly into `/GameRun`; repeatedly exercised Hydrant success, no-target/cooldown rejection, out-of-range exclusion, coins, Help, `F1`, and `F2`; and inspected fresh Godot output without task-introduced parser errors, runtime errors, or warnings.
+- Smoke-tested local Windows and Web exports. Desktop audio initialized through WASAPI. Web cold and warm loads showed the immediate one-shot sound prompt; one gesture unlocked audio without resetting combat, and exercised browser checks reported no warning/error console messages.
+- Repeated visible-control Web fullscreen entry/exit and fullscreen-only Escape were stable. Representative mobile-landscape and portrait viewports preserved centered 16:9 presentation, safe layout, and landscape guidance.
+
+#### Limitations
+
+- The in-app browser retained F11 instead of delivering it to the game. The runtime handles F11 if delivered and otherwise allows the browser to retain its normal behavior; the visible fullscreen control remains the primary cross-platform method.
+- The generated Godot Web shell continued to block ordinary browser zoom while its canvas was focused. Fullscreen is the useful Milestone 2 presentation-scale alternative; a custom accessible shell is deferred.
+- Physical-device touch testing was unavailable; representative mobile browser viewports, deterministic interaction-authority tests, and typed touch handlers supplied the current evidence.
+- The temporary self-contained headless export runner reported that its sandboxed `user://` profiler directory could not be opened. Both exports completed, and the message did not reproduce in the exported Windows runtime or game/browser logs.
+- The 640 x 360 canvas remains intentional. A future higher-resolution pixel-art presentation pass is recommended if production typography and art outgrow it.
+
+#### Scope
+
+- Technical Milestone 2 is complete. The separate Milestone 1 Human Validation Gate remains the project owner's qualitative pass and is not claimed by automated or agent verification.
+- Wet/status effects, combo meters, Call Backup, Subway Reroute, patrol progression, encounter scheduling, Heat, Night Pressure, random streams, equipment, synergies, cards, shops, extraction, saving, bosses, progression, procedural generation, and all other Milestone 3+ behavior remain unimplemented.
+- Local verification exports were not committed, published, or deployed. GitHub Pages was not redeployed.
+
+### 2026-07-18 — Owner Human Validation Gate Pass and Milestone 2 Authorization
+
+#### Recorded
+
+- The project owner recorded the Milestone 1 five-person Human Validation Gate as **PASSED** on 2026-07-18.
+- All five designated testers voluntarily played for more than two minutes. Their feedback showed clear curiosity about future encounters, enemies, abilities, weapons, customization, and progression.
+- Testers could follow the combat, identified satisfying hits and sounds, and did not broadly describe the fighting as confusing, lifeless, or difficult to understand.
+- Remaining feedback concerned presentation, onboarding, controls, and communicating the larger purpose of the game.
+- This is the owner's qualitative human-validation record. It is distinct from automated test results, technical verification, or agent observation, and no individual tester records have been invented.
+
+#### Design Input
+
+- Captured interest in additional melee and ranged enemies, weapon and gun variants, timed abilities or spells, lifesteal, armor and damage types, enemy inspection and detailed health information, enemy area attacks, damage-over-time attacks and spells, encounter starts, between-fight structure, eventual coin spending, customization, and progression.
+- These interests remain future design input for their owning later milestones; this record does not authorize or implement Milestone 3+ systems.
+
+#### Scope
+
+- The owner-recorded gate pass authorizes Milestone 2 — Player Intervention and targeted Milestone 1 presentation and usability improvements identified during testing.
+- This owner-authorization entry itself claims no Milestone 2 technical acceptance; the separate technical completion entry above records the subsequently executed result.
+- Milestone 3 and later gameplay systems remain outside the authorized scope.
+
 ### 2026-07-17 — Browser Playtest Release
 
 #### Added

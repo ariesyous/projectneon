@@ -2,7 +2,7 @@
 
 ## Catalog status
 
-This catalog reflects the implemented **Milestone 0 — Project Foundation** and **Milestone 1 — Combat Lab**. Entries explicitly marked as placeholders still reserve later ownership or screen space; listing deferred vertical-slice content does not authorize it.
+This catalog reflects the implemented **Milestone 0 — Project Foundation**, **Milestone 1 — Combat Lab**, and **Milestone 2 — Player Intervention**. Entries explicitly marked as placeholders still reserve later ownership or screen space; listing deferred vertical-slice content does not authorize it.
 
 ## Implemented foundation content
 
@@ -16,7 +16,7 @@ This catalog reflects the implemented **Milestone 0 — Project Foundation** and
 | Front Lane | Debug lane guide / combat lane | Visible development marker at Y 258; used by Combat Lab movement |
 | Route nodes | Route placeholders | Visual markers only; no patrol or encounter resolution |
 | Spawn points | Authored lab markers | Fixed Jax/enemy starting regions; no encounter scheduling |
-| Interactables container | Stage container | Contains a clearly labelled/drawn nonfunctional placeholder; no intervention behavior |
+| Interactables container | Stage container | Hosts the functional Fire Hydrant presentation/input scene; gameplay authority remains run-scoped |
 | Crew container | Stage container | Hosts the runtime Jax actor |
 | Enemy container | Stage container | Hosts five live Street Punks plus short death-cleanup presentation |
 | Effects container | Stage container | Hosts replaceable combat feedback, damage numbers, and audio players |
@@ -34,9 +34,9 @@ This catalog reflects the implemented **Milestone 0 — Project Foundation** and
 | Interventions | Intervention controls and charge/cooldown space |
 | Extraction | Extraction action and reward multiplier space |
 
-Combat Lab elapsed time, Jax health/state/target, coin total, and manual streak are live presentation values. Their native-scale typography, meters, and framing are enlarged for common 16:9 displays; compact labels preserve the central fight area. Other displayed values and disabled buttons remain placeholders. No HUD region owns authoritative gameplay state.
+Combat Lab elapsed time, Jax health/state/target, coin total, manual streak, Fire Hydrant state/cooldown, fullscreen state, and player guidance are live presentation values. Their native-scale typography, meters, and framing are enlarged for common 16:9 displays; compact labels preserve the central fight area. Other displayed values and disabled buttons remain placeholders. No HUD region owns authoritative gameplay state.
 
-The HUD now presents the Milestone 1 manual coin streak. Dedicated Night Pressure, run-seed, and random-stream readouts remain deferred with their future gameplay owners.
+The HUD presents the Milestone 1 manual coin streak plus Milestone 2 Hydrant, onboarding, sound, fullscreen, landscape, and safe-area state. Dedicated Night Pressure, run-seed, and random-stream readouts remain deferred with their future gameplay owners.
 
 ### Development tools
 
@@ -51,21 +51,23 @@ The HUD now presents the Milestone 1 manual coin streak. Dedicated Night Pressur
 | --- | --- |
 | `RunDirector` | Typed responsibility description only |
 | `PatrolController` | Typed responsibility description only |
-| `CombatDirector` | Milestone 1 actor registration, targeting, reservations, hit resolution, hit-stop, and cleanup authority |
+| `CombatDirector` | Actor registration, targeting, reservations, hit resolution, hit-stop, cleanup, safe-space assignment, and typed environmental-hit authority |
 | `RewardDirector` | Milestone 1 coin ledger, at-most-once cluster resolution, and manual streak authority |
 | `CombatLabController` | Fixed five-enemy authored demo orchestration and repeat spawning |
+| `FireHydrantController` | Milestone 2 circle validation, deterministic area resolution, rejection, and cooldown authority |
+| `DisplayController` | Presentation-only fullscreen, landscape, and safe-area integration |
 | `CardSystem` | Typed responsibility description only |
 | `SynergySystem` | Typed responsibility description only |
 
 ## Assets
 
-Milestone 1 uses project-native code-drawn placeholder actors, health/target indicators, hit/death/spawn effects, damage numbers, coin presentation, and deterministic generated PCM cues. These are deliberately replaceable evaluation assets, not production sprites or audio. No production character sprites, enemy sprites, equipment icons, card art, or music are cataloged as implemented.
+Milestones 1 and 2 use project-native code-drawn placeholder actors, health/target indicators, hit/death/spawn/water effects, damage numbers, Hydrant and coin presentation, and deterministic generated PCM cues. These are deliberately replaceable evaluation assets, not production sprites or audio. No production character sprites, enemy sprites, equipment icons, card art, or music are cataloged as implemented.
 
 The existing project icon and Godot MCP addon files are project/development support, not Neon Loop gameplay content.
 
 Milestone 0 visual evidence is stored at `res://docs/screenshots/milestone_0_foundation.png`.
 
-The visual-direction reference is stored at `res://docs/reference/neon_loop_gameplay_mockup.png`; it is inspiration only and does not authorize the later systems depicted in it. Milestone 1 evidence is stored at `res://docs/screenshots/milestone_1_combat_lab.png`.
+The visual-direction reference is stored at `res://docs/reference/neon_loop_gameplay_mockup.png`; it is inspiration only and does not authorize the later systems depicted in it. Milestone 1 evidence is stored at `res://docs/screenshots/milestone_1_combat_lab.png`. Milestone 2 evidence is stored at `res://docs/screenshots/milestone_2_player_intervention.png`.
 
 ## Implemented Combat Lab content
 
@@ -77,9 +79,29 @@ The visual-direction reference is stored at `res://docs/reference/neon_loop_game
 | `street_punk_basic_punch` | Basic attack | 0.31s windup, 0.08s active, 0.42s recovery, visible 68-force knockback, 0.04s hit-stop |
 | Milestone 1 coin cluster | Ambient interaction | 2.5s auto-collect, 3.0s manual streak window, basis-point bonus schedule capped at 10% |
 
+## Implemented Player Intervention content
+
+| Content ID | Type | Authored Milestone 2 values |
+| --- | --- | --- |
+| `downtown_loop_combat_space` | Combat-space Resource | Inclusive actor origins X 164–456, Y 194–258; lanes Y 194/226/258; includes worst-case safe-area HUD inset |
+| `fire_hydrant` | Environmental intervention | 112px fixed circle, 18 deterministic area damage, fixed leftward 300-force knockback for 0.30s, 8.0s cooldown |
+| Fire Hydrant presentation | World/HUD feedback | 36px world interaction radius, exact range preview, 0.55s water, 0.28s impact, 0.50s rejection timing |
+| Combat Lab onboarding | Nonmodal HUD help | Auto combat, manual/full-value-auto coins, Hydrant use, fullscreen, and honest no-spending-yet purpose text |
+| Sound unlock | Web presentation | One-shot click/tap/key affordance; the same gesture primes generated audio without pausing or restarting combat |
+| Fullscreen and mobile support | Display presentation | Visible control, F11 fallback, fullscreen-only Escape, 16:9 letterboxing, landscape guidance, conservative safe-area insets |
+
+### Milestone 2 technical content record
+
+- The authored Hydrant presentation radius and authoritative gameplay radius are the same 112-pixel inclusive circle; the world interaction itself remains a generous 36-pixel target.
+- The authored combat-safe actor-origin rectangle is X 164–456 and Y 194–258, with lane centers Y 194/226/258. Spawning, approach, reservations, knockback, recovery, replacement cleanup, coin placement, and lane visualization share this Resource.
+- The complete deterministic suite passed 46/46 tests and 694 assertions with no failures: preserved Milestone 1 coverage is 30 tests/348 assertions, and Milestone 2 adds 16 tests/346 assertions.
+- A 315.3046-second runtime soak produced 113 spawns and 98 defeats, ended with five enemies, six live actors, and six live reservations, and retained every origin inside the safe region. The 3,920-coin total exactly matched 98 fixed 40-coin rewards.
+- Editor and local Windows/Web checks exercised the intervention, coins, Help, audio unlock, fullscreen, Escape, 16:9/mobile-landscape layout, `F1`, and `F2`. The standard Web shell retained its browser-zoom restriction; fullscreen remains the presentation-scale alternative.
+- These outputs and the screenshot are local technical evidence. No Milestone 2 GitHub Pages build was published or deployed.
+
 ## Remaining specified content and contracts
 
-The following names and contracts come from `GameSpecifications.md`. Named crew/enemies and later systems remain deferred unless a subsection explicitly identifies implemented Milestone 1 behavior.
+The following names and contracts come from `GameSpecifications.md`. Named crew/enemies and later systems remain deferred unless a subsection explicitly identifies implemented Milestone 1 or Milestone 2 behavior.
 
 ### Crew
 
@@ -93,15 +115,16 @@ The following names and contracts come from `GameSpecifications.md`. Named crew/
 - Viper Enforcer (elite)
 - The Viper (boss)
 
-### Interventions
+### Remaining interventions
 
-- Fire Hydrant
 - Call Backup
 - Subway Reroute — finite charge or explicit consumable; cannot reduce Night Pressure or bypass its thresholds
 
+Wet application and combo continuation remain future compatibility contracts only. No general status-effect, Wet, combo-meter, or combo-reward system is implemented in Milestone 2.
+
 ### Equipment
 
-The vertical-slice catalogue contains these nine definitions. None is implemented in Milestone 1.
+The vertical-slice catalogue contains these nine definitions. None is implemented in Milestone 2.
 
 | Equipment | Tags | Primary-synergy role |
 | --- | --- | --- |
@@ -136,7 +159,7 @@ There are three cross-primary bridge items—Spiked Bat, Magnetic Flail, and Vol
 
 ### Implemented optional coin clusters
 
-Coin clusters are the implemented Milestone 1 ambient interaction under `LootContainer`.
+Coin clusters are the implemented optional Combat Lab ambient interaction under `LootContainer`.
 
 - Each coin-rewarding defeated enemy creates one cluster; explicitly rewardless enemies create none.
 - Milestone 1 uses fixed authored base values; randomized values remain deferred to the Milestone 3 `rewards` stream.
@@ -145,6 +168,8 @@ Coin clusters are the implemented Milestone 1 ambient interaction under `LootCon
 - Manual streak bonus tuning is data-driven and capped at 10% of that cluster's base value; auto-collection receives no manual bonus.
 - Click and timeout are mutually exclusive resolutions of one authoritative award, so the base value is credited at most once.
 - `RewardDirector`, not the cluster presentation or combat actor, owns the coin ledger, resolution state, and streak.
+- The presentation uses a 32px mouse/touch shape, pointer cursor, pulse, hover response, and persistent `CLICK / TAP` affordance.
+- Combat Lab placement enforces a 76px center exclusion around the Hydrant so the two generous interaction areas do not overlap.
 
 ### Escalation and finite cooling
 
@@ -155,10 +180,10 @@ Coin clusters are the implemented Milestone 1 ambient interaction under `LootCon
 
 Night Pressure thresholds latch when crossed. A boss reached at an unsafe transition is queued until the next valid boundary, and the boss takes precedence when it and an extraction threshold are reached by the same authoritative update unless extraction was already confirmed. Cooling cannot reduce Night Pressure, reopen a spent extraction threshold, or clear a queued boss.
 
-Shop cooling requires meaningful cost plus finite stock or an explicit per-run purchase limit; price escalation alone is insufficient. Subway Reroute consumes a finite charge or consumable and does not regenerate merely through elapsed time. These values, thresholds, latches, shops, and charges are specified only and have no Milestone 1 runtime implementation.
+Shop cooling requires meaningful cost plus finite stock or an explicit per-run purchase limit; price escalation alone is insufficient. Subway Reroute consumes a finite charge or consumable and does not regenerate merely through elapsed time. These values, thresholds, latches, shops, and charges are specified only and have no Milestone 2 runtime implementation.
 
 ### Run-scoped deterministic streams
 
-`RunDirector` will own one authoritative integer seed and a non-Autoload `RunRandomStreams` child with seven streams: `encounters`, `spawns`, `rewards`, `equipment`, `cards`, `enemy_variants`, and `cosmetic`. Gameplay candidates must be deterministically filtered and sorted by stable content ID before selection. The `cosmetic` stream is isolated so presentation draws cannot alter gameplay outcomes. No seed, stream component, or random content selection is implemented in Milestone 1.
+`RunDirector` will own one authoritative integer seed and a non-Autoload `RunRandomStreams` child with seven streams: `encounters`, `spawns`, `rewards`, `equipment`, `cards`, `enemy_variants`, and `cosmetic`. Gameplay candidates must be deterministically filtered and sorted by stable content ID before selection. The `cosmetic` stream is isolated so presentation draws cannot alter gameplay outcomes. No seed, stream component, or random content selection is implemented in Milestone 2.
 
-Listing deferred content does not authorize its implementation beyond Milestone 1.
+Listing deferred content does not authorize its implementation beyond Milestone 2.

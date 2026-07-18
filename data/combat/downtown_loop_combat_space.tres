@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="CombatSpaceDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/combat/combat_space_definition.gd" id="1_space"]
+
+[resource]
+script = ExtResource("1_space")
+actor_origin_bounds = Rect2(164, 194, 292, 64)
+lane_y_positions = PackedFloat32Array(194, 226, 258)
