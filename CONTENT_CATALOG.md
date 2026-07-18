@@ -2,25 +2,25 @@
 
 ## Catalog status
 
-This catalog reflects **Milestone 0 — Project Foundation**. Entries marked as placeholders reserve ownership or screen space; they are not functional gameplay content. Revised vertical-slice entries are cataloged below as specified-but-not-implemented contracts and do not expand the current milestone.
+This catalog reflects the implemented **Milestone 0 — Project Foundation** and **Milestone 1 — Combat Lab**. Entries explicitly marked as placeholders still reserve later ownership or screen space; listing deferred vertical-slice content does not authorize it.
 
 ## Implemented foundation content
 
 ### Stage
 
-| ID / name | Type | Milestone 0 state |
+| ID / name | Type | Current state |
 | --- | --- | --- |
 | Downtown Loop | Fixed district stage | Placeholder nighttime street made from development shapes and labels |
-| Back Lane | Debug lane guide | Visible development marker; no navigation behavior |
-| Middle Lane | Debug lane guide | Visible development marker; no navigation behavior |
-| Front Lane | Debug lane guide | Visible development marker; no navigation behavior |
+| Back Lane | Debug lane guide / combat lane | Visible development marker at Y 194; used by Combat Lab movement |
+| Middle Lane | Debug lane guide / combat lane | Visible development marker at Y 226; used by Combat Lab movement |
+| Front Lane | Debug lane guide / combat lane | Visible development marker at Y 258; used by Combat Lab movement |
 | Route nodes | Route placeholders | Visual markers only; no patrol or encounter resolution |
-| Spawn points | Spawn placeholders | Marker nodes only; no spawned content or behavior |
+| Spawn points | Authored lab markers | Fixed Jax/enemy starting regions; no encounter scheduling |
 | Interactables container | Stage container | Contains a clearly labelled/drawn nonfunctional placeholder; no intervention behavior |
-| Crew container | Stage container | Contains a clearly labelled/drawn nonfunctional placeholder; no crew actor behavior |
-| Enemy container | Stage container | Contains a clearly labelled/drawn nonfunctional placeholder; no enemy behavior |
-| Effects container | Stage container | Contains a clearly temporary drawn placeholder; no combat effect behavior |
-| Loot container | Stage container | Empty; no rewards or pickups |
+| Crew container | Stage container | Hosts the runtime Jax actor |
+| Enemy container | Stage container | Hosts five live Street Punks plus short death-cleanup presentation |
+| Effects container | Stage container | Hosts replaceable combat feedback, damage numbers, and audio players |
+| Loot container | Stage container | Hosts temporary non-authoritative coin-cluster presentation |
 
 ### HUD shell
 
@@ -34,49 +34,60 @@ This catalog reflects **Milestone 0 — Project Foundation**. Entries marked as 
 | Interventions | Intervention controls and charge/cooldown space |
 | Extraction | Extraction action and reward multiplier space |
 
-All displayed values and buttons are placeholders. No HUD region owns authoritative gameplay state.
+Combat Lab elapsed time, Jax health/state/target, coin total, and manual streak are live presentation values. Their native-scale typography, meters, and framing are enlarged for common 16:9 displays; compact labels preserve the central fight area. Other displayed values and disabled buttons remain placeholders. No HUD region owns authoritative gameplay state.
 
-The Milestone 0 HUD does not yet claim dedicated Night Pressure, run-seed, random-stream, or coin-streak presentation. Those revised-specification readouts remain deferred with their gameplay owners.
+The HUD now presents the Milestone 1 manual coin streak. Dedicated Night Pressure, run-seed, and random-stream readouts remain deferred with their future gameplay owners.
 
 ### Development tools
 
-| Tool | Control | Milestone 0 state |
+| Tool | Control | Current state |
 | --- | --- | --- |
 | DebugOverlay | `F1` | Toggleable development information shell |
 | Lane guides | DebugOverlay button or `F2` | Requests that Downtown Loop show or hide all three lane visuals |
 
-### Runtime ownership placeholders
+### Runtime ownership state
 
-| Class | Milestone 0 content |
+| Class | Current content |
 | --- | --- |
 | `RunDirector` | Typed responsibility description only |
 | `PatrolController` | Typed responsibility description only |
-| `CombatDirector` | Typed responsibility description only |
-| `RewardDirector` | Typed responsibility description only |
+| `CombatDirector` | Milestone 1 actor registration, targeting, reservations, hit resolution, hit-stop, and cleanup authority |
+| `RewardDirector` | Milestone 1 coin ledger, at-most-once cluster resolution, and manual streak authority |
+| `CombatLabController` | Fixed five-enemy authored demo orchestration and repeat spawning |
 | `CardSystem` | Typed responsibility description only |
 | `SynergySystem` | Typed responsibility description only |
 
 ## Assets
 
-Milestone 0 uses project-native placeholder shapes, labels, and any compatible existing project assets. No production character sprites, enemy sprites, equipment icons, card art, effects, music, or gameplay audio are cataloged as implemented.
+Milestone 1 uses project-native code-drawn placeholder actors, health/target indicators, hit/death/spawn effects, damage numbers, coin presentation, and deterministic generated PCM cues. These are deliberately replaceable evaluation assets, not production sprites or audio. No production character sprites, enemy sprites, equipment icons, card art, or music are cataloged as implemented.
 
 The existing project icon and Godot MCP addon files are project/development support, not Neon Loop gameplay content.
 
 Milestone 0 visual evidence is stored at `res://docs/screenshots/milestone_0_foundation.png`.
 
-## Specified but not implemented
+The visual-direction reference is stored at `res://docs/reference/neon_loop_gameplay_mockup.png`; it is inspiration only and does not authorize the later systems depicted in it. Milestone 1 evidence is stored at `res://docs/screenshots/milestone_1_combat_lab.png`.
 
-The following names come from `GameSpecifications.md` and remain deferred:
+## Implemented Combat Lab content
+
+| Content ID | Type | Authored Milestone 1 values |
+| --- | --- | --- |
+| `jax` | Crew actor | 520 health, 112 movement speed, 20 base damage, rewardless |
+| `jax_basic_punch` | Basic attack | 0.20s windup, 0.08s active, 0.34s recovery, visible 155-force knockback, 0.075s hit-stop |
+| `street_punk` | Enemy actor | 58 health, 86 movement speed, 2 base damage, fixed 40-coin reward |
+| `street_punk_basic_punch` | Basic attack | 0.31s windup, 0.08s active, 0.42s recovery, visible 68-force knockback, 0.04s hit-stop |
+| Milestone 1 coin cluster | Ambient interaction | 2.5s auto-collect, 3.0s manual streak window, basis-point bonus schedule capped at 10% |
+
+## Remaining specified content and contracts
+
+The following names and contracts come from `GameSpecifications.md`. Named crew/enemies and later systems remain deferred unless a subsection explicitly identifies implemented Milestone 1 behavior.
 
 ### Crew
 
-- Jax — Brawler (Milestone 1 combat proof)
 - Zoey — Tech Fighter
 - Rex — Bruiser
 
 ### Enemies
 
-- Street Punk
 - Bat Thug
 - Bottle Thrower
 - Viper Enforcer (elite)
@@ -90,7 +101,7 @@ The following names come from `GameSpecifications.md` and remain deferred:
 
 ### Equipment
 
-The vertical-slice catalogue contains these nine definitions. None is implemented in Milestone 0.
+The vertical-slice catalogue contains these nine definitions. None is implemented in Milestone 1.
 
 | Equipment | Tags | Primary-synergy role |
 | --- | --- | --- |
@@ -123,9 +134,9 @@ There are three cross-primary bridge items—Spiked Bat, Magnetic Flail, and Vol
 - Gang Hideout
 - Subway Entrance — finite reroute/cooling effect; cannot reduce Night Pressure or skip extraction/boss progression
 
-### Optional coin clusters
+### Implemented optional coin clusters
 
-Coin clusters are a Milestone 1 ambient interaction and are not present in the empty Milestone 0 `LootContainer`.
+Coin clusters are the implemented Milestone 1 ambient interaction under `LootContainer`.
 
 - Each coin-rewarding defeated enemy creates one cluster; explicitly rewardless enemies create none.
 - Milestone 1 uses fixed authored base values; randomized values remain deferred to the Milestone 3 `rewards` stream.
@@ -144,10 +155,10 @@ Coin clusters are a Milestone 1 ambient interaction and are not present in the e
 
 Night Pressure thresholds latch when crossed. A boss reached at an unsafe transition is queued until the next valid boundary, and the boss takes precedence when it and an extraction threshold are reached by the same authoritative update unless extraction was already confirmed. Cooling cannot reduce Night Pressure, reopen a spent extraction threshold, or clear a queued boss.
 
-Shop cooling requires meaningful cost plus finite stock or an explicit per-run purchase limit; price escalation alone is insufficient. Subway Reroute consumes a finite charge or consumable and does not regenerate merely through elapsed time. These values, thresholds, latches, shops, and charges are specified only and have no Milestone 0 runtime implementation.
+Shop cooling requires meaningful cost plus finite stock or an explicit per-run purchase limit; price escalation alone is insufficient. Subway Reroute consumes a finite charge or consumable and does not regenerate merely through elapsed time. These values, thresholds, latches, shops, and charges are specified only and have no Milestone 1 runtime implementation.
 
 ### Run-scoped deterministic streams
 
-`RunDirector` will own one authoritative integer seed and a non-Autoload `RunRandomStreams` child with seven streams: `encounters`, `spawns`, `rewards`, `equipment`, `cards`, `enemy_variants`, and `cosmetic`. Gameplay candidates must be deterministically filtered and sorted by stable content ID before selection. The `cosmetic` stream is isolated so presentation draws cannot alter gameplay outcomes. No seed, stream component, or random content selection is implemented in Milestone 0.
+`RunDirector` will own one authoritative integer seed and a non-Autoload `RunRandomStreams` child with seven streams: `encounters`, `spawns`, `rewards`, `equipment`, `cards`, `enemy_variants`, and `cosmetic`. Gameplay candidates must be deterministically filtered and sorted by stable content ID before selection. The `cosmetic` stream is isolated so presentation draws cannot alter gameplay outcomes. No seed, stream component, or random content selection is implemented in Milestone 1.
 
-Listing deferred content does not authorize its implementation during Milestone 0.
+Listing deferred content does not authorize its implementation beyond Milestone 1.

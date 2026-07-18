@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/stages/downtown_loop.gd" id="1_stage"]
 [ext_resource type="Script" path="res://scripts/stages/downtown_backdrop.gd" id="2_backdrop"]
 [ext_resource type="Script" path="res://scripts/stages/route_markers.gd" id="3_route"]
 [ext_resource type="Script" path="res://scripts/stages/debug_lane_markers.gd" id="4_lanes"]
+[ext_resource type="PackedScene" path="res://scenes/effects/combat_feedback.tscn" id="5_feedback"]
 
 [node name="DowntownLoop" type="Node2D"]
 script = ExtResource("1_stage")
@@ -105,55 +106,11 @@ text = "INTERACTABLE SLOT"
 
 [node name="CrewContainer" type="Node2D" parent="."]
 
-[node name="CrewPlaceholder" type="Node2D" parent="CrewContainer"]
-position = Vector2(283, 241)
-
-[node name="Body" type="Polygon2D" parent="CrewContainer/CrewPlaceholder"]
-polygon = PackedVector2Array(-7, -16, 7, -16, 9, 7, -9, 7)
-color = Color(0.2, 0.91, 1, 1)
-
-[node name="Head" type="Polygon2D" parent="CrewContainer/CrewPlaceholder"]
-polygon = PackedVector2Array(-5, -24, 5, -24, 6, -16, -6, -16)
-color = Color(0.52, 0.96, 1, 1)
-
-[node name="Label" type="Label" parent="CrewContainer/CrewPlaceholder"]
-offset_left = -17.0
-offset_top = 9.0
-offset_right = 25.0
-offset_bottom = 20.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.45, 0.94, 1, 0.9)
-theme_override_font_sizes/font_size = 6
-text = "CREW SLOT"
-
 [node name="EnemyContainer" type="Node2D" parent="."]
-
-[node name="EnemyPlaceholder" type="Node2D" parent="EnemyContainer"]
-position = Vector2(361, 241)
-
-[node name="Body" type="Polygon2D" parent="EnemyContainer/EnemyPlaceholder"]
-polygon = PackedVector2Array(-8, -17, 8, -17, 10, 7, -10, 7)
-color = Color(1, 0.23, 0.71, 1)
-
-[node name="Head" type="Polygon2D" parent="EnemyContainer/EnemyPlaceholder"]
-polygon = PackedVector2Array(-6, -25, 6, -25, 7, -17, -7, -17)
-color = Color(1, 0.5, 0.82, 1)
-
-[node name="Label" type="Label" parent="EnemyContainer/EnemyPlaceholder"]
-offset_left = -21.0
-offset_top = 9.0
-offset_right = 28.0
-offset_bottom = 20.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.45, 0.78, 0.9)
-theme_override_font_sizes/font_size = 6
-text = "ENEMY SLOT"
 
 [node name="EffectsContainer" type="Node2D" parent="."]
 
-[node name="EffectPlaceholder" type="Polygon2D" parent="EffectsContainer"]
-position = Vector2(324, 210)
-polygon = PackedVector2Array(0, -9, 3, -3, 10, -1, 3, 2, 1, 9, -2, 3, -9, 1, -3, -2)
-color = Color(1, 0.87, 0.35, 0.85)
+[node name="CombatFeedback" parent="EffectsContainer" instance=ExtResource("5_feedback")]
+z_index = 300
 
 [node name="LootContainer" type="Node2D" parent="."]

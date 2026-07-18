@@ -4,6 +4,66 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 
 ## [Unreleased]
 
+### 2026-07-17 — Browser Playtest Release
+
+#### Added
+
+- A Godot 4.7 Web export preset with browser threads disabled for ordinary GitHub Pages hosting.
+- A GitHub Actions workflow that downloads the official Godot 4.7 editor and export templates, builds the web release from source, and deploys it through GitHub Pages.
+- Public playtest and repository links in `README.md`, which now reflects the implemented Milestone 1 scope.
+
+#### Scope
+
+- Browser packaging changes distribution only; it adds no Milestone 2 gameplay or new gameplay authority.
+
+#### Verification
+
+- Exported the release locally with the official Godot 4.7 Web templates and loaded it through an HTTP server in the in-app browser.
+- Confirmed automatic combat, five-enemy presentation, coin spawning and auto-collection, and the enlarged HUD with no browser-console warnings or errors.
+
+### 2026-07-17 — HUD Readability Refinement
+
+#### Changed
+
+- Enlarged critical HUD typography, the timer, Jax portrait and health meter, placeholder buttons, panel borders, and the opt-in development overlay in response to playtest readability feedback.
+- Shortened presentation-only copy for actor state, coin resolution, and deferred HUD regions so the larger type remains contained without adding later-milestone behavior or covering the five-enemy fight.
+- Kept the existing 640 x 360 internal canvas and 1280 x 720 integer-scaled desktop window; no global HUD transform or gameplay authority was introduced.
+
+#### Verification
+
+- Passed all 30 discoverable Milestone 1 tests after the presentation changes.
+- Launched directly into `GameRun`, visually inspected the enlarged HUD and debug overlay, and rechecked F1/F2 behavior with five enemies active.
+
+### 2026-07-17 — Milestone 1: Combat Lab (Technical)
+
+#### Added
+
+- Resource-backed Jax and Street Punk actor scenes composed from typed state, health, attack-timing, logical-hitbox, and replaceable visual components.
+- Three-lane automatic movement, stable opposing-team target acquisition/invalidation, six-position attack reservations, active-edge basic attacks, deterministic integer damage, visible knockback, combat-local hit-stop, health indicators, damage numbers, hit/death/spawn effects, and deterministic placeholder audio.
+- A fixed authored Combat Lab that launches one Jax against five Street Punks, replaces defeated enemies, cleans dead actors and reservations, and restarts the lab round after Jax incapacitates without direct character control.
+- Fixed-value coin clusters for rewarding enemies, including a generous click target, approximately 2.5-second full-value auto-collection, approximately 3-second manual streak, data-driven basis-point bonus schedule, and hard 10% per-cluster cap.
+- Deterministic combat, combat-director, and reward suites covering damage/health, state and attack timing, lanes/reservations, target validity, repeated cleanup, manual/automatic accounting, same-tick races, repeated/late input, streak expiry/exclusion, rounding, and bonus caps.
+- Updated Combat Lab screenshot evidence at `res://docs/screenshots/milestone_1_combat_lab.png`.
+
+#### Changed
+
+- `GameRun` now wires the run-scoped combat/reward authorities to the Combat Lab, HUD, debug overlay, and presentation feedback while preserving the Milestone 0 main scene and F1/F2 behavior.
+- `GameHUD` presents elapsed lab time, Jax status/target, coin total, and manual streak. `DebugOverlay` presents live actor, lane, target, reservation, and reward diagnostics.
+- `DowntownLoop` stage containers now host the Milestone 1 actors, effects, and temporary loot presentation; the intervention placeholder remains explicitly nonfunctional.
+- Coin clusters are offset outside the immediate melee silhouette so their forgiving interaction area does not mask combat.
+
+#### Verification
+
+- Passed all 30 discoverable tests with 348 assertions and no failures in Godot 4.7.
+- Launched the configured main scene directly to `/GameRun`, observed a five-enemy automatic fight beyond 60 seconds, confirmed repeated death/replacement cleanup and live-only target/reservation state, and verified lane/battlefield bounds.
+- Exercised `F1` and `F2`, verified manual and ignored coin collection behavior, captured 640 x 360 evidence, and inspected fresh game/editor logs with no task-introduced parser errors, runtime errors, or warnings.
+
+#### Scope
+
+- No Neon Loop gameplay Autoload or unseeded/global randomness was added. Milestone 1 uses only fixed authored values.
+- Fire Hydrant behavior, Night Pressure runtime, deterministic random streams, equipment, synergies, cards, extraction, shops, saving, bosses, progression, and procedural generation remain unimplemented.
+- Technical Milestone 1 is complete. The Human Validation Gate has not been run or passed; only the project owner may record it, and Milestone 2 remains blocked.
+
 ### 2026-07-17 — Specification Alignment Review (Documentation Only)
 
 #### Changed

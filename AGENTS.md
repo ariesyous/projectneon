@@ -20,20 +20,17 @@ If documentation and implementation disagree with the specification, stop and re
 
 ## Current scope
 
-The currently implemented scope is **Milestone 0 — Project Foundation** only. Milestone 1 is the next planned implementation milestone but requires a separate, explicit task. The completed foundation provides:
+The currently implemented scope is **Milestone 1 — Combat Lab**. The completed technical proof preserves Milestone 0 and adds:
 
-- A 640 x 360, 16:9, pixel-art-friendly project configuration
-- A `GameRun` composition root
-- A placeholder `DowntownLoop` nighttime street
-- Three development-only combat-lane guides and placeholder route nodes
-- Clearly temporary, nonfunctional crew, enemy, effects, and interactable visuals inside their future stage containers; spawn markers and `LootContainer` remain unpopulated
-- A placeholder HUD shell reserving the required information regions
-- A development `DebugOverlay`, toggled with `F1`, with lane visibility control
-- Typed, logic-free placeholders for the six core run systems
+- Resource-backed Jax and Street Punk actor scenes
+- Typed composed actor state, health, attack timing, and presentation
+- Three-lane automatic movement, target acquisition/invalidation, and attack-position reservations
+- Deterministic damage, visible knockback, hit-stop, damage numbers, death, cleanup, and repeat spawning
+- Fixed authored coin rewards with generous clusters, approximately 2.5-second full-value auto-collection, at-most-once click/timeout resolution, and a manual-only streak bonus capped at 10%
+- Live Combat Lab HUD/debug presentation and sufficient placeholder audiovisual feedback for technical readability checks
+- Deterministic Milestone 1 combat and reward tests
 
-Do not implement combat, actors, enemies, targeting, attacks, damage, cards, equipment, synergies, rewards, progression, saving, shops, bosses, encounter scheduling, patrol behavior, procedural generation, or other later-milestone behavior as part of Milestone 0.
-
-The revised downstream contracts for coin clusters, Night Pressure, deterministic random streams, equipment combinations, and the Milestone 1 human gate are planning constraints only. This documentation revision does not start Milestone 1, authorize post-Milestone 0 gameplay work, or change the verified Milestone 0 runtime.
+Technical Milestone 1 is complete. The owner-recorded five-person Human Validation Gate is still pending and **Milestone 2 remains blocked**. Do not implement Fire Hydrant behavior, Night Pressure runtime, deterministic random streams, equipment, synergies, cards, extraction, shops, saving, bosses, progression, procedural generation, or other later-milestone systems until their entry conditions and explicit tasks are satisfied.
 
 ## Engineering rules
 

@@ -4,15 +4,15 @@
 
 [sub_resource type="StyleBoxFlat" id="DebugPanel"]
 bg_color = Color(0.015, 0.02, 0.055, 0.96)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
 border_color = Color(1, 0.78, 0.28, 0.95)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [node name="DebugOverlay" type="CanvasLayer"]
 visible = false
@@ -30,59 +30,100 @@ mouse_filter = 2
 
 [node name="Panel" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 194.0
-offset_top = 67.0
-offset_right = 446.0
-offset_bottom = 157.0
+offset_left = 104.0
+offset_top = 20.0
+offset_right = 536.0
+offset_bottom = 340.0
 mouse_filter = 1
 theme_override_styles/panel = SubResource("DebugPanel")
 
 [node name="Title" type="Label" parent="Root/Panel"]
 layout_mode = 0
 offset_left = 8.0
-offset_top = 5.0
-offset_right = 244.0
-offset_bottom = 18.0
+offset_top = 7.0
+offset_right = 424.0
+offset_bottom = 28.0
 theme_override_colors/font_color = Color(1, 0.82, 0.34, 1)
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 14
 text = "DEVELOPMENT OVERLAY  •  F1 TO CLOSE"
 
 [node name="StateLabel" type="Label" parent="Root/Panel"]
 layout_mode = 0
 offset_left = 8.0
-offset_top = 25.0
-offset_right = 173.0
-offset_bottom = 40.0
+offset_top = 37.0
+offset_right = 424.0
+offset_bottom = 55.0
 theme_override_colors/font_color = Color(0.69, 0.79, 0.94, 1)
-theme_override_font_sizes/font_size = 7
-text = "RUN: FOUNDATION  |  ROUTE: NODE 01"
+theme_override_font_sizes/font_size = 11
+text = "RUN: COMBAT LAB  |  ACTIVE 0.0s"
+
+[node name="LabSummaryLabel" type="Label" parent="Root/Panel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 61.0
+offset_right = 424.0
+offset_bottom = 79.0
+theme_override_colors/font_color = Color(0.75, 0.82, 0.96, 1)
+theme_override_font_sizes/font_size = 11
+text = "ACTORS  JAX 1 / ENEMIES 0    CLUSTERS 0"
 
 [node name="LaneStateLabel" type="Label" parent="Root/Panel"]
 layout_mode = 0
 offset_left = 8.0
-offset_top = 43.0
-offset_right = 173.0
-offset_bottom = 58.0
+offset_top = 85.0
+offset_right = 260.0
+offset_bottom = 103.0
 theme_override_colors/font_color = Color(0.42, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 7
+theme_override_font_sizes/font_size = 11
 text = "COMBAT LANES: VISIBLE"
 
 [node name="FpsLabel" type="Label" parent="Root/Panel"]
 layout_mode = 0
 offset_left = 8.0
-offset_top = 64.0
-offset_right = 80.0
-offset_bottom = 79.0
+offset_top = 285.0
+offset_right = 110.0
+offset_bottom = 308.0
 theme_override_colors/font_color = Color(0.55, 0.92, 0.67, 1)
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 12
 text = "FPS: 60"
 
 [node name="LaneToggleButton" type="Button" parent="Root/Panel"]
 layout_mode = 0
-offset_left = 143.0
-offset_top = 42.0
-offset_right = 243.0
-offset_bottom = 79.0
+offset_left = 274.0
+offset_top = 280.0
+offset_right = 424.0
+offset_bottom = 311.0
 mouse_filter = 0
-theme_override_font_sizes/font_size = 7
+theme_override_font_sizes/font_size = 11
 text = "F2  HIDE LANES"
+
+[node name="JaxDebugLabel" type="Label" parent="Root/Panel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 109.0
+offset_right = 424.0
+offset_bottom = 143.0
+theme_override_colors/font_color = Color(0.31, 0.92, 1, 1)
+theme_override_font_sizes/font_size = 11
+text = "JAX  STATE IDLE\nTARGET NONE  |  LANE 1  |  SLOT NONE"
+
+[node name="EnemyDebugLabel" type="Label" parent="Root/Panel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 151.0
+offset_right = 424.0
+offset_bottom = 247.0
+theme_override_colors/font_color = Color(1, 0.46, 0.75, 1)
+theme_override_font_sizes/font_size = 9
+text = "ENEMIES\nNONE"
+clip_text = true
+
+[node name="RewardDebugLabel" type="Label" parent="Root/Panel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 254.0
+offset_right = 424.0
+offset_bottom = 273.0
+theme_override_colors/font_color = Color(1, 0.84, 0.37, 1)
+theme_override_font_sizes/font_size = 11
+text = "REWARDS  COINS 0  |  MANUAL STREAK x0"

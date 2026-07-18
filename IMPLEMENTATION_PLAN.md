@@ -4,9 +4,9 @@
 
 **Milestone 0 — Project Foundation: complete**
 
-**Milestone 1 — Combat Lab: not started**
+**Milestone 1 — Combat Lab: technical implementation complete**
 
-The foundation implementation is scoped to project configuration, scene composition, placeholder presentation, typed system shells, debugging visibility, and documentation. Implementation and runtime acceptance verification are complete. The 2026-07-17 specification review changed planning only: no gameplay code, scenes, data, project settings, or runtime behavior changed, and no Milestone 1 work has begun.
+The Combat Lab now supplies the smallest repeatable automatic-combat proof while preserving the Milestone 0 foundation. Technical acceptance is complete; the owner-recorded five-person Human Validation Gate has not been run or passed. Milestone 2 remains blocked.
 
 ## Milestone 0 implementation
 
@@ -40,13 +40,13 @@ The foundation implementation is scoped to project configuration, scene composit
 
 ## Planned milestones
 
-### Milestone 1 — Combat Lab (recommended next task)
+### Milestone 1 — Combat Lab
 
-**Status: Not started.**
+**Status: Technical implementation and verification complete. Human Validation Gate pending.**
 
-Implement the smallest automatic combat proof: Jax, Street Punk, actor state, three-lane movement, targeting and attack-position reservation, basic attacks, damage/health, knockback, hit-stop, damage numbers, enemy death, and sufficient placeholder audiovisual feedback to judge combat readability. The lab must run repeatably for at least 60 seconds without coin clicks or direct character control.
+Implemented the smallest automatic combat proof: Jax, Street Punk, typed actor state, three-lane movement, targeting and attack-position reservation, basic attacks, damage/health, knockback, hit-stop, damage numbers, enemy death/cleanup, repeat spawning, and placeholder audiovisual feedback. The authored lab runs without coin clicks or direct character control.
 
-Add the narrow coin-cluster loop required by the revised specification:
+Implemented the narrow coin-cluster loop required by the revised specification:
 
 - Each coin-rewarding defeated enemy creates one generous clickable cluster; explicitly rewardless enemies create none.
 - Milestone 1 uses fixed authored base coin values; randomized reward generation waits for the named streams in Milestone 3.
@@ -57,11 +57,26 @@ Add the narrow coin-cluster loop required by the revised specification:
 - Click and timeout share one authoritative, at-most-once resolution so a race cannot duplicate the award.
 - Ignoring clusters never loses the base reward and never interrupts combat.
 
-Add deterministic tests for base-value delivery, click/timeout single resolution, streak timing, auto-collection exclusion, and the 10% cap. Instrument or observe the ambient opportunity rate without fabricating extra strategic prompts. The vertical-slice target is approximately one ambient opportunity every 10-20 seconds of eligible active play; paused time, modal choices, shops, and non-interactive introductions do not count. Final cadence tuning remains part of Milestone 6.
+Deterministic tests cover damage, health, attack timing, lane/reservation behavior, target validity and cleanup, base-value delivery, click/timeout single resolution, streak timing, auto-collection exclusion, deterministic rounding, and the 10% cap. Technical runtime verification covers the configured main scene, a five-enemy session beyond 60 seconds, F1/F2, repeated spawning/cleanup, and clean logs. Final cadence and qualitative tuning remain part of the owner gate and Milestone 6.
+
+Technical checklist:
+
+- [x] Jax and Street Punk Resource-backed actor scenes
+- [x] Typed composed state, health, attack timing, and presentation components
+- [x] Stable three-lane movement, target acquisition/invalidation, and six attack-position reservations
+- [x] Active-edge damage, visible knockback, combat-local hit-stop, damage numbers, death, and cleanup
+- [x] Fixed five-enemy authored Combat Lab with repeat replacement and no direct character control
+- [x] Fixed authored 40-coin Street Punk reward and explicitly rewardless Jax
+- [x] Approximately 2.5-second full-value auto-collection and immediate manual collection
+- [x] One authoritative at-most-once click/timeout resolver
+- [x] Manual-only approximately 3-second streak and data-driven bonus capped at 10%
+- [x] Deterministic automated suites and Godot 4.7 runtime verification
+- [x] Playtest-driven HUD readability pass with enlarged live values, meters, panel framing, buttons, and development diagnostics
+- [x] No gameplay Autoload, global/unseeded randomness, or Milestone 2+ runtime system
 
 ### Milestone 1 Human Validation Gate — mandatory owner record
 
-**Status: Not eligible; Milestone 1 technical acceptance has not started.**
+**Status: Eligible for owner testing, but not recorded and not passed.**
 
 After every technical Milestone 1 acceptance criterion passes, the project owner must run and record the specification's qualitative test with at least five people who were not involved in implementation. A pass requires all recorded criteria, including at least four of five testers voluntarily watching for 60 seconds, at least three expressing curiosity or requesting another encounter, and majority readability/satisfying-impact observations without broad confusion or lifelessness feedback.
 
