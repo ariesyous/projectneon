@@ -3,6 +3,8 @@ extends "res://addons/godot_ai/testing/test_suite.gd"
 
 const EPSILON: float = 0.00001
 
+var _combat_space: CombatSpaceDefinition = CombatSpaceDefinition.new()
+
 
 class HealthSignalCapture:
 	extends RefCounted
@@ -222,18 +224,18 @@ func test_attack_cancel_is_an_immediate_inactive_seam() -> void:
 
 
 func test_three_lane_mapping_is_clamped_and_evenly_spaced() -> void:
-	_expect_approx(ActorController.lane_y(-99), ActorController.BACK_LANE_Y, "lanes: low index clamps to back")
-	_expect_approx(ActorController.lane_y(0), ActorController.BACK_LANE_Y, "lanes: back lane is authored")
-	_expect_approx(ActorController.lane_y(1), ActorController.MIDDLE_LANE_Y, "lanes: middle lane is authored")
-	_expect_approx(ActorController.lane_y(2), ActorController.FRONT_LANE_Y, "lanes: front lane is authored")
-	_expect_approx(ActorController.lane_y(99), ActorController.FRONT_LANE_Y, "lanes: high index clamps to front")
+	_expect_approx(_combat_space.lane_y(-99), _combat_space.lane_y(0), "lanes: low index clamps to back")
+	_expect_approx(_combat_space.lane_y(0), _combat_space.lane_y(0), "lanes: back lane is authored")
+	_expect_approx(_combat_space.lane_y(1), _combat_space.lane_y(1), "lanes: middle lane is authored")
+	_expect_approx(_combat_space.lane_y(2), _combat_space.lane_y(2), "lanes: front lane is authored")
+	_expect_approx(_combat_space.lane_y(99), _combat_space.lane_y(2), "lanes: high index clamps to front")
 	_expect_approx(
-		ActorController.MIDDLE_LANE_Y - ActorController.BACK_LANE_Y,
+		_combat_space.lane_y(1) - _combat_space.lane_y(0),
 		32.0,
 		"lanes: back-to-middle spacing is stable"
 	)
 	_expect_approx(
-		ActorController.FRONT_LANE_Y - ActorController.MIDDLE_LANE_Y,
+		_combat_space.lane_y(2) - _combat_space.lane_y(1),
 		32.0,
 		"lanes: middle-to-front spacing is stable"
 	)
@@ -241,14 +243,15 @@ func test_three_lane_mapping_is_clamped_and_evenly_spaced() -> void:
 
 func test_six_attack_positions_are_unique_span_three_lanes_and_release_for_reuse() -> void:
 	var registry: AttackPositionRegistry = track(AttackPositionRegistry.new()) as AttackPositionRegistry
+	registry.configure(_combat_space)
 	var target: ActorController = track(ActorController.new()) as ActorController
-	target.global_position = Vector2(320.0, ActorController.MIDDLE_LANE_Y)
+	target.global_position = Vector2(320.0, _combat_space.lane_y(1))
 	target.lane_index = 1
 	var attackers: Array[ActorController] = []
 	var positions: Array[Vector2] = []
 	for index: int in range(7):
 		var attacker: ActorController = track(ActorController.new()) as ActorController
-		attacker.global_position = Vector2(260.0 + float(index), ActorController.MIDDLE_LANE_Y)
+		attacker.global_position = Vector2(260.0 + float(index), _combat_space.lane_y(1))
 		attackers.append(attacker)
 
 	for index: int in range(6):
@@ -269,7 +272,7 @@ func test_six_attack_positions_are_unique_span_three_lanes_and_release_for_reuse
 	observed_lane_y.sort()
 	_expect_equal(
 		observed_lane_y,
-		[ActorController.BACK_LANE_Y, ActorController.MIDDLE_LANE_Y, ActorController.FRONT_LANE_Y],
+		[_combat_space.lane_y(0), _combat_space.lane_y(1), _combat_space.lane_y(2)],
 		"reservations: a middle-lane target exposes positions across all authored lanes"
 	)
 

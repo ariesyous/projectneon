@@ -20,7 +20,7 @@ If documentation and implementation disagree with the specification, stop and re
 
 ## Current scope
 
-The currently implemented scope is **Milestone 1 — Combat Lab**. The completed technical proof preserves Milestone 0 and adds:
+The currently implemented and technically verified scope is **Milestone 2 — Player Intervention**. It preserves all Milestone 0 and Milestone 1 behavior, including:
 
 - Resource-backed Jax and Street Punk actor scenes
 - Typed composed actor state, health, attack timing, and presentation
@@ -29,8 +29,16 @@ The currently implemented scope is **Milestone 1 — Combat Lab**. The completed
 - Fixed authored coin rewards with generous clusters, approximately 2.5-second full-value auto-collection, at-most-once click/timeout resolution, and a manual-only streak bonus capped at 10%
 - Live Combat Lab HUD/debug presentation and sufficient placeholder audiovisual feedback for technical readability checks
 - Deterministic Milestone 1 combat and reward tests
+- One authoritative combat-safe Resource used by spawning, lane movement, attack reservations, knockback, recovery, coin placement, and debug markers
+- A run-scoped Fire Hydrant authority with typed tuning, deterministic circular target validation, area damage, strong fixed-direction knockback, rejection, and cooldown
+- Matching world/HUD Hydrant presentation, nonmodal onboarding, clearer coin affordances, Web sound unlock, fullscreen controls, and mobile-landscape guidance
+- Deterministic Milestone 2 intervention and combat-space tests plus desktop, Web, and five-minute runtime verification
 
-Technical Milestone 1 is complete. The owner-recorded five-person Human Validation Gate is still pending and **Milestone 2 remains blocked**. Do not implement Fire Hydrant behavior, Night Pressure runtime, deterministic random streams, equipment, synergies, cards, extraction, shops, saving, bosses, progression, procedural generation, or other later-milestone systems until their entry conditions and explicit tasks are satisfied.
+Technical Milestone 1 is complete. On 2026-07-18, the project owner recorded the five-person Human Validation Gate as **PASSED** from the owner's aggregate playtest record. This is an owner qualitative decision, not an automated-test, coding-agent, or implementation-team verification result. The Milestone 2 entry condition is satisfied, and **Milestone 2 — Player Intervention** plus targeted Milestone 1 presentation/usability improvements are explicitly authorized.
+
+Technical Milestone 2 is also complete. The Godot 4.7 verification record is **46/46 tests and 694 assertions with no failures**, comprising the preserved Milestone 1 result of 30 tests/348 assertions and 16 Milestone 2 tests/346 assertions. A 315.3046-second Combat Lab soak preserved the authored safe space through repeated spawning and cleanup. This technical result does not replace, reinterpret, or claim independent validation of the owner's Milestone 1 gate decision.
+
+Do not implement Night Pressure runtime, deterministic random streams, equipment, synergies, cards, extraction, shops, saving, bosses, progression, procedural generation, or other Milestone 3+ systems until their entry conditions and explicit tasks are satisfied. Playtester interest in additional enemy types, weapons, abilities and spells, lifesteal, armour and damage types, inspection, area and damage-over-time attacks, encounter/run transitions, coin spending, customization, and progression is recorded as future Milestone 3+ design input only; it does not expand Milestone 2 scope.
 
 ## Engineering rules
 
@@ -47,7 +55,7 @@ Technical Milestone 1 is complete. The owner-recorded five-person Human Validati
 
 ## Deterministic gameplay randomness
 
-These rules apply when their owning later milestone is explicitly authorized. They do not authorize implementing random systems during the current Milestone 0 scope.
+These rules apply when their owning later milestone is explicitly authorized. They do not authorize implementing random systems during the current Milestone 2 scope.
 
 - `RunDirector` owns one authoritative integer run seed and a run-scoped `RunRandomStreams` component. `RunRandomStreams` is never an Autoload.
 - The required named streams are exactly `encounters`, `spawns`, `rewards`, `equipment`, `cards`, `enemy_variants`, and `cosmetic`. A gameplay system may consume only the stream appropriate to its responsibility.
@@ -60,6 +68,8 @@ These rules apply when their owning later milestone is explicitly authorized. Th
 ## Milestone progression gate
 
 Milestone 2 is blocked until all technical Milestone 1 acceptance criteria pass and the project owner records a passing five-person human validation gate.
+
+**Recorded status:** The project owner recorded this gate as **PASSED** on 2026-07-18. All five designated testers voluntarily played for more than two minutes; the owner's aggregate feedback records curiosity about future content, readable combat relationships, satisfying hits and sounds, and no broad description of combat as confusing, lifeless, or difficult to understand. Remaining feedback concerns presentation, onboarding, controls, and communicating the Combat Lab's larger purpose. This paragraph transcribes the owner's decision and does not claim independent agent or automated validation.
 
 The gate procedure is fixed by `GameSpecifications.md` section 44:
 

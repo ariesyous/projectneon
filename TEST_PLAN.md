@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Testing is milestone-scoped. Milestone 0 verifies the project foundation; Milestone 1 verifies the narrow Combat Lab, automatic combat, and coin-cluster accounting. Later checklists do not pretend that deferred gameplay systems are implemented.
+Testing is milestone-scoped. Milestone 0 verifies the project foundation; Milestone 1 verifies the narrow Combat Lab, automatic combat, and coin-cluster accounting; Milestone 2 verifies the Fire Hydrant intervention, combat-safe space, and targeted presentation/usability improvements. Later checklists do not pretend that deferred gameplay systems are implemented.
 
 ## Error policy
 
@@ -17,7 +17,7 @@ Testing is milestone-scoped. Milestone 0 verifies the project foundation; Milest
 - **Planned** means the test is a downstream acceptance contract only; an unchecked planned item is not evidence that its system exists or works.
 - **Owner-recorded** means only the project owner may enter the result.
 
-Milestone 1 technical checks are recorded as executed. Milestone 2 and later suites remain **Planned**; their presence does not start or authorize those milestones.
+Milestone 1 and Milestone 2 technical checks are recorded as executed. Milestone 3 and later suites remain **Planned**; their presence does not start or authorize those milestones. The Milestone 1 Human Validation Gate result is separately labelled as an owner-recorded qualitative decision.
 
 ## Milestone 0 static checks
 
@@ -117,9 +117,9 @@ Runtime execution:
 
 ### Milestone 1 human validation gate — owner recorded
 
-Status: **Eligible after technical pass, not recorded, and blocking Milestone 2**
+Status: **PASSED — owner-recorded on 2026-07-18**
 
-This qualitative gate begins only after every technical Milestone 1 criterion passes. Automated checks, coding agents, and implementation-team observations cannot satisfy it.
+This qualitative gate began only after every technical Milestone 1 criterion passed. Automated checks, coding agents, and implementation-team observations cannot satisfy it. The result below transcribes the project owner's decision and is not an independent agent or automated verification result.
 
 Owner procedure:
 
@@ -130,40 +130,108 @@ Owner procedure:
 5. Record each observation duration and concise, unattributed notes.
 6. Allow coin clicking only if discovered naturally; do not count coin-cluster engagement as evidence that passive combat is entertaining.
 
-Minimum five-person owner record (use anonymous tester labels; add rows if the owner recruits more):
+Owner-provided aggregate record:
 
-| Tester | Uninvolved confirmed | Observation duration | Curious/requested another encounter | Identified who attacks whom | Identified a satisfying combat moment | Concise confusion/readability notes |
-| --- | --- | --- | --- | --- | --- | --- |
-| T1 |  |  |  |  |  |  |
-| T2 |  |  |  |  |  |  |
-| T3 |  |  |  |  |  |  |
-| T4 |  |  |  |  |  |  |
-| T5 |  |  |  |  |  |  |
+- All five designated testers voluntarily played for more than two minutes.
+- Feedback showed clear curiosity about future encounters, enemies, abilities, weapons, customization, and progression.
+- Testers could follow the combat and identified satisfying hits and sounds.
+- Testers did not broadly describe the fighting as confusing, lifeless, or difficult to understand.
+- Remaining feedback concerns presentation, onboarding, controls, and communicating the larger purpose of the game.
+
+No individual tester rows are fabricated here; the project owner's aggregate decision is the authoritative human-validation record supplied to this repository task.
 
 The project owner may record **Go** only if every criterion passes:
 
-- [ ] At least four of five testers voluntarily watched for 60 seconds.
-- [ ] At least three testers expressed curiosity about what happens next or requested another encounter.
-- [ ] Most testers could identify who was attacking whom.
-- [ ] Most testers identified at least one satisfying hit, reaction, or combat moment.
-- [ ] Combat was not broadly described as confusing, lifeless, or visually difficult to follow.
+- [x] At least four of five testers voluntarily watched for 60 seconds.
+- [x] At least three testers expressed curiosity about what happens next or requested another encounter.
+- [x] Most testers could identify who was attacking whom.
+- [x] Most testers identified at least one satisfying hit, reaction, or combat moment.
+- [x] Combat was not broadly described as confusing, lifeless, or visually difficult to follow.
 
 Owner-only result record:
 
-- Owner-recorded decision: **Not recorded**
-- Date/build: **Not recorded**
-- Evidence location: **Not recorded**
+- Owner-recorded decision: **PASSED**
+- Date: **2026-07-18**
+- Build/revision: **Not separately identified in the owner's aggregate record**
+- Evidence location: **Owner-provided aggregate record transcribed in this section**
 
 If any criterion fails, the result is **No-Go**, Milestone 2 remains blocked even if technical tests pass, and the full five-person gate must be repeated after the relevant attack timing, animation, sound, hit reaction, targeting readability, density, pacing, or effects revisions. Only the project owner may change the result above or record a pass.
 
 ### Milestone 2 — Fire Hydrant
 
-Status: **Planned and entry-blocked by the owner-recorded Milestone 1 gate**
+Status: **Passed — technical verification on Godot 4.7, 2026-07-18**
 
-- [ ] The hydrant cannot activate while unavailable or when no enemy is in range.
-- [ ] Hover feedback previews the affected area and the UI exposes availability and cooldown or charge state.
-- [ ] Activation damages and strongly knocks back valid in-range enemies while leaving out-of-range enemies unchanged.
-- [ ] Activation provides readable audio/visual feedback and can materially alter an encounter.
+Authoritative intervention behavior:
+
+- [x] An available Hydrant activates once and begins its authored 8.0-second cooldown before resolution callbacks can request another activation.
+- [x] Requests while cooling down, repeated/same-tick requests, and a re-entrant callback are rejected without duplicate damage, knockback, feedback, or cooldown reset.
+- [x] An available request with no valid enemy in range is rejected without consuming cooldown.
+- [x] The inclusive 112-pixel circle includes a valid enemy exactly on its boundary and excludes one beyond it.
+- [x] Stable registration order, rather than scene-tree presentation order, determines the deterministic affected-target sequence.
+- [x] Every valid in-range enemy receives exactly 18 area damage and fixed leftward 300-force knockback for 0.30 seconds; out-of-range actors are unchanged.
+- [x] Dead, freed, queued-for-deletion, unregistered, allied, and otherwise invalid actors are excluded.
+- [x] Cooldown starts, progresses, reaches ready, and permits reactivation with no hidden charge or random state.
+- [x] The world preview and HUD state are projections of authoritative tuning/state rather than competing gameplay calculations.
+
+Combat-space and regression behavior:
+
+- [x] One typed combat-space Resource defines inclusive actor origins X 164–456 and Y 194–258 with lane centers Y 194/226/258.
+- [x] Spawning, lane movement, target approach, attack-position reservations, knockback, recovery, coin placement, and debug lanes use that same contract.
+- [x] Repeated spawning/death cleanup leaves only live actors and reservations and never moves combat beneath the left HUD.
+- [x] Coin base values, full-value timeout collection, at-most-once resolution, manual-only streak, deterministic rounding, and 10% bonus cap remain unchanged.
+- [x] Coin and Hydrant interaction regions do not overlap; both retain generous mouse/touch bounds and forward intent to separate authorities.
+
+Presentation and input behavior:
+
+- [x] The environmental Hydrant is visible and has pointer, hover highlight, exact range preview, click/tap activation, and clear available/no-target/cooling/rejection feedback.
+- [x] The HUD exposes authoritative state, remaining cooldown, target count, a concise tooltip, and the same activation intent while automatic combat continues.
+- [x] Placeholder water, impact, damage-number, rejection, and generated audio feedback make a successful activation readable and materially disruptive.
+- [x] Nonmodal Help accurately explains automatic combat, manual and full-value-auto coins, Hydrant readiness/range, fullscreen, the Combat Lab purpose, and that coins are not spendable yet.
+- [x] Coin clusters show a persistent click/tap affordance plus pulse/hover feedback without affecting timeout or accounting authority.
+- [x] Web sound unlock appears immediately when a gesture is required, uses one ordinary interaction to prime audio, and neither pauses nor resets combat.
+- [x] The visible fullscreen control is the primary cross-platform path; repeated entry/exit and fullscreen-only Escape preserve combat state.
+- [x] F11 toggles fullscreen if the platform delivers it to the game; browser-retained F11 remains browser behavior rather than a captured no-op.
+- [x] Mobile landscape preserves the native 16:9 presentation with sensible letterboxing/safe-area handling, and portrait displays a landscape recommendation.
+
+Automated execution:
+
+- `milestone_1_combat`: 8/8 tests, 97 assertions.
+- `milestone_1_combat_director`: 3/3 tests, 175 assertions.
+- `milestone_1_rewards`: 19/19 tests, 76 assertions.
+- Preserved Milestone 1 total: **30/30 tests, 348 assertions**.
+- `milestone_2_combat_space`: 3/3 tests, 27 assertions.
+- `milestone_2_intervention`: 13/13 tests, 319 assertions.
+- Milestone 2 total: **16/16 tests, 346 assertions**.
+- Combined result: **46/46 tests, 694 assertions, 0 failures**.
+
+The Milestone 2 suites cover available activation; cooldown/no-target rejection; inclusive in-range versus out-of-range behavior; exact damage and strong knockback; dead/invalid exclusion; cooldown progression/completion/reactivation; repeated, same-tick, and re-entrant activation; shared preview/HUD authority; combat-safe tuning and lane usage; coin/Hydrant input separation; and a deterministic 30-cycle spawn/cleanup lifecycle. A production `PackedScene` long-loop probe was not kept inside the editor addon because non-`@tool` runtime scripts are represented as placeholders there; the configured running game supplies the required lifecycle soak instead of suppressing or misreporting that tooling limitation.
+
+Manual editor, desktop, and Web execution:
+
+- The configured project launched directly into `/GameRun` with Jax and five live Street Punks, and automatic combat continued while hovering, activating, opening Help, collecting coins, and waiting for cooldown.
+- Repeated Hydrant use with five enemies present materially changed active encounters. A representative boundary probe changed the only in-range Street Punk from 58 to 40 health and entered knockback while four out-of-range enemies and Jax were unchanged; an immediate second request was rejected.
+- The uninterrupted combat-boundary soak reached **315.3046 seconds**: 113 enemies spawned, 98 defeated, five remained active, and all six live actors plus six reservations remained valid inside the authored safe region. Repeated Jax round resets and enemy replacement did not drift combat beneath the HUD.
+- The soak coin ledger reached **3,920**, exactly 98 rewarding defeats multiplied by the fixed 40-coin base; active clusters resolved to zero without duplicate or lost awards. Manual collection separately produced the expected manual streak while automatic collection remained full-value.
+- Help content was readable, nonmodal, and re-openable. `F1` and `F2` still toggled the debug overlay and lane visibility.
+- A local Windows export launched and remained stable with WASAPI audio active; its smoke log contained no parser/runtime warning or error matches.
+- Local Web cold load progressed into the game with the sound-unlock affordance immediately visible. One click removed it and enabled feedback without resetting the encounter. A warm reload reported its load event after approximately 226 ms and showed the same immediate one-shot prompt before the first gesture.
+- Web hover showed the authoritative range circle. Successful activation showed water/impact feedback and cooldown; a no-target activation showed rejection without consuming cooldown. Coin, Help, and Hydrant clicks did not conflict.
+- The visible Web fullscreen control entered and exited a 1920 x 1080 16:9 view twice; Escape restored the 1280 x 720 view without changing combat. The in-app browser retained F11 rather than delivering it to the game, exercising the allowed browser-owned path.
+- A representative 844 x 390 mobile-landscape viewport retained centered 16:9 content and readable controls with side letterboxing. A 390 x 844 portrait viewport showed the landscape recommendation.
+- Ordinary browser zoom remained unchanged while the generated Godot Web canvas had focus because the standard shell uses `user-scalable=no` and canvas touch ownership. Fullscreen is the documented presentation-scale alternative; a custom accessible shell is deferred.
+- Fresh editor/game output and browser warning/error checks after the exercised interactions were clean. No task-introduced parser error, runtime error, warning, or browser-console message remained.
+- Visual evidence: `res://docs/screenshots/milestone_2_player_intervention.png`.
+- The local Windows and Web outputs were verification artifacts only. No GitHub Pages publication or redeployment occurred.
+
+Technical limitations recorded without waiving acceptance:
+
+- A physical mobile device was not available; mobile layouts were inspected at representative browser viewports, while mouse/touch authority and `InputEventScreenTouch` paths have deterministic coverage and typed runtime handlers.
+- The in-app browser and embedded editor did not deliver F11 to the game. The runtime handles it when delivered and otherwise does not capture it, so the browser can retain its normal fullscreen shortcut.
+- The standard Web shell's zoom policy remains a presentation limitation. The visible fullscreen control provides a stable scale alternative for Milestone 2.
+- The temporary self-contained headless export runner reported that its sandboxed `user://` profiler directory could not be opened. Both exports completed, and this environment-only message did not reproduce in the exported Windows runtime or game/browser logs.
+- The 640 x 360 internal canvas remains intentional. A future higher-resolution pixel-art presentation pass is recommended if production typography and art require more detail; no unplanned resolution migration was made.
+
+**Milestone 2 technical acceptance result: Passed.** Every technical Milestone 2 criterion was satisfied. This does not constitute, repeat, or reinterpret the owner-recorded Milestone 1 Human Validation Gate.
 
 ### Milestone 3 — Heat and Night Pressure
 

@@ -4,9 +4,18 @@ extends Node
 ## Stable, deterministic reservations around a target. Slots are limited and
 ## unique, preventing combatants from converging on one exact position.
 
+const DEFAULT_COMBAT_SPACE: CombatSpaceDefinition = preload(
+	"res://data/combat/downtown_loop_combat_space.tres"
+)
+
 var _target_slots: Dictionary = {}
 var _attacker_reservations: Dictionary = {}
 var _slot_x_offsets: Array[float] = [-28.0, 28.0, -28.0, 28.0, -28.0, 28.0]
+var _combat_space: CombatSpaceDefinition = DEFAULT_COMBAT_SPACE
+
+
+func configure(combat_space: CombatSpaceDefinition) -> void:
+	_combat_space = combat_space if combat_space != null else DEFAULT_COMBAT_SPACE
 
 
 func reserve(attacker: ActorController, target: ActorController, maximum_distance: float) -> bool:
@@ -97,13 +106,11 @@ func _slot_world_position(
 	var slot_lane: int = 1
 	if attacker.team == ActorController.Team.ENEMY:
 		slot_lane = int(floor(float(slot_index) / 2.0))
-	return Vector2(
-		clampf(
+	return _combat_space.clamp_actor_position(
+		Vector2(
 			target.global_position.x + _slot_x_offsets[slot_index],
-			ActorController.BATTLEFIELD_MIN_X,
-			ActorController.BATTLEFIELD_MAX_X
-		),
-		ActorController.lane_y(slot_lane)
+			_combat_space.lane_y(slot_lane)
+		)
 	)
 
 

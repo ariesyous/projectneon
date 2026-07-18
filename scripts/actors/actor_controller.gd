@@ -15,11 +15,9 @@ enum Team {
 	ENEMY,
 }
 
-const BACK_LANE_Y: float = 194.0
-const MIDDLE_LANE_Y: float = 226.0
-const FRONT_LANE_Y: float = 258.0
-const BATTLEFIELD_MIN_X: float = 134.0
-const BATTLEFIELD_MAX_X: float = 506.0
+const DEFAULT_COMBAT_SPACE: CombatSpaceDefinition = preload(
+	"res://data/combat/downtown_loop_combat_space.tres"
+)
 const POSITION_ARRIVAL_TOLERANCE: float = 2.0
 
 @export var actor_definition: ActorDefinition
@@ -34,6 +32,7 @@ const POSITION_ARRIVAL_TOLERANCE: float = 2.0
 @onready var actor_visual: ActorVisual = $ActorVisual
 
 var combat_coordinator: Node = null
+var combat_space: CombatSpaceDefinition = DEFAULT_COMBAT_SPACE
 var current_target: ActorController = null
 var registration_order: int = -1
 var lane_index: int = 1
@@ -56,7 +55,8 @@ func _ready() -> void:
 	attack_hitbox.monitorable = false
 	attack_hitbox.monitoring = false
 	lane_index = clampi(initial_lane, 0, 2)
-	global_position.y = lane_y(lane_index)
+	global_position.y = combat_space.lane_y(lane_index)
+	global_position = combat_space.clamp_actor_position(global_position)
 	_refresh_lane_depth()
 	initialize_runtime()
 	set_process(false)
@@ -78,6 +78,19 @@ func initialize_runtime() -> void:
 	actor_visual.set_health(health_component.current_health, health_component.maximum_health)
 	actor_visual.set_state(state_machine.current_state)
 	actor_visual.set_facing(facing_direction)
+
+
+func configure_combat_space(definition: CombatSpaceDefinition) -> void:
+	combat_space = definition if definition != null else DEFAULT_COMBAT_SPACE
+	lane_index = clampi(lane_index, 0, maxi(combat_space.lane_count() - 1, 0))
+	global_position = combat_space.clamp_actor_position(global_position)
+	if not is_node_ready():
+		return
+	_refresh_lane_from_position()
+
+
+func get_combat_space() -> CombatSpaceDefinition:
+	return combat_space
 
 
 func bind_combat(coordinator: Node) -> void:
@@ -134,13 +147,10 @@ func step_simulation(delta: float) -> void:
 	if global_position.distance_to(destination) > POSITION_ARRIVAL_TOLERANCE:
 		state_machine.transition_to(ActorStateMachine.State.APPROACHING_TARGET)
 		global_position = global_position.move_toward(destination, actor_definition.movement_speed * delta)
-		global_position.x = clampf(global_position.x, BATTLEFIELD_MIN_X, BATTLEFIELD_MAX_X)
-		global_position.y = clampf(global_position.y, BACK_LANE_Y, FRONT_LANE_Y)
+		global_position = combat_space.clamp_actor_position(global_position)
 		_refresh_lane_from_position()
 		return
-	global_position = destination
-	global_position.x = clampf(global_position.x, BATTLEFIELD_MIN_X, BATTLEFIELD_MAX_X)
-	global_position.y = clampf(global_position.y, BACK_LANE_Y, FRONT_LANE_Y)
+	global_position = combat_space.clamp_actor_position(destination)
 	_refresh_lane_from_position()
 
 	if not is_target_in_attack_range(current_target):
@@ -290,12 +300,9 @@ func get_snapshot() -> Dictionary:
 
 
 static func lane_y(requested_lane: int) -> float:
-	match clampi(requested_lane, 0, 2):
-		0:
-			return BACK_LANE_Y
-		2:
-			return FRONT_LANE_Y
-	return MIDDLE_LANE_Y
+	# Compatibility seam for callers that do not yet hold the run-scoped
+	# director. Runtime actors use their configured CombatSpaceDefinition.
+	return DEFAULT_COMBAT_SPACE.lane_y(requested_lane)
 
 
 func _acquire_target() -> void:
@@ -338,10 +345,8 @@ func _release_attack_position() -> void:
 
 func _step_knockback(delta: float) -> void:
 	var applied_time: float = minf(delta, _knockback_remaining)
-	global_position.x = clampf(
-		global_position.x + _knockback_velocity_x * applied_time,
-		BATTLEFIELD_MIN_X,
-		BATTLEFIELD_MAX_X
+	global_position = combat_space.clamp_actor_position(
+		global_position + Vector2(_knockback_velocity_x * applied_time, 0.0)
 	)
 	_knockback_remaining = maxf(_knockback_remaining - delta, 0.0)
 	_knockback_velocity_x = move_toward(_knockback_velocity_x, 0.0, 500.0 * delta)
@@ -356,19 +361,12 @@ func _step_stun(delta: float) -> void:
 
 
 func _refresh_lane_from_position() -> void:
-	var nearest_lane: int = 0
-	var nearest_distance: float = absf(global_position.y - lane_y(0))
-	for candidate_lane: int in range(1, 3):
-		var candidate_distance: float = absf(global_position.y - lane_y(candidate_lane))
-		if candidate_distance < nearest_distance:
-			nearest_lane = candidate_lane
-			nearest_distance = candidate_distance
-	lane_index = nearest_lane
+	lane_index = combat_space.nearest_lane_index(global_position.y)
 	_refresh_lane_depth()
 
 
 func _refresh_lane_depth() -> void:
-	z_index = int(lane_y(lane_index))
+	z_index = int(combat_space.lane_y(lane_index))
 
 
 func _on_attack_phase_changed(_previous_phase: int, new_phase: int) -> void:

@@ -67,8 +67,8 @@ func _draw() -> void:
 	# Replaceable street props.
 	draw_rect(Rect2(365.0, 188.0, 31.0, 18.0), Color("263247"))
 	draw_rect(Rect2(368.0, 185.0, 25.0, 4.0), Color("49576c"))
-	draw_rect(Rect2(583.0, 182.0, 6.0, 20.0), Color("ad355d"))
-	draw_circle(Vector2(586.0, 181.0), 5.0, Color("ff557f"))
+	draw_rect(Rect2(579.0, 190.0, 13.0, 12.0), Color("263247"))
+	draw_rect(Rect2(577.0, 187.0, 17.0, 4.0), Color("49576c"))
 
 
 func _draw_windows() -> void:

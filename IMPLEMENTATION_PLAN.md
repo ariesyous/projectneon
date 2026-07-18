@@ -6,7 +6,9 @@
 
 **Milestone 1 — Combat Lab: technical implementation complete**
 
-The Combat Lab now supplies the smallest repeatable automatic-combat proof while preserving the Milestone 0 foundation. Technical acceptance is complete; the owner-recorded five-person Human Validation Gate has not been run or passed. Milestone 2 remains blocked.
+**Milestone 2 — Player Intervention: technical implementation and verification complete**
+
+The Combat Lab supplies the smallest repeatable automatic-combat proof while preserving the Milestone 0 foundation. Technical Milestone 1 acceptance is complete. On 2026-07-18, the project owner recorded the five-person Human Validation Gate as **PASSED**, satisfying the Milestone 2 entry condition. This owner qualitative decision is distinct from automated tests and coding-agent verification. The authorized Fire Hydrant intervention and targeted presentation/usability work have now passed their separate technical Milestone 2 verification.
 
 ## Milestone 0 implementation
 
@@ -42,7 +44,7 @@ The Combat Lab now supplies the smallest repeatable automatic-combat proof while
 
 ### Milestone 1 — Combat Lab
 
-**Status: Technical implementation and verification complete. Human Validation Gate pending.**
+**Status: Technical implementation and verification complete. Human Validation Gate passed by owner on 2026-07-18.**
 
 Implemented the smallest automatic combat proof: Jax, Street Punk, typed actor state, three-lane movement, targeting and attack-position reservation, basic attacks, damage/health, knockback, hit-stop, damage numbers, enemy death/cleanup, repeat spawning, and placeholder audiovisual feedback. The authored lab runs without coin clicks or direct character control.
 
@@ -57,7 +59,7 @@ Implemented the narrow coin-cluster loop required by the revised specification:
 - Click and timeout share one authoritative, at-most-once resolution so a race cannot duplicate the award.
 - Ignoring clusters never loses the base reward and never interrupts combat.
 
-Deterministic tests cover damage, health, attack timing, lane/reservation behavior, target validity and cleanup, base-value delivery, click/timeout single resolution, streak timing, auto-collection exclusion, deterministic rounding, and the 10% cap. Technical runtime verification covers the configured main scene, a five-enemy session beyond 60 seconds, F1/F2, repeated spawning/cleanup, and clean logs. Final cadence and qualitative tuning remain part of the owner gate and Milestone 6.
+Deterministic tests cover damage, health, attack timing, lane/reservation behavior, target validity and cleanup, base-value delivery, click/timeout single resolution, streak timing, auto-collection exclusion, deterministic rounding, and the 10% cap. Technical runtime verification covers the configured main scene, a five-enemy session beyond 60 seconds, F1/F2, repeated spawning/cleanup, and clean logs. The owner subsequently recorded the separate qualitative gate as passed; final vertical-slice cadence and broader tuning remain part of Milestone 6.
 
 Technical checklist:
 
@@ -72,21 +74,57 @@ Technical checklist:
 - [x] Manual-only approximately 3-second streak and data-driven bonus capped at 10%
 - [x] Deterministic automated suites and Godot 4.7 runtime verification
 - [x] Playtest-driven HUD readability pass with enlarged live values, meters, panel framing, buttons, and development diagnostics
-- [x] No gameplay Autoload, global/unseeded randomness, or Milestone 2+ runtime system
+- [x] At the Milestone 1 gate, no gameplay Autoload, global/unseeded randomness, or later-milestone runtime system
 
 ### Milestone 1 Human Validation Gate — mandatory owner record
 
-**Status: Eligible for owner testing, but not recorded and not passed.**
+**Status: PASSED — owner-recorded on 2026-07-18.**
 
-After every technical Milestone 1 acceptance criterion passes, the project owner must run and record the specification's qualitative test with at least five people who were not involved in implementation. A pass requires all recorded criteria, including at least four of five testers voluntarily watching for 60 seconds, at least three expressing curiosity or requesting another encounter, and majority readability/satisfying-impact observations without broad confusion or lifelessness feedback.
+After every technical Milestone 1 acceptance criterion passed, the project owner ran the specification's qualitative test and supplied an aggregate passing record. All five designated testers voluntarily played for more than two minutes. The owner reported clear curiosity about future encounters, enemies, abilities, weapons, customization, and progression; readable combat relationships; satisfying hits and sounds; and no broad description of the fighting as confusing, lifeless, or difficult to understand. Remaining feedback concerns presentation, onboarding, controls, and communicating the larger purpose of the Combat Lab.
 
-Only the project owner may record this gate as passed. Coding agents, automated tests, and implementation-team observations cannot satisfy or infer it. Any failed criterion requires combat improvements and a repeat of the full gate. **Milestone 2 is blocked until the owner records a pass.**
+Only the project owner may record this gate as passed. This plan transcribes the owner's 2026-07-18 decision; coding agents, automated tests, and implementation-team observations did not satisfy or infer it. The gate's pass unblocks Milestone 2 and does not verify any Milestone 2 acceptance criterion.
 
 ### Milestone 2 — Player Intervention
 
 **Entry condition: an owner-recorded passing Milestone 1 Human Validation Gate.**
 
-After that gate passes, implement the Fire Hydrant interaction, feedback, valid targeting, damage, strong knockback, and cooldown/charge presentation. Do not begin this milestone merely because automated or technical Milestone 1 checks pass.
+**Status: Entry condition satisfied; technical implementation and verification complete.**
+
+Implemented the smallest complete Fire Hydrant player intervention together with the specifically authorized Combat Lab presentation/usability improvements. The authoritative tuning is a 112-pixel fixed circle, 18 deterministic area damage, fixed leftward 300-force knockback for 0.30 seconds, an 8.0-second cooldown, and 0.55-second water, 0.28-second impact, and 0.50-second rejection presentation windows.
+
+Technical checklist:
+
+- [x] Visible environmental Hydrant with a generous mouse/touch area, pointer cursor, hover highlight, and preview drawn from the same authored radius used by authority
+- [x] Click/tap activation through a run-scoped typed controller rather than UI authority
+- [x] Stable inclusive-circle validation, deterministic light damage, strong readable fixed-left knockback, and no effect on actors outside the authoritative area
+- [x] Dead, invalid, unregistered, and non-enemy exclusion
+- [x] Cooldown lock before callbacks, repeated/same-tick input rejection, no duplicate activation, cooldown progression/completion, and reactivation
+- [x] Clear available, no-target, cooling-down, and rejected world/HUD states with a concise effect/availability tooltip
+- [x] Readable placeholder water, impact, rejection, and prebuilt audio feedback sufficient to materially change an active encounter
+- [x] One `CombatSpaceDefinition` used for spawning, lane movement, target approach, reservations, knockback, recovery, coin placement, and lane guides: actor origins X 164–456 and Y 194–258 on lanes Y 194/226/258
+- [x] Nonmodal, re-openable Help explaining autonomous combat, manual/full-value-auto coins, Hydrant use, fullscreen, the Combat Lab purpose, and the absence of current coin spending
+- [x] More discoverable coin clusters with pointer, pulse, hover, click/tap copy, generous bounds, preserved full-value auto-collection, manual-only streak rules, and non-overlapping Hydrant placement
+- [x] Prebuilt Combat Lab audio set plus one-shot Web gesture unlock that does not pause or reset combat
+- [x] Obvious fullscreen control, F11-if-delivered and fullscreen-only Escape handling, repeated stable transitions, mobile-landscape/safe-area support, and preserved 16:9 presentation
+- [x] Retained the 640 x 360 internal canvas; documented Web-shell zoom limitation and future higher-resolution pixel-art recommendation instead of performing an unplanned resolution migration
+- [x] Passed 46/46 tests and 694 assertions with no failures: preserved Milestone 1 30/348 plus Milestone 2 16/346
+- [x] Completed editor, local Windows, and local Web checks plus a 315.3046-second safe-boundary soak with 113 spawned, 98 defeated, five active enemies, six live actors/reservations, and an exact 3,920-coin ledger
+- [x] Captured `res://docs/screenshots/milestone_2_player_intervention.png`
+- [x] Added no gameplay Autoload, unseeded/global randomness, Wet/status/combo system, or Milestone 3+ behavior
+
+**Milestone 2 technical acceptance status: Passed.** This result is an implementation/test record; it neither performs nor reinterprets the separate owner-recorded Milestone 1 Human Validation Gate. Work stops here until a later milestone is explicitly authorized. The verified local Milestone 2 build has not been published or deployed.
+
+#### Future design input — deferred to owning Milestone 3+ work
+
+The owner-recorded playtest surfaced interest in the following areas. They are captured for later design work and are deliberately excluded from Milestone 2 implementation:
+
+- Additional melee and ranged enemies, plus enemy area attacks, damage-over-time attacks, and spells
+- Weapon and gun variants, timed abilities or spells, lifesteal, armour, and damage types
+- Enemy inspection and more detailed health information
+- How encounters begin, what happens between fights, and how coins are eventually spent
+- Customization and progression
+
+Call Backup, Subway Reroute, patrol progression, encounter scheduling, Heat, Night Pressure, `RunRandomStreams`, equipment, synergies, cards, shops, extraction, saving, bosses, progression, procedural generation, and other Milestone 3+ behavior remain outside the authorized implementation scope.
 
 ### Milestone 3 — Complete Run Structure
 
