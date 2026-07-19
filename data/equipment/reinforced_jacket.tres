@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="EquipmentDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/equipment/equipment_definition.gd" id="1_item"]
+[ext_resource type="Script" path="res://scripts/equipment/equipment_modifier_definition.gd" id="2_modifier"]
+[ext_resource type="Texture2D" path="res://assets/ui/equipment/icons/reinforced_jacket.png" id="9_icon"]
+
+[sub_resource type="Resource" id="Modifier_health"]
+script = ExtResource("2_modifier")
+id = &"reinforced_jacket_health"
+stat_id = &"maximum_health"
+operation = 1
+amount = 0.20
+
+[sub_resource type="Resource" id="Modifier_knockback_received"]
+script = ExtResource("2_modifier")
+id = &"reinforced_jacket_knockback_received"
+stat_id = &"knockback_received"
+operation = 1
+amount = -0.20
+
+[resource]
+script = ExtResource("1_item")
+id = &"reinforced_jacket"
+display_name = "Reinforced Jacket"
+icon = ExtResource("9_icon")
+description = "Protective street gear for surviving crowded fights."
+tags = Array[StringName]([&"DEFENCE", &"STREET"])
+modifiers = Array[EquipmentModifierDefinition]([SubResource("Modifier_health"), SubResource("Modifier_knockback_received")])
+major_effects = PackedStringArray("+20% maximum health", "-20% knockback received")

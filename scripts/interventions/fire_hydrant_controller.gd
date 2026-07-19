@@ -33,6 +33,7 @@ var _request_in_progress: bool = false
 var _last_emitted_state: int = -1
 var _last_emitted_cooldown: float = -1.0
 var _last_emitted_valid_target_count: int = -1
+var _cooldown_multiplier: float = 1.0
 var simulation_enabled: bool = true
 
 
@@ -90,7 +91,7 @@ func request_activation() -> bool:
 	# Lock availability before any combat or presentation callback can issue a
 	# second request in the same authoritative activation.
 	_activation_locked = true
-	_cooldown_remaining = maxf(_get_tuning().cooldown_seconds, 0.0)
+	_cooldown_remaining = get_cooldown_duration()
 	_emit_state_if_changed(true)
 
 	var affected_count: int = 0
@@ -167,7 +168,20 @@ func get_cooldown_remaining() -> float:
 
 
 func get_cooldown_duration() -> float:
-	return maxf(_get_tuning().cooldown_seconds, 0.0)
+	return maxf(_get_tuning().cooldown_seconds * _cooldown_multiplier, 0.0)
+
+
+func set_cooldown_multiplier(multiplier: float) -> void:
+	var previous_duration: float = get_cooldown_duration()
+	var remaining_ratio: float = (
+		clampf(_cooldown_remaining / previous_duration, 0.0, 1.0)
+		if previous_duration > 0.0
+		else 0.0
+	)
+	_cooldown_multiplier = maxf(multiplier, 0.05)
+	if _cooldown_remaining > 0.0:
+		_cooldown_remaining = get_cooldown_duration() * remaining_ratio
+	_emit_state_if_changed(true)
 
 
 func get_snapshot() -> Dictionary:
@@ -181,6 +195,7 @@ func get_snapshot() -> Dictionary:
 		"valid_target_count": valid_target_count,
 		"cooldown_remaining": _cooldown_remaining,
 		"cooldown_duration": get_cooldown_duration(),
+		"cooldown_multiplier": _cooldown_multiplier,
 		"range_radius": get_range_radius(),
 		"activation_origin": _activation_origin,
 	}

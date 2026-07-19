@@ -138,11 +138,13 @@ func _new_actor(is_crew: bool, world_x: float, lane: int) -> ActorController:
 	actor.attack_controller = AttackController.new()
 	actor.attack_hitbox = Area2D.new()
 	actor.actor_visual = ActorVisual.new()
+	actor.status_controller = StatusController.new()
 	actor.add_child(actor.state_machine)
 	actor.add_child(actor.health_component)
 	actor.add_child(actor.attack_controller)
 	actor.add_child(actor.attack_hitbox)
 	actor.add_child(actor.actor_visual)
+	actor.add_child(actor.status_controller)
 	actor.initialize_runtime()
 	return actor
 

@@ -70,10 +70,10 @@ func present_state(
 	queue_redraw()
 
 
-func set_external_preview_visible(is_visible: bool) -> void:
-	if _external_preview_visible == is_visible:
+func set_external_preview_visible(preview_is_visible: bool) -> void:
+	if _external_preview_visible == preview_is_visible:
 		return
-	_external_preview_visible = is_visible
+	_external_preview_visible = preview_is_visible
 	queue_redraw()
 
 

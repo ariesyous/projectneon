@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/actors/actor_controller.gd" id="1_controller"]
 [ext_resource type="Resource" path="res://data/crew/jax.tres" id="2_definition"]
@@ -7,6 +7,9 @@
 [ext_resource type="Script" path="res://scripts/actors/health_component.gd" id="5_health"]
 [ext_resource type="Script" path="res://scripts/combat/attack_controller.gd" id="6_attack_controller"]
 [ext_resource type="Script" path="res://scripts/actors/actor_visual.gd" id="7_visual"]
+[ext_resource type="Script" path="res://scripts/actors/status_controller.gd" id="8_status_controller"]
+[ext_resource type="Resource" path="res://data/equipment/bleed_status.tres" id="9_bleed"]
+[ext_resource type="Resource" path="res://data/equipment/shock_status.tres" id="10_shock"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape_hitbox"]
 size = Vector2(34, 22)
@@ -27,6 +30,10 @@ script = ExtResource("4_state")
 
 [node name="HealthComponent" type="Node" parent="."]
 script = ExtResource("5_health")
+
+[node name="StatusController" type="Node" parent="."]
+script = ExtResource("8_status_controller")
+status_definitions = Array[StatusEffectDefinition]([ExtResource("9_bleed"), ExtResource("10_shock")])
 
 [node name="AttackController" type="Node" parent="."]
 script = ExtResource("6_attack_controller")

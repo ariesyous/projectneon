@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="SynergyDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/synergies/synergy_definition.gd" id="1_synergy"]
+[ext_resource type="Script" path="res://scripts/equipment/equipment_modifier_definition.gd" id="2_modifier"]
+[ext_resource type="Texture2D" path="res://assets/ui/synergies/badges/knockback_2.png" id="9_badge"]
+
+[sub_resource type="Resource" id="Modifier_knockback"]
+script = ExtResource("2_modifier")
+id = &"knockback_2_distance"
+stat_id = &"knockback_distance"
+operation = 1
+amount = 0.20
+
+[sub_resource type="Resource" id="Modifier_environment_damage"]
+script = ExtResource("2_modifier")
+id = &"knockback_2_environment_damage"
+stat_id = &"environmental_collision_damage"
+operation = 1
+amount = 0.25
+
+[resource]
+script = ExtResource("1_synergy")
+id = &"knockback_2"
+display_name = "Knockback 2"
+badge = ExtResource("9_badge")
+required_tag = &"KNOCKBACK"
+threshold = 2
+modifiers = Array[EquipmentModifierDefinition]([SubResource("Modifier_knockback"), SubResource("Modifier_environment_damage")])
+major_effects = PackedStringArray("+20% knockback distance", "+25% environmental collision damage")

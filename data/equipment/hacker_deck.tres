@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="EquipmentDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/equipment/equipment_definition.gd" id="1_item"]
+[ext_resource type="Script" path="res://scripts/equipment/equipment_modifier_definition.gd" id="2_modifier"]
+[ext_resource type="Texture2D" path="res://assets/ui/equipment/icons/hacker_deck.png" id="9_icon"]
+
+[sub_resource type="Resource" id="Modifier_cooldown"]
+script = ExtResource("2_modifier")
+id = &"hacker_deck_intervention_cooldown"
+stat_id = &"intervention_cooldown"
+operation = 1
+amount = -0.10
+
+[sub_resource type="Resource" id="Modifier_shock_duration"]
+script = ExtResource("2_modifier")
+id = &"hacker_deck_shock_duration"
+stat_id = &"shock_duration"
+operation = 0
+amount = 1.5
+
+[resource]
+script = ExtResource("1_item")
+id = &"hacker_deck"
+display_name = "Hacker Deck"
+icon = ExtResource("9_icon")
+description = "A portable control rig that keeps interventions and Shock online."
+tags = Array[StringName]([&"TECH", &"INTERVENTION"])
+modifiers = Array[EquipmentModifierDefinition]([SubResource("Modifier_cooldown"), SubResource("Modifier_shock_duration")])
+major_effects = PackedStringArray("-10% intervention cooldown", "+1.5s Shock duration")

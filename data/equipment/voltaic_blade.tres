@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="EquipmentDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/equipment/equipment_definition.gd" id="1_item"]
+[ext_resource type="Script" path="res://scripts/equipment/equipment_modifier_definition.gd" id="2_modifier"]
+[ext_resource type="Script" path="res://scripts/equipment/triggered_effect_definition.gd" id="3_effect"]
+[ext_resource type="Texture2D" path="res://assets/ui/equipment/icons/voltaic_blade.png" id="9_icon"]
+
+[sub_resource type="Resource" id="Modifier_shock_interaction"]
+script = ExtResource("2_modifier")
+id = &"voltaic_blade_shock_interaction"
+stat_id = &"damage_against_shocked"
+operation = 1
+amount = 0.20
+
+[sub_resource type="Resource" id="Effect_bleed"]
+script = ExtResource("3_effect")
+id = &"voltaic_blade_bleed"
+trigger = 0
+status_id = &"bleed"
+chance_basis_points = 10000
+stacks = 1
+duration_seconds = 4.0
+
+[resource]
+script = ExtResource("1_item")
+id = &"voltaic_blade"
+display_name = "Voltaic Blade"
+icon = ExtResource("9_icon")
+description = "A Tech/Bleed bridge that cuts reliably and exploits Shock."
+tags = Array[StringName]([&"TECH", &"BLEED"])
+modifiers = Array[EquipmentModifierDefinition]([SubResource("Modifier_shock_interaction")])
+triggered_effects = Array[TriggeredEffectDefinition]([SubResource("Effect_bleed")])
+major_effects = PackedStringArray("Every hit applies 1 Bleed stack", "+20% damage against Shocked enemies")

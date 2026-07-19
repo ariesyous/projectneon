@@ -38,6 +38,23 @@ func heal(amount: int) -> int:
 	return current_health - previous_health
 
 
+func set_maximum_health(authored_maximum: int, preserve_health_ratio: bool = true) -> void:
+	var new_maximum: int = maxi(authored_maximum, 1)
+	if new_maximum == maximum_health:
+		return
+	var previous_ratio: float = normalized_health()
+	maximum_health = new_maximum
+	if preserve_health_ratio:
+		current_health = clampi(
+			int(floor(previous_ratio * float(maximum_health) + 0.5)),
+			1 if current_health > 0 else 0,
+			maximum_health
+		)
+	else:
+		current_health = mini(current_health, maximum_health)
+	health_changed.emit(current_health, maximum_health)
+
+
 func is_depleted() -> bool:
 	return current_health <= 0
 

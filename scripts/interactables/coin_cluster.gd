@@ -5,8 +5,8 @@ extends Area2D
 
 const FULL_CIRCLE_RADIANS: float = TAU
 const PULSE_SPEED: float = 4.6
-const POINTER_CURSOR: int = Input.CURSOR_POINTING_HAND
-const DEFAULT_CURSOR: int = Input.CURSOR_ARROW
+const POINTER_CURSOR: Input.CursorShape = Input.CURSOR_POINTING_HAND
+const DEFAULT_CURSOR: Input.CursorShape = Input.CURSOR_ARROW
 
 @onready var _countdown_label: Label = %CountdownLabel
 @onready var _value_label: Label = %ValueLabel

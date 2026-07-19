@@ -24,6 +24,13 @@ signal environmental_hit_landed(
 	world_position: Vector2,
 	knockback_force: float
 )
+signal status_applied(
+	target: ActorController,
+	status_id: StringName,
+	stacks: int,
+	duration_seconds: float,
+	source_effect_id: StringName
+)
 
 const RESPONSIBILITY: String = "Coordinate encounter-level combat state."
 const TARGET_RETALIATION_DISTANCE_MARGIN: float = 18.0
@@ -37,6 +44,9 @@ var _actors: Array[ActorController] = []
 var _reservation_registry: AttackPositionRegistry = null
 var _next_registration_order: int = 0
 var _hit_stop_remaining: float = 0.0
+var _synergy_system: SynergySystem
+var _random_streams: RunRandomStreams
+var _equipment_proc_roll_count: int = 0
 var simulation_enabled: bool = true
 
 
@@ -94,6 +104,7 @@ func register_actor(actor: ActorController) -> bool:
 	if not actor.target_changed.is_connected(_on_actor_target_changed):
 		actor.target_changed.connect(_on_actor_target_changed)
 	actor.bind_combat(self)
+	_apply_build_to_actor(actor)
 	actor_registered.emit(actor)
 	_emit_crew_status(actor)
 	return true
@@ -202,9 +213,27 @@ func request_attack_hit(
 		or not attacker.is_target_in_attack_range(target)
 	):
 		return 0
+	var build_damage_multiplier: float = 1.0
+	if attacker.team == ActorController.Team.CREW and _synergy_system != null:
+		if attack.hit_stop_duration >= 0.06:
+			build_damage_multiplier += _synergy_system.get_percent_modifier(&"heavy_hit_damage")
+		if target.has_status(&"bleed"):
+			build_damage_multiplier += _synergy_system.get_percent_modifier(
+				&"damage_against_bleeding"
+			)
+		if target.has_status(&"shock"):
+			build_damage_multiplier += _synergy_system.get_percent_modifier(
+				&"damage_against_shocked"
+			)
+		if target.is_knocked_back():
+			build_damage_multiplier += _synergy_system.get_percent_modifier(&"knockback_followup")
 	var damage: int = DamageCalculator.calculate_damage(
 		attacker.actor_definition.base_damage,
-		attacker.actor_definition.damage_multiplier * attacker.get_runtime_damage_multiplier(),
+		(
+			attacker.actor_definition.damage_multiplier
+			* attacker.get_runtime_damage_multiplier()
+			* maxf(build_damage_multiplier, 0.0)
+		),
 		attack.damage_multiplier,
 		target.actor_definition.damage_taken_multiplier
 	)
@@ -215,7 +244,15 @@ func request_attack_hit(
 	if is_zero_approx(hit_direction):
 		hit_direction = attacker.facing_direction
 	if target.can_act():
-		target.apply_knockback(hit_direction, attack.knockback_force, attack.knockback_duration)
+		var knockback_multiplier: float = 1.0
+		if attacker.team == ActorController.Team.CREW and _synergy_system != null:
+			knockback_multiplier += _synergy_system.get_percent_modifier(&"knockback_distance")
+		target.apply_knockback(
+			hit_direction,
+			attack.knockback_force * maxf(knockback_multiplier, 0.0),
+			attack.knockback_duration
+		)
+	_apply_triggered_effects(attacker, target, attack)
 	_hit_stop_remaining = maxf(_hit_stop_remaining, attack.hit_stop_duration)
 	hit_landed.emit(attacker, target, applied_damage, target.global_position, attack.hit_stop_duration)
 	return applied_damage
@@ -263,9 +300,23 @@ func request_environmental_hit(
 		or target.actor_definition == null
 	):
 		return 0
+	var environmental_damage_multiplier: float = 1.0
+	var environmental_knockback_multiplier: float = 1.0
+	if _synergy_system != null:
+		environmental_damage_multiplier += _synergy_system.get_percent_modifier(
+			&"environmental_collision_damage"
+		)
+		environmental_knockback_multiplier += (
+			_synergy_system.get_percent_modifier(&"environmental_knockback")
+			+ _synergy_system.get_percent_modifier(&"knockback_distance")
+		)
+		if target.has_status(&"shock"):
+			environmental_damage_multiplier += _synergy_system.get_percent_modifier(
+				&"damage_against_shocked"
+			)
 	var damage: int = DamageCalculator.calculate_damage(
 		base_damage,
-		1.0,
+		maxf(environmental_damage_multiplier, 0.0),
 		1.0,
 		target.actor_definition.damage_taken_multiplier
 	)
@@ -280,13 +331,17 @@ func request_environmental_hit(
 		# Stable fallback for a source and target sharing the same X coordinate.
 		hit_direction = -1.0
 	if target.can_act():
-		target.apply_knockback(hit_direction, knockback_force, knockback_duration)
+		target.apply_knockback(
+			hit_direction,
+			knockback_force * maxf(environmental_knockback_multiplier, 0.0),
+			knockback_duration
+		)
 	environmental_hit_landed.emit(
 		source_id,
 		target,
 		applied_damage,
 		hit_position,
-		maxf(knockback_force, 0.0)
+		maxf(knockback_force * environmental_knockback_multiplier, 0.0)
 	)
 	return applied_damage
 
@@ -344,6 +399,27 @@ func set_simulation_enabled(is_enabled: bool) -> void:
 	simulation_enabled = is_enabled
 
 
+func configure_build_system(
+	synergy_system: SynergySystem,
+	random_streams: RunRandomStreams
+) -> void:
+	if _synergy_system != null and _synergy_system.modifiers_changed.is_connected(
+		_on_build_modifiers_changed
+	):
+		_synergy_system.modifiers_changed.disconnect(_on_build_modifiers_changed)
+	_synergy_system = synergy_system
+	_random_streams = random_streams
+	if _synergy_system != null and not _synergy_system.modifiers_changed.is_connected(
+		_on_build_modifiers_changed
+	):
+		_synergy_system.modifiers_changed.connect(_on_build_modifiers_changed)
+	_on_build_modifiers_changed({}, {})
+
+
+func get_equipment_proc_roll_count() -> int:
+	return _equipment_proc_roll_count
+
+
 func clear_all(queue_free_actors: bool = true) -> void:
 	_ensure_reservation_registry()
 	var actors_to_clear: Array[ActorController] = _actors.duplicate()
@@ -351,6 +427,7 @@ func clear_all(queue_free_actors: bool = true) -> void:
 	_reservation_registry.clear_all()
 	_hit_stop_remaining = 0.0
 	_next_registration_order = 0
+	_equipment_proc_roll_count = 0
 	for actor: ActorController in actors_to_clear:
 		if not is_instance_valid(actor):
 			continue
@@ -439,6 +516,86 @@ func _disconnect_actor_signals(actor: ActorController) -> void:
 		actor.state_changed.disconnect(_on_actor_state_changed)
 	if actor.target_changed.is_connected(_on_actor_target_changed):
 		actor.target_changed.disconnect(_on_actor_target_changed)
+
+
+func _on_build_modifiers_changed(
+	_flat_modifiers: Dictionary,
+	_percent_modifiers: Dictionary
+) -> void:
+	for actor: ActorController in _actors:
+		_apply_build_to_actor(actor)
+
+
+func _apply_build_to_actor(actor: ActorController) -> void:
+	if actor == null or not is_instance_valid(actor):
+		return
+	if _synergy_system == null or actor.team != ActorController.Team.CREW:
+		var empty_flat: Dictionary[StringName, float] = {}
+		var empty_percent: Dictionary[StringName, float] = {}
+		actor.apply_build_modifiers(empty_flat, empty_percent)
+		return
+	actor.apply_build_modifiers(
+		_synergy_system.get_flat_modifiers(),
+		_synergy_system.get_percent_modifiers()
+	)
+
+
+func _apply_triggered_effects(
+	attacker: ActorController,
+	target: ActorController,
+	attack: AttackDefinition
+) -> void:
+	if (
+		_synergy_system == null
+		or attacker == null
+		or attacker.team != ActorController.Team.CREW
+		or target == null
+		or not target.can_be_targeted()
+	):
+		return
+	for effect: TriggeredEffectDefinition in _synergy_system.get_triggered_effects():
+		var trigger_matches: bool = effect.trigger == TriggeredEffectDefinition.Trigger.ON_HIT
+		if effect.trigger == TriggeredEffectDefinition.Trigger.ON_HEAVY_HIT:
+			trigger_matches = attack != null and attack.hit_stop_duration >= 0.06
+		if not trigger_matches or not _roll_equipment_proc(effect.chance_basis_points):
+			continue
+		var duration: float = effect.duration_seconds
+		var maximum_stacks_override: int = -1
+		if effect.status_id == &"shock":
+			duration += _synergy_system.get_flat_modifier(&"shock_duration")
+		elif effect.status_id == &"bleed":
+			maximum_stacks_override = 3 + maxi(
+				int(floor(_synergy_system.get_flat_modifier(&"bleed_maximum_stacks"))),
+				0
+			)
+		if target.apply_status(
+			effect.status_id,
+			effect.stacks,
+			maxf(duration, 0.05),
+			maximum_stacks_override
+		):
+			status_applied.emit(
+				target,
+				effect.status_id,
+				effect.stacks,
+				maxf(duration, 0.05),
+				effect.id
+			)
+
+
+func _roll_equipment_proc(chance_basis_points: int) -> bool:
+	var safe_chance: int = clampi(chance_basis_points, 0, 10000)
+	if safe_chance <= 0:
+		return false
+	if safe_chance >= 10000:
+		return true
+	if _random_streams == null:
+		return false
+	_equipment_proc_roll_count += 1
+	return _random_streams.draw_index(
+		RunRandomStreams.STREAM_EQUIPMENT,
+		10000
+	) < safe_chance
 
 
 func _registration_order_before(left: ActorController, right: ActorController) -> bool:

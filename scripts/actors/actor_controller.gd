@@ -9,6 +9,12 @@ signal target_changed(actor: ActorController, target: ActorController)
 signal health_changed(actor: ActorController, current_health: int, maximum_health: int)
 signal died(actor: ActorController)
 signal incapacitated(actor: ActorController)
+signal status_changed(
+	actor: ActorController,
+	status_id: StringName,
+	stacks: int,
+	remaining_seconds: float
+)
 
 enum Team {
 	CREW,
@@ -27,6 +33,7 @@ const POSITION_ARRIVAL_TOLERANCE: float = 2.0
 
 @onready var state_machine: ActorStateMachine = $StateMachine
 @onready var health_component: HealthComponent = $HealthComponent
+@onready var status_controller: StatusController = get_node_or_null("StatusController") as StatusController
 @onready var attack_controller: AttackController = $AttackController
 @onready var attack_hitbox: Area2D = $AttackHitbox
 @onready var actor_visual: ActorVisual = $ActorVisual
@@ -45,9 +52,12 @@ var _cleanup_remaining: float = 0.0
 var _runtime_initialized: bool = false
 var _runtime_health_multiplier: float = 1.0
 var _runtime_damage_multiplier: float = 1.0
+var _build_flat_modifiers: Dictionary[StringName, float] = {}
+var _build_percent_modifiers: Dictionary[StringName, float] = {}
 
 
 func _ready() -> void:
+	_ensure_status_controller()
 	state_machine.state_changed.connect(_on_state_machine_changed)
 	health_component.health_changed.connect(_on_health_component_changed)
 	health_component.depleted.connect(_on_health_depleted)
@@ -75,6 +85,7 @@ func initialize_runtime() -> void:
 	if attack_definition == null:
 		push_error("ActorController '%s' requires an AttackDefinition." % name)
 		return
+	_ensure_status_controller()
 	_runtime_initialized = true
 	var scaled_maximum_health: int = maxi(
 		int(floor(float(actor_definition.maximum_health) * _runtime_health_multiplier + 0.5)),
@@ -106,6 +117,45 @@ func get_runtime_damage_multiplier() -> float:
 	return _runtime_damage_multiplier
 
 
+func apply_build_modifiers(
+	flat_modifiers: Dictionary[StringName, float],
+	percent_modifiers: Dictionary[StringName, float]
+) -> void:
+	_build_flat_modifiers.clear()
+	_build_percent_modifiers.clear()
+	if team == Team.CREW:
+		for stat_id: StringName in flat_modifiers:
+			_build_flat_modifiers[stat_id] = flat_modifiers[stat_id]
+		for stat_id: StringName in percent_modifiers:
+			_build_percent_modifiers[stat_id] = percent_modifiers[stat_id]
+	if _runtime_initialized:
+		var base_maximum: float = (
+			float(actor_definition.maximum_health)
+			* _runtime_health_multiplier
+			* maxf(0.05, 1.0 + get_build_percent_modifier(&"maximum_health"))
+		)
+		health_component.set_maximum_health(maxi(int(floor(base_maximum + 0.5)), 1))
+
+
+func get_build_flat_modifier(stat_id: StringName) -> float:
+	return _build_flat_modifiers.get(stat_id, 0.0)
+
+
+func get_build_percent_modifier(stat_id: StringName) -> float:
+	return _build_percent_modifiers.get(stat_id, 0.0)
+
+
+func get_movement_speed() -> float:
+	return actor_definition.movement_speed * maxf(
+		0.05,
+		1.0 + get_build_percent_modifier(&"movement_speed")
+	)
+
+
+func get_attack_speed_multiplier() -> float:
+	return maxf(0.05, 1.0 + get_build_percent_modifier(&"attack_speed"))
+
+
 func get_combat_space() -> CombatSpaceDefinition:
 	return combat_space
 
@@ -125,6 +175,10 @@ func unbind_combat() -> void:
 
 func step_simulation(delta: float) -> void:
 	if not _runtime_initialized or delta <= 0.0 or state_machine.is_terminal():
+		return
+	if status_controller != null:
+		status_controller.step(delta)
+	if state_machine.is_terminal():
 		return
 	state_machine.advance_time(delta)
 	_attack_cooldown_remaining = maxf(_attack_cooldown_remaining - delta, 0.0)
@@ -163,7 +217,7 @@ func step_simulation(delta: float) -> void:
 	face_toward(current_target.global_position.x)
 	if global_position.distance_to(destination) > POSITION_ARRIVAL_TOLERANCE:
 		state_machine.transition_to(ActorStateMachine.State.APPROACHING_TARGET)
-		global_position = global_position.move_toward(destination, actor_definition.movement_speed * delta)
+		global_position = global_position.move_toward(destination, get_movement_speed() * delta)
 		global_position = combat_space.clamp_actor_position(global_position)
 		_refresh_lane_from_position()
 		return
@@ -222,11 +276,49 @@ func receive_damage(amount: int) -> int:
 	return applied_damage
 
 
+func apply_status(
+	status_id: StringName,
+	stacks: int,
+	duration_seconds: float,
+	maximum_stacks_override: int = -1
+) -> bool:
+	if not can_be_targeted():
+		return false
+	_ensure_status_controller()
+	return status_controller.apply_status(
+		status_id,
+		stacks,
+		duration_seconds,
+		maximum_stacks_override
+	)
+
+
+func has_status(status_id: StringName) -> bool:
+	return status_controller != null and status_controller.has_status(status_id)
+
+
+func get_status_stacks(status_id: StringName) -> int:
+	return status_controller.get_stacks(status_id) if status_controller != null else 0
+
+
+func is_knocked_back() -> bool:
+	return _knockback_remaining > 0.0
+
+
 func apply_knockback(direction_x: float, force: float, duration: float) -> void:
 	if not can_act() or force <= 0.0 or duration <= 0.0:
 		return
 	var resistance: float = clampf(actor_definition.knockback_resistance, 0.0, 1.0)
-	_knockback_velocity_x = (-1.0 if direction_x < 0.0 else 1.0) * force * (1.0 - resistance)
+	var received_multiplier: float = maxf(
+		0.0,
+		1.0 + get_build_percent_modifier(&"knockback_received")
+	)
+	_knockback_velocity_x = (
+		(-1.0 if direction_x < 0.0 else 1.0)
+		* force
+		* (1.0 - resistance)
+		* received_multiplier
+	)
 	_knockback_remaining = duration
 	attack_controller.cancel()
 	_release_attack_position()
@@ -311,6 +403,9 @@ func get_snapshot() -> Dictionary:
 		"maximum_health": health_component.maximum_health,
 		"runtime_health_multiplier": _runtime_health_multiplier,
 		"runtime_damage_multiplier": _runtime_damage_multiplier,
+		"build_flat_modifiers": _build_flat_modifiers.duplicate(),
+		"build_percent_modifiers": _build_percent_modifiers.duplicate(),
+		"statuses": status_controller.get_snapshot() if status_controller != null else [],
 		"lane": lane_index,
 		"target_instance_id": current_target.get_instance_id() if current_target != null else -1,
 		"position": global_position,
@@ -407,7 +502,7 @@ func _on_attack_active_started() -> void:
 
 
 func _on_attack_finished() -> void:
-	_attack_cooldown_remaining = attack_definition.cooldown_time
+	_attack_cooldown_remaining = attack_definition.cooldown_time / get_attack_speed_multiplier()
 	if current_target != null:
 		state_machine.transition_to(ActorStateMachine.State.APPROACHING_TARGET)
 	else:
@@ -430,6 +525,8 @@ func _on_health_component_changed(current_health: int, maximum_health: int) -> v
 
 
 func _on_health_depleted() -> void:
+	if status_controller != null:
+		status_controller.clear_all()
 	attack_controller.cancel()
 	clear_target()
 	if team == Team.CREW:
@@ -440,6 +537,35 @@ func _on_health_depleted() -> void:
 		_cleanup_remaining = actor_definition.cleanup_delay
 		set_process(true)
 		died.emit(self)
+
+
+func _on_status_changed(
+	status_id: StringName,
+	stacks: int,
+	remaining_seconds: float
+) -> void:
+	actor_visual.set_statuses(
+		status_controller.get_stacks(&"bleed"),
+		status_controller.has_status(&"shock")
+	)
+	status_changed.emit(self, status_id, stacks, remaining_seconds)
+
+
+func _on_status_damage_requested(amount: int, _status_id: StringName) -> void:
+	receive_damage(amount)
+
+
+func _ensure_status_controller() -> void:
+	if status_controller == null:
+		status_controller = StatusController.new()
+		status_controller.name = "StatusController"
+		add_child(status_controller)
+	if not status_controller.status_changed.is_connected(_on_status_changed):
+		status_controller.status_changed.connect(_on_status_changed)
+	if not status_controller.status_damage_requested.is_connected(
+		_on_status_damage_requested
+	):
+		status_controller.status_damage_requested.connect(_on_status_damage_requested)
 
 
 func _process(delta: float) -> void:

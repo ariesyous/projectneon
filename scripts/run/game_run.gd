@@ -14,6 +14,7 @@ const HYDRANT_COIN_EXCLUSION_RADIUS: float = 76.0
 @onready var cooling_controller: RunCoolingController = $RunCoolingController
 @onready var encounter_controller: RunEncounterController = $RunEncounterController
 @onready var run_flow_controller: RunFlowController = $RunFlowController
+@onready var synergy_system: SynergySystem = $SynergySystem
 @onready var display_controller: DisplayController = $DisplayController
 @onready var downtown_loop: DowntownLoop = $DowntownLoop
 @onready var game_hud: GameHUD = $GameHUD
@@ -46,7 +47,11 @@ func _ready() -> void:
 	reward_director.scrap_changed.connect(_on_scrap_changed)
 	reward_director.streak_changed.connect(_on_streak_changed)
 	reward_director.cluster_resolved.connect(_on_cluster_resolved)
+	reward_director.equipment_choice_resolved.connect(_on_equipment_choice_resolved)
 	run_director.run_summary_ready.connect(game_hud.present_run_summary)
+	synergy_system.build_changed.connect(_on_build_changed)
+	synergy_system.synergy_activated.connect(_on_synergy_activated)
+	synergy_system.synergy_deactivated.connect(_on_synergy_deactivated)
 
 	fire_hydrant_controller.state_changed.connect(_on_hydrant_state_changed)
 	fire_hydrant_controller.activation_resolved.connect(_on_hydrant_activation_resolved)
@@ -62,11 +67,17 @@ func _ready() -> void:
 	game_hud.shop_cooling_requested.connect(run_flow_controller.request_shop_cooling)
 	game_hud.restart_same_seed_requested.connect(run_flow_controller.restart_same_seed)
 	game_hud.restart_new_seed_requested.connect(run_flow_controller.restart_new_seed)
+	game_hud.equipment_acquisition_requested.connect(_on_equipment_acquisition_requested)
+	game_hud.equipment_reward_decline_requested.connect(_on_equipment_reward_decline_requested)
+	game_hud.inventory_swap_requested.connect(_on_inventory_swap_requested)
+	game_hud.inventory_move_requested.connect(_on_inventory_move_requested)
+	game_hud.inventory_discard_requested.connect(_on_inventory_discard_requested)
 	display_controller.fullscreen_changed.connect(game_hud.present_fullscreen_state)
 	display_controller.landscape_state_changed.connect(game_hud.present_landscape_state)
 	display_controller.safe_area_changed.connect(game_hud.apply_safe_area)
 
 	fire_hydrant_controller.configure(combat_director, fire_hydrant.global_position)
+	combat_director.configure_build_system(synergy_system, run_director.get_random_streams())
 	cooling_controller.configure(run_director, reward_director, patrol_controller)
 	encounter_controller.configure_coin_interaction_exclusion(
 		fire_hydrant.global_position,
@@ -89,15 +100,18 @@ func _ready() -> void:
 		reward_director,
 		cooling_controller,
 		combat_director,
-		fire_hydrant_controller
+		fire_hydrant_controller,
+		synergy_system
 	)
 	run_flow_controller.flow_status_changed.connect(_on_flow_status_changed)
 	run_flow_controller.action_feedback.connect(_on_action_feedback)
+	run_flow_controller.equipment_reward_ready.connect(_on_equipment_reward_ready)
 
 	_web_audio_unlocked = not OS.has_feature("web")
 	game_hud.present_audio_unlock_required(not _web_audio_unlocked)
 	display_controller.refresh_state(true)
 	_refresh_hydrant_presentation()
+	_on_build_changed(synergy_system.get_snapshot())
 	run_flow_controller.start_initial_run()
 	_refresh_combat_presentation()
 
@@ -131,7 +145,13 @@ func _input(event: InputEvent) -> void:
 func _on_primary_action_requested() -> void:
 	match run_director.current_state:
 		RunDirector.RunState.REWARD_SELECTION:
-			run_flow_controller.claim_standard_reward()
+			var pending_id: int = int(
+			run_flow_controller.get_snapshot().get("pending_reward_encounter_id", -1)
+			)
+			if reward_director.get_pending_equipment_choices(pending_id).is_empty():
+				run_flow_controller.claim_standard_reward()
+			else:
+				_on_action_feedback("CHOOSE ONE EQUIPMENT REWARD")
 		RunDirector.RunState.SHOP:
 			run_flow_controller.leave_shop()
 		RunDirector.RunState.EXTRACTION_AVAILABLE:
@@ -151,6 +171,167 @@ func _on_action_feedback(message: String) -> void:
 	game_hud.present_action_feedback(message)
 	_hydrant_feedback_override = message
 	_hydrant_feedback_remaining = 1.2
+
+
+func _on_build_changed(snapshot: Dictionary) -> void:
+	game_hud.present_build_snapshot(snapshot)
+	var cooldown_multiplier: float = maxf(
+		0.05,
+		1.0 + synergy_system.get_percent_modifier(&"intervention_cooldown")
+	)
+	fire_hydrant_controller.set_cooldown_multiplier(cooldown_multiplier)
+	_refresh_hydrant_presentation()
+
+
+func _on_equipment_reward_ready(
+	encounter_instance_id: int,
+	choices: Array[EquipmentDefinition]
+) -> void:
+	var previews_by_choice: Array[Dictionary] = []
+	for choice_index: int in range(choices.size()):
+		var by_slot: Array[Dictionary] = []
+		for slot_index: int in range(SynergySystem.SLOT_COUNT):
+			by_slot.append(
+				reward_director.get_equipment_choice_preview(
+					encounter_instance_id,
+					choice_index,
+					slot_index
+				)
+			)
+		previews_by_choice.append({"by_slot": by_slot})
+	game_hud.present_equipment_reward(encounter_instance_id, choices, previews_by_choice)
+
+
+func _on_equipment_acquisition_requested(
+	choice_index: int,
+	destination: StringName,
+	equipment_slot: int,
+	backpack_slot: int,
+	replace_confirmed: bool,
+	expected_revision: int
+) -> void:
+	var applied: bool = run_flow_controller.claim_equipment_reward_to_inventory(
+		choice_index,
+		destination,
+		equipment_slot,
+		backpack_slot,
+		replace_confirmed,
+		expected_revision
+	)
+	game_hud.present_equipment_action_result(applied)
+	if applied:
+		game_hud.dismiss_equipment_reward()
+	else:
+		_on_action_feedback("EQUIPMENT CHOICE REJECTED")
+
+
+func _on_equipment_reward_decline_requested() -> void:
+	var declined: bool = run_flow_controller.decline_equipment_reward()
+	game_hud.present_equipment_action_result(declined)
+	if declined:
+		game_hud.dismiss_equipment_reward()
+		_on_action_feedback("CURRENT BUILD KEPT - RUN REWARD SECURED")
+
+
+func _on_inventory_swap_requested(
+	equipment_slot: int,
+	backpack_slot: int,
+	expected_revision: int
+) -> void:
+	if not _inventory_management_allowed():
+		game_hud.present_inventory_action_result(false)
+		_on_action_feedback("MANAGE EQUIPMENT BETWEEN FIGHTS")
+		return
+	var stored: EquipmentDefinition = synergy_system.get_backpack_item(backpack_slot)
+	var swapped: bool = synergy_system.swap_equipped_with_backpack(
+		equipment_slot,
+		backpack_slot,
+		expected_revision
+	)
+	game_hud.present_inventory_action_result(swapped)
+	if swapped and stored != null:
+		_on_action_feedback("EQUIPPED %s FROM BACKPACK" % stored.display_name.to_upper())
+
+
+func _on_inventory_move_requested(
+	equipment_slot: int,
+	backpack_slot: int,
+	replace_confirmed: bool,
+	expected_revision: int
+) -> void:
+	if not _inventory_management_allowed():
+		game_hud.present_inventory_action_result(false)
+		_on_action_feedback("MANAGE EQUIPMENT BETWEEN FIGHTS")
+		return
+	var equipped: EquipmentDefinition = synergy_system.get_equipped_item(equipment_slot)
+	var moved: bool = synergy_system.move_equipped_to_backpack(
+		equipment_slot,
+		backpack_slot,
+		replace_confirmed,
+		expected_revision
+	)
+	game_hud.present_inventory_action_result(moved)
+	if moved and equipped != null:
+		_on_action_feedback("STORED %s IN BACKPACK" % equipped.display_name.to_upper())
+
+
+func _on_inventory_discard_requested(
+	area: StringName,
+	slot_index: int,
+	equipment_id: StringName,
+	expected_revision: int
+) -> void:
+	if not _inventory_management_allowed():
+		game_hud.present_inventory_action_result(false)
+		_on_action_feedback("MANAGE EQUIPMENT BETWEEN FIGHTS")
+		return
+	var item: EquipmentDefinition = synergy_system.get_catalogue_item(equipment_id)
+	var discarded: bool = synergy_system.discard_confirmed(
+		area,
+		slot_index,
+		equipment_id,
+		expected_revision
+	)
+	game_hud.present_inventory_action_result(discarded)
+	if discarded and item != null:
+		_on_action_feedback("DISCARDED %s" % item.display_name.to_upper())
+
+
+func _on_equipment_choice_resolved(
+	_encounter_instance_id: int,
+	_choice_index: int,
+	equipment: EquipmentDefinition,
+	destination: StringName,
+	equipment_slot: int,
+	backpack_slot: int
+) -> void:
+	if destination == SynergySystem.AREA_BACKPACK:
+		_on_action_feedback("STORED %s IN BACKPACK SLOT %d" % [
+			equipment.display_name.to_upper(),
+			backpack_slot + 1,
+		])
+	else:
+		_on_action_feedback("EQUIPPED %s IN ACTIVE SLOT %d" % [
+			equipment.display_name.to_upper(),
+			equipment_slot + 1,
+		])
+
+
+func _inventory_management_allowed() -> bool:
+	return run_director.current_state in [
+		RunDirector.RunState.INTRO,
+		RunDirector.RunState.PATROLLING,
+		RunDirector.RunState.SHOP,
+		RunDirector.RunState.EXTRACTION_AVAILABLE,
+	]
+
+
+func _on_synergy_activated(synergy: SynergyDefinition) -> void:
+	_on_action_feedback("%s ACTIVATED" % synergy.display_name.to_upper())
+
+
+func _on_synergy_deactivated(synergy: SynergyDefinition) -> void:
+	_on_action_feedback("%s DEACTIVATED" % synergy.display_name.to_upper())
 
 
 func _on_lane_visibility_requested(lanes_are_visible: bool) -> void:
@@ -300,7 +481,7 @@ func _refresh_hydrant_presentation() -> void:
 	if feedback.is_empty():
 		match state:
 			FireHydrantController.State.READY:
-				feedback = "READY TO CHANGE THE FIGHT"
+				feedback = "READY TO INTERVENE"
 			FireHydrantController.State.COOLING_DOWN:
 				feedback = "WATER PRESSURE RECOVERING"
 			_:

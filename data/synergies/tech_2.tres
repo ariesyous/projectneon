@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="SynergyDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/synergies/synergy_definition.gd" id="1_synergy"]
+[ext_resource type="Script" path="res://scripts/equipment/equipment_modifier_definition.gd" id="2_modifier"]
+[ext_resource type="Texture2D" path="res://assets/ui/synergies/badges/tech_2.png" id="9_badge"]
+
+[sub_resource type="Resource" id="Modifier_cooldown"]
+script = ExtResource("2_modifier")
+id = &"tech_2_intervention_cooldown"
+stat_id = &"intervention_cooldown"
+operation = 1
+amount = -0.15
+
+[sub_resource type="Resource" id="Modifier_shock_duration"]
+script = ExtResource("2_modifier")
+id = &"tech_2_shock_duration"
+stat_id = &"shock_duration"
+operation = 0
+amount = 1.5
+
+[resource]
+script = ExtResource("1_synergy")
+id = &"tech_2"
+display_name = "Tech 2"
+badge = ExtResource("9_badge")
+required_tag = &"TECH"
+threshold = 2
+modifiers = Array[EquipmentModifierDefinition]([SubResource("Modifier_cooldown"), SubResource("Modifier_shock_duration")])
+major_effects = PackedStringArray("-15% intervention cooldown", "+1.5s Shock duration")

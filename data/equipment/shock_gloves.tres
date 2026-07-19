@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="EquipmentDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/equipment/equipment_definition.gd" id="1_item"]
+[ext_resource type="Script" path="res://scripts/equipment/equipment_modifier_definition.gd" id="2_modifier"]
+[ext_resource type="Script" path="res://scripts/equipment/triggered_effect_definition.gd" id="3_effect"]
+[ext_resource type="Texture2D" path="res://assets/ui/equipment/icons/shock_gloves.png" id="9_icon"]
+
+[sub_resource type="Resource" id="Modifier_attack_speed"]
+script = ExtResource("2_modifier")
+id = &"shock_gloves_attack_speed"
+stat_id = &"attack_speed"
+operation = 1
+amount = 0.08
+
+[sub_resource type="Resource" id="Effect_shock"]
+script = ExtResource("3_effect")
+id = &"shock_gloves_shock"
+trigger = 0
+status_id = &"shock"
+chance_basis_points = 2500
+stacks = 1
+duration_seconds = 3.0
+
+[resource]
+script = ExtResource("1_item")
+id = &"shock_gloves"
+display_name = "Shock Gloves"
+icon = ExtResource("9_icon")
+description = "Fast conductive gloves that seed Shock for intervention play."
+tags = Array[StringName]([&"TECH", &"SHOCK", &"FAST"])
+modifiers = Array[EquipmentModifierDefinition]([SubResource("Modifier_attack_speed")])
+triggered_effects = Array[TriggeredEffectDefinition]([SubResource("Effect_shock")])
+major_effects = PackedStringArray("25% hit Shock chance (3.0s)", "+8% attack speed")

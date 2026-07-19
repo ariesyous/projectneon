@@ -295,7 +295,9 @@ func finalize_summary(
 	coins_collected: int,
 	manual_clusters_collected: int,
 	maximum_manual_streak: int,
-	scrap_secured: int
+	scrap_secured: int,
+	equipment_build: String = "NOT AVAILABLE IN MILESTONE 3",
+	active_synergies: String = "NOT AVAILABLE IN MILESTONE 3"
 ) -> RunSummaryRecord:
 	if current_state not in [RunState.EXTRACTING, RunState.VICTORY, RunState.DEFEAT]:
 		return null
@@ -315,6 +317,8 @@ func finalize_summary(
 	summary.manual_clusters_collected = maxi(manual_clusters_collected, 0)
 	summary.maximum_manual_streak = maxi(maximum_manual_streak, 0)
 	summary.scrap_secured = maxi(scrap_secured, 0)
+	summary.equipment_build = equipment_build
+	summary.active_synergies = active_synergies
 	summary.boss_triggered = _boss_started
 	_last_summary = summary
 	request_transition(RunState.RUN_SUMMARY)

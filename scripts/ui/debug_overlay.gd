@@ -77,8 +77,8 @@ func present_combat_lab(
 	elapsed_seconds: float,
 	active_enemy_count: int,
 	active_cluster_count: int,
-	total_coins: int,
-	streak_count: int
+	_total_coins: int,
+	_streak_count: int
 ) -> void:
 	state_label.text = "RUN: COMBAT LAB  |  ACTIVE %.1fs" % maxf(0.0, elapsed_seconds)
 	lab_summary_label.text = "ACTORS  JAX 1 / ENEMIES %d    CLUSTERS %d" % [

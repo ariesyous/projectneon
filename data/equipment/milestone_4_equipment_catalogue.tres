@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EquipmentCatalogue" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/equipment/equipment_catalogue.gd" id="1_catalogue"]
+[ext_resource type="Resource" path="res://data/equipment/spiked_bat.tres" id="2_spiked"]
+[ext_resource type="Resource" path="res://data/equipment/shock_gloves.tres" id="3_shock"]
+[ext_resource type="Resource" path="res://data/equipment/reinforced_jacket.tres" id="4_jacket"]
+[ext_resource type="Resource" path="res://data/equipment/hacker_deck.tres" id="5_deck"]
+[ext_resource type="Resource" path="res://data/equipment/steel_toe_boots.tres" id="6_boots"]
+[ext_resource type="Resource" path="res://data/equipment/serrated_wraps.tres" id="7_wraps"]
+[ext_resource type="Resource" path="res://data/equipment/magnetic_flail.tres" id="8_flail"]
+[ext_resource type="Resource" path="res://data/equipment/voltaic_blade.tres" id="9_blade"]
+[ext_resource type="Resource" path="res://data/equipment/chain_sneakers.tres" id="10_sneakers"]
+
+[resource]
+script = ExtResource("1_catalogue")
+items = Array[EquipmentDefinition]([ExtResource("2_spiked"), ExtResource("3_shock"), ExtResource("4_jacket"), ExtResource("5_deck"), ExtResource("6_boots"), ExtResource("7_wraps"), ExtResource("8_flail"), ExtResource("9_blade"), ExtResource("10_sneakers")])

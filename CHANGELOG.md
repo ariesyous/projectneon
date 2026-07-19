@@ -4,6 +4,149 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 
 ## [Unreleased]
 
+### 2026-07-19 — Milestone 4.2: Inventory Drag and Backpack Clarity Correction
+
+#### Added
+
+- Typed `EquipmentDragPayload` presentation data for owned-item and reward origins, stable equipment identity, source/choice position, inventory revision, encounter identity where applicable, and drag-preview metadata.
+- Typed `EquipmentDragSlot` buttons using Godot's built-in `Control` drag/drop callbacks, off-tree drag previews, valid-target feedback, and typed drop requests to `GameHUD`.
+- Real drag targets for all three generic active slots and all three cells in the single inactive backpack, including empty third-slot destinations.
+- Drag staging for equipment rewards through the existing active/backpack destination, exact leave-behind, preview, and exactly-once confirmation flow.
+- A dedicated M4.2 integration suite with 13 tests/125 assertions covering terminology, typed payload/target validation, all third-slot paths, combat lockout, lossless move/swap staging, reward forwarding, full-inventory handling, exactly-once confirmation, rejection without mutation, longest-item-name pixel fit, pointer-threshold fallback, and first-touch preservation.
+
+#### Changed
+
+- Reworded the equipment surface as **three generic active slots** plus **one backpack with three inactive slots**. It no longer suggests three separate packs, loadouts, or Store-versus-Equip bags.
+- Owned-item cross-area dragging is non-destructive and non-authoritative. Active-to-empty-backpack stages a move; occupied active/backpack drops stage an atomic swap that keeps both items; Confirm remains required before authority changes.
+- Reward dragging stages the same revisioned choice/destination request used by click/tap/keyboard input. It cannot bypass the exact consequence preview or tokenized one-time application.
+- Same-area, stale-revision, wrong-identity, invalid-target, outside, and combat-locked drops reject or snap back without changing ownership. Destructive discard remains a separate exact-item action with named confirmation.
+- Full-inventory guidance now explicitly offers exact leave-behind selection or **Skip Gear**. Skipping the equipment does not discard an owned item and still resolves the paired ordinary run reward.
+- Click/tap/keyboard item inspection, destination selection, confirmation, and cancellation remain complete fallbacks for players who do not use drag gestures.
+- Dynamic reward destinations now use compact `ACTIVE n` / `BACKPACK [n]` labels; inventory action targets use `ACTIVE` / `STORE SLOT` / `SWAP SLOT`; key consequence prompts are bounded to two lines; Help states `CLICKS ONLY INSPECT; NEVER DISCARD`; and unsupported action-arrow glyphs were replaced by Web-safe words.
+- `EquipmentDragSlot` now arms typed mouse/touch input and, after 8 pixels of movement, calls Godot `force_drag` with the same payload/preview when Web or touch motion does not enter `_get_drag_data`. The first armed touch retains its pointer index so a second touch cannot steal or begin that drag. This compatibility fallback adds no selection or authority request and cannot bypass staging or Confirm.
+
+#### Verification
+
+- Passed **145/145 tests and 1,709 assertions with no failures or skips** across 12 suites. All 132 Milestone 1–4.1 tests/1,584 assertions remain preserved; M4.2 adds 13 tests/125 assertions.
+- Automated coverage confirms one-backpack terminology; typed stable-ID/revision payloads; all three active/backpack destinations; lossless move/swap semantics; reward drag/click forwarding to slot 3; exact full-inventory leave-behind/skip behavior; exactly-once Confirm; and stale, invalid, same-area, or combat-locked rejection without mutation. Dynamic fit now covers all six reward destination controls, all six inventory action-target states, and key two-line prompts with 20 assertions; the pointer fallback has seven assertions; and touch threshold/first-pointer preservation adds five.
+- Configured Godot 4.7 opened `/GameRun`. A real `InputEvent` pointer drag staged Magnetic Flail from active slot 3 to empty backpack slot 3 without changing revision 6, named the no-loss consequence, and required separate Confirm. Confirm applied exactly once at revision 7; a repeated invocation left revision 7 unchanged.
+- Fresh editor logs since cursor 158 contained zero new lines/warnings/errors, and the game log contained only development-helper registration. The 1280 x 720 evidence at `res://docs/screenshots/milestone_4_2_inventory_drag.png` showed one backpack, all third-slot controls, and no visible overflow or border crossing.
+- Fresh Windows and Web exports exited 0 with no export warning/error. Windows passed a headless smoke that loaded `game_run.tscn` plus M4.2 scripts/Resources, wrote no stderr, and reported no diagnostic. The final local 1280 x 720 Web build unlocked sound; staged Hacker Deck reward→active slot 3 and active slot 3→empty backpack slot 3 through real pointer drags with no pre-Confirm mutation; applied each through one ordinary Confirm click; ended with active slot 3 empty and backpack slot 3 holding Hacker Deck; showed no glyph boxes/overflow; and produced an empty browser warning/error console.
+
+#### Scope
+
+- M4.2 changes only the authorized Milestone 4 equipment interaction/presentation surface. It changes no equipment tuning, active-slot aggregation, candidate ordering, random-stream ownership, or random schema, and it preserves every Milestone 0–4.1 technical acceptance decision plus the owner-recorded Milestone 1 gate.
+- Selling, salvage, buyback, auto-sell/auto-salvage, equipment economy, rarity tiers, uniques, affixes, set items/set bonuses, category-locked slots, District Cards, and every other Milestone 5+ system remain unimplemented.
+- No commit, push, merge, publication, or deployment is part of this correction unless separately requested.
+- Every technical Milestone 4.2 acceptance check passed. Work stopped before Milestone 5.
+
+### 2026-07-19 — Equipment Experience Playtest Direction (Documentation Only)
+
+#### Recorded
+
+- Clarified the implemented model as three generic equipped cells plus three inactive cells in one backpack; `PACK 1/2/3` are not separate bags or loadouts.
+- Recorded owner preference for tactile click-and-drag inventory management, with automatic combat remaining visible behind a future Diablo II-style character inventory.
+- Recorded **Keep Current Build / Skip** as the current safe full-inventory answer. Selling, salvage, auto-sell, and auto-salvage remain unimplemented future economy decisions; no item should be destroyed automatically by default.
+- Added rarity tiers, uniques, affixes, and data-driven set items/set bonuses to the future itemization design backlog.
+- The bounded drag/backpack-clarity portion of this direction was subsequently implemented by Milestone 4.2 above; economy, rarity, unique, affix, set, and category-slot ideas remain future design input only.
+
+#### Scope
+
+- Documentation only. This record authorizes no gameplay, UI, economy, random-schema, Milestone 5, or later implementation.
+
+### 2026-07-19 — Milestone 4.1: Equipment Safety and HUD Readability Correction
+
+#### Added
+
+- Exactly three ordered backpack storage slots alongside the three active generic equipment slots. Stored items remain owned but contribute no active tags, modifiers, triggered effects, new triggered status applications, or synergy progress; already-applied actor-owned statuses expire or clear normally.
+- Revisioned, typed inventory transactions for reward acquisition, active/backpack swapping, moving active items to storage, and deliberately confirmed discard.
+- A staged equipment reward interface: item inspection, explicit Equip or Store destination, exact named consequence review, and separate Confirm. **Keep Current Build** safely resolves the paired ordinary reward without acquiring equipment.
+- Generated, replaceable placeholder icons for all nine equipment Resources under `res://assets/ui/equipment/icons/` and badges for Knockback 2, Bleed 2, and Tech 2 under `res://assets/ui/synergies/badges/`.
+- A persistent Downtown journey strip and expanded opening guidance for `HIDEOUT → PATROL → FIGHT → GEAR → EXIT/BOSS`, current stage/next objective, and inspection-only inventory clicks.
+- Deterministic Milestone 4.1 inventory-safety and HUD/input/layout/icon test suites.
+
+#### Changed
+
+- Migrated the true presentation viewport from 640 x 360 to 1280 x 720 while preserving the established logical 640 x 360 stage/combat coordinate system through a camera centered at `(320, 180)` with `Vector2(2, 2)` zoom.
+- Re-authored `GameHUD` and `DebugOverlay` at the native presentation size. Labels/buttons use at least 16-pixel text, ordinary controls and headings use a larger hierarchy, and tests inspect root/panel containment.
+- Preserved 16:9 aspect, viewport stretch, integer scale mode, nearest-neighbour canvas filtering, the explicit default mipmap-filter setting, and pixel snapping.
+- Equipment reward candidates now exclude stable IDs owned in either active or backpack positions while preserving stable-ID sorting and consumption of only the existing `equipment` stream. Destination review consumes no random draws. Random schema version 1 remains unchanged because pre-backpack candidate states retain the same order, backpack ownership is explicit decision state, and stream derivation/draw-without-replacement semantics are unchanged.
+- Equipping over an occupied active slot now stores the outgoing item in the first empty or explicitly selected backpack position. A full six-position inventory requires the player to choose the exact stored item left behind; no oldest item or replacement slot is selected automatically.
+- Ordinary active/backpack item clicks now inspect only. Between encounters, move, swap, or discard remains disabled until a destination/action is selected and its named consequences are explicitly confirmed; combat permits inspection only.
+- Inventory requests carry the inspected revision and, for discard, the expected stable ID. Stale, mismatched, incomplete, duplicate, or unconfirmed requests reject without mutation.
+
+#### Verification
+
+- Automated suite definitions cover finite three-slot storage, active-only aggregation, cross-area duplicate rejection, atomic outgoing-item storage, full-inventory rejection/confirmation, exact leave-behind selection, move/swap/discard safety, stale-revision rejection, restart cleanup, owned-item candidate filtering, exactly-once Equip/Store/Keep Current Build paths, inspection-only clicks, no default full-loadout replacement, 1280 x 720/camera/filter contracts, minimum typography/containment, journey guidance, and all twelve placeholder visuals.
+- Passed **132/132 tests and 1,584 assertions with no failures or skips** across 11 suites. All 75 Milestone 1–3 tests/1,100 assertions remain preserved; 26 dedicated Milestone 4.1 tests add 249 assertions, and existing Milestone 4 coverage gained 29 strengthened assertions.
+- Launched configured `/GameRun` at native 1280 x 720 and used real pointer input to select a reward without mutation, choose a destination, confirm one application exactly once, inspect inventory without mutation, and stage/cancel a named discard. Journey/Help, Hydrant rejection, sound unlock, fullscreen, and preserved `F1`/`F2` handlers passed; fresh cursor-bounded logs were clean. Evidence: `res://docs/screenshots/milestone_4_1_inventory_readability.png`.
+- Fresh local Windows and Web exports succeeded. Windows completed a clean 180-frame headless startup smoke; Web completed sound unlock, reward confirmation, inventory inspection, discard cancellation, Help, fullscreen, and Hydrant input with no console warnings/errors. The portable export editor's ObjectDB-profiler `user://` message did not reproduce in exported runtimes; browser automation did not deliver `F1` to the Web canvas, while the unchanged runtime handler and automated coverage passed.
+
+#### Scope
+
+- This is an owner-authorized usability/readability correction to completed Milestone 4. It preserves every Milestone 0–4 technical acceptance decision and does not reopen or reinterpret the owner-recorded Milestone 1 Human Validation Gate.
+- Equipment selling, buyback, and a broader shop economy were deliberately not implemented because they exceed this correction. District Cards, final-boss content, progression/persistence, procedural generation, and every other Milestone 5+ system remain absent.
+- No commit, push, merge, publication, or deployment is part of this correction unless separately requested.
+
+### 2026-07-18 — Milestone 4: Equipment and Synergies (Technical)
+
+#### Added
+
+- Exactly nine typed, stable-ID equipment Resources: Spiked Bat, Shock Gloves, Reinforced Jacket, Hacker Deck, Steel-Toe Boots, Serrated Wraps, Magnetic Flail, Voltaic Blade, and Chain Sneakers.
+- Typed equipment modifier, triggered-effect, status-effect, equipment/synergy definition, and catalogue Resources with validation and stable ordering.
+- Three generic ordered equipment slots with acquisition, explicit replacement, removal, duplicate/invalid rejection, immediate derived-state rebuilding, and clean restart.
+- A full `SynergySystem` authority for deterministic tag/modifier/effect aggregation, data-driven thresholds, non-mutating previews, and typed activation/deactivation/build signals.
+- Knockback 2 (+20% knockback distance, +25% environmental collision damage), Bleed 2 (+2 maximum Bleed stacks, +20% crew damage against bleeding enemies), and Tech 2 (-15% intervention cooldown, +1.5s Shock duration).
+- Actor-owned Bleed (4.0s, base maximum 3, 1.0s ticks, 2 damage per stack) and Shock (3.0s, one stack, no tick damage) behavior, visual marks, snapshots, and cleanup.
+- Deterministic three-choice equipment rewards using only the run-scoped `equipment` stream after invalid/duplicate/equipped filtering and stable-ID sorting, with tokenized exactly-once application.
+- A compact 640 x 360 equipment UI showing three slots, names, tags/effects, counts, active/inactive threshold progress/effects, immediate activations, alternative paths, and replacement losses/gains.
+- Two Milestone 4 suites containing 31 tests/206 assertions and visual evidence at `res://docs/screenshots/milestone_4_equipment_synergies.png`.
+
+#### Authored tuning
+
+- Spiked Bat: `MELEE`/`BLEED`/`KNOCKBACK`; +25% heavy-hit damage, 25% heavy-hit Bleed chance, +15% knockback distance.
+- Shock Gloves: `TECH`/`SHOCK`/`FAST`; 25% hit Shock chance for 3.0s, +8% attack speed.
+- Reinforced Jacket: `DEFENCE`/`STREET`; +20% maximum health, -20% knockback received.
+- Hacker Deck: `TECH`/`INTERVENTION`; -10% intervention cooldown, +1.5s Shock duration.
+- Steel-Toe Boots: `KNOCKBACK`/`MOBILITY`; +10% movement speed, +15% environmental collision damage.
+- Serrated Wraps: `BLEED`/`FAST`; +1 maximum Bleed stack, +15% damage against bleeding enemies.
+- Magnetic Flail: `TECH`/`KNOCKBACK`; +20% environmental knockback, +10% environmental collision damage.
+- Voltaic Blade: `TECH`/`BLEED`; every hit applies one 4.0s Bleed stack, +20% damage against Shocked enemies.
+- Chain Sneakers: `FAST`/`KNOCKBACK`; +6% movement speed, +6% attack speed, +10% knockback follow-up damage.
+
+#### Changed
+
+- `GameRun` now wires `SynergySystem`, `RewardDirector`, combat/status authorities, Hydrant cooldown scaling, and `GameHUD` while keeping each owner scene-scoped.
+- `CombatDirector` applies stable aggregated health, heavy-hit/conditional damage, movement/attack speed, knockback, environmental damage, triggered Bleed/Shock, and follow-up modifiers without item-specific combat branches.
+- Equipment changes preserve current-health ratio where maximum health changes and never mutate Heat or irreversible Night Pressure.
+- Tech modifiers scale the existing finite intervention cooldown without regenerating resources or changing Subway/shop cooling rules.
+- Equipment choices and equipment effect chances share the existing specification-owned `equipment` stream. Extra cosmetic draws remain isolated; later equipment-choice reproduction additionally requires identical equipment decisions, proc resolutions, and authoritative timing. Random schema version 1 is unchanged.
+- Existing fixture helpers now compose the actor-owned `StatusController` required by the production actor scene; all prior acceptance behavior remains covered.
+
+#### Verification
+
+- Passed **106/106 tests and 1,306 assertions with no failures or skips**. All 75 Milestone 1–3 tests/1,100 assertions remain preserved; Milestone 4 adds 31 tests/206 assertions.
+- Covered exactly nine definitions/unique IDs, Resource validation, three slots, equip/replace/remove/rejection, stable aggregation, immediate recalculation, exact threshold effects/signals/deactivation, future threshold data, all two-item matrices/bridges, stream ownership/order/replay/variation/isolation, all preview modes, exactly-once one-click selection, combat modifiers/statuses, and clean restart.
+- Acquired Bat, Blade, and Flail through normal choices to activate all three synergies, replaced Bat with Gloves after a correct loss/gain preview, and removed bridge items to deactivate invalidated thresholds.
+- Verified seed 424242 reproduced `steel_toe_boots`, `serrated_wraps`, and `hacker_deck` after 20 extra cosmetic draws; same-seed restart cleared slots, tags, synergies, modifiers, statuses, modal/token state, and all seven draw counts.
+- Exercised visibly distinct Bat/Boots/Chain Knockback, Bat/Wraps/Blade Bleed, and Gloves/Hacker/Blade Tech builds in live combat. Observed increased displacement/environmental damage, live Bleed stacks/conditional damage, and 6.0-second Shock plus a 6.0-second Hydrant cooldown.
+- Exercised extraction, defeat, and boss-threshold flows with equipment active. Hydrant, coins, Help, sound unlock, fullscreen delivery, `F1`, and `F2` remained functional.
+- Launched the configured Godot 4.7 main scene directly into `/GameRun`; fresh editor/game output contained no task-introduced parser errors, runtime errors, warnings, failures, or skips.
+- Fresh local release Windows and Web exports succeeded. Windows passed a 180-frame headless startup smoke. Locally served Web rendered the equipment UI, accepted sound unlock, applied Serrated Wraps with one ordinary click, closed the modal, and produced no browser-console warnings or errors.
+
+#### Limitations
+
+- Numerical equipment/status balance is provisional and data-driven. Presentation uses text/code-drawn placeholders; production equipment icons/art/audio remain later presentation work.
+- Bleed and Shock are the only Milestone 4 statuses. Wet, combo systems, additional statuses, district cards, final-boss content, progression/persistence, procedural generation, and every Milestone 5+ system remain deliberately absent.
+- The embedded editor runner supports windowed mode only and reports that informational limitation for fullscreen; exported/browser fullscreen delivery paths are preserved. The generated Web shell retains its focused-canvas zoom limitation.
+- Reproduction is limited to the same supported build, content revision, schema version, seed, ordered decisions/effect resolutions, and authoritative timing context.
+
+#### Scope
+
+- Every explicitly authorized technical Milestone 4 criterion passed. Work stopped before Milestone 5.
+- All Milestone 0–3 technical acceptance decisions and the owner-recorded Milestone 1 Human Validation Gate were preserved without reopening or reinterpretation.
+- Milestone 4 changes, local exports, and verification evidence were not committed, pushed, merged, published, or deployed. GitHub Pages was not redeployed.
+
 ### 2026-07-18 — Milestone 3: Complete Run Structure (Technical)
 
 #### Added

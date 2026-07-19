@@ -365,7 +365,8 @@ func test_finite_shop_cooling_has_cost_stock_and_cannot_clear_progression() -> v
 func test_standard_rewards_use_encounter_tables_and_apply_exactly_once() -> void:
 	var director: RunDirector = _new_active_run(411)
 	var rewards: RewardDirector = _new_reward_director(director.get_random_streams())
-	rewards.standard_rewards = [VIPER_REWARD, STREET_REWARD, NEON_REWARD]
+	var reward_catalogue: Array[StandardRewardDefinition] = [VIPER_REWARD, STREET_REWARD, NEON_REWARD]
+	rewards.standard_rewards = reward_catalogue
 	var selected: StandardRewardDefinition = rewards.prepare_standard_reward(
 		1,
 		1,
@@ -428,7 +429,8 @@ func test_clean_same_seed_restart_clears_authoritative_and_ledger_state() -> voi
 	director.apply_heat_delta(90)
 	director.add_night_pressure(50.0)
 	var rewards: RewardDirector = _new_reward_director(streams)
-	rewards.standard_rewards = [STREET_REWARD]
+	var restart_reward_catalogue: Array[StandardRewardDefinition] = [STREET_REWARD]
+	rewards.standard_rewards = restart_reward_catalogue
 	rewards.grant_coins(100)
 	rewards.grant_scrap(9)
 	rewards.register_coin_cluster(1, 10)
@@ -594,11 +596,13 @@ func _new_actor(
 	actor.attack_controller = AttackController.new()
 	actor.attack_hitbox = Area2D.new()
 	actor.actor_visual = ActorVisual.new()
+	actor.status_controller = StatusController.new()
 	actor.add_child(actor.state_machine)
 	actor.add_child(actor.health_component)
 	actor.add_child(actor.attack_controller)
 	actor.add_child(actor.attack_hitbox)
 	actor.add_child(actor.actor_visual)
+	actor.add_child(actor.status_controller)
 	if initialize:
 		actor.initialize_runtime()
 	return actor

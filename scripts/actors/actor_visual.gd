@@ -19,6 +19,8 @@ var _is_targeted: bool = false
 var _has_target: bool = false
 var _flash_remaining: float = 0.0
 var _animation_clock: float = 0.0
+var _bleed_stacks: int = 0
+var _is_shocked: bool = false
 
 
 func _ready() -> void:
@@ -60,6 +62,12 @@ func set_has_target(has_target: bool) -> void:
 
 func play_hit_flash(duration: float = 0.09) -> void:
 	_flash_remaining = maxf(_flash_remaining, maxf(duration, 0.0))
+	queue_redraw()
+
+
+func set_statuses(bleed_stacks: int, is_shocked: bool) -> void:
+	_bleed_stacks = maxi(bleed_stacks, 0)
+	_is_shocked = is_shocked
 	queue_redraw()
 
 
@@ -177,6 +185,20 @@ func _draw_indicators() -> void:
 			Vector2(12.0 * _facing, -49.0),
 		])
 		draw_colored_polygon(direction_marker, Color("f8f1a6"))
+	if _bleed_stacks > 0 and _state != ActorStateMachine.State.DEAD:
+		draw_circle(Vector2(-9.0, -73.0), 3.0, Color("ff335f"))
+		draw_string(
+			ThemeDB.fallback_font,
+			Vector2(-6.0, -70.0),
+			str(_bleed_stacks),
+			HORIZONTAL_ALIGNMENT_LEFT,
+			-1.0,
+			8,
+			Color("ffd4dc")
+		)
+	if _is_shocked and _state != ActorStateMachine.State.DEAD:
+		var pulse: float = 0.65 + sin(_animation_clock * 15.0) * 0.25
+		draw_arc(Vector2(10.0, -72.0), 4.0, -PI, PI, 8, Color(0.2, 0.95, 1.0, pulse), 2.0)
 
 
 func _body_rotation() -> float:

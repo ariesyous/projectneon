@@ -20,23 +20,23 @@ If documentation and implementation disagree with the specification, stop and re
 
 ## Current verified state
 
-The currently implemented and technically verified scope is **Milestone 3 — Complete Run Structure**. It preserves all Milestone 0–2 behavior and adds:
+The currently implemented and technically verified scope is **Milestone 4.2 — Inventory drag and backpack clarity correction** on top of completed **Milestone 4.1 — Equipment usability and HUD readability correction** and **Milestone 4 — Equipment and Synergies**. It preserves all Milestone 0–4.1 behavior and includes:
 
-- `GameRun` as the configured run-scoped composition root
-- An explicit `RunDirector` state graph covering initialization, introduction, patrol, encounters, rewards, shop, extraction, boss trigger, terminal results, summary, pause, and restart
-- Authored patrol-route progression, deterministic encounter scheduling, safe transition boundaries, and encounter/global concurrency limits
-- Tactical Heat clamped to 0–100 with exact tiers and immediate danger/reward effects
-- Separate, irreversible Night Pressure driven only by eligible active time and exactly-once encounter completion
-- Data-driven enemy health, damage, and deterministic round-half-up spawn-budget scaling
-- Latched extraction thresholds, boss precedence, and unavoidable safe-boundary boss queueing
-- Finite Subway Reroute charges and finite shop cooling that reduce Heat without changing Night Pressure or latched progression
-- One authoritative integer run seed, optional supplied seeds, and a run-scoped `RunRandomStreams` child
-- Seven isolated deterministic streams: `encounters`, `spawns`, `rewards`, `equipment`, `cards`, `enemy_variants`, and `cosmetic`
-- Stable-ID candidate ordering, same-seed restart, known derivation vectors, and stream/cosmetic isolation
-- Standard rewards, authoritative coin/scrap accounting, extraction, defeat, boss-trigger results, summaries, and clean restart
-- Preserved automatic Jax/Street Punk combat, coin clusters, Fire Hydrant intervention, Help, audio unlock, fullscreen, mobile-landscape guidance, `F1`, and `F2`
+- Exactly nine typed stable-ID equipment Resources, three generic ordered active slots, and one clearly named backpack with three ordered inactive slots
+- Acquisition, explicit replacement/storage/removal, duplicate/invalid rejection, revisioned inventory transactions, and synchronous clean restart
+- Stable deterministic equipment tag, modifier, and triggered-effect aggregation
+- Data-driven Knockback 2, Bleed 2, and Tech 2 thresholds with immediate typed activation/deactivation events
+- Actor-owned Bleed/Shock status behavior and shared combat modifier/effect application
+- Deterministic equipment reward choices using only the `equipment` stream after stable-ID filtering/sorting
+- Immediate-activation, alternative-path, and full-slot replacement previews
+- A native 1280 x 720 equipment/synergy HUD over the preserved logical 640 x 360 world, with 16-pixel-minimum typography, item/synergy visuals, journey guidance, unambiguous active-versus-backpack language, bounded two-line prompts, compact action-target labels, and longest-name pixel-fit coverage across all reward/inventory destinations
+- Typed built-in `Control` drag payloads and targets for owned equipment and reward choices, plus an 8-pixel typed mouse/touch threshold fallback into Godot `force_drag`; the first armed touch cannot be stolen by a second touch, cross-area drops stage a lossless move or swap and still require Confirm, and click/tap/keyboard destination selection remains available
+- Explicit full-inventory replacement consequences and **Skip Gear** behavior that declines the new equipment without losing the paired run reward; destructive discard remains a separate named confirmation
+- Six Knockback, three Bleed, and six Tech valid two-item pairs plus three cross-primary bridge items
+- Three visibly distinct live builds and clean extraction/defeat/boss/restart behavior with equipment active
+- Preserved complete run lifecycle, Heat/Night Pressure separation, finite cooling, deterministic streams, automatic combat, coins, Fire Hydrant, Help, sound unlock, fullscreen, `F1`, and `F2`
 
-Technical verification on Godot 4.7 passed **75/75 tests and 1,100 assertions with no failures or skips**. This preserves the complete Milestone 1–2 result of 46 tests/694 assertions and adds 29 Milestone 3 tests/406 assertions.
+Technical verification on Godot 4.7 passed **145/145 tests and 1,709 assertions with no failures or skips** across 12 suites. This preserves all 132 Milestone 1–4.1 tests/1,584 assertions and adds 13 dedicated Milestone 4.2 tests/125 assertions. Configured `/GameRun` pointer drag, fresh logs, 1280 x 720 containment, Windows export/runtime smoke, and final local Web reward/inventory drag plus browser-console checks all passed.
 
 Milestone 3 was committed to and deployed from `main` at `725cd373e2732b0dd6967a24a16e717e21ef8487`. The GitHub Pages build is available at [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/). The deployed build rendered the live Milestone 3 HUD, accepted the sound-unlock gesture, and produced no Web-console warnings or errors during the deployment smoke check.
 
@@ -44,24 +44,9 @@ The Milestone 3 boss scope ends at threshold latching, safe queueing, `BOSS_INTR
 
 ## Next authorized scope
 
-The project owner has authorized **Milestone 4 — Equipment and Synergies** as the next development scope. It is authorized but not yet implemented.
+No Milestone 5 or later gameplay/content scope is authorized. Do not begin Milestone 5 District Cards, Milestone 6 content/presentation, final-boss content, broad progression or persistence, procedural generation, or any other later system without separate explicit authorization. Listing future content in documentation is not authorization to implement it.
 
-Milestone 4 is limited to:
-
-- At least nine data-driven equipment definitions, including Magnetic Flail, Voltaic Blade, and Chain Sneakers
-- Three generic equipment slots
-- Equipment acquisition, replacement, removal, reward choices, and UI
-- Deterministic equipment modifier and tag aggregation
-- Knockback 2, Bleed 2, and Tech 2 synergies
-- Immediate recalculation plus typed activation/deactivation events
-- Immediate-activation and alternative-build-path previews
-- At least three visibly distinct builds
-- At least three valid two-item combinations for each primary synergy
-- At least two cross-primary bridge items
-
-The `equipment` stream exists as Milestone 3 compatibility infrastructure and must own Milestone 4 equipment selection. The current `SynergySystem` is still a typed shell until Milestone 4 implements its specified authority.
-
-Do not begin Milestone 5 District Cards, Milestone 6 content/presentation, final-boss content, broad progression or persistence, procedural generation, or any other later system without separate explicit authorization. Listing future content in documentation is not authorization to implement it.
+The Milestone 4–4.2 implementation, local exports, and evidence have not been committed, pushed, merged, published, or deployed. Do not perform those actions without a new owner request.
 
 ## Historical Milestone 1 Human Validation Gate
 
@@ -114,12 +99,12 @@ Milestone 3 implements the deterministic randomness contract. All later gameplay
 - `RunEncounterController`: encounter identity, deterministic spawning/lanes, scaling, caps, completion, and cleanup
 - `RunCoolingController`: finite Subway and shop-cooling resources
 - `RunFlowController`: typed coordination between run, patrol, encounter, reward, cooling, and presentation intent
-- `CombatDirector`: actors, targeting, reservations, hits, environmental effects, and combat cleanup
-- `RewardDirector`: standard reward selection/accounting, coin ledger, at-most-once clusters, and manual streak
+- `CombatDirector`: actors, targeting, reservations, hits, equipment modifiers/effects, environmental effects, and combat cleanup
+- `RewardDirector`: standard/equipment reward selection and application coordination, coin ledger, at-most-once clusters, and manual streak
 - `FireHydrantController`: Hydrant validation, area resolution, rejection, and cooldown
 - `DisplayController`: presentation-only fullscreen, landscape, and safe-area integration
 - `CardSystem`: typed Milestone 5 authority shell only
-- `SynergySystem`: typed Milestone 4 authority shell pending implementation
+- `SynergySystem`: three active equipment slots, one three-slot inactive backpack, unique ownership, revisioned inventory transactions, deterministic active-only aggregation, threshold state/signals, and non-mutating previews
 
 The active run remains scene-scoped. No Neon Loop gameplay Autoload owns run state.
 
@@ -148,7 +133,7 @@ Primary run-system paths include:
 - `res://scripts/cards/card_system.gd`
 - `res://scripts/synergies/synergy_system.gd`
 
-Do not describe the implemented Milestone 3 directors as logic-free Milestone 0 shells. Only `CardSystem` and the pre-Milestone-4 `SynergySystem` remain deferred responsibility shells.
+Do not describe the implemented Milestone 3–4 directors as logic-free Milestone 0 shells. Only `CardSystem` remains a deferred responsibility shell.
 
 ## Verification requirements
 
@@ -165,7 +150,7 @@ Before declaring an implementation task complete:
 9. Capture visual evidence for visual acceptance criteria when tooling supports it.
 10. Verify affected Windows and Web behavior in proportion to the change.
 
-For Milestone 4, use the planned matrix and preview coverage in `TEST_PLAN.md`. All nine catalogue entries must be available to development/tests, each primary synergy must retain at least three valid two-item combinations, bridge choices must remain visible, and equipment selection must use the isolated `equipment` stream.
+Milestone 4's executed matrix and preview record in `TEST_PLAN.md` is an acceptance contract for later changes. All nine catalogue entries must remain available to development/tests, each primary synergy must retain at least three valid two-item combinations, bridge choices must remain visible, and equipment selection/effect chances must use only the isolated `equipment` stream.
 
 ## Verification records
 
@@ -173,5 +158,8 @@ For Milestone 4, use the planned matrix and preview coverage in `TEST_PLAN.md`. 
 - **Milestone 1:** 30/30 tests and 348 assertions passed. The separate owner-recorded Human Validation Gate passed on 2026-07-18. Evidence: `res://docs/screenshots/milestone_1_combat_lab.png`.
 - **Milestone 2:** 46/46 cumulative tests and 694 assertions passed. A 315.3046-second soak preserved the combat-safe region and exact reward accounting. Windows and Web checks were clean. Evidence: `res://docs/screenshots/milestone_2_player_intervention.png`.
 - **Milestone 3:** 75/75 cumulative tests and 1,100 assertions passed with no failures or skips. Extraction, defeat, boss threshold, finite cooling, time eligibility, deterministic replay/isolation, and clean restart were exercised in the configured project plus local Windows and Web exports. Evidence: `res://docs/screenshots/milestone_3_complete_run_structure.png`.
+- **Milestone 4:** 106/106 cumulative tests and 1,306 assertions passed with no failures or skips. Nine equipment definitions, three slots, aggregation, all three synergies/signals, choice determinism/previews/one-click input, three live builds, run endings, restart cleanup, and local Windows/Web exports were exercised. Evidence: `res://docs/screenshots/milestone_4_equipment_synergies.png`.
+- **Milestone 4.1:** 132/132 cumulative tests and 1,584 assertions passed with no failures or skips. Three inactive backpack slots, safe staged acquisition and revisioned inventory management, inspection-only clicks, named discard confirmation, native 1280 x 720 readability, twelve placeholder visuals, configured-project real-pointer input, and fresh local Windows/Web exports were verified. Evidence: `res://docs/screenshots/milestone_4_1_inventory_readability.png`.
+- **Milestone 4.2:** 145/145 cumulative tests and 1,709 assertions passed with no failures or skips across 12 suites. The 13 new tests/125 assertions verify one-backpack terminology, typed drag payloads and all three destinations, staged non-destructive move/swap behavior, reward-drag destination forwarding, exact full-inventory leave-behind/skip behavior, invalid/stale/combat-locked rejection, runtime pixel fit using the longest catalogue item name, the 8-pixel mouse/touch threshold fallback entering the same native drag transaction without mutation, and first-touch ownership under multi-touch input. Twenty dynamic-fit assertions cover all six reward destinations, all six inventory action-target states, and key two-line prompts; the pointer fallback has seven assertions and the touch/first-pointer test has five. Reward targets use compact `ACTIVE n` / `BACKPACK [n]` labels, inventory actions use compact `ACTIVE` / `STORE SLOT` / `SWAP SLOT` targets, Help states `CLICKS ONLY INSPECT; NEVER DISCARD`, and action labels use Web-safe ASCII wording. Configured Godot 4.7 opened `/GameRun`; a real pointer drag staged Magnetic Flail from active slot 3 to empty backpack slot 3 without mutation, then one Confirm changed revision 6→7 and a second invocation did nothing. Fresh logs were clean, the 1280 x 720 evidence showed no overflow, and fresh Windows export/runtime checks passed. The final local Web build unlocked sound, staged Hacker Deck reward→active slot 3 and active slot 3→empty backpack slot 3 through real pointer drags, applied each only after one ordinary Confirm click, showed no glyph boxes/overflow, and produced an empty warning/error console. Evidence: `res://docs/screenshots/milestone_4_2_inventory_drag.png`.
 
-Milestone 4 and later test sections remain planned acceptance contracts until their systems are actually implemented and executed.
+Milestone 5 and later test sections remain planned acceptance contracts until their systems are separately authorized, implemented, and executed.

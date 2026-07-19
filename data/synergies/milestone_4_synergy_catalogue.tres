@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="SynergyCatalogue" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/synergies/synergy_catalogue.gd" id="1_catalogue"]
+[ext_resource type="Resource" path="res://data/synergies/knockback_2.tres" id="2_knockback"]
+[ext_resource type="Resource" path="res://data/synergies/bleed_2.tres" id="3_bleed"]
+[ext_resource type="Resource" path="res://data/synergies/tech_2.tres" id="4_tech"]
+
+[resource]
+script = ExtResource("1_catalogue")
+synergies = Array[SynergyDefinition]([ExtResource("2_knockback"), ExtResource("3_bleed"), ExtResource("4_tech")])

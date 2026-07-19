@@ -6,6 +6,10 @@ extends Node
 
 signal flow_status_changed(snapshot: Dictionary)
 signal reward_ready(encounter_instance_id: int, reward: StandardRewardDefinition)
+signal equipment_reward_ready(
+	encounter_instance_id: int,
+	choices: Array[EquipmentDefinition]
+)
 signal action_feedback(message: String)
 
 @export var encounter_candidates: Array[EncounterDefinition] = []
@@ -17,6 +21,7 @@ var _reward_director: RewardDirector
 var _cooling_controller: RunCoolingController
 var _combat_director: CombatDirector
 var _fire_hydrant_controller: FireHydrantController
+var _synergy_system: SynergySystem
 var _next_encounter_instance_id: int = 1
 var _pending_reward_encounter_id: int = -1
 
@@ -28,7 +33,8 @@ func configure(
 	reward_director: RewardDirector,
 	cooling_controller: RunCoolingController,
 	combat_director: CombatDirector,
-	fire_hydrant_controller: FireHydrantController
+	fire_hydrant_controller: FireHydrantController,
+	synergy_system: SynergySystem = null
 ) -> void:
 	_run_director = run_director
 	_patrol_controller = patrol_controller
@@ -37,6 +43,8 @@ func configure(
 	_cooling_controller = cooling_controller
 	_combat_director = combat_director
 	_fire_hydrant_controller = fire_hydrant_controller
+	_synergy_system = synergy_system
+	_reward_director.configure_equipment(_synergy_system)
 
 	_run_director.run_started.connect(_on_run_started)
 	_run_director.run_state_changed.connect(_on_run_state_changed)
@@ -68,6 +76,61 @@ func claim_standard_reward() -> bool:
 	var continued: bool = _run_director.complete_reward_selection()
 	_continue_patrol_if_active()
 	return continued
+
+
+func claim_equipment_reward(choice_index: int, slot_index: int = -1) -> bool:
+	if (
+		_run_director.current_state != RunDirector.RunState.REWARD_SELECTION
+		or _pending_reward_encounter_id < 0
+		or not _reward_director.apply_equipment_choice(
+			_pending_reward_encounter_id,
+			choice_index,
+			slot_index
+		)
+	):
+		action_feedback.emit("EQUIPMENT CHOICE REJECTED")
+		return false
+	_pending_reward_encounter_id = -1
+	var continued: bool = _run_director.complete_reward_selection()
+	_continue_patrol_if_active()
+	return continued
+
+
+func claim_equipment_reward_to_inventory(
+	choice_index: int,
+	destination: StringName,
+	equipment_slot: int,
+	backpack_slot: int,
+	replace_confirmed: bool,
+	expected_revision: int
+) -> bool:
+	if (
+		_run_director.current_state != RunDirector.RunState.REWARD_SELECTION
+		or _pending_reward_encounter_id < 0
+		or not _reward_director.apply_equipment_choice_to_inventory(
+			_pending_reward_encounter_id,
+			choice_index,
+			destination,
+			equipment_slot,
+			backpack_slot,
+			replace_confirmed,
+			expected_revision
+		)
+	):
+		action_feedback.emit("EQUIPMENT CHOICE REJECTED")
+		return false
+	return _finish_reward_selection()
+
+
+func decline_equipment_reward() -> bool:
+	if (
+		_run_director.current_state != RunDirector.RunState.REWARD_SELECTION
+		or _pending_reward_encounter_id < 0
+		or not _reward_director.decline_equipment_reward(_pending_reward_encounter_id)
+	):
+		action_feedback.emit("EQUIPMENT REWARD STILL WAITING")
+		return false
+	return _finish_reward_selection()
 
 
 func leave_shop() -> bool:
@@ -131,6 +194,7 @@ func get_snapshot() -> Dictionary:
 		"encounter": _encounter_controller.get_snapshot() if _encounter_controller != null else {},
 		"rewards": _reward_director.get_debug_snapshot() if _reward_director != null else {},
 		"cooling": _cooling_controller.get_snapshot() if _cooling_controller != null else {},
+		"build": _synergy_system.get_snapshot() if _synergy_system != null else {},
 		"pending_reward_encounter_id": _pending_reward_encounter_id,
 	}
 
@@ -140,6 +204,8 @@ func _on_run_started(_seed: int, _schema_version: int) -> void:
 	_pending_reward_encounter_id = -1
 	_reward_director.configure_random_streams(_run_director.get_random_streams())
 	_reward_director.reset_for_run()
+	if _synergy_system != null:
+		_synergy_system.reset_for_run()
 	_cooling_controller.reset_for_run()
 	_patrol_controller.start_patrol()
 	_fire_hydrant_controller.reset_for_run()
@@ -205,6 +271,11 @@ func _on_encounter_completed(
 	)
 	if reward != null:
 		reward_ready.emit(encounter_instance_id, reward)
+	var equipment_choices: Array[EquipmentDefinition] = (
+		_reward_director.prepare_equipment_choices(encounter_instance_id)
+	)
+	if not equipment_choices.is_empty():
+		equipment_reward_ready.emit(encounter_instance_id, equipment_choices)
 	_emit_status()
 
 
@@ -218,13 +289,22 @@ func _on_run_completed(_result: int) -> void:
 		_reward_director.get_coin_total(),
 		_reward_director.get_manual_clusters_collected(),
 		_reward_director.get_maximum_manual_streak(),
-		_reward_director.get_scrap_total()
+		_reward_director.get_scrap_total(),
+		_synergy_system.get_build_summary() if _synergy_system != null else "None",
+		_synergy_system.get_active_synergy_summary() if _synergy_system != null else "None"
 	)
 
 
 func _continue_patrol_if_active() -> void:
 	if _run_director.current_state == RunDirector.RunState.PATROLLING:
 		_patrol_controller.continue_from_current_node()
+
+
+func _finish_reward_selection() -> bool:
+	_pending_reward_encounter_id = -1
+	var continued: bool = _run_director.complete_reward_selection()
+	_continue_patrol_if_active()
+	return continued
 
 
 func _on_route_progress_changed(_route_index: int, _progress: float, _loop_count: int) -> void:

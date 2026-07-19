@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="EquipmentDefinition" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/equipment/equipment_definition.gd" id="1_item"]
+[ext_resource type="Script" path="res://scripts/equipment/equipment_modifier_definition.gd" id="2_modifier"]
+[ext_resource type="Script" path="res://scripts/equipment/triggered_effect_definition.gd" id="3_effect"]
+[ext_resource type="Texture2D" path="res://assets/ui/equipment/icons/spiked_bat.png" id="9_icon"]
+
+[sub_resource type="Resource" id="Modifier_heavy_damage"]
+script = ExtResource("2_modifier")
+id = &"spiked_bat_heavy_damage"
+stat_id = &"heavy_hit_damage"
+operation = 1
+amount = 0.25
+
+[sub_resource type="Resource" id="Modifier_knockback"]
+script = ExtResource("2_modifier")
+id = &"spiked_bat_knockback"
+stat_id = &"knockback_distance"
+operation = 1
+amount = 0.15
+
+[sub_resource type="Resource" id="Effect_bleed"]
+script = ExtResource("3_effect")
+id = &"spiked_bat_bleed"
+trigger = 1
+status_id = &"bleed"
+chance_basis_points = 2500
+stacks = 1
+duration_seconds = 4.0
+
+[resource]
+script = ExtResource("1_item")
+id = &"spiked_bat"
+display_name = "Spiked Bat"
+icon = ExtResource("9_icon")
+description = "A committed street weapon that bridges Bleed and Knockback builds."
+tags = Array[StringName]([&"MELEE", &"BLEED", &"KNOCKBACK"])
+modifiers = Array[EquipmentModifierDefinition]([SubResource("Modifier_heavy_damage"), SubResource("Modifier_knockback")])
+triggered_effects = Array[TriggeredEffectDefinition]([SubResource("Effect_bleed")])
+major_effects = PackedStringArray("+25% heavy-hit damage", "25% heavy-hit Bleed chance", "+15% knockback distance")

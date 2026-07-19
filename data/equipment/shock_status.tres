@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="StatusEffectDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/equipment/status_effect_definition.gd" id="1_status"]
+
+[resource]
+script = ExtResource("1_status")
+id = &"shock"
+display_name = "Shock"
+base_duration_seconds = 3.0
+base_maximum_stacks = 1
+tick_interval_seconds = 0.0
+damage_per_stack = 0
+presentation_color = Color(0.25, 0.9, 1, 1)

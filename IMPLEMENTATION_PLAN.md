@@ -10,7 +10,13 @@
 
 **Milestone 3 — Complete Run Structure: technical implementation and verification complete**
 
-The Combat Lab foundation and Fire Hydrant intervention are preserved inside a complete run lifecycle. Technical Milestone 1 acceptance is complete. On 2026-07-18, the project owner recorded the five-person Human Validation Gate as **PASSED**, satisfying the Milestone 2 entry condition; this owner qualitative decision remains distinct from all automated and coding-agent verification. Milestone 2 and the separately authorized Milestone 3 run structure have now passed their respective technical verification.
+**Milestone 4 — Equipment and Synergies: technical implementation and verification complete**
+
+**Milestone 4.1 — Equipment usability and HUD readability correction: technical implementation and verification complete**
+
+**Milestone 4.2 — Inventory drag and backpack clarity correction: technical implementation and verification complete**
+
+The Combat Lab foundation and Fire Hydrant intervention are preserved inside a complete run lifecycle with the verified Milestone 4 equipment/synergy layer, Milestone 4.1 usability/readability correction, and bounded Milestone 4.2 drag/backpack-clarity implementation. Technical Milestone 1 acceptance is complete. On 2026-07-18, the project owner recorded the five-person Human Validation Gate as **PASSED**, satisfying the Milestone 2 entry condition; this owner qualitative decision remains distinct from all automated and coding-agent verification. Milestones 2–4.2 passed their respective technical verification without starting Milestone 5.
 
 ## Milestone 0 implementation
 
@@ -170,7 +176,94 @@ Technical checklist:
 
 ### Milestone 4 — Equipment and Synergies
 
-Implement at least nine equipment definitions, equipment UI, tag aggregation, and the Knockback, Bleed, and Tech synergies. The initial catalogue includes the original six plus Magnetic Flail, Voltaic Blade, and Chain Sneakers. Each primary synergy must have at least three valid two-item activation combinations, at least two items must bridge primary synergy categories, and choice UI must preview both immediate activation and alternative-path progress.
+- [x] Added exactly nine stable-ID `EquipmentDefinition` Resources plus typed modifier, triggered-effect, status, catalogue, synergy, and synergy-catalogue Resources
+- [x] Implemented three generic ordered slots with explicit acquire, empty-slot equip, full-slot replacement, removal, duplicate/invalid rejection, and synchronous clean restart
+- [x] Implemented stable deterministic tag, modifier, and triggered-effect aggregation independent of UI nodes and equipment-ID branches
+- [x] Implemented data-driven Knockback 2, Bleed 2, and Tech 2 thresholds, derived modifiers, immediate recalculation, and deduplicated typed activation/deactivation signals
+- [x] Implemented actor-owned Bleed and Shock behavior and shared combat application for health, heavy-hit/conditional damage, movement/attack speed, knockback, environmental damage, and intervention cooldown
+- [x] Implemented deterministic three-choice equipment rewards using only the existing `equipment` stream after invalid/duplicate/equipped filtering and stable-ID sorting
+- [x] Implemented exactly-once choice application and preserved one ordinary click/tap selection through the live reward flow
+- [x] Implemented a 640 x 360 equipment HUD with three slots, item names/tags/effects, tag counts, active/inactive threshold progress/effects, immediate activations, alternative paths, and full-slot replacement losses/gains
+- [x] Preserved six Knockback, three Bleed, and six Tech two-item activation pairs plus the Spiked Bat, Magnetic Flail, and Voltaic Blade cross-primary bridge decisions
+- [x] Preserved all 75 Milestone 1–3 tests and added 31 Milestone 4 tests: **106/106 tests, 1,306 assertions, no failures or skips**
+- [x] Launched `/GameRun`; exercised normal acquisition/replacement/removal, three visibly distinct builds, previews, Heat/Pressure isolation, cooldown rules, same-seed/cosmetic isolation, extraction/defeat/boss flows, restart cleanup, Hydrant, coins, Help, fullscreen path, `F1`, and `F2`
+- [x] Produced clean local release Windows and Web exports, passed a Windows headless startup smoke, and verified Web render/audio unlock/one-click equipment selection with no browser-console warnings or errors
+- [x] Captured `res://docs/screenshots/milestone_4_equipment_synergies.png`
+- [x] Added no gameplay Autoload and no Milestone 5+ card, content, persistence, progression, procedural, or final-boss behavior
+
+**Milestone 4 technical acceptance status: Passed.** Equipment proc chances and later equipment choices intentionally share the specification-owned `equipment` stream, so replay requires identical build decisions and authoritative effect timing as well as build/content/schema/seed equality. Random schema version 1 did not change. The implementation, exports, and evidence remain local; no commit, push, merge, publication, or deployment was performed.
+
+#### Milestone 4.1 — Equipment usability and HUD readability correction
+
+**Status: Authorized follow-up technically complete and verified.** This is a correction to the completed Milestone 4 interaction/presentation surface, not Milestone 5.
+
+- [x] Migrated the true presentation viewport to 1280 x 720 while preserving the established logical 640 x 360 stage/combat coordinates with `Camera2D` centered at `(320, 180)` and zoomed `Vector2(2, 2)`
+- [x] Preserved 16:9 aspect, integer viewport scaling, nearest-neighbour canvas filtering, the explicit default mipmap-filter setting, and pixel snapping
+- [x] Re-authored HUD/debug presentation natively at 1280 x 720 with no label or button below 16-pixel text, larger ordinary controls/headings, and panel-containment coverage
+- [x] Added generated, replaceable placeholder visuals for all nine equipment items and all three primary synergy badges; icon/badge references remain presentation-only
+- [x] Added exactly three ordered backpack slots in addition to the three active generic equipment slots
+- [x] Excluded stored items from active tags, modifiers, triggered effects, new triggered status applications, and synergy progress; already-applied actor-owned statuses expire/clear normally; enforced unique stable-ID ownership across all six positions
+- [x] Replaced direct reward mutation with item inspection, explicit Equip/Store destination selection, named consequence review, and a separate Confirm action
+- [x] Moved an outgoing active item to the first empty or explicitly chosen backpack slot; when all six positions are full, require the exact stored leave-behind item rather than auto-evicting an oldest item
+- [x] Added **Keep Current Build** so a player can decline equipment while resolving the paired ordinary reward exactly once
+- [x] Changed active/stored item clicks to inspection only; no ordinary inventory click removes or replaces equipment
+- [x] Added between-fight move-to-backpack, active/backpack swap, and named destructive-discard confirmation flows; combat permits inspection only
+- [x] Added inventory-revision and expected-stable-ID validation so stale modal/inspection requests reject without side effects
+- [x] Added a persistent Downtown journey strip and expanded opening guidance for `HIDEOUT → PATROL → FIGHT → GEAR → EXIT/BOSS`, current stage/next objective, and safe inventory use
+- [x] Kept equipment reward generation on the isolated `equipment` stream with the existing stable-ID ordering and random schema version 1; filtering now covers all owned IDs, while derivation and draw-without-replacement semantics remain unchanged
+- [x] Added deterministic inventory-safety and HUD/input/layout/icon suites
+- [x] Passed **132/132 tests and 1,584 assertions with no failures or skips** across 11 suites; preserved all 75 Milestone 1–3 tests/1,100 assertions and added 26 dedicated Milestone 4.1 tests/249 assertions
+- [x] Launched configured `/GameRun`; exercised real-pointer select/destination/single-confirm application, inspection-only inventory clicks, named discard review/cancel, journey/Help, Hydrant rejection, sound unlock, fullscreen, and preserved `F1`/`F2` handlers with clean fresh cursor-bounded logs
+- [x] Captured `res://docs/screenshots/milestone_4_1_inventory_readability.png`
+- [x] Produced fresh local release Windows and Web exports; Windows passed a clean 180-frame headless runtime smoke and Web passed reward/inventory/Help/fullscreen/Hydrant interaction with no console warnings/errors
+
+**Milestone 4.1 technical acceptance status: Passed.** The portable headless export editor emitted an ObjectDB-profiler `user://` directory message after successful exports, but neither exported runtime reproduced it. Browser automation did not deliver `F1` to the Web canvas; the unchanged configured runtime handler and preserved automated coverage passed. No commit, push, merge, publication, or deployment was performed.
+
+Selling, buyback, and a broader equipment shop/economy were deliberately not implemented: they exceed the authorized correction and require a separate product/economy decision. District Cards, final-boss content, progression/persistence, procedural generation, and every other Milestone 5+ system remain unimplemented.
+
+#### Milestone 4.2 — Inventory drag and backpack clarity correction
+
+**Status: Technical implementation and verification complete.** This is a bounded interaction follow-up to completed Milestone 4.1, not Milestone 5.
+
+- [x] Reworded the inventory surface as one unmistakable backpack containing three ordered inactive slots beside the unchanged three generic active slots
+- [x] Added typed `EquipmentDragPayload` data for owned-item and reward origins, stable equipment identity, source/choice position, inventory revision, encounter identity where applicable, and presentation metadata
+- [x] Added typed `EquipmentDragSlot` controls using Godot's built-in `Control` drag/drop callbacks, off-tree previews, and valid-target highlighting
+- [x] Added an 8-pixel typed mouse/touch threshold fallback that calls Godot `force_drag` with the same payload/preview when Web or touch motion does not enter `_get_drag_data`; it adds no authority path and still requires staging plus Confirm
+- [x] Preserved the first armed touch index so a second touch cannot steal or start that pointer's drag transaction
+- [x] Kept every drag non-authoritative: a valid drop stages the destination/action and still requires the existing Confirm step
+- [x] Made active-to-empty-backpack dragging stage a lossless move, and occupied active/backpack cross-area dragging stage an atomic swap that preserves both items
+- [x] Kept same-area drops, invalid targets, outside drops, stale revisions, wrong identities, and combat-locked management non-mutating
+- [x] Routed reward dragging through the existing revisioned exact-choice, active/backpack destination, and full-inventory leave-behind flow rather than adding a second acquisition path
+- [x] Kept click/tap/keyboard selection and destination controls as the complete fallback; destructive discard remains a separate named confirmation
+- [x] Made the full-inventory explanation explicit: choose the exact item left behind or **Skip Gear**, which declines equipment while preserving the paired run reward
+- [x] Shortened dynamic reward targets to `ACTIVE n` / `BACKPACK [n]`, inventory action targets to `ACTIVE` / `STORE SLOT` / `SWAP SLOT`, bounded key consequence prompts to two lines, made Help state `CLICKS ONLY INSPECT; NEVER DISCARD`, and replaced unsupported action-arrow glyphs with Web-safe words
+- [x] Added coverage for all three active/backpack targets, including third-slot reward and inventory paths, exactly-once confirmation, and non-mutating rejection cases
+- [x] Added 20 runtime pixel-fit assertions using the longest catalogue item name across all six reward destination controls, all six inventory action-target states, and key two-line prompts
+- [x] Added seven assertions proving the pointer-threshold fallback enters native drag without mutating inventory, plus five verifying touch thresholding and first-pointer preservation
+- [x] Passed **145/145 tests and 1,709 assertions with no failures or skips** across 12 suites; all 132 Milestone 1–4.1 tests/1,584 assertions remain preserved and M4.2 adds 13 tests/125 assertions
+- [x] Launched configured `/GameRun`; used real `InputEvent` pointer drag to stage Magnetic Flail from active slot 3 to empty backpack slot 3 without mutation, then confirmed exactly once (revision 6→7; repeat stayed 7)
+- [x] Inspected fresh cursor-bounded logs with no new warning/error and captured the contained 1280 x 720 state at `res://docs/screenshots/milestone_4_2_inventory_drag.png`
+- [x] Produced fresh Windows and Web exports with exit code 0/no export warnings or errors; Windows passed a clean headless load of `game_run.tscn` and the M4.2 scripts/Resources
+- [x] Verified the final locally served 1280 x 720 Web build: sound unlock; real pointer reward→active slot 3 staging with no pre-Confirm mutation; one-click application/modal close; active slot 3→empty backpack slot 3 named no-loss staging; one-click Confirm; no glyph boxes/overflow; empty warning/error console
+
+**Milestone 4.2 technical acceptance status: Passed.** No random draw, candidate order, inventory authority, active-slot aggregation rule, random schema, or Milestone 0–4.1 acceptance decision changed. No publication or deployment was performed.
+
+Selling, salvage, buyback, auto-sell/auto-salvage, equipment economy, rarity tiers, uniques, affixes, set items/set bonuses, and category-locked equipment slots were deliberately not implemented. District Cards and every other Milestone 5+ system remain unimplemented.
+
+#### Future equipment experience direction — design backlog, not authorized
+
+The completed behavior remains explicit: **Equip** places an item in one of three generic active slots and powers Jax; **Store** places it in one of three inactive cells in a single backpack; cross-area dragging stages a non-destructive move or swap and still requires Confirm; **Skip Gear / Keep Current Build** safely skips a new item when the six owned positions are full while preserving the paired run reward. There is no current selling, salvage, auto-sell, or auto-salvage behavior.
+
+Owner playtest direction to carry into a separately authorized itemization/UX milestone:
+
+- Evolve the implemented one-backpack/three-active-cell surface toward a fuller Diablo II-style character sheet only if a later product pass demonstrates that more space or deeper item management is needed.
+- Preserve the implemented non-destructive drag contract, valid-target feedback, snap-back behavior, and click/tap/keyboard destination/confirmation fallback. Any future leave-behind, salvage, or sale must name the affected item and require deliberate intent.
+- Keep **Skip / Keep Current Build** as the always-available full-inventory answer. Later economy work may compare explicit sell, explicit salvage, or player-configured auto-salvage rules, but must not silently destroy an item by default.
+- Explore a Diablo II-style character inventory that can be opened while the automatic fight remains visible. A later design must decide whether management is live, slowed, or paused during combat before changing the current between-encounter mutation rule.
+- Consider rarity tiers, uniques, affixes, and data-driven set items/set bonuses in a later equipment-content milestone. Stable IDs, deterministic instance/roll ownership, balance, economy, and presentation must be specified before implementation.
+- The current active slots remain generic. Category-locked weapon/armor/boots slots would be a separate product change and must preserve valid synergy-build paths if later authorized.
+
+This record captures product direction only. It does not authorize implementation, change random schema version 1, or begin Milestone 5 or later systems.
 
 ### Milestone 5 — District Cards
 

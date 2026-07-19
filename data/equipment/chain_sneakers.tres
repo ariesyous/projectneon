@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="EquipmentDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/equipment/equipment_definition.gd" id="1_item"]
+[ext_resource type="Script" path="res://scripts/equipment/equipment_modifier_definition.gd" id="2_modifier"]
+[ext_resource type="Texture2D" path="res://assets/ui/equipment/icons/chain_sneakers.png" id="9_icon"]
+
+[sub_resource type="Resource" id="Modifier_movement"]
+script = ExtResource("2_modifier")
+id = &"chain_sneakers_movement"
+stat_id = &"movement_speed"
+operation = 1
+amount = 0.06
+
+[sub_resource type="Resource" id="Modifier_attack_speed"]
+script = ExtResource("2_modifier")
+id = &"chain_sneakers_attack_speed"
+stat_id = &"attack_speed"
+operation = 1
+amount = 0.06
+
+[sub_resource type="Resource" id="Modifier_followup"]
+script = ExtResource("2_modifier")
+id = &"chain_sneakers_knockback_followup"
+stat_id = &"knockback_followup"
+operation = 1
+amount = 0.10
+
+[resource]
+script = ExtResource("1_item")
+id = &"chain_sneakers"
+display_name = "Chain Sneakers"
+icon = ExtResource("9_icon")
+description = "Fast footwear that helps chase and extend knockback follow-ups."
+tags = Array[StringName]([&"FAST", &"KNOCKBACK"])
+modifiers = Array[EquipmentModifierDefinition]([SubResource("Modifier_movement"), SubResource("Modifier_attack_speed"), SubResource("Modifier_followup")])
+major_effects = PackedStringArray("+6% movement speed", "+6% attack speed", "+10% knockback follow-up damage")

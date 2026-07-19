@@ -1,3 +1,4 @@
+@tool
 class_name GameHUD
 extends CanvasLayer
 
@@ -13,6 +14,32 @@ signal subway_reroute_requested()
 signal shop_cooling_requested()
 signal restart_same_seed_requested()
 signal restart_new_seed_requested()
+signal equipment_acquisition_requested(
+	choice_index: int,
+	destination: StringName,
+	equipment_slot: int,
+	backpack_slot: int,
+	replace_confirmed: bool,
+	expected_revision: int
+)
+signal equipment_reward_decline_requested()
+signal inventory_swap_requested(
+	equipment_slot: int,
+	backpack_slot: int,
+	expected_revision: int
+)
+signal inventory_move_requested(
+	equipment_slot: int,
+	backpack_slot: int,
+	replace_confirmed: bool,
+	expected_revision: int
+)
+signal inventory_discard_requested(
+	area: StringName,
+	slot_index: int,
+	equipment_id: StringName,
+	expected_revision: int
+)
 
 enum HydrantPresentationState {
 	AVAILABLE,
@@ -22,13 +49,13 @@ enum HydrantPresentationState {
 
 const RESPONSIBILITY: String = "Run presentation and player input forwarding"
 const ONBOARDING_EXPANDED_SECONDS: float = 12.0
-const DESIGN_SIZE: Vector2 = Vector2(640.0, 360.0)
-const MAX_SAFE_INSET: Vector2 = Vector2(16.0, 12.0)
-const HYDRANT_PANEL_BASE_POSITION: Vector2 = Vector2(510.0, 155.0)
-const HELP_PANEL_BASE_POSITION: Vector2 = Vector2(130.0, 290.0)
-const HELP_BUTTON_BASE_POSITION: Vector2 = Vector2(6.0, 290.0)
-const FULLSCREEN_BUTTON_BASE_POSITION: Vector2 = Vector2(64.0, 290.0)
-const LAB_PURPOSE_BASE_POSITION: Vector2 = Vector2(6.0, 326.0)
+const DESIGN_SIZE: Vector2 = Vector2(1280.0, 720.0)
+const MAX_SAFE_INSET: Vector2 = Vector2(32.0, 24.0)
+const HYDRANT_PANEL_BASE_POSITION: Vector2 = Vector2(1020.0, 310.0)
+const HELP_PANEL_BASE_POSITION: Vector2 = Vector2(260.0, 580.0)
+const HELP_BUTTON_BASE_POSITION: Vector2 = Vector2(12.0, 580.0)
+const FULLSCREEN_BUTTON_BASE_POSITION: Vector2 = Vector2(128.0, 580.0)
+const LAB_PURPOSE_BASE_POSITION: Vector2 = Vector2(12.0, 652.0)
 const HYDRANT_READY_COLOR: Color = Color("72f0d0")
 const HYDRANT_UNAVAILABLE_COLOR: Color = Color("ffbf69")
 const HYDRANT_COOLDOWN_COLOR: Color = Color("a987ff")
@@ -74,6 +101,56 @@ const HYDRANT_COOLDOWN_COLOR: Color = Color("a987ff")
 @onready var boss_trigger_panel: Panel = $Root/BossTriggerPanel
 @onready var boss_same_seed_button: Button = $Root/BossTriggerPanel/RestartSameSeed
 @onready var boss_new_seed_button: Button = $Root/BossTriggerPanel/RestartNewSeed
+@onready var build_title_button: LinkButton = $Root/BuildPanel/Title
+@onready var build_slot_01: LinkButton = $Root/BuildPanel/Slot01
+@onready var build_slot_02: LinkButton = $Root/BuildPanel/Slot02
+@onready var build_slot_03: LinkButton = $Root/BuildPanel/Slot03
+@onready var build_details_panel: Panel = $Root/BuildDetailsPanel
+@onready var build_details_close: Button = $Root/BuildDetailsPanel/Close
+@onready var equipment_details_label: Label = $Root/BuildDetailsPanel/EquipmentDetails
+@onready var synergy_details_label: Label = $Root/BuildDetailsPanel/SynergyDetails
+@onready var backpack_title_label: Label = $Root/BuildDetailsPanel/BackpackTitle
+@onready var synergy_badge_01: TextureRect = $Root/BuildDetailsPanel/SynergyBadge01
+@onready var synergy_badge_02: TextureRect = $Root/BuildDetailsPanel/SynergyBadge02
+@onready var synergy_badge_03: TextureRect = $Root/BuildDetailsPanel/SynergyBadge03
+@onready var equipped_inventory_01: EquipmentDragSlot = $Root/BuildDetailsPanel/Equipped01
+@onready var equipped_inventory_02: EquipmentDragSlot = $Root/BuildDetailsPanel/Equipped02
+@onready var equipped_inventory_03: EquipmentDragSlot = $Root/BuildDetailsPanel/Equipped03
+@onready var backpack_inventory_01: EquipmentDragSlot = $Root/BuildDetailsPanel/Backpack01
+@onready var backpack_inventory_02: EquipmentDragSlot = $Root/BuildDetailsPanel/Backpack02
+@onready var backpack_inventory_03: EquipmentDragSlot = $Root/BuildDetailsPanel/Backpack03
+@onready var inventory_action_01: Button = $Root/BuildDetailsPanel/ActionTarget01
+@onready var inventory_action_02: Button = $Root/BuildDetailsPanel/ActionTarget02
+@onready var inventory_action_03: Button = $Root/BuildDetailsPanel/ActionTarget03
+@onready var inventory_action_prompt: Label = $Root/BuildDetailsPanel/ActionPrompt
+@onready var inventory_discard_button: Button = $Root/BuildDetailsPanel/Discard
+@onready var inventory_confirm_button: Button = $Root/BuildDetailsPanel/Confirm
+@onready var inventory_cancel_button: Button = $Root/BuildDetailsPanel/Cancel
+@onready var equipment_reward_panel: Panel = $Root/EquipmentRewardPanel
+@onready var reward_target_01: EquipmentDragSlot = $Root/EquipmentRewardPanel/Target01
+@onready var reward_target_02: EquipmentDragSlot = $Root/EquipmentRewardPanel/Target02
+@onready var reward_target_03: EquipmentDragSlot = $Root/EquipmentRewardPanel/Target03
+@onready var reward_store_01: EquipmentDragSlot = $Root/EquipmentRewardPanel/Store01
+@onready var reward_store_02: EquipmentDragSlot = $Root/EquipmentRewardPanel/Store02
+@onready var reward_store_03: EquipmentDragSlot = $Root/EquipmentRewardPanel/Store03
+@onready var reward_pack_target_label: Label = $Root/EquipmentRewardPanel/PackTargetLabel
+@onready var reward_pack_target_01: Button = $Root/EquipmentRewardPanel/PackTarget01
+@onready var reward_pack_target_02: Button = $Root/EquipmentRewardPanel/PackTarget02
+@onready var reward_pack_target_03: Button = $Root/EquipmentRewardPanel/PackTarget03
+@onready var reward_choice_01: EquipmentDragSlot = $Root/EquipmentRewardPanel/Choice01
+@onready var reward_choice_02: EquipmentDragSlot = $Root/EquipmentRewardPanel/Choice02
+@onready var reward_choice_03: EquipmentDragSlot = $Root/EquipmentRewardPanel/Choice03
+@onready var reward_choice_icon_01: TextureRect = $Root/EquipmentRewardPanel/Choice01/Icon
+@onready var reward_choice_icon_02: TextureRect = $Root/EquipmentRewardPanel/Choice02/Icon
+@onready var reward_choice_icon_03: TextureRect = $Root/EquipmentRewardPanel/Choice03/Icon
+@onready var reward_choice_details_01: Label = $Root/EquipmentRewardPanel/Choice01/Details
+@onready var reward_choice_details_02: Label = $Root/EquipmentRewardPanel/Choice02/Details
+@onready var reward_choice_details_03: Label = $Root/EquipmentRewardPanel/Choice03/Details
+@onready var reward_instruction_label: Label = $Root/EquipmentRewardPanel/Instruction
+@onready var reward_confirmation_label: Label = $Root/EquipmentRewardPanel/Confirmation
+@onready var reward_confirm_button: Button = $Root/EquipmentRewardPanel/Confirm
+@onready var reward_cancel_button: Button = $Root/EquipmentRewardPanel/Cancel
+@onready var reward_keep_current_button: Button = $Root/EquipmentRewardPanel/KeepCurrent
 
 var _onboarding_remaining: float = ONBOARDING_EXPANDED_SECONDS
 var _hydrant_state: int = HydrantPresentationState.UNAVAILABLE
@@ -87,6 +164,35 @@ var _pending_safe_area: Rect2i = Rect2i()
 var _pending_window_size: Vector2i = Vector2i.ZERO
 var _scrap_total: int = 0
 var _last_run_snapshot: Dictionary = {}
+var _last_flow_state: int = -1
+var _build_snapshot: Dictionary = {}
+var _build_slot_buttons: Array[LinkButton] = []
+var _equipped_inventory_buttons: Array[EquipmentDragSlot] = []
+var _backpack_inventory_buttons: Array[EquipmentDragSlot] = []
+var _inventory_action_buttons: Array[Button] = []
+var _synergy_badges: Array[TextureRect] = []
+var _reward_target_buttons: Array[EquipmentDragSlot] = []
+var _reward_store_buttons: Array[EquipmentDragSlot] = []
+var _reward_pack_target_buttons: Array[Button] = []
+var _reward_choice_buttons: Array[EquipmentDragSlot] = []
+var _reward_choice_icons: Array[TextureRect] = []
+var _reward_choice_details: Array[Label] = []
+var _reward_choices: Array[EquipmentDefinition] = []
+var _reward_previews_by_choice: Array[Dictionary] = []
+var _reward_encounter_id: int = -1
+var _selected_reward_choice: int = -1
+var _selected_reward_destination: StringName = &""
+var _selected_reward_slot: int = -1
+var _selected_reward_backpack_slot: int = -1
+var _selected_reward_outgoing_backpack_slot: int = -1
+var _equipment_choice_in_flight: bool = false
+var _selected_inventory_area: StringName = &""
+var _selected_inventory_slot: int = -1
+var _selected_inventory_id: StringName = &""
+var _pending_inventory_action: StringName = &""
+var _pending_inventory_target: int = -1
+var _inventory_action_in_flight: bool = false
+var _inventory_management_enabled: bool = false
 
 
 func _ready() -> void:
@@ -105,11 +211,103 @@ func _ready() -> void:
 	summary_new_seed_button.pressed.connect(_on_restart_new_seed_pressed)
 	boss_same_seed_button.pressed.connect(_on_restart_same_seed_pressed)
 	boss_new_seed_button.pressed.connect(_on_restart_new_seed_pressed)
+	_build_slot_buttons = [build_slot_01, build_slot_02, build_slot_03]
+	_equipped_inventory_buttons = [
+		equipped_inventory_01,
+		equipped_inventory_02,
+		equipped_inventory_03,
+	]
+	_backpack_inventory_buttons = [
+		backpack_inventory_01,
+		backpack_inventory_02,
+		backpack_inventory_03,
+	]
+	_inventory_action_buttons = [inventory_action_01, inventory_action_02, inventory_action_03]
+	_synergy_badges = [synergy_badge_01, synergy_badge_02, synergy_badge_03]
+	_reward_target_buttons = [reward_target_01, reward_target_02, reward_target_03]
+	_reward_store_buttons = [reward_store_01, reward_store_02, reward_store_03]
+	_reward_pack_target_buttons = [
+		reward_pack_target_01,
+		reward_pack_target_02,
+		reward_pack_target_03,
+	]
+	_reward_choice_buttons = [reward_choice_01, reward_choice_02, reward_choice_03]
+	_reward_choice_icons = [reward_choice_icon_01, reward_choice_icon_02, reward_choice_icon_03]
+	_reward_choice_details = [
+		reward_choice_details_01,
+		reward_choice_details_02,
+		reward_choice_details_03,
+	]
+	build_title_button.pressed.connect(_toggle_build_details)
+	build_details_close.pressed.connect(_toggle_build_details)
+	for slot_index: int in range(SynergySystem.SLOT_COUNT):
+		_build_slot_buttons[slot_index].pressed.connect(
+			_on_equipment_slot_pressed.bind(slot_index)
+		)
+		_equipped_inventory_buttons[slot_index].pressed.connect(
+			_on_inventory_item_pressed.bind(SynergySystem.AREA_EQUIPPED, slot_index)
+		)
+		_equipped_inventory_buttons[slot_index].equipment_drag_started.connect(
+			_on_equipment_drag_started
+		)
+		_equipped_inventory_buttons[slot_index].equipment_drag_ended.connect(
+			_on_equipment_drag_ended
+		)
+		_equipped_inventory_buttons[slot_index].equipment_drop_requested.connect(
+			_on_inventory_drag_drop
+		)
+		_backpack_inventory_buttons[slot_index].pressed.connect(
+			_on_inventory_item_pressed.bind(SynergySystem.AREA_BACKPACK, slot_index)
+		)
+		_backpack_inventory_buttons[slot_index].equipment_drag_started.connect(
+			_on_equipment_drag_started
+		)
+		_backpack_inventory_buttons[slot_index].equipment_drag_ended.connect(
+			_on_equipment_drag_ended
+		)
+		_backpack_inventory_buttons[slot_index].equipment_drop_requested.connect(
+			_on_inventory_drag_drop
+		)
+		_inventory_action_buttons[slot_index].pressed.connect(
+			_on_inventory_action_target_pressed.bind(slot_index)
+		)
+		_reward_target_buttons[slot_index].pressed.connect(
+			_on_reward_target_pressed.bind(slot_index)
+		)
+		_reward_target_buttons[slot_index].equipment_drop_requested.connect(
+			_on_reward_drag_drop
+		)
+		_reward_store_buttons[slot_index].pressed.connect(
+			_on_reward_store_pressed.bind(slot_index)
+		)
+		_reward_store_buttons[slot_index].equipment_drop_requested.connect(
+			_on_reward_drag_drop
+		)
+		_reward_pack_target_buttons[slot_index].pressed.connect(
+			_on_reward_pack_target_pressed.bind(slot_index)
+		)
+		_reward_choice_buttons[slot_index].pressed.connect(
+			_on_reward_choice_pressed.bind(slot_index)
+		)
+		_reward_choice_buttons[slot_index].equipment_drag_started.connect(
+			_on_equipment_drag_started
+		)
+		_reward_choice_buttons[slot_index].equipment_drag_ended.connect(
+			_on_equipment_drag_ended
+		)
+	inventory_discard_button.pressed.connect(_on_inventory_discard_pressed)
+	inventory_confirm_button.pressed.connect(_on_inventory_confirm_pressed)
+	inventory_cancel_button.pressed.connect(_clear_inventory_pending_action)
+	reward_confirm_button.pressed.connect(_on_reward_confirm_pressed)
+	reward_cancel_button.pressed.connect(_clear_reward_selection)
+	reward_keep_current_button.pressed.connect(_on_reward_keep_current_pressed)
 	help_panel.visible = true
 	summary_panel.visible = false
 	boss_trigger_panel.visible = false
 	audio_unlock_panel.visible = false
 	landscape_panel.visible = false
+	build_details_panel.visible = false
+	equipment_reward_panel.visible = false
 	_refresh_hydrant_presentation()
 	_refresh_fullscreen_presentation()
 	_refresh_safe_area_layout()
@@ -202,17 +400,48 @@ func present_flow_snapshot(snapshot: Dictionary) -> void:
 		"  •  QUEUED" if bool(run.get("boss_queued", false)) else "",
 	]
 
-	var node_id: String = String(patrol.get("route_node_id", &"departing_hideout"))
-	route_title.text = "ROUTE • %s" % node_id.replace("_", " ").to_upper()
+	var state: int = int(run.get("state", RunDirector.RunState.INITIALIZING))
+	var management_was_enabled: bool = _inventory_management_enabled
+	if state == RunDirector.RunState.INTRO and _last_flow_state != RunDirector.RunState.INTRO:
+		build_details_panel.visible = false
+		_clear_inventory_selection()
+		dismiss_equipment_reward()
+		_onboarding_remaining = ONBOARDING_EXPANDED_SECONDS
+		help_panel.visible = true
+	_last_flow_state = state
+	_inventory_management_enabled = state in [
+		RunDirector.RunState.INTRO,
+		RunDirector.RunState.PATROLLING,
+		RunDirector.RunState.SHOP,
+		RunDirector.RunState.EXTRACTION_AVAILABLE,
+	]
+	if management_was_enabled and not _inventory_management_enabled:
+		_clear_inventory_selection()
+	if state in [
+		RunDirector.RunState.REWARD_SELECTION,
+		RunDirector.RunState.EXTRACTING,
+		RunDirector.RunState.BOSS_INTRO,
+		RunDirector.RunState.BOSS_ACTIVE,
+		RunDirector.RunState.VICTORY,
+		RunDirector.RunState.DEFEAT,
+		RunDirector.RunState.RUN_SUMMARY,
+	]:
+		build_details_panel.visible = false
+	if build_details_panel.visible:
+		_refresh_build_details(_build_snapshot.get("slots", []))
+		_refresh_inventory_action_presentation()
+	route_title.text = "ROUTE • %s" % _journey_stage_for_state(state)
 	var route_index: int = int(patrol.get("route_index", -1))
 	var route_progress: float = float(patrol.get("route_progress", 0.0))
-	route_label.text = "NODE %d  •  %02d%%  •  LOOP %d" % [
+	route_label.text = "HIDEOUT>PATROL>FIGHT\nGEAR>EXIT/BOSS\nN%d %02d%% L%d > %s" % [
 		route_index + 1,
 		int(round(route_progress * 100.0)),
 		int(patrol.get("loop_count", 0)),
+		_journey_next_objective(state),
 	]
 
-	var state: int = int(run.get("state", RunDirector.RunState.INITIALIZING))
+	if state != RunDirector.RunState.REWARD_SELECTION:
+		dismiss_equipment_reward()
 	var encounter_name: String = String(encounter.get("active_encounter_name", "Patrolling"))
 	_refresh_run_actions(state, encounter_name, cooling, rewards)
 	if state == RunDirector.RunState.EXTRACTION_AVAILABLE:
@@ -223,6 +452,107 @@ func present_flow_snapshot(snapshot: Dictionary) -> void:
 		]
 	summary_panel.visible = state == RunDirector.RunState.RUN_SUMMARY
 	boss_trigger_panel.visible = state == RunDirector.RunState.BOSS_ACTIVE
+
+
+func present_build_snapshot(snapshot: Dictionary) -> void:
+	_build_snapshot = snapshot.duplicate(true)
+	_inventory_action_in_flight = false
+	_validate_inventory_selection()
+	if not is_node_ready():
+		return
+	_refresh_build_presentation()
+
+
+func present_equipment_reward(
+	encounter_instance_id: int,
+	choices: Array[EquipmentDefinition],
+	previews_by_choice: Array[Dictionary]
+) -> void:
+	_reward_encounter_id = encounter_instance_id
+	_reward_choices = choices.duplicate()
+	_reward_previews_by_choice = previews_by_choice.duplicate(true)
+	_equipment_choice_in_flight = false
+	_selected_reward_choice = -1
+	_selected_reward_destination = &""
+	_selected_reward_slot = _first_empty_build_slot()
+	_selected_reward_backpack_slot = -1
+	_selected_reward_outgoing_backpack_slot = -1
+	_clear_inventory_selection()
+	build_details_panel.visible = false
+	help_panel.visible = false
+	equipment_reward_panel.visible = true
+	equipment_reward_panel.move_to_front()
+	_refresh_equipment_reward_presentation()
+
+
+func dismiss_equipment_reward() -> void:
+	if not is_node_ready():
+		return
+	equipment_reward_panel.visible = false
+	_reward_encounter_id = -1
+	_reward_choices.clear()
+	_reward_previews_by_choice.clear()
+	_equipment_choice_in_flight = false
+	_selected_reward_choice = -1
+	_selected_reward_destination = &""
+	_selected_reward_slot = -1
+	_selected_reward_backpack_slot = -1
+	_selected_reward_outgoing_backpack_slot = -1
+	for button: EquipmentDragSlot in _reward_choice_buttons:
+		button.disabled = false
+
+
+func is_equipment_reward_visible() -> bool:
+	return equipment_reward_panel.visible if is_node_ready() else false
+
+
+func get_selected_reward_slot() -> int:
+	return _selected_reward_slot
+
+
+func get_selected_reward_choice() -> int:
+	return _selected_reward_choice
+
+
+func get_selected_reward_destination() -> StringName:
+	return _selected_reward_destination
+
+
+func get_selected_reward_backpack_slot() -> int:
+	return _selected_reward_backpack_slot
+
+
+func get_selected_inventory_area() -> StringName:
+	return _selected_inventory_area
+
+
+func get_selected_inventory_slot() -> int:
+	return _selected_inventory_slot
+
+
+func get_pending_inventory_action() -> StringName:
+	return _pending_inventory_action
+
+
+func get_pending_inventory_target() -> int:
+	return _pending_inventory_target
+
+
+func present_inventory_action_result(succeeded: bool) -> void:
+	_inventory_action_in_flight = false
+	if succeeded:
+		_clear_inventory_selection()
+	elif is_node_ready():
+		inventory_action_prompt.text = "INVENTORY CHANGED OR ACTION REJECTED. REVIEW AND TRY AGAIN."
+	_refresh_build_presentation()
+
+
+func present_equipment_action_result(succeeded: bool) -> void:
+	_equipment_choice_in_flight = false
+	if not succeeded:
+		for button: EquipmentDragSlot in _reward_choice_buttons:
+			button.disabled = false
+		_refresh_equipment_reward_presentation()
 
 
 func present_run_summary(summary: RunSummaryRecord) -> void:
@@ -378,8 +708,8 @@ func _safe_area_matches_window(safe_area: Rect2i, window_size: Vector2i) -> bool
 		and safe_area.size.y <= ceili(float(window_size.y) * 1.05)
 		and safe_area.position.x >= 0
 		and safe_area.position.y >= 0
-		and safe_area.position.x <= window_size.x / 4
-		and safe_area.position.y <= window_size.y / 4
+		and safe_area.position.x <= float(window_size.x) / 4.0
+		and safe_area.position.y <= float(window_size.y) / 4.0
 	)
 
 
@@ -479,6 +809,335 @@ func _on_restart_new_seed_pressed() -> void:
 	restart_new_seed_requested.emit()
 
 
+func _toggle_build_details() -> void:
+	if equipment_reward_panel.visible:
+		return
+	build_details_panel.visible = not build_details_panel.visible
+	if build_details_panel.visible:
+		help_panel.visible = false
+		build_details_panel.move_to_front()
+		_refresh_build_presentation()
+	else:
+		_clear_inventory_selection()
+
+
+func _on_equipment_slot_pressed(slot_index: int) -> void:
+	if equipment_reward_panel.visible:
+		return
+	build_details_panel.visible = true
+	build_details_panel.move_to_front()
+	help_panel.visible = false
+	_on_inventory_item_pressed(SynergySystem.AREA_EQUIPPED, slot_index)
+
+
+func _on_inventory_item_pressed(area: StringName, slot_index: int) -> void:
+	if _inventory_action_in_flight:
+		return
+	if (
+		_inventory_management_enabled
+		and _selected_inventory_id != &""
+		and _selected_inventory_area != area
+	):
+		_stage_inventory_destination(area, slot_index)
+		return
+	var slot: Dictionary = _inventory_slot(area, slot_index)
+	var equipment_id: StringName = StringName(slot.get("id", &""))
+	if equipment_id == &"":
+		_clear_inventory_selection()
+		return
+	_selected_inventory_area = area
+	_selected_inventory_slot = slot_index
+	_selected_inventory_id = equipment_id
+	_pending_inventory_action = &""
+	_pending_inventory_target = -1
+	_refresh_build_presentation()
+
+
+func _on_inventory_action_target_pressed(target_slot: int) -> void:
+	if (
+		_inventory_action_in_flight
+		or not _inventory_management_enabled
+		or _selected_inventory_id == &""
+		or target_slot < 0
+		or target_slot >= SynergySystem.SLOT_COUNT
+	):
+		return
+	var target_area: StringName = (
+		SynergySystem.AREA_BACKPACK
+		if _selected_inventory_area == SynergySystem.AREA_EQUIPPED
+		else SynergySystem.AREA_EQUIPPED
+	)
+	_stage_inventory_destination(target_area, target_slot)
+
+
+func _stage_inventory_destination(target_area: StringName, target_slot: int) -> void:
+	if (
+		_inventory_action_in_flight
+		or not _inventory_management_enabled
+		or _selected_inventory_id == &""
+		or target_area == _selected_inventory_area
+		or (
+			target_area != SynergySystem.AREA_EQUIPPED
+			and target_area != SynergySystem.AREA_BACKPACK
+		)
+		or target_slot < 0
+		or target_slot >= SynergySystem.SLOT_COUNT
+	):
+		return
+	_pending_inventory_target = target_slot
+	var target: Dictionary = _inventory_slot(target_area, target_slot)
+	var target_id: StringName = StringName(target.get("id", &""))
+	_pending_inventory_action = &"swap"
+	if (
+		_selected_inventory_area == SynergySystem.AREA_EQUIPPED
+		and target_area == SynergySystem.AREA_BACKPACK
+		and target_id == &""
+	):
+		_pending_inventory_action = &"move_to_backpack"
+	_refresh_inventory_action_presentation()
+
+
+func _on_equipment_drag_started(payload: EquipmentDragPayload) -> void:
+	if payload.origin == EquipmentDragPayload.Origin.REWARD:
+		reward_instruction_label.text = (
+			"DRAGGING %s • HIGHLIGHTED ACTIVE/BACKPACK SLOTS ARE VALID • RELEASE TO STAGE"
+			% payload.display_name.to_upper()
+		)
+		return
+	inventory_action_prompt.text = (
+		"DRAGGING %s\nDROP IN THE OTHER COLUMN" % payload.display_name.to_upper()
+	)
+
+
+func _on_equipment_drag_ended(
+	payload: EquipmentDragPayload,
+	successful: bool
+) -> void:
+	if successful:
+		return
+	if payload.origin == EquipmentDragPayload.Origin.REWARD and equipment_reward_panel.visible:
+		reward_instruction_label.text = (
+			"INVALID / OUTSIDE DROP • GEAR RETURNED • INVENTORY UNCHANGED"
+		)
+	elif payload.origin == EquipmentDragPayload.Origin.INVENTORY and build_details_panel.visible:
+		inventory_action_prompt.text = (
+			"INVALID / OUTSIDE DROP • ITEM RETURNED • INVENTORY UNCHANGED"
+		)
+
+
+func _on_inventory_drag_drop(
+	payload: EquipmentDragPayload,
+	target_area: StringName,
+	target_slot: int
+) -> void:
+	if (
+		payload.origin != EquipmentDragPayload.Origin.INVENTORY
+		or not _inventory_management_enabled
+		or _inventory_action_in_flight
+		or target_area == payload.source_area
+		or target_slot < 0
+		or target_slot >= SynergySystem.SLOT_COUNT
+	):
+		inventory_action_prompt.text = "DROP REJECTED • INVENTORY UNCHANGED"
+		return
+	if payload.inventory_revision != int(_build_snapshot.get("inventory_revision", -1)):
+		inventory_action_prompt.text = "STALE DROP REJECTED • INVENTORY UNCHANGED"
+		return
+	var source: Dictionary = _inventory_slot(payload.source_area, payload.source_slot)
+	if StringName(source.get("id", &"")) != payload.equipment_id:
+		inventory_action_prompt.text = "STALE DROP REJECTED • INVENTORY UNCHANGED"
+		return
+	_selected_inventory_area = payload.source_area
+	_selected_inventory_slot = payload.source_slot
+	_selected_inventory_id = payload.equipment_id
+	_pending_inventory_action = &""
+	_pending_inventory_target = -1
+	_stage_inventory_destination(target_area, target_slot)
+
+
+func _on_reward_drag_drop(
+	payload: EquipmentDragPayload,
+	target_area: StringName,
+	target_slot: int
+) -> void:
+	if (
+		payload.origin != EquipmentDragPayload.Origin.REWARD
+		or _equipment_choice_in_flight
+		or not equipment_reward_panel.visible
+		or payload.encounter_id != _reward_encounter_id
+		or payload.inventory_revision != int(_build_snapshot.get("inventory_revision", -1))
+		or payload.choice_index < 0
+		or payload.choice_index >= _reward_choices.size()
+		or _reward_choices[payload.choice_index].id != payload.equipment_id
+	):
+		reward_instruction_label.text = "DROP REJECTED • REWARD AND INVENTORY UNCHANGED"
+		return
+	_on_reward_choice_pressed(payload.choice_index)
+	if target_area == SynergySystem.AREA_EQUIPPED:
+		_on_reward_target_pressed(target_slot)
+	elif target_area == SynergySystem.AREA_BACKPACK:
+		_on_reward_store_pressed(target_slot)
+
+
+func _on_inventory_discard_pressed() -> void:
+	if (
+		_inventory_action_in_flight
+		or not _inventory_management_enabled
+		or _selected_inventory_id == &""
+	):
+		return
+	_pending_inventory_action = &"discard"
+	_pending_inventory_target = -1
+	_refresh_inventory_action_presentation()
+
+
+func _on_inventory_confirm_pressed() -> void:
+	if (
+		_inventory_action_in_flight
+		or not _inventory_management_enabled
+		or _pending_inventory_action == &""
+	):
+		return
+	var revision: int = int(_build_snapshot.get("inventory_revision", -1))
+	_inventory_action_in_flight = true
+	if _pending_inventory_action == &"swap":
+		if _selected_inventory_area == SynergySystem.AREA_EQUIPPED:
+			inventory_swap_requested.emit(
+				_selected_inventory_slot,
+				_pending_inventory_target,
+				revision
+			)
+		else:
+			inventory_swap_requested.emit(
+				_pending_inventory_target,
+				_selected_inventory_slot,
+				revision
+			)
+	elif _pending_inventory_action == &"move_to_backpack":
+		inventory_move_requested.emit(
+			_selected_inventory_slot,
+			_pending_inventory_target,
+			false,
+			revision
+		)
+	elif _pending_inventory_action == &"discard":
+		inventory_discard_requested.emit(
+			_selected_inventory_area,
+			_selected_inventory_slot,
+			_selected_inventory_id,
+			revision
+		)
+	else:
+		_inventory_action_in_flight = false
+
+
+func _clear_inventory_pending_action() -> void:
+	_pending_inventory_action = &""
+	_pending_inventory_target = -1
+	if is_node_ready():
+		_refresh_inventory_action_presentation()
+
+
+func _on_reward_target_pressed(slot_index: int) -> void:
+	if (
+		_equipment_choice_in_flight
+		or _selected_reward_choice < 0
+		or slot_index < 0
+		or slot_index >= SynergySystem.SLOT_COUNT
+	):
+		return
+	_selected_reward_destination = SynergySystem.AREA_EQUIPPED
+	_selected_reward_slot = slot_index
+	_selected_reward_backpack_slot = -1
+	_selected_reward_outgoing_backpack_slot = -1
+	var equipped_slot: Dictionary = _inventory_slot(SynergySystem.AREA_EQUIPPED, slot_index)
+	if StringName(equipped_slot.get("id", &"")) != &"":
+		_selected_reward_outgoing_backpack_slot = _first_empty_backpack_slot()
+	_refresh_equipment_reward_presentation()
+
+
+func _on_reward_store_pressed(slot_index: int) -> void:
+	if (
+		_equipment_choice_in_flight
+		or _selected_reward_choice < 0
+		or slot_index < 0
+		or slot_index >= SynergySystem.BACKPACK_SLOT_COUNT
+	):
+		return
+	_selected_reward_destination = SynergySystem.AREA_BACKPACK
+	_selected_reward_slot = -1
+	_selected_reward_backpack_slot = slot_index
+	_selected_reward_outgoing_backpack_slot = -1
+	_refresh_equipment_reward_presentation()
+
+
+func _on_reward_pack_target_pressed(slot_index: int) -> void:
+	if (
+		_equipment_choice_in_flight
+		or _selected_reward_destination != SynergySystem.AREA_EQUIPPED
+		or slot_index < 0
+		or slot_index >= SynergySystem.BACKPACK_SLOT_COUNT
+	):
+		return
+	_selected_reward_outgoing_backpack_slot = slot_index
+	_refresh_equipment_reward_presentation()
+
+
+func _on_reward_choice_pressed(choice_index: int) -> void:
+	if (
+		_equipment_choice_in_flight
+		or _reward_encounter_id < 0
+		or choice_index < 0
+		or choice_index >= _reward_choices.size()
+	):
+		return
+	_selected_reward_choice = choice_index
+	_selected_reward_destination = &""
+	_selected_reward_backpack_slot = -1
+	_selected_reward_outgoing_backpack_slot = -1
+	# Empty active slots are safe defaults. Occupied slots are never selected
+	# automatically, so a full build cannot evict an item by accident.
+	_selected_reward_slot = _first_empty_build_slot()
+	_refresh_equipment_reward_presentation()
+
+
+func _on_reward_confirm_pressed() -> void:
+	if _equipment_choice_in_flight or not _reward_selection_is_complete():
+		return
+	_equipment_choice_in_flight = true
+	for button: EquipmentDragSlot in _reward_choice_buttons:
+		button.disabled = true
+	var backpack_slot: int = _selected_reward_backpack_slot
+	if _selected_reward_destination == SynergySystem.AREA_EQUIPPED:
+		backpack_slot = _selected_reward_outgoing_backpack_slot
+	equipment_acquisition_requested.emit(
+		_selected_reward_choice,
+		_selected_reward_destination,
+		_selected_reward_slot,
+		backpack_slot,
+		_reward_replaces_stored_item(),
+		int(_build_snapshot.get("inventory_revision", -1))
+	)
+
+
+func _on_reward_keep_current_pressed() -> void:
+	if _equipment_choice_in_flight or _reward_encounter_id < 0:
+		return
+	_equipment_choice_in_flight = true
+	equipment_reward_decline_requested.emit()
+
+
+func _clear_reward_selection() -> void:
+	if _equipment_choice_in_flight:
+		return
+	_selected_reward_choice = -1
+	_selected_reward_destination = &""
+	_selected_reward_slot = -1
+	_selected_reward_backpack_slot = -1
+	_selected_reward_outgoing_backpack_slot = -1
+	_refresh_equipment_reward_presentation()
+
+
 func _refresh_run_actions(
 	state: int,
 	encounter_name: String,
@@ -494,8 +1153,7 @@ func _refresh_run_actions(
 		RunDirector.RunState.ENCOUNTER_ACTIVE:
 			primary_text = "%s\nIN PROGRESS" % encounter_name.to_upper()
 		RunDirector.RunState.REWARD_SELECTION:
-			primary_disabled = false
-			primary_text = "CLAIM\nSTANDARD REWARD"
+			primary_text = "CHOOSE EQUIPMENT\nIN REWARD PANEL"
 		RunDirector.RunState.SHOP:
 			primary_disabled = false
 			primary_text = "LEAVE\nSHOP"
@@ -555,6 +1213,54 @@ func _present_action_button(button: Button, text: String, disabled: bool) -> voi
 		button.disabled = disabled
 
 
+func _journey_stage_for_state(state: int) -> String:
+	match state:
+		RunDirector.RunState.INITIALIZING, RunDirector.RunState.INTRO:
+			return "HIDEOUT"
+		RunDirector.RunState.PATROLLING:
+			return "PATROL"
+		RunDirector.RunState.ENCOUNTER_ACTIVE:
+			return "FIGHT"
+		RunDirector.RunState.REWARD_SELECTION:
+			return "GEAR"
+		RunDirector.RunState.SHOP:
+			return "SHOP"
+		RunDirector.RunState.EXTRACTION_AVAILABLE:
+			return "EXTRACTION DECISION"
+		RunDirector.RunState.BOSS_INTRO, RunDirector.RunState.BOSS_ACTIVE:
+			return "BOSS THRESHOLD"
+		RunDirector.RunState.PAUSED:
+			return "PAUSED"
+		RunDirector.RunState.RUN_SUMMARY:
+			return "RUN COMPLETE"
+	return "DOWNTOWN"
+
+
+func _journey_next_objective(state: int) -> String:
+	match state:
+		RunDirector.RunState.INITIALIZING, RunDirector.RunState.INTRO:
+			return "PATROL"
+		RunDirector.RunState.PATROLLING:
+			return "FIGHT / SHOP"
+		RunDirector.RunState.ENCOUNTER_ACTIVE:
+			return "DEFEAT"
+		RunDirector.RunState.REWARD_SELECTION:
+			return "CHOOSE GEAR"
+		RunDirector.RunState.SHOP:
+			return "COOL / LEAVE"
+		RunDirector.RunState.EXTRACTION_AVAILABLE:
+			return "EXIT / CONTINUE"
+		RunDirector.RunState.BOSS_INTRO:
+			return "ENTER BOSS"
+		RunDirector.RunState.BOSS_ACTIVE:
+			return "BOSS"
+		RunDirector.RunState.PAUSED:
+			return "RESUME"
+		RunDirector.RunState.RUN_SUMMARY:
+			return "RESTART"
+	return "GET READY"
+
+
 func _heat_implication(tier: int) -> String:
 	match tier:
 		0:
@@ -574,7 +1280,7 @@ func _heat_implication(tier: int) -> String:
 
 func _format_time(elapsed_seconds: float) -> String:
 	var safe_seconds: int = maxi(0, int(floor(elapsed_seconds)))
-	return "%02d:%02d" % [safe_seconds / 60, safe_seconds % 60]
+	return "%02d:%02d" % [floori(float(safe_seconds) / 60.0), safe_seconds % 60]
 
 
 func _compact_state_name(state_name: StringName) -> String:
@@ -595,3 +1301,730 @@ func _compact_state_name(state_name: StringName) -> String:
 			return "DOWN"
 		_:
 			return String(state_name).replace("_", " ")
+
+
+func _refresh_build_presentation() -> void:
+	var slots: Array = _build_snapshot.get("slots", [])
+	for slot_index: int in range(SynergySystem.SLOT_COUNT):
+		var button: LinkButton = _build_slot_buttons[slot_index]
+		var slot: Dictionary = slots[slot_index] if slot_index < slots.size() else {}
+		var equipment_id: StringName = StringName(slot.get("id", &""))
+		var display_name: String = str(slot.get("display_name", "EMPTY"))
+		button.disabled = equipment_id == &""
+		button.text = "%d  %s" % [slot_index + 1, display_name.to_upper()]
+		button.tooltip_text = _equipment_slot_tooltip(slot)
+	var stored_count: int = 0
+	for value: Variant in _build_snapshot.get("backpack_slots", []):
+		var stored_slot: Dictionary = value as Dictionary
+		if StringName(stored_slot.get("id", &"")) != &"":
+			stored_count += 1
+	build_title_button.text = "BUILD • BACKPACK %d/%d" % [
+		stored_count,
+		SynergySystem.BACKPACK_SLOT_COUNT,
+	]
+	backpack_title_label.text = "BACKPACK • %d/%d STORED • INACTIVE" % [
+		stored_count,
+		SynergySystem.BACKPACK_SLOT_COUNT,
+	]
+	_refresh_build_details(slots)
+
+
+func _refresh_build_details(slots: Array) -> void:
+	var backpack_slots: Array = _build_snapshot.get("backpack_slots", [])
+	for slot_index: int in range(SynergySystem.SLOT_COUNT):
+		_present_inventory_slot_button(
+			_equipped_inventory_buttons[slot_index],
+			SynergySystem.AREA_EQUIPPED,
+			slot_index,
+			slots[slot_index] if slot_index < slots.size() else {}
+		)
+		_present_inventory_slot_button(
+			_backpack_inventory_buttons[slot_index],
+			SynergySystem.AREA_BACKPACK,
+			slot_index,
+			backpack_slots[slot_index] if slot_index < backpack_slots.size() else {}
+		)
+
+	var selected_slot: Dictionary = _inventory_slot(
+		_selected_inventory_area,
+		_selected_inventory_slot
+	)
+	if _selected_inventory_id == &"" or selected_slot.is_empty():
+			equipment_details_label.text = (
+			"SELECT AN ITEM TO INSPECT.\n\n"
+			+ "ITEM CLICKS NEVER DROP EQUIPMENT.\n"
+			+ "ONLY EQUIPPED ITEMS POWER JAX. STORED ITEMS ARE INACTIVE.\n\n"
+			+ "DRAG BETWEEN COLUMNS OR USE CLICK/TAP. CONFIRM APPLIES."
+		)
+	else:
+		var detail_lines: PackedStringArray = PackedStringArray()
+		detail_lines.append(str(selected_slot.get("display_name", "")).to_upper())
+		detail_lines.append(
+			"%s SLOT %d" % [
+				"ACTIVE" if _selected_inventory_area == SynergySystem.AREA_EQUIPPED else "BACKPACK",
+				_selected_inventory_slot + 1,
+			]
+		)
+		detail_lines.append("TAGS: %s" % _join_string_names(selected_slot.get("tags", [])))
+		detail_lines.append("")
+		for effect_text: Variant in selected_slot.get("major_effects", PackedStringArray()):
+			detail_lines.append("- %s" % str(effect_text))
+		detail_lines.append("")
+		detail_lines.append(
+			"POWERING CURRENT BUILD"
+			if _selected_inventory_area == SynergySystem.AREA_EQUIPPED
+			else "STORED SAFELY - NO ACTIVE MODIFIERS OR TAGS"
+		)
+		equipment_details_label.text = "\n".join(detail_lines)
+
+	var synergy_lines: PackedStringArray = PackedStringArray()
+	synergy_lines.append("CURRENT TAG COUNTS")
+	var tag_counts: Dictionary = _build_snapshot.get("tag_counts", {})
+	var tags: Array[StringName] = []
+	for tag_value: Variant in tag_counts.keys():
+		tags.append(StringName(tag_value))
+	tags.sort_custom(_string_name_before)
+	var tag_parts: PackedStringArray = PackedStringArray()
+	for tag: StringName in tags:
+		tag_parts.append("%s %d" % [tag, int(tag_counts.get(tag, 0))])
+	synergy_lines.append("  %s" % (" • ".join(tag_parts) if not tag_parts.is_empty() else "NONE"))
+	synergy_lines.append("")
+	for badge: TextureRect in _synergy_badges:
+		badge.texture = null
+		badge.visible = false
+	var progress_index: int = 0
+	for progress_value: Variant in _build_snapshot.get("synergy_progress", []):
+		var progress: Dictionary = progress_value as Dictionary
+		var active: bool = bool(progress.get("active", false))
+		if progress_index < _synergy_badges.size():
+			var badge: TextureRect = _synergy_badges[progress_index]
+			badge.texture = progress.get("badge") as Texture2D
+			badge.visible = badge.texture != null
+			badge.modulate = Color.WHITE if active else Color(0.45, 0.48, 0.62, 0.72)
+		progress_index += 1
+		synergy_lines.append("%s %d/%d — %s" % [
+			str(progress.get("tag", &"")).to_upper(),
+			int(progress.get("count", 0)),
+			int(progress.get("threshold", 0)),
+			"ACTIVE" if active else "INACTIVE",
+		])
+		for effect_text: Variant in progress.get("major_effects", PackedStringArray()):
+			synergy_lines.append("  %s %s" % ["✓" if active else "•", str(effect_text)])
+		synergy_lines.append("")
+	synergy_details_label.text = "\n".join(synergy_lines)
+	_refresh_inventory_action_presentation()
+
+
+func _refresh_equipment_reward_presentation() -> void:
+	var slots: Array = _build_snapshot.get("slots", [])
+	var backpack_slots: Array = _build_snapshot.get("backpack_slots", [])
+	var has_rewards: bool = not _reward_choices.is_empty()
+	var has_choice: bool = (
+		_selected_reward_choice >= 0
+		and _selected_reward_choice < _reward_choices.size()
+	)
+	for slot_index: int in range(SynergySystem.SLOT_COUNT):
+		var slot: Dictionary = slots[slot_index] if slot_index < slots.size() else {}
+		var equip_selected: bool = (
+			_selected_reward_destination == SynergySystem.AREA_EQUIPPED
+			and slot_index == _selected_reward_slot
+		)
+		_reward_target_buttons[slot_index].text = "%s ACTIVE %d • %s" % [
+			">" if equip_selected else " ",
+			slot_index + 1,
+			str(slot.get("display_name", "EMPTY")).to_upper(),
+		]
+		_reward_target_buttons[slot_index].disabled = (
+			not has_rewards or _equipment_choice_in_flight
+		)
+		_reward_target_buttons[slot_index].configure_drop_target(
+			EquipmentDragPayload.Origin.REWARD,
+			SynergySystem.AREA_EQUIPPED,
+			slot_index,
+			has_rewards and not _equipment_choice_in_flight
+		)
+		var backpack_slot: Dictionary = (
+			backpack_slots[slot_index] if slot_index < backpack_slots.size() else {}
+		)
+		var store_selected: bool = (
+			_selected_reward_destination == SynergySystem.AREA_BACKPACK
+			and slot_index == _selected_reward_backpack_slot
+		)
+		_reward_store_buttons[slot_index].text = "%s BACKPACK [%d] • %s" % [
+			">" if store_selected else " ",
+			slot_index + 1,
+			str(backpack_slot.get("display_name", "EMPTY")).to_upper(),
+		]
+		_reward_store_buttons[slot_index].disabled = (
+			not has_rewards or _equipment_choice_in_flight
+		)
+		_reward_store_buttons[slot_index].configure_drop_target(
+			EquipmentDragPayload.Origin.REWARD,
+			SynergySystem.AREA_BACKPACK,
+			slot_index,
+			has_rewards and not _equipment_choice_in_flight
+		)
+	for choice_index: int in range(_reward_choice_buttons.size()):
+		var button: EquipmentDragSlot = _reward_choice_buttons[choice_index]
+		if choice_index >= _reward_choices.size():
+			button.visible = false
+			button.configure_drag_source(null, false)
+			continue
+		button.visible = true
+		button.disabled = _equipment_choice_in_flight
+		var item: EquipmentDefinition = _reward_choices[choice_index]
+		var preview: Dictionary = {}
+		var choice_text: String = ""
+		if _selected_reward_destination == SynergySystem.AREA_EQUIPPED:
+			preview = _preview_for_choice(choice_index, _selected_reward_slot)
+			choice_text = _format_equipment_choice(item, preview)
+		else:
+			choice_text = _format_equipment_choice_overview(
+				item,
+				choice_index,
+				_selected_reward_destination == SynergySystem.AREA_BACKPACK
+			)
+		button.text = ""
+		_reward_choice_details[choice_index].text = "%s%s" % [
+			"> SELECTED\n" if choice_index == _selected_reward_choice else "",
+			choice_text,
+		]
+		button.icon = null
+		_reward_choice_icons[choice_index].texture = item.icon
+		button.tooltip_text = item.description
+		button.configure_drag_source(
+			EquipmentDragPayload.new(
+				EquipmentDragPayload.Origin.REWARD,
+				&"",
+				-1,
+				choice_index,
+				item.id,
+				item.display_name,
+				int(_build_snapshot.get("inventory_revision", -1)),
+				_reward_encounter_id,
+				item.icon
+			),
+			not _equipment_choice_in_flight
+		)
+
+	var full_backpack_choice_required: bool = _reward_needs_full_backpack_choice()
+	var reserved_empty_backpack: bool = (
+		_selected_reward_destination == SynergySystem.AREA_EQUIPPED
+		and _selected_reward_slot >= 0
+		and StringName(
+			_inventory_slot(
+				SynergySystem.AREA_EQUIPPED,
+				_selected_reward_slot
+			).get("id", &"")
+		) != &""
+		and _selected_reward_outgoing_backpack_slot >= 0
+		and not full_backpack_choice_required
+	)
+	reward_pack_target_label.visible = (
+		full_backpack_choice_required or reserved_empty_backpack
+	)
+	if full_backpack_choice_required:
+		reward_pack_target_label.text = (
+			"BACKPACK FULL • CHOOSE A STORED ITEM TO DISCARD, OR SKIP GEAR"
+		)
+	elif reserved_empty_backpack:
+		var outgoing: Dictionary = _inventory_slot(
+			SynergySystem.AREA_EQUIPPED,
+			_selected_reward_slot
+		)
+		reward_pack_target_label.text = "%s TO BACKPACK SLOT %d • NO ITEM LOST" % [
+			str(outgoing.get("display_name", "ITEM")).to_upper(),
+			_selected_reward_outgoing_backpack_slot + 1,
+		]
+	for slot_index: int in range(SynergySystem.BACKPACK_SLOT_COUNT):
+		var button: Button = _reward_pack_target_buttons[slot_index]
+		button.visible = full_backpack_choice_required
+		button.disabled = _equipment_choice_in_flight
+		if not full_backpack_choice_required:
+			continue
+		var slot: Dictionary = (
+			backpack_slots[slot_index] if slot_index < backpack_slots.size() else {}
+		)
+		button.text = "%s DISCARD SLOT %d • %s" % [
+			">" if slot_index == _selected_reward_outgoing_backpack_slot else " ",
+			slot_index + 1,
+			str(slot.get("display_name", "EMPTY")).to_upper(),
+		]
+
+	if not has_choice:
+		reward_instruction_label.text = (
+			"DRAG GEAR TO A SLOT • OR CLICK GEAR + DESTINATION • REVIEW • CONFIRM"
+		)
+	elif _selected_reward_destination == &"":
+		reward_instruction_label.text = (
+			"GEAR SELECTED • DRAG IT OR CLICK AN ACTIVE/BACKPACK DESTINATION"
+		)
+	else:
+		reward_instruction_label.text = (
+			"DESTINATION STAGED • REVIEW CONSEQUENCES BELOW • CONFIRM TO APPLY"
+		)
+	reward_confirmation_label.text = _reward_confirmation_text()
+	reward_confirm_button.disabled = (
+		_equipment_choice_in_flight or not _reward_selection_is_complete()
+	)
+	reward_cancel_button.disabled = _equipment_choice_in_flight or not has_choice
+	reward_keep_current_button.disabled = _equipment_choice_in_flight
+
+
+func _present_inventory_slot_button(
+	button: EquipmentDragSlot,
+	area: StringName,
+	slot_index: int,
+	slot: Dictionary
+) -> void:
+	var equipment_id: StringName = StringName(slot.get("id", &""))
+	var selected: bool = (
+		area == _selected_inventory_area
+		and slot_index == _selected_inventory_slot
+		and equipment_id == _selected_inventory_id
+	)
+	button.text = "%s %s %d - %s" % [
+		">" if selected else " ",
+		"EQUIPPED" if area == SynergySystem.AREA_EQUIPPED else "SLOT",
+		slot_index + 1,
+		str(slot.get("display_name", "EMPTY")).to_upper(),
+	]
+	button.icon = slot.get("icon") as Texture2D
+	# Empty cells remain pointer-reachable because they are valid drag/drop and
+	# tap destinations. Empty presses simply inspect nothing.
+	button.disabled = _inventory_action_in_flight
+	button.tooltip_text = _equipment_slot_tooltip(slot)
+	var payload: EquipmentDragPayload = null
+	if equipment_id != &"":
+		payload = EquipmentDragPayload.new(
+			EquipmentDragPayload.Origin.INVENTORY,
+			area,
+			slot_index,
+			-1,
+			equipment_id,
+			str(slot.get("display_name", "ITEM")),
+			int(_build_snapshot.get("inventory_revision", -1)),
+			-1,
+			slot.get("icon") as Texture2D
+		)
+	button.configure_drag_source(
+		payload,
+		_inventory_management_enabled
+		and not _inventory_action_in_flight
+		and equipment_id != &""
+	)
+	button.configure_drop_target(
+		EquipmentDragPayload.Origin.INVENTORY,
+		area,
+		slot_index,
+		_inventory_management_enabled and not _inventory_action_in_flight
+	)
+
+
+func _inventory_slot(area: StringName, slot_index: int) -> Dictionary:
+	if slot_index < 0:
+		return {}
+	var key: String = (
+		"slots" if area == SynergySystem.AREA_EQUIPPED else "backpack_slots"
+	)
+	if area != SynergySystem.AREA_EQUIPPED and area != SynergySystem.AREA_BACKPACK:
+		return {}
+	var slots: Array = _build_snapshot.get(key, [])
+	if slot_index >= slots.size():
+		return {}
+	return slots[slot_index] as Dictionary
+
+
+func _validate_inventory_selection() -> void:
+	if _selected_inventory_id == &"":
+		return
+	var slot: Dictionary = _inventory_slot(_selected_inventory_area, _selected_inventory_slot)
+	if StringName(slot.get("id", &"")) != _selected_inventory_id:
+		_clear_inventory_selection()
+
+
+func _clear_inventory_selection() -> void:
+	_selected_inventory_area = &""
+	_selected_inventory_slot = -1
+	_selected_inventory_id = &""
+	_pending_inventory_action = &""
+	_pending_inventory_target = -1
+	_inventory_action_in_flight = false
+
+
+func _refresh_inventory_action_presentation() -> void:
+	var has_selection: bool = _selected_inventory_id != &""
+	for target_slot: int in range(_inventory_action_buttons.size()):
+		var button: Button = _inventory_action_buttons[target_slot]
+		button.disabled = (
+			not has_selection
+			or _inventory_action_in_flight
+			or not _inventory_management_enabled
+		)
+		if not has_selection:
+			button.text = "SELECT AN ITEM"
+			continue
+		var target_area: StringName = (
+			SynergySystem.AREA_BACKPACK
+			if _selected_inventory_area == SynergySystem.AREA_EQUIPPED
+			else SynergySystem.AREA_EQUIPPED
+		)
+		var target: Dictionary = _inventory_slot(target_area, target_slot)
+		var target_id: StringName = StringName(target.get("id", &""))
+		var action_label: String = "ACTIVE"
+		if target_area == SynergySystem.AREA_BACKPACK:
+			action_label = "SWAP SLOT" if target_id != &"" else "STORE SLOT"
+		button.text = "%s %s %d • %s" % [
+			">" if target_slot == _pending_inventory_target else " ",
+			action_label,
+			target_slot + 1,
+			str(target.get("display_name", "EMPTY")).to_upper(),
+		]
+
+	inventory_discard_button.disabled = (
+		not has_selection
+		or _inventory_action_in_flight
+		or not _inventory_management_enabled
+	)
+	inventory_confirm_button.disabled = (
+		_inventory_action_in_flight
+		or not _inventory_management_enabled
+		or _pending_inventory_action == &""
+	)
+	inventory_cancel_button.disabled = (
+		_inventory_action_in_flight or _pending_inventory_action == &""
+	)
+	if not has_selection:
+		inventory_action_prompt.text = "SELECT AN ITEM. INSPECTION NEVER CHANGES THE INVENTORY."
+		return
+	if not _inventory_management_enabled:
+		inventory_action_prompt.text = (
+			"INSPECTION ONLY DURING A FIGHT. MANAGE EQUIPMENT BETWEEN ENCOUNTERS."
+		)
+		return
+	var selected: Dictionary = _inventory_slot(
+		_selected_inventory_area,
+		_selected_inventory_slot
+	)
+	var selected_name: String = str(selected.get("display_name", "ITEM")).to_upper()
+	if _pending_inventory_action == &"":
+		inventory_action_prompt.text = (
+			"%s SELECTED.\nCHOOSE DESTINATION OR DISCARD." % selected_name
+		)
+		return
+	if _pending_inventory_action == &"discard":
+		inventory_action_prompt.text = (
+			"DISCARD %s?\nPERMANENT • CONFIRM REQUIRED." % selected_name
+		)
+		return
+	if _pending_inventory_action == &"move_to_backpack":
+		inventory_action_prompt.text = (
+			"BACKPACK %d: %s\nNO ITEM WILL BE LOST." % [
+				_pending_inventory_target + 1,
+				selected_name,
+			]
+		)
+		return
+	var target_area: StringName = (
+		SynergySystem.AREA_BACKPACK
+		if _selected_inventory_area == SynergySystem.AREA_EQUIPPED
+		else SynergySystem.AREA_EQUIPPED
+	)
+	var target: Dictionary = _inventory_slot(
+		target_area,
+		_pending_inventory_target
+	)
+	var target_id: StringName = StringName(target.get("id", &""))
+	if target_id != &"":
+		inventory_action_prompt.text = "SWAP %s\nWITH %s • KEEP BOTH." % [
+			selected_name,
+			str(target.get("display_name", "ITEM")).to_upper(),
+		]
+		return
+	inventory_action_prompt.text = (
+		"ACTIVE %d: %s\nBACKPACK %d BECOMES EMPTY." % [
+			_pending_inventory_target + 1,
+			selected_name,
+			_selected_inventory_slot + 1,
+		]
+	)
+
+
+func _first_empty_backpack_slot() -> int:
+	var slots: Array = _build_snapshot.get("backpack_slots", [])
+	for slot_index: int in range(mini(slots.size(), SynergySystem.BACKPACK_SLOT_COUNT)):
+		var slot: Dictionary = slots[slot_index] as Dictionary
+		if StringName(slot.get("id", &"")) == &"":
+			return slot_index
+	return -1
+
+
+func _reward_needs_full_backpack_choice() -> bool:
+	if (
+		_selected_reward_destination != SynergySystem.AREA_EQUIPPED
+		or _selected_reward_slot < 0
+	):
+		return false
+	var active: Dictionary = _inventory_slot(
+		SynergySystem.AREA_EQUIPPED,
+		_selected_reward_slot
+	)
+	return (
+		StringName(active.get("id", &"")) != &""
+		and _first_empty_backpack_slot() < 0
+	)
+
+
+func _reward_selection_is_complete() -> bool:
+	if (
+		_selected_reward_choice < 0
+		or _selected_reward_choice >= _reward_choices.size()
+	):
+		return false
+	if _selected_reward_destination == SynergySystem.AREA_BACKPACK:
+		return (
+			_selected_reward_backpack_slot >= 0
+			and _selected_reward_backpack_slot < SynergySystem.BACKPACK_SLOT_COUNT
+		)
+	if _selected_reward_destination != SynergySystem.AREA_EQUIPPED:
+		return false
+	if _selected_reward_slot < 0 or _selected_reward_slot >= SynergySystem.SLOT_COUNT:
+		return false
+	var active: Dictionary = _inventory_slot(
+		SynergySystem.AREA_EQUIPPED,
+		_selected_reward_slot
+	)
+	if StringName(active.get("id", &"")) == &"":
+		return true
+	return (
+		_selected_reward_outgoing_backpack_slot >= 0
+		and _selected_reward_outgoing_backpack_slot < SynergySystem.BACKPACK_SLOT_COUNT
+	)
+
+
+func _reward_replaces_stored_item() -> bool:
+	var backpack_slot: int = _selected_reward_backpack_slot
+	if _selected_reward_destination == SynergySystem.AREA_EQUIPPED:
+		backpack_slot = _selected_reward_outgoing_backpack_slot
+	if backpack_slot < 0:
+		return false
+	return StringName(
+		_inventory_slot(SynergySystem.AREA_BACKPACK, backpack_slot).get("id", &"")
+	) != &""
+
+
+func _reward_confirmation_text() -> String:
+	if _selected_reward_choice < 0 or _selected_reward_choice >= _reward_choices.size():
+		if int(_build_snapshot.get("owned_count", 0)) >= (
+			SynergySystem.SLOT_COUNT + SynergySystem.BACKPACK_SLOT_COUNT
+		):
+			return (
+				"INVENTORY FULL: 3 EQUIPPED + 3 STORED. REPLACE AN ITEM OR SKIP GEAR; "
+				+ "YOUR RUN REWARD IS STILL GRANTED."
+			)
+		return "SELECT AN ITEM. NOTHING CHANGES UNTIL YOU CONFIRM."
+	var item: EquipmentDefinition = _reward_choices[_selected_reward_choice]
+	if _selected_reward_destination == &"":
+		return (
+			"%s SELECTED. CHOOSE AN ACTIVE SLOT OR BACKPACK SLOT. NOTHING HAS CHANGED."
+			% item.display_name.to_upper()
+		)
+	if _selected_reward_destination == SynergySystem.AREA_BACKPACK:
+		var stored: Dictionary = _inventory_slot(
+			SynergySystem.AREA_BACKPACK,
+			_selected_reward_backpack_slot
+		)
+		var stored_id: StringName = StringName(stored.get("id", &""))
+		return "CONFIRM: STORE %s IN BACKPACK SLOT %d. %s" % [
+			item.display_name.to_upper(),
+			_selected_reward_backpack_slot + 1,
+			(
+				"%s WILL BE DISCARDED." % str(stored.get("display_name", "")).to_upper()
+				if stored_id != &""
+				else "NO ITEM WILL BE LOST."
+			),
+		]
+	var active: Dictionary = _inventory_slot(
+		SynergySystem.AREA_EQUIPPED,
+		_selected_reward_slot
+	)
+	var active_id: StringName = StringName(active.get("id", &""))
+	if active_id == &"":
+		return "CONFIRM: EQUIP %s IN ACTIVE SLOT %d. NO ITEM WILL BE LOST." % [
+			item.display_name.to_upper(),
+			_selected_reward_slot + 1,
+		]
+	if _selected_reward_outgoing_backpack_slot < 0:
+		return "BACKPACK FULL: CHOOSE A STORED ITEM TO DISCARD, OR SKIP GEAR."
+	var displaced: Dictionary = _inventory_slot(
+		SynergySystem.AREA_BACKPACK,
+		_selected_reward_outgoing_backpack_slot
+	)
+	var displaced_id: StringName = StringName(displaced.get("id", &""))
+	return "CONFIRM: EQUIP %s IN ACTIVE %d. %s TO BACKPACK SLOT %d. %s" % [
+		item.display_name.to_upper(),
+		_selected_reward_slot + 1,
+		str(active.get("display_name", "")).to_upper(),
+		_selected_reward_outgoing_backpack_slot + 1,
+		(
+			"%s WILL BE DISCARDED." % str(displaced.get("display_name", "")).to_upper()
+			if displaced_id != &""
+			else "NO ITEM WILL BE LOST."
+		),
+	]
+
+
+func _preview_for_choice(choice_index: int, slot_index: int) -> Dictionary:
+	if choice_index < 0 or choice_index >= _reward_previews_by_choice.size():
+		return {"valid": false}
+	var by_slot: Array = _reward_previews_by_choice[choice_index].get("by_slot", [])
+	if slot_index < 0 or slot_index >= by_slot.size():
+		return {"valid": false}
+	return by_slot[slot_index] as Dictionary
+
+
+func _format_equipment_choice_overview(
+	item: EquipmentDefinition,
+	choice_index: int,
+	stored_destination: bool
+) -> String:
+	var lines: PackedStringArray = _format_equipment_choice(
+		item,
+		{"valid": true}
+	).split("\n")
+	var activation_by_id: Dictionary[StringName, bool] = {}
+	var alternative_by_tag: Dictionary[StringName, Dictionary] = {}
+	if choice_index >= 0 and choice_index < _reward_previews_by_choice.size():
+		var by_slot: Array = _reward_previews_by_choice[choice_index].get("by_slot", [])
+		for preview_value: Variant in by_slot:
+			var preview: Dictionary = preview_value as Dictionary
+			if not bool(preview.get("valid", false)):
+				continue
+			for activation_value: Variant in preview.get("immediate_activations", []):
+				activation_by_id[StringName(activation_value)] = true
+			for alternative_value: Variant in preview.get("alternative_progress", []):
+				var alternative: Dictionary = alternative_value as Dictionary
+				var tag: StringName = StringName(alternative.get("tag", &""))
+				if tag == &"":
+					continue
+				var previous: Dictionary = alternative_by_tag.get(tag, {})
+				if (
+					previous.is_empty()
+					or int(alternative.get("after", 0)) > int(previous.get("after", 0))
+				):
+					alternative_by_tag[tag] = alternative
+
+	var activation_ids: Array[StringName] = []
+	activation_ids.assign(activation_by_id.keys())
+	activation_ids.sort_custom(_string_name_before)
+	if not activation_ids.is_empty():
+		var activation_values: Array = []
+		activation_values.assign(activation_ids)
+		lines.append("CAN ACTIVATE: %s" % _join_synergy_ids(activation_values))
+
+	var alternative_tags: Array[StringName] = []
+	alternative_tags.assign(alternative_by_tag.keys())
+	alternative_tags.sort_custom(_string_name_before)
+	if not alternative_tags.is_empty():
+		var alternative_parts: PackedStringArray = PackedStringArray()
+		for tag: StringName in alternative_tags:
+			var entry: Dictionary = alternative_by_tag[tag]
+			alternative_parts.append("%s %d/%d" % [
+				String(tag).to_upper(),
+				int(entry.get("after", 0)),
+				int(entry.get("threshold", 0)),
+			])
+		lines.append("CAN OPEN: %s" % " • ".join(alternative_parts))
+	if stored_destination:
+		lines.append("STORE: INACTIVE UNTIL EQUIPPED")
+	else:
+		lines.append("CHOOSE ACTIVE SLOT FOR EXACT RESULT")
+	return "\n".join(lines)
+
+
+func _format_equipment_choice(item: EquipmentDefinition, preview: Dictionary) -> String:
+	var lines: PackedStringArray = PackedStringArray()
+	lines.append(item.display_name.to_upper())
+	lines.append("[%s]" % _join_string_names(item.sorted_tags()))
+	for effect_text: String in item.major_effects:
+		lines.append_array(_wrap_compact("• %s" % effect_text, 44))
+	var replaced_name: String = str(preview.get("replaces_name", ""))
+	if not replaced_name.is_empty():
+		lines.append("REPLACE: %s" % replaced_name.to_upper())
+	var activations: Array = preview.get("immediate_activations", [])
+	var deactivations: Array = preview.get("deactivations", [])
+	var immediate_parts: PackedStringArray = PackedStringArray()
+	if not activations.is_empty():
+		immediate_parts.append("+%s" % _join_synergy_ids(activations))
+	if not deactivations.is_empty():
+		immediate_parts.append("-%s" % _join_synergy_ids(deactivations))
+	if not immediate_parts.is_empty():
+		lines.append("NOW: %s" % " • ".join(immediate_parts))
+	var alternative: Array = preview.get("alternative_progress", [])
+	if not alternative.is_empty():
+		var alternative_parts: PackedStringArray = PackedStringArray()
+		for value: Variant in alternative:
+			var entry: Dictionary = value as Dictionary
+			alternative_parts.append("%s %d/%d" % [
+				str(entry.get("tag", &"")).to_upper(),
+				int(entry.get("after", 0)),
+				int(entry.get("threshold", 0)),
+			])
+		lines.append("OTHER PATH: %s" % " • ".join(alternative_parts))
+	if not bool(preview.get("valid", false)):
+		lines.append("SELECT TO REVIEW BUILD PATHS")
+	return "\n".join(lines)
+
+
+func _equipment_slot_tooltip(slot: Dictionary) -> String:
+	if StringName(slot.get("id", &"")) == &"":
+		return "Empty generic slot. Drag an item here or use the click/tap destination controls."
+	var lines: PackedStringArray = PackedStringArray()
+	lines.append("Tags: %s" % _join_string_names(slot.get("tags", [])))
+	for effect_text: Variant in slot.get("major_effects", PackedStringArray()):
+		lines.append("• %s" % str(effect_text))
+	lines.append("Click to inspect or drag between columns. Dropping never discards an item.")
+	return "\n".join(lines)
+
+
+func _first_empty_build_slot() -> int:
+	var slots: Array = _build_snapshot.get("slots", [])
+	for slot_index: int in range(mini(slots.size(), SynergySystem.SLOT_COUNT)):
+		var slot: Dictionary = slots[slot_index] as Dictionary
+		if StringName(slot.get("id", &"")) == &"":
+			return slot_index
+	return -1
+
+
+func _join_string_names(values: Variant) -> String:
+	var parts: PackedStringArray = PackedStringArray()
+	for value: Variant in values:
+		parts.append(str(value))
+	return " • ".join(parts)
+
+
+func _join_synergy_ids(values: Array) -> String:
+	var parts: PackedStringArray = PackedStringArray()
+	for value: Variant in values:
+		parts.append(str(value).replace("_", " ").to_upper())
+	return " + ".join(parts)
+
+
+func _wrap_compact(value: String, maximum_characters: int) -> PackedStringArray:
+	var result: PackedStringArray = PackedStringArray()
+	var words: PackedStringArray = value.split(" ", false)
+	var line: String = ""
+	for word: String in words:
+		var candidate: String = word if line.is_empty() else "%s %s" % [line, word]
+		if candidate.length() > maximum_characters and not line.is_empty():
+			result.append(line)
+			line = word
+		else:
+			line = candidate
+	if not line.is_empty():
+		result.append(line)
+	return result
+
+
+func _string_name_before(left: StringName, right: StringName) -> bool:
+	return String(left) < String(right)

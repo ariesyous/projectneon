@@ -21,6 +21,25 @@ signal standard_reward_applied(
 	total_coins: int,
 	total_scrap: int
 )
+signal equipment_choices_prepared(
+	encounter_instance_id: int,
+	choices: Array[EquipmentDefinition]
+)
+signal equipment_choice_applied(
+	encounter_instance_id: int,
+	choice_index: int,
+	equipment: EquipmentDefinition,
+	slot_index: int
+)
+signal equipment_choice_resolved(
+	encounter_instance_id: int,
+	choice_index: int,
+	equipment: EquipmentDefinition,
+	destination: StringName,
+	equipment_slot: int,
+	backpack_slot: int
+)
+signal equipment_reward_declined(encounter_instance_id: int)
 
 const RESPONSIBILITY: String = "Own the coin ledger and resolve each coin cluster at most once."
 const MAX_MANUAL_BONUS_BASIS_POINTS: int = 1000
@@ -51,6 +70,7 @@ class PendingCoinAward:
 
 @export var tuning: CoinClusterTuning = DEFAULT_TUNING
 @export var standard_rewards: Array[StandardRewardDefinition] = []
+@export_range(1, 3, 1) var equipment_choice_count: int = 3
 
 var _simulation_time_msec: int = 0
 var _sub_millisecond_remainder: float = 0.0
@@ -65,7 +85,12 @@ var _active_awards: Dictionary[int, PendingCoinAward] = {}
 var _registered_cluster_ids: Dictionary[int, bool] = {}
 var _pending_standard_rewards: Dictionary[int, StandardRewardDefinition] = {}
 var _applied_standard_reward_ids: Dictionary[int, bool] = {}
+var _pending_equipment_choices: Dictionary = {}
+var _applied_equipment_reward_ids: Dictionary[int, bool] = {}
+var _resolving_equipment_reward_ids: Dictionary[int, bool] = {}
+var _last_equipment_candidate_order: Array[StringName] = []
 var _random_streams: RunRandomStreams
+var _synergy_system: SynergySystem
 var simulation_enabled: bool = true
 
 
@@ -93,6 +118,10 @@ func configure_random_streams(random_streams: RunRandomStreams) -> void:
 	_random_streams = random_streams
 
 
+func configure_equipment(synergy_system: SynergySystem) -> void:
+	_synergy_system = synergy_system
+
+
 func set_simulation_enabled(is_enabled: bool) -> void:
 	simulation_enabled = is_enabled
 
@@ -111,6 +140,10 @@ func reset_for_run() -> void:
 	_registered_cluster_ids.clear()
 	_pending_standard_rewards.clear()
 	_applied_standard_reward_ids.clear()
+	_pending_equipment_choices.clear()
+	_applied_equipment_reward_ids.clear()
+	_resolving_equipment_reward_ids.clear()
+	_last_equipment_candidate_order.clear()
 	coins_changed.emit(_coin_total)
 	scrap_changed.emit(_scrap_total)
 	streak_changed.emit(0, -1)
@@ -170,7 +203,10 @@ func prepare_standard_reward(
 
 
 func apply_standard_reward(encounter_instance_id: int) -> bool:
-	if _applied_standard_reward_ids.has(encounter_instance_id):
+	if (
+		_applied_standard_reward_ids.has(encounter_instance_id)
+		or _pending_equipment_choices.has(encounter_instance_id)
+	):
 		return false
 	var reward: StandardRewardDefinition = _pending_standard_rewards.get(
 		encounter_instance_id
@@ -187,6 +223,195 @@ func apply_standard_reward(encounter_instance_id: int) -> bool:
 
 func get_pending_standard_reward(encounter_instance_id: int) -> StandardRewardDefinition:
 	return _pending_standard_rewards.get(encounter_instance_id) as StandardRewardDefinition
+
+
+func prepare_equipment_choices(encounter_instance_id: int) -> Array[EquipmentDefinition]:
+	var empty_result: Array[EquipmentDefinition] = []
+	if (
+		encounter_instance_id < 0
+		or _pending_equipment_choices.has(encounter_instance_id)
+		or _applied_equipment_reward_ids.has(encounter_instance_id)
+		or _random_streams == null
+		or _synergy_system == null
+	):
+		return empty_result
+	var candidate_by_id: Dictionary[StringName, EquipmentDefinition] = {}
+	for item: EquipmentDefinition in _synergy_system.get_sorted_catalogue():
+		if (
+			item == null
+			or item.id == &""
+			or _synergy_system.owns_equipment(item.id)
+			or candidate_by_id.has(item.id)
+		):
+			continue
+		candidate_by_id[item.id] = item
+	_last_equipment_candidate_order.clear()
+	for equipment_id: StringName in candidate_by_id.keys():
+		_last_equipment_candidate_order.append(equipment_id)
+	_last_equipment_candidate_order.sort_custom(_string_name_before)
+
+	var remaining_ids: Array[StringName] = _last_equipment_candidate_order.duplicate()
+	var choices: Array[EquipmentDefinition] = []
+	var draw_count: int = mini(equipment_choice_count, remaining_ids.size())
+	for _draw_index: int in range(draw_count):
+		var selected_id: StringName = _random_streams.choose_stable_id(
+			RunRandomStreams.STREAM_EQUIPMENT,
+			remaining_ids
+		)
+		var selected: EquipmentDefinition = candidate_by_id.get(selected_id)
+		if selected == null:
+			break
+		choices.append(selected)
+		remaining_ids.erase(selected_id)
+	if choices.is_empty():
+		return empty_result
+	_pending_equipment_choices[encounter_instance_id] = choices
+	equipment_choices_prepared.emit(encounter_instance_id, choices)
+	return choices
+
+
+func apply_equipment_choice(
+	encounter_instance_id: int,
+	choice_index: int,
+	slot_index: int = -1
+) -> bool:
+	if (
+		_applied_equipment_reward_ids.has(encounter_instance_id)
+		or _resolving_equipment_reward_ids.has(encounter_instance_id)
+		or _synergy_system == null
+	):
+		return false
+	var choices: Array = _pending_equipment_choices.get(encounter_instance_id, [])
+	if choice_index < 0 or choice_index >= choices.size():
+		return false
+	var equipment: EquipmentDefinition = choices[choice_index] as EquipmentDefinition
+	if equipment == null:
+		return false
+	_resolving_equipment_reward_ids[encounter_instance_id] = true
+	if not _synergy_system.acquire_equipped(equipment, slot_index):
+		_resolving_equipment_reward_ids.erase(encounter_instance_id)
+		return false
+	var applied_slot: int = slot_index
+	if applied_slot < 0:
+		for equipped_slot: int in range(SynergySystem.SLOT_COUNT):
+			if _synergy_system.get_equipped_item(equipped_slot) == equipment:
+				applied_slot = equipped_slot
+				break
+	_finalize_equipment_reward(
+		encounter_instance_id,
+		choice_index,
+		equipment,
+		SynergySystem.AREA_EQUIPPED,
+		applied_slot,
+		-1
+	)
+	return true
+
+
+## Applies a previously selected reward only after presentation has gathered a
+## destination and explicit confirmation. The inventory revision makes stale
+## modal confirmations fail safely.
+func apply_equipment_choice_to_inventory(
+	encounter_instance_id: int,
+	choice_index: int,
+	destination: StringName,
+	equipment_slot: int,
+	backpack_slot: int,
+	replace_confirmed: bool,
+	expected_revision: int
+) -> bool:
+	if (
+		_applied_equipment_reward_ids.has(encounter_instance_id)
+		or _resolving_equipment_reward_ids.has(encounter_instance_id)
+		or _synergy_system == null
+	):
+		return false
+	var choices: Array = _pending_equipment_choices.get(encounter_instance_id, [])
+	if choice_index < 0 or choice_index >= choices.size():
+		return false
+	var equipment: EquipmentDefinition = choices[choice_index] as EquipmentDefinition
+	if equipment == null:
+		return false
+	_resolving_equipment_reward_ids[encounter_instance_id] = true
+	var applied: bool = false
+	if destination == SynergySystem.AREA_EQUIPPED:
+		applied = _synergy_system.acquire_equipped(
+			equipment,
+			equipment_slot,
+			backpack_slot,
+			replace_confirmed,
+			expected_revision
+		)
+	elif destination == SynergySystem.AREA_BACKPACK:
+		applied = _synergy_system.store(
+			equipment,
+			backpack_slot,
+			replace_confirmed,
+			expected_revision
+		)
+	if not applied:
+		_resolving_equipment_reward_ids.erase(encounter_instance_id)
+		return false
+	_finalize_equipment_reward(
+		encounter_instance_id,
+		choice_index,
+		equipment,
+		destination,
+		equipment_slot if destination == SynergySystem.AREA_EQUIPPED else -1,
+		backpack_slot
+	)
+	return true
+
+
+## Keeps the current inventory while still resolving the encounter's paired
+## standard reward. This is the safe default when all six positions are full.
+func decline_equipment_reward(encounter_instance_id: int) -> bool:
+	if (
+		_applied_equipment_reward_ids.has(encounter_instance_id)
+		or _resolving_equipment_reward_ids.has(encounter_instance_id)
+		or not _pending_equipment_choices.has(encounter_instance_id)
+	):
+		return false
+	_pending_equipment_choices.erase(encounter_instance_id)
+	_applied_equipment_reward_ids[encounter_instance_id] = true
+	_resolving_equipment_reward_ids.erase(encounter_instance_id)
+	apply_standard_reward(encounter_instance_id)
+	equipment_reward_declined.emit(encounter_instance_id)
+	return true
+
+
+func get_pending_equipment_choices(
+	encounter_instance_id: int
+) -> Array[EquipmentDefinition]:
+	var result: Array[EquipmentDefinition] = []
+	var stored: Array = _pending_equipment_choices.get(encounter_instance_id, [])
+	for value: Variant in stored:
+		var item: EquipmentDefinition = value as EquipmentDefinition
+		if item != null:
+			result.append(item)
+	return result
+
+
+func get_equipment_choice_preview(
+	encounter_instance_id: int,
+	choice_index: int,
+	slot_index: int = -1,
+	backpack_slot: int = -1
+) -> Dictionary:
+	if _synergy_system == null:
+		return {"valid": false, "reason": &"not_configured"}
+	var choices: Array[EquipmentDefinition] = get_pending_equipment_choices(encounter_instance_id)
+	if choice_index < 0 or choice_index >= choices.size():
+		return {"valid": false, "reason": &"invalid_choice"}
+	return _synergy_system.preview_equipment(
+		choices[choice_index],
+		slot_index,
+		backpack_slot
+	)
+
+
+func get_last_equipment_candidate_order() -> Array[StringName]:
+	return _last_equipment_candidate_order.duplicate()
 
 
 func grant_coins(amount: int) -> int:
@@ -313,6 +538,14 @@ func get_debug_snapshot() -> Dictionary:
 	for cluster_id: int in _active_awards.keys():
 		active_ids.append(cluster_id)
 	active_ids.sort()
+	var pending_equipment_ids: Array[StringName] = []
+	var pending_encounter_ids: Array[int] = []
+	for pending_id: Variant in _pending_equipment_choices.keys():
+		pending_encounter_ids.append(int(pending_id))
+	pending_encounter_ids.sort()
+	if not pending_encounter_ids.is_empty():
+		for item: EquipmentDefinition in get_pending_equipment_choices(pending_encounter_ids[0]):
+			pending_equipment_ids.append(item.id)
 	return {
 		"simulation_time_msec": _simulation_time_msec,
 		"coin_total": _coin_total,
@@ -323,6 +556,11 @@ func get_debug_snapshot() -> Dictionary:
 		"maximum_manual_streak": _maximum_manual_streak,
 		"manual_clusters_collected": _manual_clusters_collected,
 		"streak_expires_at_msec": _streak_expires_at_msec,
+		"pending_equipment_encounter_id": (
+			pending_encounter_ids[0] if not pending_encounter_ids.is_empty() else -1
+		),
+		"pending_equipment_ids": pending_equipment_ids,
+		"equipment_rewards_applied": _applied_equipment_reward_ids.size(),
 	}
 
 
@@ -352,6 +590,36 @@ func _resolve_cluster(cluster_id: int, manual: bool, resolution_time_msec: int) 
 		_active_streak_count
 	)
 	return true
+
+
+func _finalize_equipment_reward(
+	encounter_instance_id: int,
+	choice_index: int,
+	equipment: EquipmentDefinition,
+	destination: StringName,
+	equipment_slot: int,
+	backpack_slot: int
+) -> void:
+	# Clear and latch before callbacks. Repeated clicks cannot reapply either
+	# inventory mutation or the paired standard encounter reward.
+	_pending_equipment_choices.erase(encounter_instance_id)
+	_applied_equipment_reward_ids[encounter_instance_id] = true
+	_resolving_equipment_reward_ids.erase(encounter_instance_id)
+	apply_standard_reward(encounter_instance_id)
+	equipment_choice_applied.emit(
+		encounter_instance_id,
+		choice_index,
+		equipment,
+		equipment_slot
+	)
+	equipment_choice_resolved.emit(
+		encounter_instance_id,
+		choice_index,
+		equipment,
+		destination,
+		equipment_slot,
+		backpack_slot
+	)
 
 
 func _advance_manual_streak(collection_time_msec: int) -> void:
@@ -400,3 +668,7 @@ func _award_expires_before(left: PendingCoinAward, right: PendingCoinAward) -> b
 	if left.expires_at_msec == right.expires_at_msec:
 		return left.cluster_id < right.cluster_id
 	return left.expires_at_msec < right.expires_at_msec
+
+
+func _string_name_before(left: StringName, right: StringName) -> bool:
+	return String(left) < String(right)

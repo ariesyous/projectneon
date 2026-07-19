@@ -1,61 +1,62 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/game_hud.gd" id="1_hud"]
+[ext_resource type="Script" path="res://scripts/ui/equipment_drag_slot.gd" id="2_drag_slot"]
 
 [sub_resource type="StyleBoxFlat" id="PanelCyan"]
 bg_color = Color(0.018, 0.033, 0.09, 0.94)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
 border_color = Color(0.17, 0.74, 0.88, 0.88)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="PanelMagenta"]
 bg_color = Color(0.035, 0.02, 0.09, 0.94)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
 border_color = Color(0.94, 0.22, 0.69, 0.86)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="PanelAmber"]
 bg_color = Color(0.055, 0.035, 0.07, 0.96)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
 border_color = Color(1, 0.67, 0.25, 0.9)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="PanelHelp"]
 bg_color = Color(0.012, 0.025, 0.07, 0.98)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
 border_color = Color(0.34, 0.91, 1, 0.95)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="MeterBackground"]
 bg_color = Color(0.02, 0.027, 0.065, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
 border_color = Color(0.2, 0.29, 0.48, 1)
 
 [sub_resource type="StyleBoxFlat" id="HeatFill"]
@@ -75,91 +76,89 @@ layer = 10
 script = ExtResource("1_hud")
 
 [node name="Root" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 720.0
 mouse_filter = 2
 
 [node name="MinimapPanel" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 6.0
-offset_right = 124.0
-offset_bottom = 70.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 248.0
+offset_bottom = 152.0
 theme_override_styles/panel = SubResource("PanelCyan")
 
 [node name="Title" type="Label" parent="Root/MinimapPanel"]
 layout_mode = 0
-offset_left = 7.0
-offset_top = 7.0
-offset_right = 112.0
-offset_bottom = 22.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = 224.0
+offset_bottom = 44.0
 theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 8
-text = "ROUTE • DEPARTING HIDEOUT"
+theme_override_font_sizes/font_size = 16
+text = "ROUTE • HIDEOUT"
 
 [node name="Route" type="Label" parent="Root/MinimapPanel"]
 layout_mode = 0
-offset_left = 8.0
-offset_top = 34.0
-offset_right = 111.0
-offset_bottom = 55.0
+offset_left = 16.0
+offset_top = 46.0
+offset_right = 222.0
+offset_bottom = 124.0
 theme_override_colors/font_color = Color(1, 0.79, 0.35, 1)
-theme_override_font_sizes/font_size = 8
-text = "NODE 0  •  00%  •  LOOP 0"
-horizontal_alignment = 1
+theme_override_font_sizes/font_size = 16
+text = "HIDEOUT>PATROL>FIGHT\nGEAR>EXIT/BOSS\nN0 00% L0 > PATROL"
+horizontal_alignment = 0
+autowrap_mode = 2
 
 [node name="RunStatusPanel" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 130.0
-offset_top = 6.0
-offset_right = 504.0
-offset_bottom = 70.0
+offset_left = 260.0
+offset_top = 12.0
+offset_right = 1008.0
+offset_bottom = 140.0
 theme_override_styles/panel = SubResource("PanelMagenta")
 
 [node name="HeatLabel" type="Label" parent="Root/RunStatusPanel"]
 layout_mode = 0
-offset_left = 9.0
-offset_top = 6.0
-offset_right = 200.0
-offset_bottom = 18.0
+offset_left = 18.0
+offset_top = 12.0
+offset_right = 400.0
+offset_bottom = 36.0
 theme_override_colors/font_color = Color(1, 0.42, 0.73, 1)
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 18
 text = "HEAT 000  •  TIER 0  •  LOW ALERT"
 
 [node name="NightLabel" type="Label" parent="Root/RunStatusPanel"]
 layout_mode = 0
-offset_left = 205.0
-offset_top = 7.0
-offset_right = 290.0
-offset_bottom = 23.0
+offset_left = 410.0
+offset_top = 14.0
+offset_right = 580.0
+offset_bottom = 46.0
 theme_override_colors/font_color = Color(0.65, 0.7, 0.9, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 20
 text = "NIGHT 01"
 horizontal_alignment = 2
 
 [node name="TimerLabel" type="Label" parent="Root/RunStatusPanel"]
 layout_mode = 0
-offset_left = 288.0
-offset_top = 2.0
-offset_right = 365.0
-offset_bottom = 26.0
+offset_left = 576.0
+offset_top = 4.0
+offset_right = 730.0
+offset_bottom = 52.0
 theme_override_colors/font_color = Color(1, 0.86, 0.45, 1)
 theme_override_colors/font_outline_color = Color(0.02, 0.025, 0.06, 1)
-theme_override_constants/outline_size = 1
-theme_override_font_sizes/font_size = 18
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 36
 text = "00:00"
 horizontal_alignment = 2
 
 [node name="HeatMeter" type="ProgressBar" parent="Root/RunStatusPanel"]
 layout_mode = 0
-offset_left = 9.0
-offset_top = 19.0
-offset_right = 200.0
-offset_bottom = 28.0
+offset_left = 18.0
+offset_top = 38.0
+offset_right = 400.0
+offset_bottom = 56.0
 mouse_filter = 2
 theme_override_styles/background = SubResource("MeterBackground")
 theme_override_styles/fill = SubResource("HeatFill")
@@ -168,20 +167,20 @@ show_percentage = false
 
 [node name="NightPressureLabel" type="Label" parent="Root/RunStatusPanel"]
 layout_mode = 0
-offset_left = 9.0
-offset_top = 31.0
-offset_right = 260.0
-offset_bottom = 43.0
+offset_left = 18.0
+offset_top = 62.0
+offset_right = 420.0
+offset_bottom = 100.0
 theme_override_colors/font_color = Color(0.72, 0.56, 1, 1)
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 16
 text = "NIGHT PRESSURE 0.0  •  IRREVERSIBLE"
 
 [node name="NightPressureMeter" type="ProgressBar" parent="Root/RunStatusPanel"]
 layout_mode = 0
-offset_left = 9.0
-offset_top = 44.0
-offset_right = 365.0
-offset_bottom = 52.0
+offset_left = 18.0
+offset_top = 106.0
+offset_right = 730.0
+offset_bottom = 124.0
 mouse_filter = 2
 theme_override_styles/background = SubResource("MeterBackground")
 theme_override_styles/fill = SubResource("PressureFill")
@@ -191,113 +190,111 @@ show_percentage = false
 
 [node name="ThresholdLabel" type="Label" parent="Root/RunStatusPanel"]
 layout_mode = 0
-offset_left = 9.0
-offset_top = 53.0
-offset_right = 365.0
-offset_bottom = 62.0
+offset_left = 430.0
+offset_top = 62.0
+offset_right = 730.0
+offset_bottom = 100.0
 theme_override_colors/font_color = Color(0.72, 0.75, 0.92, 1)
-theme_override_font_sizes/font_size = 6
+theme_override_font_sizes/font_size = 16
 text = "NEXT 18.0  •  BOSS 50.0"
+horizontal_alignment = 2
 
 [node name="ResourcesPanel" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 510.0
-offset_top = 6.0
-offset_right = 634.0
-offset_bottom = 70.0
+offset_left = 1020.0
+offset_top = 12.0
+offset_right = 1268.0
+offset_bottom = 140.0
 theme_override_styles/panel = SubResource("PanelCyan")
 
 [node name="Title" type="Label" parent="Root/ResourcesPanel"]
 layout_mode = 0
-offset_left = 7.0
-offset_top = 6.0
-offset_right = 117.0
-offset_bottom = 21.0
+offset_left = 14.0
+offset_top = 12.0
+offset_right = 234.0
+offset_bottom = 42.0
 theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 20
 text = "RUN RESOURCES"
 
 [node name="Values" type="Label" parent="Root/ResourcesPanel"]
 layout_mode = 0
-offset_left = 7.0
-offset_top = 24.0
-offset_right = 117.0
-offset_bottom = 61.0
+offset_left = 14.0
+offset_top = 44.0
+offset_right = 234.0
+offset_bottom = 122.0
 theme_override_colors/font_color = Color(0.82, 0.87, 1, 1)
 theme_override_colors/font_outline_color = Color(0.02, 0.025, 0.06, 1)
-theme_override_constants/outline_size = 1
-theme_override_constants/line_spacing = -2
-theme_override_font_sizes/font_size = 9
+theme_override_constants/outline_size = 2
+theme_override_constants/line_spacing = -6
+theme_override_font_sizes/font_size = 18
 text = "COINS 000  SCRAP 00\nSTREAK —\nAUTO • FULL VALUE"
 
 [node name="CrewPanel" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 76.0
-offset_right = 124.0
-offset_bottom = 284.0
+offset_left = 12.0
+offset_top = 152.0
+offset_right = 248.0
+offset_bottom = 568.0
 theme_override_styles/panel = SubResource("PanelCyan")
 
 [node name="Title" type="Label" parent="Root/CrewPanel"]
 layout_mode = 0
-offset_left = 7.0
-offset_top = 6.0
-offset_right = 111.0
-offset_bottom = 21.0
+offset_left = 14.0
+offset_top = 12.0
+offset_right = 222.0
+offset_bottom = 42.0
 theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 20
 text = "JAX • AUTO FIGHT"
 
 [node name="Portrait" type="ColorRect" parent="Root/CrewPanel"]
 layout_mode = 0
-offset_left = 8.0
-offset_top = 29.0
-offset_right = 50.0
-offset_bottom = 71.0
+offset_left = 16.0
+offset_top = 58.0
+offset_right = 100.0
+offset_bottom = 142.0
 mouse_filter = 2
 color = Color(0.08, 0.24, 0.33, 1)
 
 [node name="PortraitGlyph" type="Label" parent="Root/CrewPanel/Portrait"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 0
+offset_right = 84.0
+offset_bottom = 84.0
 theme_override_colors/font_color = Color(0.32, 0.92, 1, 1)
 theme_override_colors/font_outline_color = Color(0.02, 0.025, 0.06, 1)
-theme_override_constants/outline_size = 1
-theme_override_font_sizes/font_size = 17
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 34
 text = "JX"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="CrewName" type="Label" parent="Root/CrewPanel"]
 layout_mode = 0
-offset_left = 56.0
-offset_top = 29.0
-offset_right = 109.0
-offset_bottom = 47.0
+offset_left = 112.0
+offset_top = 58.0
+offset_right = 218.0
+offset_bottom = 94.0
 theme_override_colors/font_color = Color(0.86, 0.94, 1, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 24
 text = "JAX"
 
 [node name="CrewState" type="Label" parent="Root/CrewPanel"]
 layout_mode = 0
-offset_left = 56.0
-offset_top = 50.0
-offset_right = 109.0
-offset_bottom = 66.0
+offset_left = 112.0
+offset_top = 100.0
+offset_right = 218.0
+offset_bottom = 132.0
 theme_override_colors/font_color = Color(0.42, 0.85, 0.7, 1)
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 18
 text = "SEEKING"
 
 [node name="HealthMeter" type="ProgressBar" parent="Root/CrewPanel"]
 layout_mode = 0
-offset_left = 8.0
-offset_top = 79.0
-offset_right = 110.0
-offset_bottom = 96.0
+offset_left = 16.0
+offset_top = 158.0
+offset_right = 220.0
+offset_bottom = 192.0
 mouse_filter = 2
 theme_override_styles/background = SubResource("MeterBackground")
 theme_override_styles/fill = SubResource("HealthFill")
@@ -306,176 +303,737 @@ show_percentage = false
 
 [node name="HealthLabel" type="Label" parent="Root/CrewPanel"]
 layout_mode = 0
-offset_left = 8.0
-offset_top = 100.0
-offset_right = 110.0
-offset_bottom = 116.0
+offset_left = 16.0
+offset_top = 200.0
+offset_right = 220.0
+offset_bottom = 232.0
 theme_override_colors/font_color = Color(0.72, 0.86, 0.94, 1)
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 18
 text = "HEALTH 100 / 100"
 
 [node name="StatusLabel" type="Label" parent="Root/CrewPanel"]
 layout_mode = 0
-offset_left = 8.0
-offset_top = 126.0
-offset_right = 110.0
-offset_bottom = 174.0
+offset_left = 16.0
+offset_top = 252.0
+offset_right = 220.0
+offset_bottom = 348.0
 theme_override_colors/font_color = Color(0.67, 0.75, 0.9, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 20
 text = "TARGET\nNONE\nAUTO FIGHTING"
 
 [node name="AutonomyHint" type="Label" parent="Root/CrewPanel"]
 layout_mode = 0
-offset_left = 8.0
-offset_top = 181.0
-offset_right = 110.0
-offset_bottom = 202.0
+offset_left = 16.0
+offset_top = 350.0
+offset_right = 220.0
+offset_bottom = 416.0
 theme_override_colors/font_color = Color(1, 0.72, 0.37, 1)
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 16
 text = "COMBAT CONTINUES\nWHILE YOU INTERVENE"
 
 [node name="BuildPanel" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 510.0
-offset_top = 76.0
-offset_right = 634.0
-offset_bottom = 151.0
+offset_left = 1020.0
+offset_top = 152.0
+offset_right = 1268.0
+offset_bottom = 302.0
 theme_override_styles/panel = SubResource("PanelMagenta")
 
-[node name="Title" type="Label" parent="Root/BuildPanel"]
+[node name="Title" type="LinkButton" parent="Root/BuildPanel"]
 layout_mode = 0
-offset_left = 7.0
-offset_top = 5.0
-offset_right = 117.0
-offset_bottom = 19.0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = 238.0
+offset_bottom = 44.0
+mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(1, 0.43, 0.76, 1)
-theme_override_font_sizes/font_size = 9
-text = "LOADOUT • FUTURE"
+theme_override_font_sizes/font_size = 16
+text = "BUILD • OPEN DETAILS"
 
-[node name="Equipment" type="Label" parent="Root/BuildPanel"]
+[node name="Slot01" type="LinkButton" parent="Root/BuildPanel"]
 layout_mode = 0
-offset_left = 7.0
-offset_top = 23.0
-offset_right = 117.0
-offset_bottom = 38.0
+offset_left = 10.0
+offset_top = 48.0
+offset_right = 238.0
+offset_bottom = 76.0
+mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.76, 0.79, 0.94, 1)
-theme_override_font_sizes/font_size = 8
-text = "WEAPON —  •  GEAR —"
+theme_override_colors/font_disabled_color = Color(0.55, 0.59, 0.72, 1)
+theme_override_font_sizes/font_size = 16
+text = "1  EMPTY"
 
-[node name="SynergyTitle" type="Label" parent="Root/BuildPanel"]
+[node name="Slot02" type="LinkButton" parent="Root/BuildPanel"]
 layout_mode = 0
-offset_left = 7.0
-offset_top = 42.0
-offset_right = 117.0
-offset_bottom = 55.0
-theme_override_colors/font_color = Color(1, 0.43, 0.76, 1)
-theme_override_font_sizes/font_size = 8
-text = "SYNERGIES • FUTURE"
+offset_left = 10.0
+offset_top = 80.0
+offset_right = 238.0
+offset_bottom = 108.0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.76, 0.79, 0.94, 1)
+theme_override_colors/font_disabled_color = Color(0.55, 0.59, 0.72, 1)
+theme_override_font_sizes/font_size = 16
+text = "2  EMPTY"
 
-[node name="Synergies" type="Label" parent="Root/BuildPanel"]
+[node name="Slot03" type="LinkButton" parent="Root/BuildPanel"]
 layout_mode = 0
-offset_left = 7.0
-offset_top = 57.0
-offset_right = 117.0
-offset_bottom = 70.0
-theme_override_colors/font_color = Color(0.69, 0.64, 0.89, 1)
-theme_override_font_sizes/font_size = 7
-text = "KNOCKBACK 0/2  •  TECH 0/2"
+offset_left = 10.0
+offset_top = 112.0
+offset_right = 238.0
+offset_bottom = 140.0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.76, 0.79, 0.94, 1)
+theme_override_colors/font_disabled_color = Color(0.55, 0.59, 0.72, 1)
+theme_override_font_sizes/font_size = 16
+text = "3  EMPTY"
+
+[node name="BuildDetailsPanel" type="Panel" parent="Root"]
+visible = false
+z_index = 20
+layout_mode = 0
+offset_left = 120.0
+offset_top = 60.0
+offset_right = 1160.0
+offset_bottom = 680.0
+mouse_filter = 0
+theme_override_styles/panel = SubResource("PanelHelp")
+
+[node name="Title" type="Label" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 14.0
+offset_right = 760.0
+offset_bottom = 50.0
+theme_override_colors/font_color = Color(0.34, 0.91, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "JAX EQUIPMENT • DRAG OR CLICK"
+
+[node name="Close" type="Button" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 900.0
+offset_top = 10.0
+offset_right = 1020.0
+offset_bottom = 54.0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 16
+text = "CLOSE"
+
+[node name="EquippedTitle" type="Label" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 54.0
+offset_right = 320.0
+offset_bottom = 80.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.34, 0.91, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "EQUIPPED • 3 GENERIC ACTIVE SLOTS"
+
+[node name="Equipped01" type="Button" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 82.0
+offset_right = 320.0
+offset_bottom = 145.0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 17
+text = "ACTIVE 1 - EMPTY"
+alignment = 0
+expand_icon = true
+script = ExtResource("2_drag_slot")
+
+[node name="Equipped02" type="Button" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 153.0
+offset_right = 320.0
+offset_bottom = 216.0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 17
+text = "ACTIVE 2 - EMPTY"
+alignment = 0
+expand_icon = true
+script = ExtResource("2_drag_slot")
+
+[node name="Equipped03" type="Button" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 224.0
+offset_right = 320.0
+offset_bottom = 287.0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 17
+text = "ACTIVE 3 - EMPTY"
+alignment = 0
+expand_icon = true
+script = ExtResource("2_drag_slot")
+
+[node name="BackpackTitle" type="Label" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 340.0
+offset_top = 54.0
+offset_right = 640.0
+offset_bottom = 80.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.64, 0.86, 1)
+theme_override_font_sizes/font_size = 16
+text = "BACKPACK • 0/3 STORED • INACTIVE"
+
+[node name="Backpack01" type="Button" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 340.0
+offset_top = 82.0
+offset_right = 640.0
+offset_bottom = 145.0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 17
+text = "SLOT 1 • EMPTY"
+alignment = 0
+expand_icon = true
+script = ExtResource("2_drag_slot")
+
+[node name="Backpack02" type="Button" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 340.0
+offset_top = 153.0
+offset_right = 640.0
+offset_bottom = 216.0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 17
+text = "SLOT 2 • EMPTY"
+alignment = 0
+expand_icon = true
+script = ExtResource("2_drag_slot")
+
+[node name="Backpack03" type="Button" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 340.0
+offset_top = 224.0
+offset_right = 640.0
+offset_bottom = 287.0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 17
+text = "SLOT 3 • EMPTY"
+alignment = 0
+expand_icon = true
+script = ExtResource("2_drag_slot")
+
+[node name="EquipmentDetails" type="Label" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 670.0
+offset_top = 58.0
+offset_right = 1020.0
+offset_bottom = 286.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.82, 0.9, 1, 1)
+theme_override_constants/line_spacing = 2
+theme_override_font_sizes/font_size = 17
+text = "SLOT 1 — EMPTY\nSLOT 2 — EMPTY\nSLOT 3 — EMPTY"
+clip_text = true
+autowrap_mode = 2
+
+[node name="SynergyBadge01" type="TextureRect" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 22.0
+offset_top = 370.0
+offset_right = 70.0
+offset_bottom = 418.0
+mouse_filter = 2
+texture_filter = 1
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SynergyBadge02" type="TextureRect" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 22.0
+offset_top = 450.0
+offset_right = 70.0
+offset_bottom = 498.0
+mouse_filter = 2
+texture_filter = 1
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SynergyBadge03" type="TextureRect" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 22.0
+offset_top = 530.0
+offset_right = 70.0
+offset_bottom = 578.0
+mouse_filter = 2
+texture_filter = 1
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SynergyDetails" type="Label" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 84.0
+offset_top = 306.0
+offset_right = 650.0
+offset_bottom = 602.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.64, 0.86, 1)
+theme_override_constants/line_spacing = -3
+theme_override_font_sizes/font_size = 16
+text = "TAG COUNTS — NONE\n\nKNOCKBACK 0/2 — INACTIVE\nBLEED 0/2 — INACTIVE\nTECH 0/2 — INACTIVE"
+clip_text = true
+
+[node name="ActionTarget01" type="Button" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 670.0
+offset_top = 296.0
+offset_right = 1020.0
+offset_bottom = 344.0
+theme_override_font_sizes/font_size = 17
+disabled = true
+text = "SELECT AN ITEM"
+
+[node name="ActionTarget02" type="Button" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 670.0
+offset_top = 350.0
+offset_right = 1020.0
+offset_bottom = 398.0
+theme_override_font_sizes/font_size = 17
+disabled = true
+text = "SELECT AN ITEM"
+
+[node name="ActionTarget03" type="Button" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 670.0
+offset_top = 404.0
+offset_right = 1020.0
+offset_bottom = 452.0
+theme_override_font_sizes/font_size = 17
+disabled = true
+text = "SELECT AN ITEM"
+
+[node name="ActionPrompt" type="Label" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 670.0
+offset_top = 460.0
+offset_right = 1020.0
+offset_bottom = 506.0
+theme_override_colors/font_color = Color(1, 0.76, 0.42, 1)
+theme_override_font_sizes/font_size = 16
+text = "DRAG BETWEEN COLUMNS, OR CLICK AN ITEM THEN A DESTINATION. CONFIRM APPLIES."
+autowrap_mode = 2
+
+[node name="Discard" type="Button" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 670.0
+offset_top = 514.0
+offset_right = 840.0
+offset_bottom = 558.0
+theme_override_colors/font_color = Color(1, 0.35, 0.5, 1)
+theme_override_font_sizes/font_size = 17
+disabled = true
+text = "DISCARD..."
+
+[node name="Confirm" type="Button" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 670.0
+offset_top = 566.0
+offset_right = 840.0
+offset_bottom = 608.0
+theme_override_colors/font_color = Color(0.28, 0.94, 0.62, 1)
+theme_override_font_sizes/font_size = 17
+disabled = true
+text = "CONFIRM"
+
+[node name="Cancel" type="Button" parent="Root/BuildDetailsPanel"]
+layout_mode = 0
+offset_left = 850.0
+offset_top = 566.0
+offset_right = 1020.0
+offset_bottom = 608.0
+theme_override_font_sizes/font_size = 17
+disabled = true
+text = "CANCEL"
+
+[node name="EquipmentRewardPanel" type="Panel" parent="Root"]
+visible = false
+z_index = 30
+layout_mode = 0
+offset_left = 60.0
+offset_top = 50.0
+offset_right = 1220.0
+offset_bottom = 670.0
+mouse_filter = 0
+theme_override_styles/panel = SubResource("PanelAmber")
+
+[node name="Title" type="Label" parent="Root/EquipmentRewardPanel"]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 10.0
+offset_right = 1142.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(1, 0.82, 0.38, 1)
+theme_override_font_sizes/font_size = 20
+text = "CHOOSE EQUIPMENT - REVIEW CONSEQUENCES BEFORE CONFIRMING"
+horizontal_alignment = 1
+
+[node name="Target01" type="Button" parent="Root/EquipmentRewardPanel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 350.0
+offset_right = 370.0
+offset_bottom = 400.0
+theme_override_font_sizes/font_size = 16
+disabled = true
+text = "TARGET 1 • EMPTY"
+script = ExtResource("2_drag_slot")
+
+[node name="Target02" type="Button" parent="Root/EquipmentRewardPanel"]
+layout_mode = 0
+offset_left = 405.0
+offset_top = 350.0
+offset_right = 755.0
+offset_bottom = 400.0
+theme_override_font_sizes/font_size = 16
+disabled = true
+text = "TARGET 2 • EMPTY"
+script = ExtResource("2_drag_slot")
+
+[node name="Target03" type="Button" parent="Root/EquipmentRewardPanel"]
+layout_mode = 0
+offset_left = 790.0
+offset_top = 350.0
+offset_right = 1140.0
+offset_bottom = 400.0
+theme_override_font_sizes/font_size = 16
+disabled = true
+text = "TARGET 3 • EMPTY"
+script = ExtResource("2_drag_slot")
+
+[node name="Choice01" type="Button" parent="Root/EquipmentRewardPanel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 54.0
+offset_right = 370.0
+offset_bottom = 280.0
+custom_maximum_size = Vector2(350, 226)
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 16
+clip_contents = true
+script = ExtResource("2_drag_slot")
+
+[node name="Icon" type="TextureRect" parent="Root/EquipmentRewardPanel/Choice01"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 12.0
+offset_right = 106.0
+offset_bottom = 108.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Details" type="Label" parent="Root/EquipmentRewardPanel/Choice01"]
+layout_mode = 0
+offset_left = 112.0
+offset_top = 4.0
+offset_right = 340.0
+offset_bottom = 222.0
+mouse_filter = 2
+theme_override_constants/line_spacing = -3
+theme_override_font_sizes/font_size = 16
+text = "EQUIPMENT 1"
+autowrap_mode = 3
+vertical_alignment = 1
+
+[node name="Choice02" type="Button" parent="Root/EquipmentRewardPanel"]
+layout_mode = 0
+offset_left = 405.0
+offset_top = 54.0
+offset_right = 755.0
+offset_bottom = 280.0
+custom_maximum_size = Vector2(350, 226)
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 16
+clip_contents = true
+script = ExtResource("2_drag_slot")
+
+[node name="Icon" type="TextureRect" parent="Root/EquipmentRewardPanel/Choice02"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 12.0
+offset_right = 106.0
+offset_bottom = 108.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Details" type="Label" parent="Root/EquipmentRewardPanel/Choice02"]
+layout_mode = 0
+offset_left = 112.0
+offset_top = 4.0
+offset_right = 340.0
+offset_bottom = 222.0
+mouse_filter = 2
+theme_override_constants/line_spacing = -3
+theme_override_font_sizes/font_size = 16
+text = "EQUIPMENT 2"
+autowrap_mode = 3
+vertical_alignment = 1
+
+[node name="Choice03" type="Button" parent="Root/EquipmentRewardPanel"]
+layout_mode = 0
+offset_left = 790.0
+offset_top = 54.0
+offset_right = 1140.0
+offset_bottom = 280.0
+custom_maximum_size = Vector2(350, 226)
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 16
+clip_contents = true
+script = ExtResource("2_drag_slot")
+
+[node name="Icon" type="TextureRect" parent="Root/EquipmentRewardPanel/Choice03"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 12.0
+offset_right = 106.0
+offset_bottom = 108.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Details" type="Label" parent="Root/EquipmentRewardPanel/Choice03"]
+layout_mode = 0
+offset_left = 112.0
+offset_top = 4.0
+offset_right = 340.0
+offset_bottom = 222.0
+mouse_filter = 2
+theme_override_constants/line_spacing = -3
+theme_override_font_sizes/font_size = 16
+text = "EQUIPMENT 3"
+autowrap_mode = 3
+vertical_alignment = 1
+
+[node name="Instruction" type="Label" parent="Root/EquipmentRewardPanel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 286.0
+offset_right = 750.0
+offset_bottom = 340.0
+theme_override_colors/font_color = Color(1, 0.76, 0.42, 1)
+theme_override_font_sizes/font_size = 16
+text = "DRAG GEAR TO A SLOT • OR CLICK GEAR + DESTINATION • REVIEW • CONFIRM"
+horizontal_alignment = 1
+clip_text = true
+autowrap_mode = 2
+
+[node name="KeepCurrent" type="Button" parent="Root/EquipmentRewardPanel"]
+layout_mode = 0
+offset_left = 780.0
+offset_top = 286.0
+offset_right = 1140.0
+offset_bottom = 338.0
+theme_override_colors/font_color = Color(0.74, 0.84, 1, 1)
+theme_override_font_sizes/font_size = 17
+text = "SKIP GEAR • KEEP RUN REWARD"
+
+[node name="Store01" type="Button" parent="Root/EquipmentRewardPanel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 410.0
+offset_right = 370.0
+offset_bottom = 458.0
+theme_override_font_sizes/font_size = 17
+disabled = true
+text = "BACKPACK [1] • EMPTY"
+script = ExtResource("2_drag_slot")
+
+[node name="Store02" type="Button" parent="Root/EquipmentRewardPanel"]
+layout_mode = 0
+offset_left = 405.0
+offset_top = 410.0
+offset_right = 755.0
+offset_bottom = 458.0
+theme_override_font_sizes/font_size = 17
+disabled = true
+text = "BACKPACK [2] • EMPTY"
+script = ExtResource("2_drag_slot")
+
+[node name="Store03" type="Button" parent="Root/EquipmentRewardPanel"]
+layout_mode = 0
+offset_left = 790.0
+offset_top = 410.0
+offset_right = 1140.0
+offset_bottom = 458.0
+theme_override_font_sizes/font_size = 17
+disabled = true
+text = "BACKPACK [3] • EMPTY"
+script = ExtResource("2_drag_slot")
+
+[node name="PackTargetLabel" type="Label" parent="Root/EquipmentRewardPanel"]
+visible = false
+layout_mode = 0
+offset_left = 20.0
+offset_top = 466.0
+offset_right = 1140.0
+offset_bottom = 492.0
+theme_override_colors/font_color = Color(1, 0.64, 0.86, 1)
+theme_override_font_sizes/font_size = 16
+text = "BACKPACK FULL • CHOOSE A STORED ITEM TO DISCARD, OR SKIP GEAR"
+horizontal_alignment = 1
+
+[node name="PackTarget01" type="Button" parent="Root/EquipmentRewardPanel"]
+visible = false
+layout_mode = 0
+offset_left = 20.0
+offset_top = 494.0
+offset_right = 370.0
+offset_bottom = 538.0
+theme_override_font_sizes/font_size = 16
+text = "DISCARD BACKPACK SLOT 1"
+
+[node name="PackTarget02" type="Button" parent="Root/EquipmentRewardPanel"]
+visible = false
+layout_mode = 0
+offset_left = 405.0
+offset_top = 494.0
+offset_right = 755.0
+offset_bottom = 538.0
+theme_override_font_sizes/font_size = 16
+text = "DISCARD BACKPACK SLOT 2"
+
+[node name="PackTarget03" type="Button" parent="Root/EquipmentRewardPanel"]
+visible = false
+layout_mode = 0
+offset_left = 790.0
+offset_top = 494.0
+offset_right = 1140.0
+offset_bottom = 538.0
+theme_override_font_sizes/font_size = 16
+text = "DISCARD BACKPACK SLOT 3"
+
+[node name="Confirmation" type="Label" parent="Root/EquipmentRewardPanel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 544.0
+offset_right = 760.0
+offset_bottom = 606.0
+theme_override_colors/font_color = Color(1, 0.82, 0.38, 1)
+theme_override_font_sizes/font_size = 16
+text = "SELECT AN ITEM. NOTHING CHANGES UNTIL YOU CONFIRM."
+autowrap_mode = 2
+
+[node name="Confirm" type="Button" parent="Root/EquipmentRewardPanel"]
+layout_mode = 0
+offset_left = 780.0
+offset_top = 548.0
+offset_right = 940.0
+offset_bottom = 606.0
+theme_override_colors/font_color = Color(0.28, 0.94, 0.62, 1)
+theme_override_font_sizes/font_size = 17
+disabled = true
+text = "CONFIRM"
+
+[node name="Cancel" type="Button" parent="Root/EquipmentRewardPanel"]
+layout_mode = 0
+offset_left = 950.0
+offset_top = 548.0
+offset_right = 1140.0
+offset_bottom = 606.0
+theme_override_font_sizes/font_size = 17
+disabled = true
+text = "CLEAR SELECTION"
 
 [node name="CardsPanel" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 130.0
-offset_top = 290.0
-offset_right = 504.0
-offset_bottom = 354.0
+offset_left = 260.0
+offset_top = 580.0
+offset_right = 1008.0
+offset_bottom = 708.0
 theme_override_styles/panel = SubResource("PanelCyan")
 
 [node name="Title" type="Label" parent="Root/CardsPanel"]
 layout_mode = 0
-offset_left = 9.0
-offset_top = 4.0
-offset_right = 220.0
-offset_bottom = 19.0
+offset_left = 18.0
+offset_top = 8.0
+offset_right = 440.0
+offset_bottom = 38.0
 theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 20
 text = "RUN ACTIONS • INTRO"
 
 [node name="Card01" type="Button" parent="Root/CardsPanel"]
 layout_mode = 0
-offset_left = 9.0
-offset_top = 23.0
-offset_right = 123.0
-offset_bottom = 58.0
-theme_override_font_sizes/font_size = 9
+offset_left = 18.0
+offset_top = 46.0
+offset_right = 246.0
+offset_bottom = 116.0
+theme_override_font_sizes/font_size = 18
 disabled = true
 text = "RUN STARTING\nSTAND BY"
 
 [node name="Card02" type="Button" parent="Root/CardsPanel"]
 layout_mode = 0
-offset_left = 130.0
-offset_top = 23.0
-offset_right = 244.0
-offset_bottom = 58.0
-theme_override_font_sizes/font_size = 9
+offset_left = 260.0
+offset_top = 46.0
+offset_right = 488.0
+offset_bottom = 116.0
+theme_override_font_sizes/font_size = 18
 disabled = true
 text = "SUBWAY REROUTE\n2 LEFT • -15 HEAT"
 
 [node name="Card03" type="Button" parent="Root/CardsPanel"]
 layout_mode = 0
-offset_left = 251.0
-offset_top = 23.0
-offset_right = 365.0
-offset_bottom = 58.0
-theme_override_font_sizes/font_size = 9
+offset_left = 502.0
+offset_top = 46.0
+offset_right = 730.0
+offset_bottom = 116.0
+theme_override_font_sizes/font_size = 18
 disabled = true
 text = "SHOP COOLING\n2 LEFT • 60 COINS"
 
 [node name="InterventionsPanel" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 510.0
-offset_top = 155.0
-offset_right = 634.0
-offset_bottom = 292.0
+offset_left = 1020.0
+offset_top = 310.0
+offset_right = 1268.0
+offset_bottom = 584.0
 theme_override_styles/panel = SubResource("PanelCyan")
 
 [node name="Title" type="Label" parent="Root/InterventionsPanel"]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 4.0
-offset_right = 117.0
-offset_bottom = 18.0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 234.0
+offset_bottom = 36.0
 theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 18
 text = "FIRE HYDRANT"
 
 [node name="StateLabel" type="Label" parent="Root/InterventionsPanel"]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 20.0
-offset_right = 118.0
-offset_bottom = 35.0
+offset_left = 12.0
+offset_top = 40.0
+offset_right = 236.0
+offset_bottom = 70.0
 theme_override_colors/font_color = Color(1, 0.72, 0.29, 1)
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 18
 text = "NO ENEMY IN RANGE"
 
 [node name="HydrantButton" type="Button" parent="Root/InterventionsPanel"]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 38.0
-offset_right = 118.0
-offset_bottom = 72.0
+offset_left = 12.0
+offset_top = 76.0
+offset_right = 236.0
+offset_bottom = 144.0
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(1, 0.72, 0.29, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 20
 text = "TRY HYDRANT"
 tooltip_text = "Fire Hydrant: light area damage and strong knockback. Requires readiness and an enemy in range."
 
 [node name="CooldownMeter" type="ProgressBar" parent="Root/InterventionsPanel"]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 76.0
-offset_right = 118.0
-offset_bottom = 88.0
+offset_left = 12.0
+offset_top = 148.0
+offset_right = 236.0
+offset_bottom = 172.0
 mouse_filter = 2
 theme_override_styles/background = SubResource("MeterBackground")
 theme_override_styles/fill = SubResource("HydrantFill")
@@ -484,155 +1042,152 @@ show_percentage = false
 
 [node name="CooldownLabel" type="Label" parent="Root/InterventionsPanel"]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 90.0
-offset_right = 118.0
-offset_bottom = 103.0
+offset_left = 12.0
+offset_top = 174.0
+offset_right = 236.0
+offset_bottom = 200.0
 theme_override_colors/font_color = Color(0.7, 0.84, 0.94, 1)
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 16
 text = "READY • NEEDS TARGET"
 
 [node name="EffectLabel" type="Label" parent="Root/InterventionsPanel"]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 103.0
-offset_right = 118.0
-offset_bottom = 120.0
+offset_left = 12.0
+offset_top = 200.0
+offset_right = 236.0
+offset_bottom = 234.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.48, 0.9, 1, 1)
 theme_override_constants/line_spacing = -3
-theme_override_font_sizes/font_size = 7
+theme_override_font_sizes/font_size = 16
 text = "LIGHT AREA DAMAGE\nSTRONG KNOCKBACK"
 
 [node name="FeedbackLabel" type="Label" parent="Root/InterventionsPanel"]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 121.0
-offset_right = 118.0
-offset_bottom = 135.0
+offset_left = 12.0
+offset_top = 234.0
+offset_right = 236.0
+offset_bottom = 270.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.78, 0.38, 1)
-theme_override_font_sizes/font_size = 6
+theme_override_font_sizes/font_size = 16
 text = "READY + ENEMY IN RANGE"
 clip_text = true
 vertical_alignment = 1
 
 [node name="ExtractionPanel" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 510.0
-offset_top = 298.0
-offset_right = 634.0
-offset_bottom = 354.0
+offset_left = 1020.0
+offset_top = 596.0
+offset_right = 1268.0
+offset_bottom = 708.0
 theme_override_styles/panel = SubResource("PanelAmber")
 
 [node name="ExtractionButton" type="Button" parent="Root/ExtractionPanel"]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 6.0
-offset_right = 118.0
-offset_bottom = 50.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 236.0
+offset_bottom = 100.0
 theme_override_colors/font_disabled_color = Color(1, 0.72, 0.33, 0.8)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 20
 disabled = true
 text = "EXTRACTION\nUNAVAILABLE"
 
 [node name="HelpPanel" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 130.0
-offset_top = 290.0
-offset_right = 504.0
-offset_bottom = 354.0
+offset_left = 260.0
+offset_top = 580.0
+offset_right = 1008.0
+offset_bottom = 708.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("PanelHelp")
 
 [node name="Title" type="Label" parent="Root/HelpPanel"]
 layout_mode = 0
-offset_left = 8.0
-offset_top = 4.0
-offset_right = 366.0
-offset_bottom = 18.0
+offset_left = 16.0
+offset_top = 8.0
+offset_right = 732.0
+offset_bottom = 36.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.34, 0.91, 1, 1)
-theme_override_font_sizes/font_size = 9
-text = "NEON LOOP • AUTO COMBAT + COMPLETE RUN STRUCTURE"
+theme_override_font_sizes/font_size = 18
+text = "NEON LOOP • AUTO COMBAT + EQUIPMENT SYNERGIES"
 
 [node name="AutoHelp" type="Label" parent="Root/HelpPanel"]
 layout_mode = 0
-offset_left = 8.0
-offset_top = 21.0
-offset_right = 185.0
-offset_bottom = 59.0
+offset_left = 16.0
+offset_top = 42.0
+offset_right = 370.0
+offset_bottom = 118.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.84, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 8
-text = "JAX FIGHTS AUTOMATICALLY.\nCOINS AUTO FOR FULL BASE VALUE.\nSPACE PAUSES ELIGIBLE RUN TIME."
+theme_override_font_sizes/font_size = 16
+text = "JAX AUTO-FIGHTS.\nCLICKS ONLY INSPECT; NEVER DISCARD."
 
 [node name="InterventionHelp" type="Label" parent="Root/HelpPanel"]
 layout_mode = 0
-offset_left = 190.0
-offset_top = 21.0
-offset_right = 367.0
-offset_bottom = 59.0
+offset_left = 380.0
+offset_top = 42.0
+offset_right = 734.0
+offset_bottom = 118.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.84, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 8
-text = "COOLING LOWERS HEAT, NEVER PRESSURE.\nE EXTRACTS WHEN A WINDOW OPENS.\nFULLSCREEN: USE THE BUTTON."
+theme_override_font_sizes/font_size = 16
+text = "3 EQUIPPED + 3 STORED.\nBACKPACK = INACTIVE • NO BUYBACK."
 
 [node name="HelpButton" type="Button" parent="Root"]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 290.0
-offset_right = 62.0
-offset_bottom = 320.0
+offset_left = 12.0
+offset_top = 580.0
+offset_right = 124.0
+offset_bottom = 640.0
 mouse_default_cursor_shape = 2
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 18
 text = "CLOSE HELP"
 tooltip_text = "Show or hide run controls"
 
 [node name="FullscreenButton" type="Button" parent="Root"]
 layout_mode = 0
-offset_left = 64.0
-offset_top = 290.0
-offset_right = 124.0
-offset_bottom = 320.0
+offset_left = 128.0
+offset_top = 580.0
+offset_right = 248.0
+offset_bottom = 640.0
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.46, 0.92, 1, 1)
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 16
 text = "FULLSCREEN"
 tooltip_text = "Fill the display while preserving the 16:9 game view"
 
 [node name="LabPurpose" type="Label" parent="Root"]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 326.0
-offset_right = 124.0
-offset_bottom = 354.0
+offset_left = 12.0
+offset_top = 652.0
+offset_right = 248.0
+offset_bottom = 708.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.64, 0.72, 0.9, 1)
-theme_override_font_sizes/font_size = 8
-text = "COMPLETE RUN\nAUTO FIGHT + DIRECT"
+theme_override_font_sizes/font_size = 16
+text = "EQUIP • SYNERGIZE\nAUTO FIGHT + DIRECT"
 horizontal_alignment = 1
 
 [node name="AudioUnlockPanel" type="Panel" parent="Root"]
 visible = false
 layout_mode = 0
-offset_left = 204.0
-offset_top = 76.0
-offset_right = 436.0
-offset_bottom = 100.0
+offset_left = 408.0
+offset_top = 152.0
+offset_right = 872.0
+offset_bottom = 200.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("PanelAmber")
 
 [node name="Label" type="Label" parent="Root/AudioUnlockPanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 0
+offset_right = 464.0
+offset_bottom = 48.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.82, 0.38, 1)
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 18
 text = "CLICK / TAP / PRESS A KEY FOR SOUND"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -640,23 +1195,20 @@ vertical_alignment = 1
 [node name="LandscapePanel" type="Panel" parent="Root"]
 visible = false
 layout_mode = 0
-offset_left = 194.0
-offset_top = 104.0
-offset_right = 446.0
-offset_bottom = 130.0
+offset_left = 388.0
+offset_top = 208.0
+offset_right = 892.0
+offset_bottom = 260.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("PanelAmber")
 
 [node name="Label" type="Label" parent="Root/LandscapePanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 0
+offset_right = 504.0
+offset_bottom = 52.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.8, 0.38, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 20
 text = "LANDSCAPE RECOMMENDED • ROTATE DEVICE"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -664,105 +1216,105 @@ vertical_alignment = 1
 [node name="RunSummaryPanel" type="Panel" parent="Root"]
 visible = false
 layout_mode = 0
-offset_left = 130.0
-offset_top = 82.0
-offset_right = 504.0
-offset_bottom = 288.0
+offset_left = 260.0
+offset_top = 164.0
+offset_right = 1008.0
+offset_bottom = 576.0
 mouse_filter = 0
 theme_override_styles/panel = SubResource("PanelHelp")
 
 [node name="Title" type="Label" parent="Root/RunSummaryPanel"]
 layout_mode = 0
-offset_left = 10.0
-offset_top = 10.0
-offset_right = 364.0
-offset_bottom = 34.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 728.0
+offset_bottom = 68.0
 theme_override_colors/font_color = Color(1, 0.82, 0.34, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 28
 text = "EXTRACTED • RUN COMPLETE"
 horizontal_alignment = 1
 
 [node name="Details" type="Label" parent="Root/RunSummaryPanel"]
 layout_mode = 0
-offset_left = 16.0
-offset_top = 44.0
-offset_right = 358.0
-offset_bottom = 151.0
+offset_left = 32.0
+offset_top = 88.0
+offset_right = 716.0
+offset_bottom = 302.0
 theme_override_colors/font_color = Color(0.82, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 20
 text = "TIME 00:00   SEED 0   SCHEMA 1\nMAX HEAT 0   NIGHT PRESSURE 0.0   ENCOUNTERS 0\nENEMIES 0   ELITES 0   BOSS NO   COMBO 0\nCOINS 0   SCRAP 0   MANUAL 0   STREAK x0\nEQUIPMENT N/A   SYNERGIES N/A"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="RestartSameSeed" type="Button" parent="Root/RunSummaryPanel"]
 layout_mode = 0
-offset_left = 18.0
-offset_top = 158.0
-offset_right = 174.0
-offset_bottom = 194.0
+offset_left = 36.0
+offset_top = 316.0
+offset_right = 348.0
+offset_bottom = 388.0
 mouse_default_cursor_shape = 2
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 20
 text = "RESTART SAME SEED"
 
 [node name="RestartNewSeed" type="Button" parent="Root/RunSummaryPanel"]
 layout_mode = 0
-offset_left = 200.0
-offset_top = 158.0
-offset_right = 356.0
-offset_bottom = 194.0
+offset_left = 400.0
+offset_top = 316.0
+offset_right = 712.0
+offset_bottom = 388.0
 mouse_default_cursor_shape = 2
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 20
 text = "NEW RUN"
 
 [node name="BossTriggerPanel" type="Panel" parent="Root"]
 visible = false
 layout_mode = 0
-offset_left = 130.0
-offset_top = 96.0
-offset_right = 504.0
-offset_bottom = 264.0
+offset_left = 260.0
+offset_top = 192.0
+offset_right = 1008.0
+offset_bottom = 528.0
 mouse_filter = 0
 theme_override_styles/panel = SubResource("PanelAmber")
 
 [node name="Title" type="Label" parent="Root/BossTriggerPanel"]
 layout_mode = 0
-offset_left = 12.0
-offset_top = 12.0
-offset_right = 362.0
-offset_bottom = 40.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 724.0
+offset_bottom = 80.0
 theme_override_colors/font_color = Color(1, 0.36, 0.62, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 32
 text = "THE VIPER • BOSS TRIGGERED"
 horizontal_alignment = 1
 
 [node name="Details" type="Label" parent="Root/BossTriggerPanel"]
 layout_mode = 0
-offset_left = 18.0
-offset_top = 52.0
-offset_right = 356.0
-offset_bottom = 103.0
+offset_left = 36.0
+offset_top = 104.0
+offset_right = 712.0
+offset_bottom = 206.0
 theme_override_colors/font_color = Color(1, 0.86, 0.62, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 20
 text = "NIGHT PRESSURE MADE THIS ENCOUNTER UNAVOIDABLE.\nFINAL BOSS ACTOR/BEHAVIOUR IS DELIBERATELY DEFERRED."
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="RestartSameSeed" type="Button" parent="Root/BossTriggerPanel"]
 layout_mode = 0
-offset_left = 18.0
-offset_top = 116.0
-offset_right = 174.0
-offset_bottom = 154.0
+offset_left = 36.0
+offset_top = 232.0
+offset_right = 348.0
+offset_bottom = 308.0
 mouse_default_cursor_shape = 2
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 20
 text = "RESTART SAME SEED"
 
 [node name="RestartNewSeed" type="Button" parent="Root/BossTriggerPanel"]
 layout_mode = 0
-offset_left = 200.0
-offset_top = 116.0
-offset_right = 356.0
-offset_bottom = 154.0
+offset_left = 400.0
+offset_top = 232.0
+offset_right = 712.0
+offset_bottom = 308.0
 mouse_default_cursor_shape = 2
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 20
 text = "NEW RUN"
