@@ -4,17 +4,17 @@ Neon Loop is a Godot 4.x pixel-art auto-brawler about shaping an automatic stree
 
 ## Play online
 
-Play the technically verified Milestone 4.2 build at **[ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/)**.
+Play the technically verified Milestone 5 build at **[ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/)**.
 
-The public build is deployed from `main` at commit `1b3d5a5118ad31d864266ec2aefd44e652ffafe9`. This records the actual Milestone 4–4.2 Pages release without assigning a semantic version.
+Milestone 5 was implemented in feature commit `7ac7fa0794e79cfc60781b84ce7181f61e16bf7f`, merged through [PR #4](https://github.com/ariesyous/projectneon/pull/4), and published from `main` at merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`. [GitHub Pages run 29713282074](https://github.com/ariesyous/projectneon/actions/runs/29713282074) completed successfully. This records the actual release state without assigning a semantic version.
 
 Repository: [github.com/ariesyous/projectneon](https://github.com/ariesyous/projectneon)
 
 ## Project status
 
-**Milestone 5 — District Cards: technically implemented and verified on the local working branch**
+**Milestone 5 — District Cards: technically implemented, verified, merged, and published**
 
-The current local working branch adds:
+The current public build adds:
 
 - Typed card/effect Resources and exactly four stable-ID, one-copy cards: Arcade, Convenience Store, Gang Hideout, and Subway Entrance; all display `FREE`
 - A finite four-card deck, deterministic two-card opening hand, hand capacity three, discard pile, no reshuffle, and clean restart
@@ -30,11 +30,11 @@ Godot 4.7 verification passed **188/188 tests and 2,450 assertions with no failu
 
 The project owner recorded the separate five-person Milestone 1 Human Validation Gate as **PASSED** on 2026-07-18. That qualitative decision belongs to the owner and is distinct from automated and coding-agent verification.
 
-The public site does not yet contain Milestone 5. The M5 work remains local and uncommitted on `codex/milestone-5-district-cards`; it has not been pushed, merged, published, or deployed.
+The published Pages build was smoke-checked at its native 1280 x 720 presentation and produced no browser-console warnings or errors. The earlier Milestone 4–4.2 publication from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9` remains a historical baseline and is superseded by the current Milestone 5 deployment.
 
 ![Published Milestone 4.2 Inventory Drag](docs/screenshots/milestone_4_2_inventory_drag.png)
 
-![Local Milestone 5 District Cards verification](docs/screenshots/milestone_5_district_cards.png)
+![Published Milestone 5 District Cards verification](docs/screenshots/milestone_5_district_cards.png)
 
 ## Running the project
 
@@ -69,7 +69,7 @@ Reward and run-action buttons respond to one ordinary click or tap.
 
 ## Current scope
 
-Milestone 4, including its M4.1 and M4.2 equipment usability corrections, is technically complete and is the current public release from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9`. Milestone 5 District Cards is technically implemented and verified only in the current local working branch.
+Milestone 5 District Cards is technically complete and is the current public release from `main` merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`. The accepted Milestone 4–4.2 baseline from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9` is preserved as historical context.
 
 Milestone 5 stops at the four-card catalogue, finite deck/hand/discard model, supplemental card reward source, five fixed future-route slots, four bounded effects, deterministic `cards`-stream selection, and safe planning UI. The boss scope still ends at threshold latching, safe queueing, `BOSS_INTRO`, and `BOSS_ACTIVE`.
 
