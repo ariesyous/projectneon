@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="DistrictCardDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/cards/district_card_definition.gd" id="1_card"]
+[ext_resource type="Script" path="res://scripts/cards/card_effect_definition.gd" id="2_effect"]
+[ext_resource type="Texture2D" path="res://assets/ui/cards/icons/subway_entrance.svg" id="3_icon"]
+
+[sub_resource type="Resource" id="CardEffect_subway"]
+script = ExtResource("2_effect")
+id = &"subway_entrance_reroute_skip"
+summary = "Reroutes the next segment and skips exactly one baseline standard encounter."
+kind = 3
+reroutes_next_segment = true
+baseline_standard_encounters_to_skip = 1
+consumes_subway_charge = false
+
+[resource]
+script = ExtResource("1_card")
+id = &"subway_entrance"
+display_name = "Subway Entrance"
+description = "Redirect the next route segment past one upcoming street fight."
+icon = ExtResource("3_icon")
+cost = 0
+heat_delta = -15
+valid_node_types = Array[StringName]([&"encounter"])
+tags = Array[StringName]([&"REROUTE", &"SKIP"])
+progression_implications = "Skips exactly one baseline standard encounter without using Subway charges, reducing Night Pressure, or bypassing extraction or boss precedence."
+effect_definition = SubResource("CardEffect_subway")

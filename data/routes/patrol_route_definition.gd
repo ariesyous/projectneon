@@ -2,8 +2,9 @@
 class_name PatrolRouteDefinition
 extends Resource
 
-## Fixed authored route used by Milestone 3. Node arrays are parallel and are
-## read in stable index order; later district-card mutation remains deferred.
+## Fixed authored baseline route. Node arrays are parallel and read in stable
+## index order; District Cards modify future occurrences without mutating this
+## definition or generating routes procedurally.
 
 @export var id: StringName = &"downtown_loop_route"
 @export_range(0.1, 60.0, 0.1) var travel_seconds_per_segment: float = 4.0

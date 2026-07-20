@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="DistrictCardDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/cards/district_card_definition.gd" id="1_card"]
+[ext_resource type="Script" path="res://scripts/cards/card_effect_definition.gd" id="2_effect"]
+[ext_resource type="Texture2D" path="res://assets/ui/cards/icons/arcade.svg" id="3_icon"]
+
+[sub_resource type="Resource" id="CardEffect_arcade"]
+script = ExtResource("2_effect")
+id = &"arcade_standard_encounter_reward_boost"
+summary = "Adds one standard fight and advances its standard reward by one eligible authored quality tier."
+kind = 0
+reward_quality_tier_steps = 1
+
+[resource]
+script = ExtResource("1_card")
+id = &"arcade"
+display_name = "Arcade"
+description = "Turn a future travel stop into a neon-lit fight with a better standard cache."
+icon = ExtResource("3_icon")
+cost = 0
+heat_delta = 10
+valid_node_types = Array[StringName]([&"travel"])
+tags = Array[StringName]([&"FIGHT", &"REWARD"])
+progression_implications = "Creates one non-recursive standard encounter; its standard reward advances one authored tier and clamps at the catalogue maximum."
+effect_definition = SubResource("CardEffect_arcade")

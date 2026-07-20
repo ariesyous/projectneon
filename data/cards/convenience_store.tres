@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="DistrictCardDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/cards/district_card_definition.gd" id="1_card"]
+[ext_resource type="Script" path="res://scripts/cards/card_effect_definition.gd" id="2_effect"]
+[ext_resource type="Texture2D" path="res://assets/ui/cards/icons/convenience_store.svg" id="3_icon"]
+
+[sub_resource type="Resource" id="CardEffect_store"]
+script = ExtResource("2_effect")
+id = &"convenience_store_existing_stock_purchase"
+summary = "Opens one shop purchase using the run's existing finite cooling stock."
+kind = 1
+maximum_purchases = 1
+uses_existing_shop_stock = true
+
+[resource]
+script = ExtResource("1_card")
+id = &"convenience_store"
+display_name = "Convenience Store"
+description = "Add a brief shop and recovery stop without restocking the district."
+icon = ExtResource("3_icon")
+cost = 0
+heat_delta = -10
+valid_node_types = Array[StringName]([&"travel"])
+tags = Array[StringName]([&"SHOP", &"RECOVERY"])
+progression_implications = "Allows one purchase from existing finite shop/cooling stock; it never replenishes stock or creates a broader economy."
+effect_definition = SubResource("CardEffect_store")
