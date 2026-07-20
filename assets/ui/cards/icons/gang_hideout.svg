@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <title>Gang Hideout placeholder icon</title>
+  <rect width="64" height="64" rx="12" fill="#29151d"/>
+  <path d="M10 27 32 10l22 17v27H10V27Z" fill="#482333" stroke="#ff715b" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M22 54V36h20v18" fill="#171827" stroke="#ffb14e" stroke-width="3"/>
+  <path d="M17 29h30" stroke="#ff4f78" stroke-width="3" stroke-linecap="round"/>
+  <path d="M25 43c4-7 10-7 14 0-3 6-11 6-14 0Z" fill="#ffb14e"/>
+  <circle cx="32" cy="43" r="2" fill="#29151d"/>
+  <path d="m19 20 5 3m21-3-5 3" stroke="#ff4f78" stroke-width="2" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <title>Subway Entrance placeholder icon</title>
+  <rect width="64" height="64" rx="12" fill="#10243a"/>
+  <path d="M13 53h38L46 22H18l-5 31Z" fill="#203b55" stroke="#4ed8ff" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M21 22v-7h22v7" fill="none" stroke="#8dffce" stroke-width="3"/>
+  <circle cx="32" cy="15" r="8" fill="#172c47" stroke="#8dffce" stroke-width="3"/>
+  <path d="M28 19v-8l4 5 4-5v8" fill="none" stroke="#ffca58" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M21 48h22m-19-6h16m-13-6h10m-7-6h4" stroke="#4ed8ff" stroke-width="3" stroke-linecap="round"/>
+</svg>

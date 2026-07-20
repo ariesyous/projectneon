@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3]
+[gd_scene load_steps=31 format=3]
 
 [ext_resource type="Script" path="res://scripts/run/game_run.gd" id="1_game"]
 [ext_resource type="PackedScene" path="res://scenes/stages/downtown_loop.tscn" id="2_stage"]
@@ -29,6 +29,7 @@
 [ext_resource type="Resource" path="res://data/rewards/neon_stash.tres" id="27_reward"]
 [ext_resource type="Resource" path="res://data/rewards/viper_cache.tres" id="28_reward"]
 [ext_resource type="Resource" path="res://data/routes/downtown_loop_route.tres" id="29_route"]
+[ext_resource type="Resource" path="res://data/cards/milestone_5_district_card_catalogue.tres" id="30_cards"]
 
 [node name="GameRun" type="Node"]
 script = ExtResource("1_game")
@@ -71,6 +72,7 @@ encounter_candidates = [ExtResource("23_encounter"), ExtResource("24_encounter")
 
 [node name="CardSystem" type="Node" parent="."]
 script = ExtResource("7_cards")
+catalogue = ExtResource("30_cards")
 
 [node name="SynergySystem" type="Node" parent="."]
 script = ExtResource("8_synergy")

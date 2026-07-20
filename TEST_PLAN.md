@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Testing is milestone-scoped. Milestone 0 verifies the project foundation; Milestone 1 verifies the narrow Combat Lab, automatic combat, and coin-cluster accounting; Milestone 2 verifies the Fire Hydrant intervention, combat-safe space, and targeted presentation/usability improvements; Milestone 3 verifies the complete run structure, escalation, thresholds, cooling, deterministic streams, standard rewards, outcomes, and restart cleanup; Milestone 4 verifies equipment, statuses, synergies, and deterministic choices; Milestone 4.1 verifies the authorized equipment-safety and HUD-readability correction; and Milestone 4.2 verifies the bounded inventory-drag and one-backpack-clarity correction. Later checklists do not pretend that deferred gameplay systems are implemented.
+Testing is milestone-scoped. Milestone 0 verifies the project foundation; Milestone 1 verifies the narrow Combat Lab, automatic combat, and coin-cluster accounting; Milestone 2 verifies the Fire Hydrant intervention, combat-safe space, and targeted presentation/usability improvements; Milestone 3 verifies the complete run structure, escalation, thresholds, cooling, deterministic streams, standard rewards, outcomes, and restart cleanup; Milestone 4 verifies equipment, statuses, synergies, and deterministic choices; Milestone 4.1 verifies the authorized equipment-safety and HUD-readability correction; Milestone 4.2 verifies the bounded inventory-drag and one-backpack-clarity correction; and Milestone 5 verifies District Cards, deterministic finite deck state, future-route placement/resolution, supplemental card rewards, progression protections, and safe multimodal planning. Later checklists do not pretend that deferred gameplay systems are implemented.
 
 ## Error policy
 
@@ -17,7 +17,7 @@ Testing is milestone-scoped. Milestone 0 verifies the project foundation; Milest
 - **Planned** means the test is a downstream acceptance contract only; an unchecked planned item is not evidence that its system exists or works.
 - **Owner-recorded** means only the project owner may enter the result.
 
-Milestone 1, Milestone 2, Milestone 3, Milestone 4, Milestone 4.1, and Milestone 4.2 technical checks are recorded as executed. Milestone 5 and later suites remain **Planned**; their presence does not start or authorize those milestones. The Milestone 1 Human Validation Gate result remains separately labelled as an owner-recorded qualitative decision.
+Milestone 1 through Milestone 5 technical suites are recorded as executed. Milestone 6 and later suites remain **Planned**; their presence does not start or authorize those milestones. The Milestone 1 Human Validation Gate result remains separately labelled as an owner-recorded qualitative decision.
 
 ## Milestone 0 static checks
 
@@ -365,9 +365,9 @@ Additional deterministic coverage passed for exactly nine unique stable IDs; Res
 - Equipment changes left Heat and Night Pressure unchanged. Extraction, defeat, and boss-threshold flows remained valid with equipment active. Hydrant, coins, Help, sound unlock, fullscreen delivery path, `F1`, and `F2` remained usable.
 - The 640 x 360 configured run and evidence capture kept all slot, effect, threshold, preview, and replacement copy inside panel borders. The embedded runner reported its expected informational windowed-only fullscreen limitation.
 - Fresh local release Windows and Web exports succeeded. Windows passed a 180-frame headless startup smoke. The locally served Web build rendered the live equipment UI, accepted the sound-unlock gesture, applied Serrated Wraps to slot 1 with one ordinary click, closed the modal, and produced no browser-console warnings or errors.
-- Fresh Godot editor/game output contained no task-introduced parser errors, runtime errors, warnings, failures, or skips. No publication or GitHub Pages redeployment was performed.
+- Fresh Godot editor/game output contained no task-introduced parser errors, runtime errors, warnings, failures, or skips. No publication or GitHub Pages redeployment was performed during that technical-verification pass; the cumulative Milestone 4–4.2 baseline was subsequently committed to `main`, pushed, and published from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9`.
 
-**Milestone 4 technical acceptance result: Passed.** Random schema version 1 remains unchanged. Equipment effect chance draws and equipment reward choices share the existing `equipment` stream, so replay of later choices requires identical equipment decisions, proc resolutions, and authoritative timing. Work stopped before Milestone 5.
+**Milestone 4 technical acceptance result: Passed.** Random schema version 1 remains unchanged. Equipment effect chance draws and equipment reward choices share the existing `equipment` stream, so replay of later choices requires identical equipment decisions, proc resolutions, and authoritative timing. Work stopped before Milestone 5 at the time of this acceptance record; Milestone 5 was authorized separately later.
 
 ### Milestone 4.1 — equipment safety and HUD readability correction
 
@@ -425,9 +425,9 @@ Full-six-position eviction, direct Store acquisition, occupied replacement, Keep
 - Local Windows result: fresh release export passed and the executable completed a clean 180-frame headless startup smoke.
 - Local Web result: fresh release export rendered the sharp 1280 x 720 UI; sound unlock, reward selection/confirmation, inventory inspection, discard cancellation, Help, fullscreen, and Hydrant input passed with no console warnings/errors.
 - Remaining tooling limitations: the portable headless export editor printed an ObjectDB-profiler `user://` directory message after successful exports, but exported runtimes did not reproduce it. Browser automation did not deliver `F1` to the Web canvas; the unchanged configured runtime handler and automated coverage passed.
-- Publication/deployment: **Not requested and not performed.**
+- Publication/deployment during the M4.1 correction pass: **Not requested and not performed.** The correction was subsequently included in the cumulative Milestone 4–4.2 `main` release from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9` and the successful Pages deployment at [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/).
 
-Selling, buyback, and a broader equipment-shop economy are outside the authorized correction and have no M4.1 acceptance claim. District Cards and every other Milestone 5+ system remain unimplemented.
+Selling, buyback, and a broader equipment-shop economy are outside the authorized correction and have no M4.1 acceptance claim. District Cards were unimplemented at the time of this historical M4.1 record and were authorized separately for Milestone 5 later.
 
 ### Milestone 4.2 — inventory drag and one-backpack clarity correction
 
@@ -484,20 +484,98 @@ Occupied cross-area swap, invalid/outside drop, combat lockout, and full-invento
 - Copy/layout hardening result: **Passed automated verification.** Compact reward and action-target labels, key two-line prompt bounds, explicit click safety copy, ASCII action wording, and 20 longest-name pixel-fit assertions are locked by the M4.2 suite.
 - Local Windows result: **Passed.** Fresh export and headless runtime smoke exited 0 without warnings, stderr, or diagnostics.
 - Local Web result: **Passed.** The fresh 1280 x 720 build completed sound unlock, reward drag/Confirm, owned-item drag/Confirm, exact final inventory-state checks, ASCII glyph/containment review, and an empty warning/error console.
-- Publication/deployment: **Not requested and not performed.**
+- Publication/deployment during the M4.2 correction pass: **Not requested and not performed.** The owner subsequently committed the cumulative Milestone 4–4.2 baseline to `main`, pushed it, and successfully published it from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9` at [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/).
 
-Selling, salvage, buyback, auto-sell/auto-salvage, rarity tiers, uniques, affixes, set items/set bonuses, and category-locked equipment slots are outside M4.2 and remain unimplemented. District Cards and every other Milestone 5+ system remain unimplemented.
+Selling, salvage, buyback, auto-sell/auto-salvage, rarity tiers, uniques, affixes, set items/set bonuses, and category-locked equipment slots are outside M4.2 and remain unimplemented. District Cards were unimplemented at the time of this historical M4.2 record and were authorized separately for Milestone 5 later.
 
-**Milestone 4.2 technical acceptance result: Passed.** Work stopped before Milestone 5.
+**Milestone 4.2 technical acceptance result: Passed.** Work stopped before Milestone 5 at that time. No semantic version is inferred for the later `1b3d5a5118ad31d864266ec2aefd44e652ffafe9` publication.
 
 ### Milestone 5 — District Cards
 
-Status: **Planned — not implemented or executed**
+Status: **Passed technical verification on Godot 4.7, 2026-07-19**
 
-- [ ] Card placement validation accepts only valid route-node types and returns invalid cards to the hand with immediate feedback.
-- [ ] Played cards resolve at the correct route time, move to discard, and update the minimap.
-- [ ] Card Heat changes are correct, while no card reduces Night Pressure or bypasses latched extraction/boss progression.
-- [ ] Card selection consumes only the deterministic `cards` stream after stable-ID candidate ordering.
+Milestone 5 implements the complete bounded District Cards system without starting Milestone 6. `DistrictCardDefinition` and `CardEffectDefinition` are typed, data-only Resources. `CardSystem` owns finite pile/hand/discard state, card-stream selection, planning and staged placement, pending/resolved effect records, reward acquisition, and exactly-once token ledgers; `PatrolController` owns the authored route position and revisioned future-route modifications; `RunDirector` remains the only Heat/Night Pressure authority; and `GameHUD` remains presentation and typed-intent forwarding only.
+
+#### Executed automated coverage matrix
+
+| Contract | Executed result |
+| --- | --- |
+| Exactly four valid, unique stable IDs — `arcade`, `convenience_store`, `gang_hideout`, and `subway_entrance` — with `FREE` cost, icons, tags, Heat values, node types, progression copy, and typed effects | **Passed** |
+| One-copy four-card deck, deterministic two-card opening draw, capacity-three hand, draw/hand/discard snapshots, immediate discard on confirmed play, and no reshuffle during M5 | **Passed** |
+| Restart clears deck, hand, discard, pending/resolved effects, route modifications, modal/planning state, revisions/tokens, reward latches, and `cards`-stream state before rebuilding the deterministic opening hand | **Passed** |
+| Exactly five stable future occurrence/route-slot identities, one card per occurrence, route revisions, and no stacking | **Passed** |
+| Travel-only versus encounter-only placement rules accept valid future slots and reject wrong-type, current, past, expired, occupied, outside, invalid, and stale placements | **Passed** |
+| Every rejection leaves Heat, Night Pressure, hand/draw/discard, pending/resolved route state, rewards, and all stream draw counts unchanged | **Passed** |
+| Confirm requires exact hand/route revisions and a one-time token; successful play moves one card to discard, creates one pending effect, and applies its Heat delta exactly once | **Passed** |
+| Route effects resolve exactly once only when the stable future occurrence is reached; route/minimap snapshots expose pending and resolved changes | **Passed** |
+| Arcade creates one non-recursive standard encounter and advances the resulting standard reward by one eligible authored tier on the existing 0/1/3 ladder, clamped to the catalogue | **Passed** |
+| Convenience Store permits at most one purchase using existing finite shop/cooling stock, without replenishing stock or creating another economy | **Passed** |
+| Gang Hideout uses the scaled elite-eligible `viper_signal` placeholder and guarantees the normal equipment-choice phase without introducing a Milestone 6 actor | **Passed** |
+| Subway Entrance skips exactly one upcoming baseline standard encounter without consuming/replenishing Subway charges | **Passed** |
+| Cards never reduce Night Pressure, reopen extraction thresholds, clear/bypass a boss latch or queue, skip extraction progression, or override boss precedence | **Passed** |
+| Supplemental card rewards follow, rather than replace or mutate, the standard/equipment reward contract and occur only after eligible baseline non-elite standard encounters | **Passed** |
+| Card-created encounters, elite encounters, shops, reroutes, and card effects cannot recursively award cards | **Passed** |
+| Card rewards offer up to three remaining valid cards, acquire the selected stable ID once, preserve non-selected cards, and provide **Skip / Keep Hand** at hand capacity | **Passed** |
+| Opening and reward candidates are filtered and sorted by stable card ID before selection with only `cards`; `encounters`, `spawns`, `rewards`, `equipment`, `enemy_variants`, and `cosmetic` remain isolated | **Passed** |
+| Same-seed opening/reward replay, documented multi-seed variation, cosmetic isolation, other-gameplay-stream isolation, and schema-1 preservation | **Passed** |
+| Planning is limited to safe `PATROLLING`, `SHOP`, or `EXTRACTION_AVAILABLE` states; its owned pause prevents eligible time and Night Pressure from advancing | **Passed** |
+| Unsafe progression synchronously ends planning and clears the staged token; stale confirmation then rejects before Heat, route, hand, or discard mutation | **Passed** |
+| Typed mouse/touch drag, 8-pixel fallback, first-pointer ownership, invalid/outside snap-back, right-click cancellation, and click/tap/keyboard placement share the same validation/confirmation path | **Passed** |
+| Card names, placeholder icons, `FREE`, Heat, node effect, tags, progression implications, pile counts, five textual slot statuses, valid highlights, feedback, and pending/resolved route preview remain contained at 1280 x 720 | **Passed** |
+| Help, sound unlock, fullscreen, `F1`, `F2`, Hydrant, coins, equipment UI, and inventory drag contracts remain present | **Passed regression coverage** |
+| All preserved Milestone 1–4.2 suites remain green | **Passed** |
+
+#### Automated execution record
+
+- `milestone_5_card_system`: **13/13 tests, 307 assertions**.
+- `milestone_5_card_ui`: **15/15 tests, 214 assertions**.
+- `milestone_5_route_effects`: **15/15 tests, 220 assertions**.
+- Milestone 5 addition: **43/43 tests, 741 assertions**.
+- Preserved Milestone 1–4.2 baseline: **145/145 tests, 1,709 assertions**.
+- Final cumulative result: **188/188 tests and 2,450 assertions passed; 0 failures, 0 skips, 15 suites.**
+
+The resource/system suite locks finite deck state, candidate ordering and stream ownership, reward acquisition, revision/token rejection, immutable invalid transactions, exactly-once discard/Heat behavior, planning-time pause, and clean restart. The UI suite covers typed drag payloads/targets, mouse/touch thresholds and first-pointer ownership, right-click cancellation, invalid/outside return, click/tap/keyboard fallback, focus transfer to Confirm, textual slot states, route/minimap snapshots, and native-view containment. The route-effects suite composes the production run authorities to verify all four authored effects, reward tier advancement, finite shop stock, guaranteed equipment, exact baseline skip, non-recursion, extraction/boss precedence, irreversible Night Pressure, correct future occurrence timing, and ending/restart cleanup.
+
+#### Authored catalogue and resolution contract
+
+| Stable ID | Cost / tags | Valid future node | Confirmed Heat | Exactly-once reached-node effect |
+| --- | --- | --- | ---: | --- |
+| `arcade` | `FREE`; `FIGHT`, `REWARD` | `travel` | +10 | Starts one standard placeholder fight, grants no card reward, and advances its standard reward exactly one available authored quality tier, clamped. |
+| `convenience_store` | `FREE`; `SHOP`, `RECOVERY` | `travel` | -10 | Opens one purchase from the existing two-use, 60-coin/18-Heat finite shop-cooling stock; it neither replenishes stock nor adds an economy. |
+| `gang_hideout` | `FREE`; `ELITE`, `EQUIPMENT` | `encounter` | +20 | Starts scaled elite-placeholder encounter `viper_signal`, guarantees its normal eligible equipment choice, and grants no card reward. |
+| `subway_entrance` | `FREE`; `REROUTE`, `SKIP` | `encounter` | -15 | Reroutes past exactly that one baseline standard encounter without changing the existing two-charge Subway intervention. |
+
+Confirmed placement applies Heat immediately and once; it does not wait for route resolution. The future encounter, shop, reroute, or reward adjustment resolves once only when the identified occurrence is reached. `RunFlowController` checks extraction/boss progression at the safe boundary first, so a pending card cannot bypass a queued boss or consume an occurrence while an extraction decision is unresolved. Declining extraction returns to that same occurrence.
+
+The specification phrase "increased upgrade choice quality" is implemented, under the owner-approved provisional rule, as one step through the existing authored standard-reward quality tiers `0 -> 1 -> 3`, clamped at tier 3. No new general upgrade system, card currency, card shop, or card economy was introduced.
+
+#### Configured-project and manual record
+
+- [x] Launched the configured project directly into `/GameRun` and observed the deterministic two-card opening hand, two-card draw remainder, empty discard, and five stable future slots.
+- [x] Completed an eligible baseline encounter through its existing reward path and observed the separate supplemental card offer; skipping equipment did not lose the ordinary reward, and the card phase did not recurse.
+- [x] Opened planning in a safe shop state, selected a hand card and future slot through keyboard focus, staged without mutation, then confirmed Gang Hideout once. Hand/discard/pending state changed once, Heat moved from 4 to 24, Night Pressure remained 10.3456, and card/random-stream draw counts did not change during placement.
+- [x] Confirmed the pending Gang Hideout marker and textual occupied route slot were visible in the route/minimap preview at the native 1280 x 720 presentation.
+- [x] Fresh Windows and Web release exports completed with exit code 0. The exported Windows runtime and PCK console-template startup smokes exited 0; the runtime emitted only the engine banner and no diagnostic.
+- [x] The locally served final Web export opened at 1280 x 720 and unlocked sound. Real pointer input returned Arcade after an outside drop without changing Heat/hand/discard, then staged Arcade on valid occurrence 4 and applied it once on confirmation: Heat 4→14, hand 3→2, discard 0→1. The route slot became textually `OCCUPIED ARCADE`, with pending/current/past state visible.
+- [x] The same Web pass rejected Gang Hideout on the occupied Arcade slot without mutation, then used click fallback to place it on occurrence 3 and applied Heat 14→34 once. Reaching that occurrence produced the scaled `VIPER SIGNAL` placeholder, Hydrant remained usable, and the result guaranteed the ordinary equipment-choice phase. Arcade subsequently resolved into `ARCADE AMBUSH`; a later eligible baseline reward separately offered the only remaining Subway Entrance card.
+- [x] Convenience Store was placed on future travel occurrence 9 with Heat 52→42 once. It remained pending when Night Pressure queued the boss; after Subway Entrance acquisition, `BOSS INTRO` took precedence and card planning was locked, demonstrating that the pending card did not clear or bypass the boss. Reloading the Web build returned Heat, equipment, pending/resolved route state, and card presentation to a clean run.
+- [x] Help, sound unlock, Hydrant, equipment/Skip Gear, supplemental card reward, extraction continuation, route preview, and clean restart were exercised in the Web pass; configured-project checks retained fullscreen, `F1`, `F2`, coins, equipment inventory drag, and the other accepted controls. The final Web warning/error console was empty and no card panel crossed the 1280 x 720 borders.
+- [x] Captured and inspected `res://docs/screenshots/milestone_5_district_cards.png`; it shows the confirmed Arcade transaction, exact pile/Heat change, five future slots, occupied text, and current/past/pending route preview without visible overflow.
+
+All four effects, every invalid/current/past/occupied/stale/outside rejection, same-seed/different-seed/isolation cases, planning-time pause, extraction/defeat/boss combinations, and complete restart cleanup were exercised through the composed deterministic suites. They were not all manually replayed in the configured-project pass above, so the record does not mislabel automated scenarios as separate human input observations.
+
+#### Honest limitations and scope
+
+- Card visuals are replaceable placeholder SVG icons and compact text presentation, not Milestone 6 production art, animation, audio, or tutorial content.
+- Gang Hideout deliberately reuses the scaled `viper_signal` Street Punk placeholder infrastructure. It does not implement the Viper Enforcer or any later elite actor.
+- Route planning is a fixed authored-route overlay with a rolling five-occurrence window. It is not procedural route generation.
+- M5 has one copy of four cards, a hand cap of three, no reshuffle, no card currency, no card shop, and no broader economy or persistence.
+- The generated Web shell retains the established focused-canvas/browser shortcut limitations; the visible fullscreen control remains the cross-platform presentation path.
+- The portable headless export editor may report its known ObjectDB-profiler `user://` directory message after a successful export. That tooling-only message is not suppressed and must be distinguished from exported-runtime output.
+- Reproduction is limited to the same supported build, content revision, random-schema version, seed, ordered decisions/effect resolutions, and authoritative timing context; cross-version or bitwise physics replay is not promised.
+- The Milestone 5 work remains local to `codex/milestone-5-district-cards`. It has not been committed, pushed, merged, published, or deployed. The public Pages build remains the Milestone 4–4.2 baseline from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9`.
+
+**Milestone 5 technical result: Passed.** Milestone 6 and every later system remain unimplemented and unauthorized.
 
 ### Milestone 6 — cadence and vertical-slice manual checks
 

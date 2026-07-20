@@ -21,6 +21,7 @@ signal encounter_completed_authoritatively(encounter_instance_id: int, definitio
 signal run_completed(result: int)
 signal run_summary_ready(summary: RunSummaryRecord)
 signal snapshot_changed(snapshot: Dictionary)
+signal card_planning_pause_changed(is_active: bool)
 
 enum RunState {
 	INITIALIZING,
@@ -84,6 +85,8 @@ var _completed_encounter_ids: Dictionary[int, bool] = {}
 var _generated_seed_nonce: int = 0
 var _last_summary: RunSummaryRecord
 var _random_streams: RunRandomStreams
+var _card_planning_pause_owned: bool = false
+var _ending_card_planning_pause: bool = false
 
 
 func _ready() -> void:
@@ -162,6 +165,13 @@ func request_transition(new_state: int) -> bool:
 	if new_state == current_state or not _is_transition_allowed(current_state, new_state):
 		transition_rejected.emit(current_state, new_state)
 		return false
+	if (
+		current_state == RunState.PAUSED
+		and _card_planning_pause_owned
+		and not _ending_card_planning_pause
+	):
+		transition_rejected.emit(current_state, new_state)
+		return false
 	var previous_state: int = current_state
 	current_state = new_state
 	run_state_changed.emit(previous_state, current_state)
@@ -178,11 +188,50 @@ func complete_intro() -> bool:
 
 func toggle_pause() -> bool:
 	if current_state == RunState.PAUSED:
+		if _card_planning_pause_owned:
+			return false
 		return request_transition(_state_before_pause)
 	if not is_pauseable_state(current_state):
 		return false
 	_state_before_pause = current_state
 	return request_transition(RunState.PAUSED)
+
+
+## Card planning owns a pause only when entered from safe route travel. The
+## ordinary Space toggle cannot release this pause behind an active card
+## gesture or placement review.
+func begin_card_planning_pause() -> bool:
+	if _card_planning_pause_owned or current_state != RunState.PATROLLING:
+		return false
+	_state_before_pause = RunState.PATROLLING
+	_card_planning_pause_owned = true
+	if not request_transition(RunState.PAUSED):
+		_card_planning_pause_owned = false
+		return false
+	card_planning_pause_changed.emit(true)
+	return true
+
+
+func end_card_planning_pause() -> bool:
+	if (
+		not _card_planning_pause_owned
+		or current_state != RunState.PAUSED
+		or _state_before_pause != RunState.PATROLLING
+	):
+		return false
+	_ending_card_planning_pause = true
+	_card_planning_pause_owned = false
+	var resumed: bool = request_transition(RunState.PATROLLING)
+	_ending_card_planning_pause = false
+	if not resumed:
+		_card_planning_pause_owned = true
+		return false
+	card_planning_pause_changed.emit(false)
+	return true
+
+
+func is_card_planning_pause_active() -> bool:
+	return _card_planning_pause_owned and current_state == RunState.PAUSED
 
 
 func begin_encounter(_definition: EncounterDefinition) -> bool:
@@ -502,6 +551,8 @@ func get_snapshot() -> Dictionary:
 		"current_extraction_threshold_index": _current_extraction_threshold_index,
 		"encounters_completed": encounters_completed,
 		"eligible_time": is_eligible_active_state(current_state),
+		"card_planning_pause_active": is_card_planning_pause_active(),
+		"pause_origin_state": _state_before_pause if current_state == RunState.PAUSED else -1,
 		"result": _run_result,
 		"random_draw_counts": get_random_streams().get_debug_snapshot().get("draw_counts", {}),
 	}
@@ -631,6 +682,9 @@ func _begin_pending_progression() -> bool:
 
 
 func _reset_authoritative_state() -> void:
+	var card_planning_was_active: bool = _card_planning_pause_owned
+	_card_planning_pause_owned = false
+	_ending_card_planning_pause = false
 	if current_state != RunState.INITIALIZING:
 		var previous_state: int = current_state
 		current_state = RunState.INITIALIZING
@@ -655,6 +709,8 @@ func _reset_authoritative_state() -> void:
 	_pending_extraction_thresholds.clear()
 	_completed_encounter_ids.clear()
 	_last_summary = null
+	if card_planning_was_active:
+		card_planning_pause_changed.emit(false)
 
 
 func _ensure_random_streams() -> void:

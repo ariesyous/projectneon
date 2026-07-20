@@ -1,7 +1,8 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/game_hud.gd" id="1_hud"]
 [ext_resource type="Script" path="res://scripts/ui/equipment_drag_slot.gd" id="2_drag_slot"]
+[ext_resource type="Script" path="res://scripts/ui/district_card_drag_slot.gd" id="3_card_drag_slot"]
 
 [sub_resource type="StyleBoxFlat" id="PanelCyan"]
 bg_color = Color(0.018, 0.033, 0.09, 0.94)
@@ -106,6 +107,7 @@ offset_top = 46.0
 offset_right = 222.0
 offset_bottom = 124.0
 theme_override_colors/font_color = Color(1, 0.79, 0.35, 1)
+theme_override_constants/line_spacing = -2
 theme_override_font_sizes/font_size = 16
 text = "HIDEOUT>PATROL>FIGHT\nGEAR>EXIT/BOSS\nN0 00% L0 > PATROL"
 horizontal_alignment = 0
@@ -952,7 +954,7 @@ theme_override_styles/panel = SubResource("PanelCyan")
 layout_mode = 0
 offset_left = 18.0
 offset_top = 8.0
-offset_right = 440.0
+offset_right = 410.0
 offset_bottom = 38.0
 theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 20
@@ -987,6 +989,288 @@ offset_bottom = 116.0
 theme_override_font_sizes/font_size = 18
 disabled = true
 text = "SHOP COOLING\n2 LEFT • 60 COINS"
+
+[node name="DistrictCardCompactPanel" type="Panel" parent="Root/CardsPanel"]
+layout_mode = 0
+offset_left = 418.0
+offset_top = 4.0
+offset_right = 730.0
+offset_bottom = 54.0
+theme_override_styles/panel = SubResource("PanelAmber")
+
+[node name="Summary" type="Label" parent="Root/CardsPanel/DistrictCardCompactPanel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 5.0
+offset_right = 172.0
+offset_bottom = 33.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.82, 0.38, 1)
+theme_override_font_sizes/font_size = 16
+text = "HAND 0/3  D4  X0"
+
+[node name="OpenCards" type="Button" parent="Root/CardsPanel/DistrictCardCompactPanel"]
+layout_mode = 0
+offset_left = 176.0
+offset_top = 3.0
+offset_right = 308.0
+offset_bottom = 35.0
+theme_override_font_sizes/font_size = 16
+text = "PLAN CARDS"
+tooltip_text = "Open the District Card hand and fixed future route slots"
+
+[node name="DistrictCardPanel" type="Panel" parent="Root"]
+visible = false
+z_index = 35
+layout_mode = 0
+offset_left = 35.0
+offset_top = 50.0
+offset_right = 1245.0
+offset_bottom = 670.0
+mouse_filter = 0
+theme_override_styles/panel = SubResource("PanelHelp")
+
+[node name="Title" type="Label" parent="Root/DistrictCardPanel"]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 10.0
+offset_right = 730.0
+offset_bottom = 42.0
+theme_override_colors/font_color = Color(0.34, 0.91, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "DISTRICT CARDS • PLAN THE FUTURE ROUTE"
+
+[node name="Counts" type="Label" parent="Root/DistrictCardPanel"]
+layout_mode = 0
+offset_left = 740.0
+offset_top = 12.0
+offset_right = 1018.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(1, 0.82, 0.38, 1)
+theme_override_font_sizes/font_size = 16
+text = "HAND 0/3 • D4 • X0"
+horizontal_alignment = 2
+
+[node name="Close" type="Button" parent="Root/DistrictCardPanel"]
+layout_mode = 0
+offset_left = 1024.0
+offset_top = 6.0
+offset_right = 1142.0
+offset_bottom = 46.0
+theme_override_font_sizes/font_size = 16
+text = "CLOSE"
+
+[node name="Choice01" type="Button" parent="Root/DistrictCardPanel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 54.0
+offset_right = 370.0
+offset_bottom = 278.0
+theme_override_font_sizes/font_size = 16
+text = "EMPTY HAND SLOT"
+script = ExtResource("3_card_drag_slot")
+
+[node name="Icon" type="TextureRect" parent="Root/DistrictCardPanel/Choice01"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 12.0
+offset_right = 106.0
+offset_bottom = 108.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Details" type="Label" parent="Root/DistrictCardPanel/Choice01"]
+layout_mode = 0
+offset_left = 112.0
+offset_top = 6.0
+offset_right = 340.0
+offset_bottom = 218.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 16
+text = "CARD 1"
+clip_text = true
+autowrap_mode = 3
+
+[node name="Choice02" type="Button" parent="Root/DistrictCardPanel"]
+layout_mode = 0
+offset_left = 405.0
+offset_top = 54.0
+offset_right = 755.0
+offset_bottom = 278.0
+theme_override_font_sizes/font_size = 16
+text = "EMPTY HAND SLOT"
+script = ExtResource("3_card_drag_slot")
+
+[node name="Icon" type="TextureRect" parent="Root/DistrictCardPanel/Choice02"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 12.0
+offset_right = 106.0
+offset_bottom = 108.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Details" type="Label" parent="Root/DistrictCardPanel/Choice02"]
+layout_mode = 0
+offset_left = 112.0
+offset_top = 6.0
+offset_right = 340.0
+offset_bottom = 218.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 16
+text = "CARD 2"
+clip_text = true
+autowrap_mode = 3
+
+[node name="Choice03" type="Button" parent="Root/DistrictCardPanel"]
+layout_mode = 0
+offset_left = 790.0
+offset_top = 54.0
+offset_right = 1140.0
+offset_bottom = 278.0
+theme_override_font_sizes/font_size = 16
+text = "EMPTY HAND SLOT"
+script = ExtResource("3_card_drag_slot")
+
+[node name="Icon" type="TextureRect" parent="Root/DistrictCardPanel/Choice03"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 12.0
+offset_right = 106.0
+offset_bottom = 108.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Details" type="Label" parent="Root/DistrictCardPanel/Choice03"]
+layout_mode = 0
+offset_left = 112.0
+offset_top = 6.0
+offset_right = 340.0
+offset_bottom = 218.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 16
+text = "CARD 3"
+clip_text = true
+autowrap_mode = 3
+
+[node name="Instruction" type="Label" parent="Root/DistrictCardPanel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 286.0
+offset_right = 1140.0
+offset_bottom = 338.0
+theme_override_colors/font_color = Color(1, 0.76, 0.42, 1)
+theme_override_font_sizes/font_size = 16
+text = "SELECT OR DRAG A CARD • CHOOSE A FUTURE ROUTE OCCURRENCE • REVIEW • CONFIRM"
+clip_text = true
+autowrap_mode = 2
+
+[node name="RouteSlot01" type="Button" parent="Root/DistrictCardPanel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 346.0
+offset_right = 230.0
+offset_bottom = 466.0
+theme_override_font_sizes/font_size = 16
+text = "SLOT 1\nNO FUTURE OCCURRENCE"
+script = ExtResource("3_card_drag_slot")
+
+[node name="RouteSlot02" type="Button" parent="Root/DistrictCardPanel"]
+layout_mode = 0
+offset_left = 248.0
+offset_top = 346.0
+offset_right = 458.0
+offset_bottom = 466.0
+theme_override_font_sizes/font_size = 16
+text = "SLOT 2\nNO FUTURE OCCURRENCE"
+script = ExtResource("3_card_drag_slot")
+
+[node name="RouteSlot03" type="Button" parent="Root/DistrictCardPanel"]
+layout_mode = 0
+offset_left = 476.0
+offset_top = 346.0
+offset_right = 686.0
+offset_bottom = 466.0
+theme_override_font_sizes/font_size = 16
+text = "SLOT 3\nNO FUTURE OCCURRENCE"
+script = ExtResource("3_card_drag_slot")
+
+[node name="RouteSlot04" type="Button" parent="Root/DistrictCardPanel"]
+layout_mode = 0
+offset_left = 704.0
+offset_top = 346.0
+offset_right = 914.0
+offset_bottom = 466.0
+theme_override_font_sizes/font_size = 16
+text = "SLOT 4\nNO FUTURE OCCURRENCE"
+script = ExtResource("3_card_drag_slot")
+
+[node name="RouteSlot05" type="Button" parent="Root/DistrictCardPanel"]
+layout_mode = 0
+offset_left = 932.0
+offset_top = 346.0
+offset_right = 1142.0
+offset_bottom = 466.0
+theme_override_font_sizes/font_size = 16
+text = "SLOT 5\nNO FUTURE OCCURRENCE"
+script = ExtResource("3_card_drag_slot")
+
+[node name="RoutePreview" type="Label" parent="Root/DistrictCardPanel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 474.0
+offset_right = 1140.0
+offset_bottom = 508.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.72, 0.86, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "ROUTE PREVIEW • NO PENDING OR RESOLVED CARD CHANGES"
+clip_text = true
+
+[node name="Feedback" type="Label" parent="Root/DistrictCardPanel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 514.0
+offset_right = 530.0
+offset_bottom = 606.0
+theme_override_colors/font_color = Color(1, 0.82, 0.38, 1)
+theme_override_font_sizes/font_size = 16
+text = "NOTHING CHANGES UNTIL A VALID PLACEMENT IS CONFIRMED."
+clip_text = true
+autowrap_mode = 2
+
+[node name="SkipKeepHand" type="Button" parent="Root/DistrictCardPanel"]
+visible = false
+layout_mode = 0
+offset_left = 540.0
+offset_top = 554.0
+offset_right = 770.0
+offset_bottom = 606.0
+theme_override_font_sizes/font_size = 16
+text = "SKIP • KEEP HAND"
+
+[node name="Confirm" type="Button" parent="Root/DistrictCardPanel"]
+layout_mode = 0
+offset_left = 780.0
+offset_top = 554.0
+offset_right = 940.0
+offset_bottom = 606.0
+theme_override_font_sizes/font_size = 17
+disabled = true
+text = "CONFIRM"
+
+[node name="Cancel" type="Button" parent="Root/DistrictCardPanel"]
+layout_mode = 0
+offset_left = 950.0
+offset_top = 554.0
+offset_right = 1140.0
+offset_bottom = 606.0
+theme_override_font_sizes/font_size = 17
+disabled = true
+text = "CLEAR SELECTION"
 
 [node name="InterventionsPanel" type="Panel" parent="Root"]
 layout_mode = 0
@@ -1099,7 +1383,7 @@ layout_mode = 0
 offset_left = 260.0
 offset_top = 580.0
 offset_right = 1008.0
-offset_bottom = 708.0
+offset_bottom = 716.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("PanelHelp")
 
@@ -1112,7 +1396,7 @@ offset_bottom = 36.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.34, 0.91, 1, 1)
 theme_override_font_sizes/font_size = 18
-text = "NEON LOOP • AUTO COMBAT + EQUIPMENT SYNERGIES"
+text = "NEON LOOP | AUTO COMBAT + GEAR + DISTRICT CARDS"
 
 [node name="AutoHelp" type="Label" parent="Root/HelpPanel"]
 layout_mode = 0
@@ -1123,7 +1407,7 @@ offset_bottom = 118.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.84, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 16
-text = "JAX AUTO-FIGHTS.\nCLICKS ONLY INSPECT; NEVER DISCARD."
+text = "JAX AUTO-FIGHTS.\nCLICKS ONLY INSPECT; NEVER DISCARD.\nCARDS: DRAG/CLICK; RIGHT-CLICK = CANCEL."
 
 [node name="InterventionHelp" type="Label" parent="Root/HelpPanel"]
 layout_mode = 0
@@ -1134,7 +1418,7 @@ offset_bottom = 118.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.84, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 16
-text = "3 EQUIPPED + 3 STORED.\nBACKPACK = INACTIVE • NO BUYBACK."
+text = "3 EQUIPPED + 3 STORED.\nBACKPACK = INACTIVE; NO BUYBACK.\nCARDS: FUTURE SLOT, THEN CONFIRM."
 
 [node name="HelpButton" type="Button" parent="Root"]
 layout_mode = 0

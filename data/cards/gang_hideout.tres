@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="DistrictCardDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/cards/district_card_definition.gd" id="1_card"]
+[ext_resource type="Script" path="res://scripts/cards/card_effect_definition.gd" id="2_effect"]
+[ext_resource type="Texture2D" path="res://assets/ui/cards/icons/gang_hideout.svg" id="3_icon"]
+
+[sub_resource type="Resource" id="CardEffect_hideout"]
+script = ExtResource("2_effect")
+id = &"gang_hideout_viper_signal_elite"
+summary = "Adds the scaled viper_signal elite placeholder and guarantees an equipment choice."
+kind = 2
+encounter_id = &"viper_signal"
+guarantees_equipment_choice = true
+
+[resource]
+script = ExtResource("1_card")
+id = &"gang_hideout"
+display_name = "Gang Hideout"
+description = "Escalate a future standard encounter into an elite placeholder showdown."
+icon = ExtResource("3_icon")
+cost = 0
+heat_delta = 20
+valid_node_types = Array[StringName]([&"encounter"])
+tags = Array[StringName]([&"ELITE", &"EQUIPMENT"])
+progression_implications = "Uses the existing scaled elite-eligible placeholder and guarantees equipment; it adds no Milestone 6 enemy actor."
+effect_definition = SubResource("CardEffect_hideout")

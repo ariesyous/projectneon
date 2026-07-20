@@ -16,7 +16,11 @@
 
 **Milestone 4.2 — Inventory drag and backpack clarity correction: technical implementation and verification complete**
 
-The Combat Lab foundation and Fire Hydrant intervention are preserved inside a complete run lifecycle with the verified Milestone 4 equipment/synergy layer, Milestone 4.1 usability/readability correction, and bounded Milestone 4.2 drag/backpack-clarity implementation. Technical Milestone 1 acceptance is complete. On 2026-07-18, the project owner recorded the five-person Human Validation Gate as **PASSED**, satisfying the Milestone 2 entry condition; this owner qualitative decision remains distinct from all automated and coding-agent verification. Milestones 2–4.2 passed their respective technical verification without starting Milestone 5.
+**Milestone 5 — District Cards: technical implementation and verification complete**
+
+The Combat Lab foundation and Fire Hydrant intervention are preserved inside a complete run lifecycle with the verified Milestone 4 equipment/synergy layer, Milestone 4.1 usability/readability correction, bounded Milestone 4.2 drag/backpack-clarity implementation, and the separately authorized and technically verified Milestone 5 District Cards implementation. Technical Milestone 1 acceptance is complete. On 2026-07-18, the project owner recorded the five-person Human Validation Gate as **PASSED**, satisfying the Milestone 2 entry condition; this owner qualitative decision remains distinct from all automated and coding-agent verification. Milestones 2–4.2 retain their recorded technical acceptance. Milestone 5 passed 188/188 cumulative tests and 2,450 assertions plus configured-project, Windows, Web, console, and visual-evidence checks.
+
+**Published baseline correction:** the owner confirmed that Milestone 4, including the M4.1 and M4.2 corrections, was committed to `main`, pushed, and successfully published to GitHub Pages from commit `1b3d5a5118ad31d864266ec2aefd44e652ffafe9`. The live baseline is [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/). This corrects only stale release-status wording below; it does not alter any historical acceptance decision or invent a semantic version.
 
 ## Milestone 0 implementation
 
@@ -191,7 +195,7 @@ Technical checklist:
 - [x] Captured `res://docs/screenshots/milestone_4_equipment_synergies.png`
 - [x] Added no gameplay Autoload and no Milestone 5+ card, content, persistence, progression, procedural, or final-boss behavior
 
-**Milestone 4 technical acceptance status: Passed.** Equipment proc chances and later equipment choices intentionally share the specification-owned `equipment` stream, so replay requires identical build decisions and authoritative effect timing as well as build/content/schema/seed equality. Random schema version 1 did not change. The implementation, exports, and evidence remain local; no commit, push, merge, publication, or deployment was performed.
+**Milestone 4 technical acceptance status: Passed.** Equipment proc chances and later equipment choices intentionally share the specification-owned `equipment` stream, so replay requires identical build decisions and authoritative effect timing as well as build/content/schema/seed equality. Random schema version 1 did not change. The cumulative M4–M4.2 baseline was subsequently committed to `main`, pushed, and published from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9`; this later release record does not change the technical acceptance recorded here.
 
 #### Milestone 4.1 — Equipment usability and HUD readability correction
 
@@ -217,9 +221,9 @@ Technical checklist:
 - [x] Captured `res://docs/screenshots/milestone_4_1_inventory_readability.png`
 - [x] Produced fresh local release Windows and Web exports; Windows passed a clean 180-frame headless runtime smoke and Web passed reward/inventory/Help/fullscreen/Hydrant interaction with no console warnings/errors
 
-**Milestone 4.1 technical acceptance status: Passed.** The portable headless export editor emitted an ObjectDB-profiler `user://` directory message after successful exports, but neither exported runtime reproduced it. Browser automation did not deliver `F1` to the Web canvas; the unchanged configured runtime handler and preserved automated coverage passed. No commit, push, merge, publication, or deployment was performed.
+**Milestone 4.1 technical acceptance status: Passed.** The portable headless export editor emitted an ObjectDB-profiler `user://` directory message after successful exports, but neither exported runtime reproduced it. Browser automation did not deliver `F1` to the Web canvas; the unchanged configured runtime handler and preserved automated coverage passed. This correction is included in the later published M4–M4.2 baseline at `1b3d5a5118ad31d864266ec2aefd44e652ffafe9`.
 
-Selling, buyback, and a broader equipment shop/economy were deliberately not implemented: they exceed the authorized correction and require a separate product/economy decision. District Cards, final-boss content, progression/persistence, procedural generation, and every other Milestone 5+ system remain unimplemented.
+Selling, buyback, and a broader equipment shop/economy were deliberately not implemented: they exceed the authorized correction and require a separate product/economy decision. District Cards were later authorized only through the bounded Milestone 5 scope below; final-boss content, progression/persistence, procedural generation, and every Milestone 6+ system remain unimplemented.
 
 #### Milestone 4.2 — Inventory drag and backpack clarity correction
 
@@ -246,9 +250,9 @@ Selling, buyback, and a broader equipment shop/economy were deliberately not imp
 - [x] Produced fresh Windows and Web exports with exit code 0/no export warnings or errors; Windows passed a clean headless load of `game_run.tscn` and the M4.2 scripts/Resources
 - [x] Verified the final locally served 1280 x 720 Web build: sound unlock; real pointer reward→active slot 3 staging with no pre-Confirm mutation; one-click application/modal close; active slot 3→empty backpack slot 3 named no-loss staging; one-click Confirm; no glyph boxes/overflow; empty warning/error console
 
-**Milestone 4.2 technical acceptance status: Passed.** No random draw, candidate order, inventory authority, active-slot aggregation rule, random schema, or Milestone 0–4.1 acceptance decision changed. No publication or deployment was performed.
+**Milestone 4.2 technical acceptance status: Passed.** No random draw, candidate order, inventory authority, active-slot aggregation rule, random schema, or Milestone 0–4.1 acceptance decision changed. The owner later confirmed successful `main` publication of the cumulative M4–M4.2 baseline from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9` to [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/).
 
-Selling, salvage, buyback, auto-sell/auto-salvage, equipment economy, rarity tiers, uniques, affixes, set items/set bonuses, and category-locked equipment slots were deliberately not implemented. District Cards and every other Milestone 5+ system remain unimplemented.
+Selling, salvage, buyback, auto-sell/auto-salvage, equipment economy, rarity tiers, uniques, affixes, set items/set bonuses, and category-locked equipment slots remain deliberately unimplemented. Milestone 5 adds only the District Cards scope below; every Milestone 6+ system remains unimplemented.
 
 #### Future equipment experience direction — design backlog, not authorized
 
@@ -263,11 +267,48 @@ Owner playtest direction to carry into a separately authorized itemization/UX mi
 - Consider rarity tiers, uniques, affixes, and data-driven set items/set bonuses in a later equipment-content milestone. Stable IDs, deterministic instance/roll ownership, balance, economy, and presentation must be specified before implementation.
 - The current active slots remain generic. Category-locked weapon/armor/boots slots would be a separate product change and must preserve valid synergy-build paths if later authorized.
 
-This record captures product direction only. It does not authorize implementation, change random schema version 1, or begin Milestone 5 or later systems.
+This record captures product direction only. It does not authorize further itemization work or any Milestone 6+ system, and it does not change random schema version 1. The separately authorized Milestone 5 work below is confined to District Cards.
 
 ### Milestone 5 — District Cards
 
-Implement data definitions, deck/hand/discard state, placement validation, route slots, minimap updates, and the four initial cards.
+**Status: Separately authorized technical implementation and verification complete.** No Milestone 6 or later gameplay/content scope is included.
+
+Implemented data and authority:
+
+- [x] Added typed `DistrictCardDefinition` and `CardEffectDefinition` Resources plus a validated four-entry catalogue with unique lowercase stable IDs, player-facing names/descriptions, replaceable icons, `FREE`/cost `0`, authored Heat deltas, valid node types, uppercase tags, progression implications, and typed effect payloads.
+- [x] Authored exactly one copy each of Arcade (`arcade`), Convenience Store (`convenience_store`), Gang Hideout (`gang_hideout`), and Subway Entrance (`subway_entrance`); no additional card, district, card currency, card shop, or card economy was added.
+- [x] Made `CardSystem` own the finite draw pile, three-card-cap hand, discard pile, staged/confirmed placement tokens, pending/resolved effect records, reward-choice tokens, revisions, and `cards`-stream draws. A run opens with two cards, confirmed plays move immediately from hand to discard, and discarded cards are never reshuffled in Milestone 5.
+- [x] Added supplemental card reward opportunities only after the existing core reward contract for eligible baseline non-elite standard encounters. Card-created encounters, elite encounters, shops, reroutes, and card effects cannot recursively award cards. Each opportunity offers up to three remaining valid draw-pile cards and supports selection exactly once or **Skip / Keep Hand**, including when the hand is full; unselected choices remain in the draw pile.
+- [x] Made `PatrolController` own five fixed future route-occurrence slots. Stable slot IDs use `<route-id>::route_slot::<occurrence-index>` and stable occurrence IDs use `<route-id>::occurrence::<occurrence-index>`; snapshots include target position, loop, node identity/type, status, occupation, and route revision.
+- [x] Enforced one card per future occurrence and no stacking. Invalid, wrong-node, current, past, expired, occupied, out-of-window, stale-revision, duplicate-token, and outside drops reject without changing Heat, route state, hand/discard state, rewards, or random streams.
+- [x] Kept placement transactional: the HUD forwards stable card/slot identity plus hand and route revisions; `CardSystem` stages a confirmation token; confirmation registers the revisioned route modification, moves the card to discard, and then `RunFlowController` asks the sole Heat authority, `RunDirector`, to apply the card delta exactly once. Cancel and invalid/outside drops return the visual card to the unchanged hand.
+- [x] Resolve a pending modification exactly once when its authored future route occurrence becomes current, before baseline node dispatch. The placed effect replaces that occurrence's baseline handling, updates pending/resolved route snapshots, and cannot reopen extraction thresholds, clear or bypass a queued boss, change boss precedence, or decrease Night Pressure.
+
+Authored card tuning:
+
+| Stable ID / card | Cost | Heat | Valid future node | Tags | Stable effect ID / exact effect |
+| --- | ---: | ---: | --- | --- | --- |
+| `arcade` / Arcade | `FREE` (`0`) | `+10` | `travel` | `FIGHT`, `REWARD` | `arcade_standard_encounter_reward_boost`: replaces the reached travel occurrence with one non-recursive standard encounter; its standard reward advances by one eligible authored quality tier and clamps at the existing catalogue maximum. It creates no general upgrade system. |
+| `convenience_store` / Convenience Store | `FREE` (`0`) | `-10` | `travel` | `SHOP`, `RECOVERY` | `convenience_store_existing_stock_purchase`: replaces the reached travel occurrence with a shop/recovery visit allowing at most one purchase from the run's existing finite shop/cooling stock. It neither replenishes stock nor creates a broader economy. |
+| `gang_hideout` / Gang Hideout | `FREE` (`0`) | `+20` | `encounter` | `ELITE`, `EQUIPMENT` | `gang_hideout_viper_signal_elite`: replaces the reached baseline encounter with the existing scaled `viper_signal` elite-eligible placeholder and guarantees an equipment choice. It adds no Viper Enforcer or other Milestone 6 actor/content. |
+| `subway_entrance` / Subway Entrance | `FREE` (`0`) | `-15` | `encounter` | `REROUTE`, `SKIP` | `subway_entrance_reroute_skip`: reroutes the reached future segment and skips exactly that one upcoming baseline standard encounter. It consumes and replenishes no Subway intervention charge, does not reduce Night Pressure, and cannot skip extraction progression or bypass boss precedence. |
+
+Determinism, flow, and presentation:
+
+- [x] Filter invalid/duplicate candidates, sort by stable card ID, and draw only from the existing run-scoped `cards` stream for both the opening hand and reward choices. No card selection consumes `encounters`, `spawns`, `rewards`, `equipment`, `enemy_variants`, or `cosmetic`; extra cosmetic draws cannot change card outcomes. Random schema version 1 and its derivation remain unchanged.
+- [x] Limit card planning to safe `PATROLLING`, `SHOP`, and `EXTRACTION_AVAILABLE` states outside active combat. Planning entered from patrol owns a run pause; eligible time and Night Pressure do not advance while that modal pause is active. Unsafe progression synchronously ends planning and clears the staged token, and stale confirmation is rejected before Heat or route mutation.
+- [x] Keep the native 1280 x 720 HUD and logical 640 x 360 combat world. The card panel shows hand/draw/discard counts, names, placeholder icons, `FREE`, Heat, node effect, tags, progression implications, five stable future slots, node type/position, explicit status text, valid-placement highlighting, confirmation, and immediate rejection/return feedback. Minimap and route preview snapshots visibly distinguish pending and resolved changes.
+- [x] Use typed native `Control` drag payloads/targets with an 8-pixel mouse/touch threshold fallback and first-pointer ownership. Right-click cancels the active native drag; click/tap selection, explicit target buttons, focus navigation, and keyboard activation remain complete alternatives.
+- [x] Clear deck, hand, discard, staged/reward tokens, pending/resolved card records, planning/modal state, route modifications, and run-scoped cards-stream state on clean same-seed or new-seed restart.
+
+Final technical acceptance record:
+
+- [x] Passed the full cumulative matrix at **188/188 tests and 2,450 assertions with no failures or skips across 15 suites**, preserving the accepted 145-test/1,709-assertion Milestone 0–4.2 baseline and adding 43 M5 tests/741 assertions.
+- [x] Launched configured `/GameRun` and combined direct interaction with the composed deterministic suites to cover the supplemental reward, all four effects, immutable invalid/stale/current/past/occupied/outside paths, cancellation, replay/isolation, restart, extraction/defeat/boss precedence, preserved equipment/Hydrant/coin/Help/display/debug behavior, and 1280 x 720 containment. Automated cases are not mislabelled as separate manual observations.
+- [x] Produced fresh release Windows and Web exports. The Windows runtime smoke exited 0; the local Web build passed real pointer drag, click fallback, outside return, occupied rejection, preserved controls, clean restart, and an empty warning/error-console check.
+- [x] Captured and inspected `res://docs/screenshots/milestone_5_district_cards.png`; fixed every task-introduced parser/runtime/test failure found during verification and recorded the remaining placeholder/fixed-route/no-reshuffle scope limits honestly.
+
+Milestone 5 deliberately excludes Milestone 6 crew/enemy/elite-actor/boss/intervention/content/presentation/audio/tutorial/settings/persistence/final-summary work; procedural route generation; additional districts/cards; a card currency/economy; equipment selling/salvage/rarity/uniques/affixes/sets; and broad progression or persistence. No Milestone 5 commit, push, merge, publication, or deployment is recorded by this plan.
 
 ### Milestone 6 — Vertical-Slice Content and Presentation
 

@@ -40,6 +40,19 @@ signal equipment_choice_resolved(
 	backpack_slot: int
 )
 signal equipment_reward_declined(encounter_instance_id: int)
+signal card_choices_prepared(
+	encounter_instance_id: int,
+	choice_token: int,
+	choices: Array[DistrictCardDefinition],
+	hand_revision: int
+)
+signal card_choice_acquired(
+	encounter_instance_id: int,
+	choice_token: int,
+	card: DistrictCardDefinition,
+	hand_revision: int
+)
+signal card_choice_skipped(encounter_instance_id: int, choice_token: int)
 
 const RESPONSIBILITY: String = "Own the coin ledger and resolve each coin cluster at most once."
 const MAX_MANUAL_BONUS_BASIS_POINTS: int = 1000
@@ -91,6 +104,10 @@ var _resolving_equipment_reward_ids: Dictionary[int, bool] = {}
 var _last_equipment_candidate_order: Array[StringName] = []
 var _random_streams: RunRandomStreams
 var _synergy_system: SynergySystem
+var _card_system: CardSystem
+var _coordinated_card_encounter_id: int = -1
+var _coordinated_card_choice_token: int = -1
+var _coordinated_card_hand_revision: int = -1
 var simulation_enabled: bool = true
 
 
@@ -122,6 +139,11 @@ func configure_equipment(synergy_system: SynergySystem) -> void:
 	_synergy_system = synergy_system
 
 
+func configure_cards(card_system: CardSystem) -> void:
+	_card_system = card_system
+	_clear_card_coordination()
+
+
 func set_simulation_enabled(is_enabled: bool) -> void:
 	simulation_enabled = is_enabled
 
@@ -144,9 +166,128 @@ func reset_for_run() -> void:
 	_applied_equipment_reward_ids.clear()
 	_resolving_equipment_reward_ids.clear()
 	_last_equipment_candidate_order.clear()
+	# CardSystem owns its deck, hand, discard, tokens, and resolved ledgers. The
+	# run coordinator resets that authority separately; RewardDirector clears
+	# only its presentation-coordination mirror here.
+	_clear_card_coordination()
 	coins_changed.emit(_coin_total)
 	scrap_changed.emit(_scrap_total)
 	streak_changed.emit(0, -1)
+
+
+## Coordinates card reward presentation without owning candidates, tokens, or
+## randomness. CardSystem performs the only cards-stream draws.
+func prepare_card_choices(
+	encounter_instance_id: int
+) -> Array[DistrictCardDefinition]:
+	var empty_result: Array[DistrictCardDefinition] = []
+	if _card_system == null:
+		return empty_result
+	var choices: Array[DistrictCardDefinition] = (
+		_card_system.prepare_reward_choices(encounter_instance_id)
+	)
+	if choices.is_empty():
+		return empty_result
+	var choice_token: int = _card_system.get_pending_reward_choice_token()
+	var pending_encounter_id: int = _card_system.get_pending_reward_encounter_id()
+	if choice_token < 0 or pending_encounter_id != encounter_instance_id:
+		return empty_result
+	var hand_revision: int = _card_system.get_hand_revision()
+	_coordinated_card_encounter_id = encounter_instance_id
+	_coordinated_card_choice_token = choice_token
+	_coordinated_card_hand_revision = hand_revision
+	card_choices_prepared.emit(
+		encounter_instance_id,
+		choice_token,
+		choices,
+		hand_revision
+	)
+	return choices
+
+
+func acquire_card_choice(
+	encounter_instance_id: int,
+	choice_token: int,
+	choice_index: int,
+	expected_hand_revision: int
+) -> DistrictCardDefinition:
+	if _card_system == null:
+		return null
+	var selected: DistrictCardDefinition = _card_system.acquire_reward_choice(
+		encounter_instance_id,
+		choice_token,
+		choice_index,
+		expected_hand_revision
+	)
+	if selected == null:
+		return null
+	var resulting_hand_revision: int = _card_system.get_hand_revision()
+	_clear_card_coordination()
+	card_choice_acquired.emit(
+		encounter_instance_id,
+		choice_token,
+		selected,
+		resulting_hand_revision
+	)
+	return selected
+
+
+func skip_card_choice(encounter_instance_id: int, choice_token: int) -> bool:
+	if _card_system == null:
+		return false
+	if not _card_system.skip_reward_choice(encounter_instance_id, choice_token):
+		return false
+	_clear_card_coordination()
+	card_choice_skipped.emit(encounter_instance_id, choice_token)
+	return true
+
+
+func get_pending_card_choice_token() -> int:
+	return _card_system.get_pending_reward_choice_token() if _card_system != null else -1
+
+
+func get_pending_card_encounter_id() -> int:
+	return _card_system.get_pending_reward_encounter_id() if _card_system != null else -1
+
+
+func get_pending_card_choices() -> Array[DistrictCardDefinition]:
+	if _card_system == null:
+		var empty_result: Array[DistrictCardDefinition] = []
+		return empty_result
+	return _card_system.get_pending_reward_choices()
+
+
+func get_card_hand_revision() -> int:
+	return _card_system.get_hand_revision() if _card_system != null else -1
+
+
+func is_card_hand_full() -> bool:
+	if _card_system == null:
+		return false
+	return bool(_card_system.get_snapshot().get("reward_hand_full", false))
+
+
+func get_card_state() -> Dictionary:
+	return _card_system.get_snapshot() if _card_system != null else {}
+
+
+func get_card_debug_snapshot() -> Dictionary:
+	var pending_ids: Array[StringName] = []
+	for card: DistrictCardDefinition in get_pending_card_choices():
+		if card != null:
+			pending_ids.append(card.id)
+	return {
+		"configured": _card_system != null,
+		"coordinated_encounter_id": _coordinated_card_encounter_id,
+		"coordinated_choice_token": _coordinated_card_choice_token,
+		"coordinated_hand_revision": _coordinated_card_hand_revision,
+		"pending_encounter_id": get_pending_card_encounter_id(),
+		"pending_choice_token": get_pending_card_choice_token(),
+		"pending_choice_ids": pending_ids,
+		"hand_revision": get_card_hand_revision(),
+		"hand_full": is_card_hand_full(),
+		"state": get_card_state(),
+	}
 
 
 func prepare_standard_reward(
@@ -200,6 +341,52 @@ func prepare_standard_reward(
 	_pending_standard_rewards[encounter_instance_id] = selected
 	standard_reward_prepared.emit(encounter_instance_id, selected)
 	return selected
+
+
+## Returns the quality tier reached by advancing through authored tiers rather
+## than assuming the integer immediately above the baseline exists. The
+## baseline is the highest eligible tier at or below maximum_quality_tier;
+## advancement clamps to the highest remaining authored tier. No random stream
+## is consumed.
+func get_advanced_authored_quality_tier(
+	maximum_quality_tier: int,
+	allowed_reward_ids: Array[StringName] = [],
+	tier_steps: int = 1
+) -> int:
+	var candidate_by_id: Dictionary[StringName, StandardRewardDefinition] = {}
+	var duplicate_ids: Dictionary[StringName, bool] = {}
+	for reward: StandardRewardDefinition in standard_rewards:
+		if (
+			reward == null
+			or reward.id == &""
+			or reward.quality_tier < 0
+			or (not allowed_reward_ids.is_empty() and not allowed_reward_ids.has(reward.id))
+		):
+			continue
+		if duplicate_ids.has(reward.id):
+			continue
+		if candidate_by_id.has(reward.id):
+			candidate_by_id.erase(reward.id)
+			duplicate_ids[reward.id] = true
+			continue
+		candidate_by_id[reward.id] = reward
+	var authored_tiers: Array[int] = []
+	for reward: StandardRewardDefinition in candidate_by_id.values():
+		if not authored_tiers.has(reward.quality_tier):
+			authored_tiers.append(reward.quality_tier)
+	authored_tiers.sort()
+	var baseline_index: int = -1
+	for index: int in range(authored_tiers.size()):
+		if authored_tiers[index] > maximum_quality_tier:
+			break
+		baseline_index = index
+	if baseline_index < 0:
+		return -1
+	var advanced_index: int = mini(
+		baseline_index + maxi(tier_steps, 0),
+		authored_tiers.size() - 1
+	)
+	return authored_tiers[advanced_index]
 
 
 func apply_standard_reward(encounter_instance_id: int) -> bool:
@@ -561,6 +748,7 @@ func get_debug_snapshot() -> Dictionary:
 		),
 		"pending_equipment_ids": pending_equipment_ids,
 		"equipment_rewards_applied": _applied_equipment_reward_ids.size(),
+		"card_reward": get_card_debug_snapshot(),
 	}
 
 
@@ -662,6 +850,12 @@ func _calculate_manual_bonus(base_value: int, resulting_streak: int) -> int:
 
 func _get_tuning() -> CoinClusterTuning:
 	return tuning if tuning != null else DEFAULT_TUNING
+
+
+func _clear_card_coordination() -> void:
+	_coordinated_card_encounter_id = -1
+	_coordinated_card_choice_token = -1
+	_coordinated_card_hand_revision = -1
 
 
 func _award_expires_before(left: PendingCoinAward, right: PendingCoinAward) -> bool:

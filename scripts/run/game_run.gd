@@ -14,6 +14,7 @@ const HYDRANT_COIN_EXCLUSION_RADIUS: float = 76.0
 @onready var cooling_controller: RunCoolingController = $RunCoolingController
 @onready var encounter_controller: RunEncounterController = $RunEncounterController
 @onready var run_flow_controller: RunFlowController = $RunFlowController
+@onready var card_system: CardSystem = $CardSystem
 @onready var synergy_system: SynergySystem = $SynergySystem
 @onready var display_controller: DisplayController = $DisplayController
 @onready var downtown_loop: DowntownLoop = $DowntownLoop
@@ -72,6 +73,19 @@ func _ready() -> void:
 	game_hud.inventory_swap_requested.connect(_on_inventory_swap_requested)
 	game_hud.inventory_move_requested.connect(_on_inventory_move_requested)
 	game_hud.inventory_discard_requested.connect(_on_inventory_discard_requested)
+	game_hud.district_card_planning_open_requested.connect(_on_card_planning_open_requested)
+	game_hud.district_card_planning_close_requested.connect(_on_card_planning_close_requested)
+	game_hud.district_card_placement_staged.connect(_on_card_placement_staged)
+	game_hud.district_card_placement_confirm_requested.connect(
+		_on_card_placement_confirm_requested
+	)
+	game_hud.district_card_placement_cancel_requested.connect(
+		_on_card_placement_cancel_requested
+	)
+	game_hud.district_card_reward_acquisition_requested.connect(
+		_on_card_reward_acquisition_requested
+	)
+	game_hud.district_card_reward_skip_requested.connect(_on_card_reward_skip_requested)
 	display_controller.fullscreen_changed.connect(game_hud.present_fullscreen_state)
 	display_controller.landscape_state_changed.connect(game_hud.present_landscape_state)
 	display_controller.safe_area_changed.connect(game_hud.apply_safe_area)
@@ -101,11 +115,16 @@ func _ready() -> void:
 		cooling_controller,
 		combat_director,
 		fire_hydrant_controller,
-		synergy_system
+		synergy_system,
+		card_system
 	)
 	run_flow_controller.flow_status_changed.connect(_on_flow_status_changed)
 	run_flow_controller.action_feedback.connect(_on_action_feedback)
 	run_flow_controller.equipment_reward_ready.connect(_on_equipment_reward_ready)
+	run_flow_controller.card_reward_ready.connect(_on_card_reward_ready)
+	run_flow_controller.card_planning_changed.connect(
+		game_hud.present_district_card_planning_state
+	)
 
 	_web_audio_unlocked = not OS.has_feature("web")
 	game_hud.present_audio_unlock_required(not _web_audio_unlocked)
@@ -138,13 +157,19 @@ func _input(event: InputEvent) -> void:
 		run_director.toggle_pause()
 		get_viewport().set_input_as_handled()
 	elif key_event.keycode == KEY_E and run_director.current_state == RunDirector.RunState.EXTRACTION_AVAILABLE:
-		run_flow_controller.confirm_extraction()
+		if card_system.is_planning_active():
+			_on_action_feedback("CLOSE DISTRICT CARD PLANNING BEFORE EXTRACTION")
+		else:
+			run_flow_controller.confirm_extraction()
 		get_viewport().set_input_as_handled()
 
 
 func _on_primary_action_requested() -> void:
 	match run_director.current_state:
 		RunDirector.RunState.REWARD_SELECTION:
+			if bool(run_flow_controller.get_snapshot().get("card_reward_phase_active", false)):
+				_on_action_feedback("CHOOSE A DISTRICT CARD OR KEEP HAND")
+				return
 			var pending_id: int = int(
 			run_flow_controller.get_snapshot().get("pending_reward_encounter_id", -1)
 			)
@@ -162,6 +187,11 @@ func _on_primary_action_requested() -> void:
 
 func _on_flow_status_changed(snapshot: Dictionary) -> void:
 	game_hud.present_flow_snapshot(snapshot)
+	game_hud.present_district_cards(
+		snapshot.get("cards", {}),
+		snapshot.get("patrol", {})
+	)
+	downtown_loop.present_route_snapshot(snapshot.get("patrol", {}))
 	debug_overlay.present_run_flow(snapshot)
 	_refresh_hydrant_presentation()
 	_refresh_combat_presentation()
@@ -231,6 +261,95 @@ func _on_equipment_reward_decline_requested() -> void:
 	if declined:
 		game_hud.dismiss_equipment_reward()
 		_on_action_feedback("CURRENT BUILD KEPT - RUN REWARD SECURED")
+
+
+func _on_card_reward_ready(
+	encounter_instance_id: int,
+	choice_token: int,
+	choices: Array[DistrictCardDefinition],
+	hand_revision: int,
+	_hand_full: bool
+) -> void:
+	game_hud.present_district_card_reward(
+		encounter_instance_id,
+		choice_token,
+		choices,
+		hand_revision,
+		true
+	)
+
+
+func _on_card_planning_open_requested() -> void:
+	if run_flow_controller.begin_card_planning():
+		return
+	game_hud.dismiss_district_card_panel()
+	game_hud.present_district_card_placement_result({
+		"accepted": false,
+		"reason": &"planning_unavailable",
+	})
+
+
+func _on_card_planning_close_requested() -> void:
+	run_flow_controller.end_card_planning()
+
+
+func _on_card_placement_staged(
+	card_id: StringName,
+	slot_id: StringName,
+	hand_revision: int,
+	route_revision: int
+) -> void:
+	var result: Dictionary = run_flow_controller.stage_card_placement(
+		card_id,
+		slot_id,
+		hand_revision,
+		route_revision
+	)
+	game_hud.present_district_card_placement_result(result)
+
+
+func _on_card_placement_confirm_requested(confirmation_token: int) -> void:
+	var result: Dictionary = run_flow_controller.confirm_card_placement(
+		confirmation_token
+	)
+	result["completed"] = bool(result.get("accepted", false))
+	game_hud.present_district_card_placement_result(result)
+
+
+func _on_card_placement_cancel_requested(confirmation_token: int) -> void:
+	run_flow_controller.cancel_card_placement(confirmation_token)
+
+
+func _on_card_reward_acquisition_requested(
+	encounter_instance_id: int,
+	choice_token: int,
+	choice_index: int,
+	hand_revision: int
+) -> void:
+	var acquired: bool = run_flow_controller.claim_card_reward(
+		encounter_instance_id,
+		choice_token,
+		choice_index,
+		hand_revision
+	)
+	game_hud.present_district_card_acquisition_result(
+		acquired,
+		"hand_full_or_stale" if not acquired else ""
+	)
+
+
+func _on_card_reward_skip_requested(
+	encounter_instance_id: int,
+	choice_token: int
+) -> void:
+	var skipped: bool = run_flow_controller.skip_card_reward(
+		encounter_instance_id,
+		choice_token
+	)
+	game_hud.present_district_card_acquisition_result(
+		skipped,
+		"stale_reward" if not skipped else ""
+	)
 
 
 func _on_inventory_swap_requested(

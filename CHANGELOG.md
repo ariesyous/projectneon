@@ -4,6 +4,64 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 
 ## [Unreleased]
 
+### 2026-07-19 — Milestone 5: District Cards (Technical)
+
+#### Added
+
+- Typed, data-only `DistrictCardDefinition` and `CardEffectDefinition` Resources plus exactly four validated, stable-ID, one-copy cards. Every card costs `0` and displays `FREE`; no card currency, card shop, or broader economy was introduced.
+- A run-scoped `CardSystem` authority for the finite draw pile, capacity-three hand, discard pile, deterministic two-card opening draw, no-reshuffle rule, planning/staged-placement state, pending/resolved effects, card reward choices, and exactly-once placement/acquisition/resolution ledgers.
+- Exactly five rolling future-route slots with stable route-occurrence and route-slot identities, a `PatrolController`-owned route revision, one card per occurrence, and explicit `valid`, `occupied`, `current`, `past`, `expired`, or `invalid` snapshots.
+- Supplemental card reward opportunities after eligible baseline non-elite standard encounters. Offers contain up to three remaining valid cards, acquire the selected card once, and include **Skip / Keep Hand** when appropriate, including at full hand capacity.
+- A native 1280 x 720 District Cards interface showing hand/draw/discard state, names, replaceable icons, `FREE`, Heat, effects, tags, progression implications, stable future slots, textual validity, highlights, immediate feedback, confirmation, and pending/resolved route/minimap state.
+- Typed native drag/drop, an 8-pixel mouse/touch fallback with first-pointer ownership, right-click cancellation, invalid/outside return-to-hand behavior, and complete click/tap/keyboard alternatives.
+- Three Milestone 5 suites with 43 tests and 741 assertions covering card data/state, deterministic selection, placement transactions, route effects/progression, rewards/non-recursion, UI/input/layout, authority-driven planning-modal cleanup, unsafe-transition cleanup, and clean restart.
+
+#### Authored cards
+
+- **Arcade** (`arcade`): `FREE`, `FIGHT`/`REWARD`, future `travel`, +10 Heat. Creates one non-recursive standard encounter and advances its standard reward by one available authored quality tier on the existing `0 -> 1 -> 3` ladder, clamped at tier 3. This resolves the specification's upgrade-quality wording without creating a general upgrade system.
+- **Convenience Store** (`convenience_store`): `FREE`, `SHOP`/`RECOVERY`, future `travel`, -10 Heat. Allows at most one purchase from the existing two-use, 60-coin/18-Heat shop-cooling stock without replenishment or a new economy.
+- **Gang Hideout** (`gang_hideout`): `FREE`, `ELITE`/`EQUIPMENT`, future `encounter`, +20 Heat. Uses the existing scaled elite-eligible `viper_signal` placeholder and guarantees the normal eligible equipment-choice phase; it adds no Milestone 6 Viper Enforcer actor.
+- **Subway Entrance** (`subway_entrance`): `FREE`, `REROUTE`/`SKIP`, future `encounter`, -15 Heat. Skips exactly that one baseline standard encounter without consuming or replenishing the existing finite Subway intervention charges.
+
+#### Changed
+
+- Confirmed placement now uses expected hand and route revisions plus a one-time token. Only successful confirmation moves the card to discard, creates its pending route effect, and asks `RunDirector` to apply the card's Heat delta exactly once.
+- Invalid, wrong-type, stale, current, past, expired, occupied, duplicate, cancelled, and outside placement paths leave Heat, Night Pressure, every card pile, route state, rewards, and all deterministic-stream draw counts unchanged.
+- `RunFlowController` preserves safe-boundary extraction/boss precedence before dispatching the exact current route occurrence. A card effect resolves once only when that occurrence is reached; declining extraction returns to the same occurrence.
+- Arcade and Gang Hideout use existing exactly-once standard/elite Night Pressure gains; Convenience Store uses existing finite Heat cooling; Subway Entrance omits one future baseline encounter. No card decreases Night Pressure, reopens extraction, clears/bypasses a boss latch or queue, or skips extraction progression.
+- Card-created encounters, elite encounters, shops, reroutes, and card effects cannot recursively create card rewards. The supplemental phase follows and never replaces or mutates the existing standard/equipment reward contract.
+- Opening and reward candidates are filtered and sorted by stable card ID, then selected only through the existing run-scoped `cards` stream. No card selection consumes `encounters`, `spawns`, `rewards`, `equipment`, `enemy_variants`, or `cosmetic`; random schema version 1 is unchanged.
+- Planning is available only in safe `PATROLLING`, `SHOP`, or `EXTRACTION_AVAILABLE` states. The `RunDirector`-owned planning pause prevents eligible time and Night Pressure from advancing and cannot be released by ordinary pause input. Unsafe progression synchronously ends planning and clears its staged token; stale confirmation rechecks the planning state and cannot apply Heat or route mutation.
+- Clean restart synchronously clears every card pile, pending/resolved route modification, modal/planning state, revision/token latch, and cards-stream position before rebuilding the deterministic opening hand.
+
+#### Verification
+
+- Passed **188/188 tests and 2,450 assertions with no failures or skips across 15 suites**. This preserves all 145 Milestone 1–4.2 tests/1,709 assertions and adds 43 Milestone 5 tests/741 assertions: card system 13/307, card UI 15/214, and route effects 15/220.
+- Configured Godot 4.7 launched directly into `/GameRun`, showed the deterministic opening two-card hand and five future slots, produced a supplemental card offer after an eligible baseline reward, and staged/confirmed Gang Hideout through keyboard focus. Confirmation moved one card to discard, created one pending route marker, changed Heat from 4 to 24 once, left Night Pressure at 10.3456, and consumed no placement-time random draw.
+- Fresh Windows and Web release exports completed with exit code 0. Both the exported Windows runtime and the PCK console-template startup smoke exited 0 without a runtime diagnostic.
+- The locally served final Web build unlocked sound and passed real outside-drop return, valid pointer drag, occupied-slot rejection, click-placement fallback, supplemental acquisition, exact once-only Heat/discard changes, fixed route preview/history, Hydrant, equipment reward, pending-card boss precedence, Help, and clean reload checks at 1280 x 720. The final warning/error console was empty.
+- Arcade resolved into its created fight/reward path; Gang Hideout resolved into the scaled `viper_signal` placeholder and guaranteed equipment; Convenience Store remained pending through a queued boss; and Subway Entrance was acquired exactly once before `BOSS INTRO` locked planning. The composed deterministic suite separately resolves all four effects, including finite Convenience Store stock and Subway Entrance's exact baseline skip.
+- Captured and inspected `res://docs/screenshots/milestone_5_district_cards.png`; it shows a confirmed Arcade placement with Heat 4→14, hand 3→2, discard 0→1, occupied future occurrence 4, and current/past/pending route state within the panel borders.
+
+#### Limitations and scope
+
+- Card art remains replaceable placeholder SVG presentation. No Milestone 6 production art, animation, audio, tutorial, setting, final summary, or other presentation/content system was added.
+- Gang Hideout deliberately uses the current Street Punk-based `viper_signal` placeholder; the Viper Enforcer and other later actors remain unimplemented.
+- Route modification is a fixed authored-route overlay with five visible future occurrences, not procedural route generation.
+- M5 intentionally has four one-copy cards, hand capacity three, no reshuffle, no card economy, and no persistence.
+- Automated suites exercised all four effects, all immutable rejection paths, planning-time pause, deterministic replay/variation/isolation, extraction/defeat/boss combinations, and clean restart. The configured-project pass did not manually replay every automated scenario, and this record does not describe those deterministic checks as separate human input observations.
+- The generated Web shell retains its established focused-canvas/browser-shortcut limitations. The portable export editor may report the known ObjectDB-profiler `user://` message after successful export; that tooling-only message is not suppressed or misreported as exported-runtime output.
+- Reproduction remains limited to an identical supported build, content revision, random-schema version, seed, ordered decisions/effect resolutions, and authoritative timing context.
+- Work remains local and uncommitted on `codex/milestone-5-district-cards`. It has not been pushed, merged, published, or deployed. Milestone 6 and every later system remain unauthorized.
+
+### 2026-07-19 — Milestone 4–4.2 Release Status Correction
+
+#### Recorded
+
+- The project owner confirmed that completed Milestone 4, including the M4.1 and M4.2 corrections, was committed to `main`, pushed, and successfully published from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9`.
+- The current public build is [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/). It supersedes the earlier Milestone 3 Pages deployment without changing that historical acceptance record.
+- This correction records release state only. It invents no semantic version and changes no Milestone 0–4.2 technical acceptance decision or owner-recorded Milestone 1 Human Validation Gate decision.
+
 ### 2026-07-19 — Milestone 4.2: Inventory Drag and Backpack Clarity Correction
 
 #### Added
@@ -36,9 +94,9 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 #### Scope
 
 - M4.2 changes only the authorized Milestone 4 equipment interaction/presentation surface. It changes no equipment tuning, active-slot aggregation, candidate ordering, random-stream ownership, or random schema, and it preserves every Milestone 0–4.1 technical acceptance decision plus the owner-recorded Milestone 1 gate.
-- Selling, salvage, buyback, auto-sell/auto-salvage, equipment economy, rarity tiers, uniques, affixes, set items/set bonuses, category-locked slots, District Cards, and every other Milestone 5+ system remain unimplemented.
-- No commit, push, merge, publication, or deployment is part of this correction unless separately requested.
-- Every technical Milestone 4.2 acceptance check passed. Work stopped before Milestone 5.
+- Selling, salvage, buyback, auto-sell/auto-salvage, equipment economy, rarity tiers, uniques, affixes, set items/set bonuses, and category-locked slots remain unimplemented. District Cards were unimplemented when this historical M4.2 correction closed and were authorized separately later.
+- No commit, push, merge, publication, or deployment occurred during the correction pass itself. The cumulative M4–M4.2 result was subsequently committed to `main`, pushed, and published from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9`.
+- Every technical Milestone 4.2 acceptance check passed. Work stopped before Milestone 5 at that time.
 
 ### 2026-07-19 — Equipment Experience Playtest Direction (Documentation Only)
 
@@ -85,8 +143,8 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 #### Scope
 
 - This is an owner-authorized usability/readability correction to completed Milestone 4. It preserves every Milestone 0–4 technical acceptance decision and does not reopen or reinterpret the owner-recorded Milestone 1 Human Validation Gate.
-- Equipment selling, buyback, and a broader shop economy were deliberately not implemented because they exceed this correction. District Cards, final-boss content, progression/persistence, procedural generation, and every other Milestone 5+ system remain absent.
-- No commit, push, merge, publication, or deployment is part of this correction unless separately requested.
+- Equipment selling, buyback, and a broader shop economy were deliberately not implemented because they exceed this correction. District Cards were absent at the time of this M4.1 record and were authorized separately later; final-boss content, progression/persistence, procedural generation, and every Milestone 6+ system remain absent.
+- No commit, push, merge, publication, or deployment occurred during the M4.1 correction pass itself. The correction was subsequently included in the cumulative M4–M4.2 publication from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9`.
 
 ### 2026-07-18 — Milestone 4: Equipment and Synergies (Technical)
 
@@ -143,9 +201,9 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 
 #### Scope
 
-- Every explicitly authorized technical Milestone 4 criterion passed. Work stopped before Milestone 5.
+- Every explicitly authorized technical Milestone 4 criterion passed. Work stopped before Milestone 5 at that time; M5 was authorized separately later.
 - All Milestone 0–3 technical acceptance decisions and the owner-recorded Milestone 1 Human Validation Gate were preserved without reopening or reinterpretation.
-- Milestone 4 changes, local exports, and verification evidence were not committed, pushed, merged, published, or deployed. GitHub Pages was not redeployed.
+- Milestone 4 changes, local exports, and verification evidence were not committed, pushed, merged, published, or deployed during this technical-verification pass. They were subsequently included in the cumulative M4–M4.2 `main` publication from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9` at [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/).
 
 ### 2026-07-18 — Milestone 3: Complete Run Structure (Technical)
 

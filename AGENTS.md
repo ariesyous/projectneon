@@ -20,7 +20,7 @@ If documentation and implementation disagree with the specification, stop and re
 
 ## Current verified state
 
-The currently implemented and technically verified scope is **Milestone 4.2 — Inventory drag and backpack clarity correction** on top of completed **Milestone 4.1 — Equipment usability and HUD readability correction** and **Milestone 4 — Equipment and Synergies**. It preserves all Milestone 0–4.1 behavior and includes:
+The currently implemented and technically verified scope is **Milestone 5 — District Cards** on top of completed **Milestone 4.2 — Inventory drag and backpack clarity correction**, **Milestone 4.1 — Equipment usability and HUD readability correction**, and **Milestone 4 — Equipment and Synergies**. It preserves every recorded Milestone 0–4.2 acceptance decision and includes:
 
 - Exactly nine typed stable-ID equipment Resources, three generic ordered active slots, and one clearly named backpack with three ordered inactive slots
 - Acquisition, explicit replacement/storage/removal, duplicate/invalid rejection, revisioned inventory transactions, and synchronous clean restart
@@ -38,15 +38,28 @@ The currently implemented and technically verified scope is **Milestone 4.2 — 
 
 Technical verification on Godot 4.7 passed **145/145 tests and 1,709 assertions with no failures or skips** across 12 suites. This preserves all 132 Milestone 1–4.1 tests/1,584 assertions and adds 13 dedicated Milestone 4.2 tests/125 assertions. Configured `/GameRun` pointer drag, fresh logs, 1280 x 720 containment, Windows export/runtime smoke, and final local Web reward/inventory drag plus browser-console checks all passed.
 
-Milestone 3 was committed to and deployed from `main` at `725cd373e2732b0dd6967a24a16e717e21ef8487`. The GitHub Pages build is available at [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/). The deployed build rendered the live Milestone 3 HUD, accepted the sound-unlock gesture, and produced no Web-console warnings or errors during the deployment smoke check.
+Milestone 5 adds typed card/effect Resources, exactly four stable-ID `FREE` cards, a finite one-copy authored deck, a deterministic two-card opening hand with capacity three and no reshuffle, five stable future-route slots plus current/past route history, revision/token-validated placement and resolution, supplemental baseline-encounter card rewards, and native drag plus click/tap/keyboard planning presentation. Godot 4.7 verification passed **188/188 tests and 2,450 assertions with no failures or skips across 15 suites**. This preserves all 145 Milestone 1–4.2 tests/1,709 assertions and adds 43 Milestone 5 tests/741 assertions: card system 13/307, card UI 15/214, and route effects 15/220. Configured `/GameRun`, fresh logs, 1280 x 720 containment, Windows export/runtime smoke, and the final local Web pointer/click interaction plus empty warning/error console all passed. Evidence: `res://docs/screenshots/milestone_5_district_cards.png`.
+
+Milestone 4, including the M4.1 and M4.2 corrections, was committed to `main`, pushed, and published from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9`. The current GitHub Pages build is available at [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/). This supersedes the earlier Milestone 3 deployment from `725cd373e2732b0dd6967a24a16e717e21ef8487`; the historical Milestone 3 acceptance record remains unchanged.
 
 The Milestone 3 boss scope ends at threshold latching, safe queueing, `BOSS_INTRO`, and `BOSS_ACTIVE`. Final-boss actor behavior, encounter content, art, audio, and the production victory path belong to later work.
 
-## Next authorized scope
+## Current scope boundary
 
-No Milestone 5 or later gameplay/content scope is authorized. Do not begin Milestone 5 District Cards, Milestone 6 content/presentation, final-boss content, broad progression or persistence, procedural generation, or any other later system without separate explicit authorization. Listing future content in documentation is not authorization to implement it.
+Milestone 5 District Cards is technically complete. Stop after that milestone. Milestone 6 content/presentation, the Viper Enforcer actor, final-boss content, broad progression or persistence, procedural generation, additional districts/cards, broader equipment economy, and every other later system remain unauthorized. Listing future content in documentation is not authorization to implement it.
 
-The Milestone 4–4.2 implementation, local exports, and evidence have not been committed, pushed, merged, published, or deployed. Do not perform those actions without a new owner request.
+The Milestone 5 working-branch implementation has not been committed, pushed, merged, published, or deployed. Do not perform any of those actions without a new owner request.
+
+## Milestone 5 invariant contracts
+
+- `DistrictCardDefinition` and `CardEffectDefinition` are typed, data-only Resources. The exactly four one-copy stable IDs are `arcade` (`FREE`, travel, +10 Heat), `convenience_store` (`FREE`, travel, -10 Heat), `gang_hideout` (`FREE`, encounter, +20 Heat), and `subway_entrance` (`FREE`, encounter, -15 Heat); each has validated tags, effect payload, progression copy, and a replaceable icon.
+- `CardSystem` owns the finite draw pile, capacity-three hand, discard pile, deterministic two-card opening draw, no-reshuffle rule, planning/staged-placement state, pending/resolved effects, card reward choices/acquisition, hand revisions, and confirmation/token ledgers. Restart clears all of them before resetting the `cards` stream and rebuilding the opening hand.
+- `PatrolController` owns current route position and exactly five fixed future modification slots with monotonic occurrence/slot identities, a route revision, one card per occurrence, and textual `valid`, `occupied`, `current`, `past`, `expired`, or `invalid` status. It applies and resolves revisioned modifications; no card/UI code procedurally generates routes.
+- Placement is staged, then confirmed with exact hand/route revisions and a confirmation token. Only successful confirmation moves the card to discard, creates the pending route effect, and asks `RunDirector` to apply the card's Heat delta exactly once. Invalid, stale, current, past, expired, wrong-type, occupied, cancelled, or outside drops change no Heat, Night Pressure, pile, route, reward, or random-stream state.
+- `RunFlowController` checks extraction/boss precedence at the safe boundary before dispatching the exact current route occurrence. The pending card effect resolves once only when that occurrence is reached; declining extraction returns to the same occurrence. Cards never reduce Night Pressure, reopen extraction, clear/bypass a boss latch or queue, or override boss precedence.
+- Arcade creates a non-recursive standard fight and advances its standard reward exactly one existing authored tier, clamped; Convenience Store permits one purchase from existing finite cooling/shop stock without replenishment; Gang Hideout uses the scaled `viper_signal` elite placeholder and guarantees the normal eligible equipment-choice phase; Subway Entrance skips exactly one upcoming baseline standard encounter without consuming/replenishing Subway charges.
+- Supplemental card rewards occur only after the existing reward contract for an eligible baseline non-elite standard encounter. They offer up to three remaining valid cards, selected only with `cards` after stable-ID filtering/sorting, acquire once, and support **Skip / Keep Hand**. Card-created encounters, elite encounters, shops, reroutes, and card effects cannot recursively offer cards.
+- Planning is available only in safe `PATROLLING`, `SHOP`, or `EXTRACTION_AVAILABLE` states. Patrol planning uses a `RunDirector`-owned pause that ordinary pause input cannot release, so eligible time and Night Pressure do not advance. Any unsafe progression transition synchronously ends planning and clears the staged token; a stale confirmation is then authority-rejected before Heat or route mutation. `GameHUD` only presents hand/piles, typed card details, stable slots, textual validity/highlights, feedback, and pending/resolved minimap changes; typed native drag, 8-pixel mouse/touch fallback, first-touch ownership, right-click cancel, and click/tap/keyboard placement all forward the same validated intent.
 
 ## Historical Milestone 1 Human Validation Gate
 
@@ -83,7 +96,7 @@ Milestone 3 implements the deterministic randomness contract. All later gameplay
 
 - `RunDirector` owns one authoritative integer run seed and a run-scoped `RunRandomStreams` child. `RunRandomStreams` is never an Autoload.
 - The named streams are exactly `encounters`, `spawns`, `rewards`, `equipment`, `cards`, `enemy_variants`, and `cosmetic`.
-- A gameplay system may consume only the stream appropriate to its responsibility. Milestone 4 equipment choices use `equipment`.
+- A gameplay system may consume only the stream appropriate to its responsibility. Equipment choices use `equipment`; opening card draws and card reward choices use `cards`.
 - Gameplay code must never call unseeded global randomness such as `randi()`, `randf()`, `randomize()`, `Array.shuffle()`, or `Array.pick_random()`.
 - Do not route all systems through one shared random sequence. Extra `cosmetic` draws must never change gameplay outcomes.
 - Before a gameplay draw, filter candidates deterministically and sort them by stable content ID. Dictionary iteration order, scene-tree insertion order, Resource order, and presentation order are not selection contracts.
@@ -93,17 +106,17 @@ Milestone 3 implements the deterministic randomness contract. All later gameplay
 
 ## Current runtime ownership
 
-- `RunDirector`: state graph, eligible time, Heat, Night Pressure, scaling, threshold latches/precedence, seed, outcomes, and summaries
+- `RunDirector`: state graph, eligible time, Heat, Night Pressure, scaling, threshold latches/precedence, card-planning pause ownership, seed, outcomes, and summaries
 - `RunRandomStreams`: seven isolated deterministic stream states and stable-ID selection
-- `PatrolController`: route progression, safe boundaries, encounter pauses, and finite reroute movement
+- `PatrolController`: authoritative route position, stable route-occurrence/slot identities, revisioned future-route modifications, safe boundaries, encounter pauses, and finite reroute movement
 - `RunEncounterController`: encounter identity, deterministic spawning/lanes, scaling, caps, completion, and cleanup
 - `RunCoolingController`: finite Subway and shop-cooling resources
-- `RunFlowController`: typed coordination between run, patrol, encounter, reward, cooling, and presentation intent
+- `RunFlowController`: typed coordination between run, patrol, encounter, reward, cooling, cards, route-effect resolution, progression precedence, and presentation intent
 - `CombatDirector`: actors, targeting, reservations, hits, equipment modifiers/effects, environmental effects, and combat cleanup
-- `RewardDirector`: standard/equipment reward selection and application coordination, coin ledger, at-most-once clusters, and manual streak
+- `RewardDirector`: standard/equipment reward selection and application coordination, card-reward presentation/application delegation without card selection authority, authored reward-tier advancement, coin ledger, at-most-once clusters, and manual streak
 - `FireHydrantController`: Hydrant validation, area resolution, rejection, and cooldown
 - `DisplayController`: presentation-only fullscreen, landscape, and safe-area integration
-- `CardSystem`: typed Milestone 5 authority shell only
+- `CardSystem`: finite draw pile/hand/discard state, hand capacity, `cards`-stream selection, planning state, placement validation/staging, pending route effects, reward acquisition tokens, exactly-once resolution coordination, and clean restart
 - `SynergySystem`: three active equipment slots, one three-slot inactive backpack, unique ownership, revisioned inventory transactions, deterministic active-only aggregation, threshold state/signals, and non-mutating previews
 
 The active run remains scene-scoped. No Neon Loop gameplay Autoload owns run state.
@@ -133,7 +146,7 @@ Primary run-system paths include:
 - `res://scripts/cards/card_system.gd`
 - `res://scripts/synergies/synergy_system.gd`
 
-Do not describe the implemented Milestone 3–4 directors as logic-free Milestone 0 shells. Only `CardSystem` remains a deferred responsibility shell.
+Do not describe the implemented Milestone 3–5 directors as logic-free Milestone 0 shells. `CardSystem` is an implemented Milestone 5 authority, not a deferred responsibility shell.
 
 ## Verification requirements
 
@@ -162,4 +175,6 @@ Milestone 4's executed matrix and preview record in `TEST_PLAN.md` is an accepta
 - **Milestone 4.1:** 132/132 cumulative tests and 1,584 assertions passed with no failures or skips. Three inactive backpack slots, safe staged acquisition and revisioned inventory management, inspection-only clicks, named discard confirmation, native 1280 x 720 readability, twelve placeholder visuals, configured-project real-pointer input, and fresh local Windows/Web exports were verified. Evidence: `res://docs/screenshots/milestone_4_1_inventory_readability.png`.
 - **Milestone 4.2:** 145/145 cumulative tests and 1,709 assertions passed with no failures or skips across 12 suites. The 13 new tests/125 assertions verify one-backpack terminology, typed drag payloads and all three destinations, staged non-destructive move/swap behavior, reward-drag destination forwarding, exact full-inventory leave-behind/skip behavior, invalid/stale/combat-locked rejection, runtime pixel fit using the longest catalogue item name, the 8-pixel mouse/touch threshold fallback entering the same native drag transaction without mutation, and first-touch ownership under multi-touch input. Twenty dynamic-fit assertions cover all six reward destinations, all six inventory action-target states, and key two-line prompts; the pointer fallback has seven assertions and the touch/first-pointer test has five. Reward targets use compact `ACTIVE n` / `BACKPACK [n]` labels, inventory actions use compact `ACTIVE` / `STORE SLOT` / `SWAP SLOT` targets, Help states `CLICKS ONLY INSPECT; NEVER DISCARD`, and action labels use Web-safe ASCII wording. Configured Godot 4.7 opened `/GameRun`; a real pointer drag staged Magnetic Flail from active slot 3 to empty backpack slot 3 without mutation, then one Confirm changed revision 6→7 and a second invocation did nothing. Fresh logs were clean, the 1280 x 720 evidence showed no overflow, and fresh Windows export/runtime checks passed. The final local Web build unlocked sound, staged Hacker Deck reward→active slot 3 and active slot 3→empty backpack slot 3 through real pointer drags, applied each only after one ordinary Confirm click, showed no glyph boxes/overflow, and produced an empty warning/error console. Evidence: `res://docs/screenshots/milestone_4_2_inventory_drag.png`.
 
-Milestone 5 and later test sections remain planned acceptance contracts until their systems are separately authorized, implemented, and executed.
+- **Milestone 5:** 188/188 cumulative tests and 2,450 assertions passed with no failures or skips across 15 suites. The 43 new tests/741 assertions verify the four-card catalogue, finite piles/hand cap/no reshuffle, deterministic opening/reward selection and stream isolation, revision/token-protected placement/acquisition/resolution, immutable rejection paths, all four reached-node effects, progression precedence, planning pause and authority-driven modal cleanup, native drag and pointer/touch/keyboard fallbacks, current/past/expired route history, minimap/preview changes, and clean restart. Configured Godot 4.7 opened `/GameRun`; the final Windows and Web release exports succeeded; the Windows runtime smoke exited 0; and the locally served Web build exercised sound unlock, supplemental acquisition, invalid/outside return, real pointer placement, occupied rejection, click fallback, Gang Hideout's placeholder encounter/equipment result, Hydrant, boss precedence with a pending card, Help, and clean reload. The final Web warning/error console was empty and the 1280 x 720 panel remained contained. Evidence: `res://docs/screenshots/milestone_5_district_cards.png`.
+
+Milestone 6 and later test sections remain planned acceptance contracts; their systems are not authorized or implemented.

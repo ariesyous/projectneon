@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DistrictCardCatalogue" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/cards/district_card_catalogue.gd" id="1_catalogue"]
+[ext_resource type="Resource" path="res://data/cards/arcade.tres" id="2_arcade"]
+[ext_resource type="Resource" path="res://data/cards/convenience_store.tres" id="3_store"]
+[ext_resource type="Resource" path="res://data/cards/gang_hideout.tres" id="4_hideout"]
+[ext_resource type="Resource" path="res://data/cards/subway_entrance.tres" id="5_subway"]
+
+[resource]
+script = ExtResource("1_catalogue")
+cards = Array[DistrictCardDefinition]([ExtResource("2_arcade"), ExtResource("3_store"), ExtResource("4_hideout"), ExtResource("5_subway")])
