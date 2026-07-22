@@ -8,6 +8,8 @@ Play the tentative Milestone 6 playtest build at **[ariesyous.github.io/projectn
 
 Milestone 5 was implemented in feature commit `7ac7fa0794e79cfc60781b84ce7181f61e16bf7f`, merged through [PR #4](https://github.com/ariesyous/projectneon/pull/4), and published from `main` at merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`. [GitHub Pages run 29713282074](https://github.com/ariesyous/projectneon/actions/runs/29713282074) completed successfully. This records the actual release state without assigning a semantic version.
 
+Milestone 6 was fast-forwarded to `main` through playtest-guide commit `a147f93`. [GitHub Pages run 29960250903](https://github.com/ariesyous/projectneon/actions/runs/29960250903) successfully exported and deployed the tentative playtest build on 2026-07-22.
+
 Repository: [github.com/ariesyous/projectneon](https://github.com/ariesyous/projectneon)
 
 ## Project status
@@ -27,7 +29,7 @@ The authorized local Milestone 6 implementation adds:
 - Presentation-only combo tracking and measurement-only cadence records for 10–20-second ambient, 30–60-second strategic, and 120–180-second major-risk targets; coin clicks remain ambient and ignoring them preserves the full base reward
 - The unchanged deterministic schema version 1 and the same seven named streams; Milestone 6 boss actions, summons, projectiles, interventions, tutorials, combo/cadence, audio synthesis, and screen shake add no unseeded gameplay randomness
 
-Godot 4.7 passed the local cumulative automated gate at **244/244 tests and 3,234 assertions with no failures or skips across 22 suites**. A configured headless boot opened `/GameRun` cleanly. A fixed-seed Rex/starter-only technical probe naturally reached Defeated at 589.517 eligible seconds (9m49.5s), but representative Victory/Extraction and owner-facing manual validation were not completed. Exact cadence conformance, interaction/settings/save/restart checks, 1280 x 720 and 1080p/1440p visual inspection, fresh Windows/Web exports, exported-runtime/browser-console checks, and new Milestone 6 visual evidence are documented as next-session TODOs. The cumulative harness's 48 ObjectDB and four resource-in-use shutdown diagnostics also remain a cleanup-audit TODO; the configured boot did not reproduce them.
+Godot 4.7 passed the cumulative automated gate at **244/244 tests and 3,234 assertions with no failures or skips across 22 suites**. A configured headless boot opened `/GameRun` cleanly, and the Pages workflow successfully exported/deployed the Web build. A live smoke loaded the `Neon Loop` page with a visible 1280×720 canvas and an empty warning/error console. Representative Victory/Extraction and owner-facing manual validation, exact cadence conformance, real-input interactions, settings/save/restart checks, broader resolutions/devices, a fresh Windows export/runtime, and new visual evidence remain organized in the playtest guide. The cumulative harness's 48 ObjectDB and four resource-in-use shutdown diagnostics remain a cleanup-audit TODO; the configured boot did not reproduce them.
 
 **Milestone 5 — District Cards remains the last fully accepted baseline; Milestone 6 is the tentative final playtest release.**
 

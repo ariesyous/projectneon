@@ -18,7 +18,7 @@ Testing is milestone-scoped. Milestone 0 verifies the project foundation; Milest
 - **Pending execution** means implementation and its test case exist, but no final pass result is recorded until that exact matrix is run against the finished working tree.
 - **Owner-recorded** means only the project owner may enter the result.
 
-Milestone 1 through Milestone 5 technical suites are recorded as executed. The authorized Milestone 6 implementation and seven-suite/56-test addition passed its final cumulative automated gate, and the configured headless `/GameRun` boot completed cleanly. Representative manual runs/interactions, exports, browser-console inspection, visual evidence, cleanup-diagnostic follow-up, and owner qualitative validation remain **Pending execution** until the checks below complete. The Milestone 1 Human Validation Gate result remains separately labelled as an owner-recorded qualitative decision and is neither repeated nor reopened.
+Milestone 1 through Milestone 5 technical suites are recorded as executed. Milestone 6 passed its 56-test cumulative addition, configured headless `/GameRun` boot, official Pages Web export/deployment, live 1280×720 canvas load, and warning/error-console smoke. Representative manual runs/interactions, broader browser/device coverage, Windows export/runtime, visual evidence, cleanup-diagnostic follow-up, and owner qualitative validation remain **Pending execution** until the checks below complete. The Milestone 1 Human Validation Gate result remains separately labelled as an owner-recorded qualitative decision and is neither repeated nor reopened.
 
 ## Milestone 0 static checks
 
@@ -670,9 +670,11 @@ A fixed-seed technical probe (`6062026`) using Rex with starter equipment only r
 
 - [ ] Inspect the HUD, main/pause/settings menus, three interventions, tutorial, equipment/cards, boss bar/telegraphs, and long summary at **1280×720**; record any overlap, clipping, colour-only communication, or illegible text.
 - [ ] Repeat containment/readability inspection at representative **1920×1080** and **2560×1440** presentation sizes.
-- [ ] Produce a fresh Windows release export at `build/milestone_6/windows/NeonLoop.exe` and a fresh Web release export at `build/milestone_6/web/index.html`; stale `build/desktop` or `build/web` output is not evidence.
+- [x] Pages run 29960250903 produced the official Godot 4.7 Web release export from `main` and deployed it successfully.
+- [ ] Produce a fresh Windows release export at `build/milestone_6/windows/NeonLoop.exe`; stale `build/desktop` output is not evidence.
 - [ ] Launch the exported Windows runtime, confirm `/GameRun`/main-menu startup, exercise a representative runtime path, exit cleanly, and inspect fresh console/runtime output.
-- [ ] Serve the fresh Web export locally; unlock sound; exercise keyboard, real pointer, and touch-equivalent paths for menus, interventions, Help, equipment/inventory drag, cards, settings, fullscreen, pause, boss, summary, and restart; inspect the final warning/error console.
+- [x] Smoke the deployed Pages shell: title `Neon Loop`, visible 1280×720 canvas, and empty warning/error console passed. Browser screenshot capture timed out on the continuously rendered WebGL canvas and is not visual evidence.
+- [ ] Exercise sound unlock plus keyboard, real pointer, and touch paths for menus, interventions, Help, equipment/inventory drag, cards, settings, fullscreen, pause, boss, summary, and restart across the assigned playtest browsers/devices.
 - [ ] Capture and inspect `res://docs/screenshots/milestone_6_vertical_slice.png`, preferably showing an active/enraged Viper, readable named telegraph and ground marker, dedicated boss bar, three labelled interventions, crew/build state, and contained native HUD.
 - [ ] Fix every M6-introduced parser error, runtime error, warning, failed/skipped test, export error, and browser-console warning/error. Record any inherited tooling-only diagnostic separately and do not suppress it.
 
@@ -685,7 +687,7 @@ Current honest limitations while final verification is pending:
 - District/boss music and the SFX catalogue are deterministic generated prototype audio, not commissioned production recordings.
 - Actor art, icons, hit effects, telegraph markers, and animation are finished prototype presentation intended to be replaceable; final aesthetic quality is an owner judgment.
 - A technical Rex starter-only Defeated trace reached 589.517 eligible seconds, but its cadence snapshot still contains 9 ambient, 8 strategic, and 3 major target-band violations. Representative manual cadence quality remains pending.
-- Representative manual Victory, Extracted, and Defeated path timings; crew/enemy/boss/intervention feel and readability; three viable builds; tutorial comprehension; settings/save restart checks; resolution inspection; final exports; browser console; and visual evidence have no passing record in this section yet.
+- Representative manual Victory, Extracted, and Defeated path timings; crew/enemy/boss/intervention feel and readability; three viable builds; tutorial comprehension; settings/save restart checks; broader resolution/device inspection; Windows export/runtime; real-input Web flows; and visual evidence have no passing record yet. The official Pages Web export and initial live console/canvas smoke passed.
 - Cumulative automation passed, but the cumulative single-process runner retained 48 ObjectDB instances and 4 resources at shutdown, and focused/long-form diagnostic runners emitted shutdown-object warnings. Runner cleanup remains a TODO even though the configured `/GameRun` headless boot was clean.
 - Persistence is deliberately profile/settings/unlock-only. Mid-run saving/replay, permanent stat bonuses, advanced progression, a tenth equipment item, and a fifth card remain unimplemented and out of scope.
 - Reproduction remains limited to the same supported build, content revision, random-schema version, seed, ordered decisions/effect resolutions, and authoritative timing context; cross-version or bitwise physics replay is not promised.
