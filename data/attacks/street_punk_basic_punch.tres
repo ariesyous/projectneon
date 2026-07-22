@@ -6,6 +6,7 @@
 script = ExtResource("1_attack")
 id = &"street_punk_basic_punch"
 display_name = "Street Jab"
+impact_kind = 0
 damage_multiplier = 1.0
 windup_time = 0.31
 active_time = 0.08

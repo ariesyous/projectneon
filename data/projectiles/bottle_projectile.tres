@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ProjectileDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/projectile_definition.gd" id="1_projectile"]
+
+[resource]
+script = ExtResource("1_projectile")
+id = &"bottle_projectile"
+speed = 105.0
+lifetime_seconds = 2.5
+collision_radius = 8.0
+visual_radius = 5.0
+primary_color = Color(0.45, 1, 0.72, 1)
+accent_color = Color(0.9, 1, 0.92, 1)

@@ -15,6 +15,7 @@ var encounters_completed: int = 0
 var enemies_defeated: int = 0
 var elites_defeated: int = 0
 var boss_defeated: bool = false
+var boss_result: String = "NOT REACHED"
 var coins_collected: int = 0
 var manual_clusters_collected: int = 0
 var maximum_manual_streak: int = 0
@@ -38,6 +39,7 @@ func to_dictionary() -> Dictionary:
 		"enemies_defeated": enemies_defeated,
 		"elites_defeated": elites_defeated,
 		"boss_defeated": boss_defeated,
+		"boss_result": boss_result,
 		"coins_collected": coins_collected,
 		"manual_clusters_collected": manual_clusters_collected,
 		"maximum_manual_streak": maximum_manual_streak,

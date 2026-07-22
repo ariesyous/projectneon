@@ -108,6 +108,8 @@ var _card_system: CardSystem
 var _coordinated_card_encounter_id: int = -1
 var _coordinated_card_choice_token: int = -1
 var _coordinated_card_hand_revision: int = -1
+var _configured_allowed_equipment_ids: Array[StringName] = []
+var _active_allowed_equipment_ids: Array[StringName] = []
 var simulation_enabled: bool = true
 
 
@@ -139,6 +141,17 @@ func configure_equipment(synergy_system: SynergySystem) -> void:
 	_synergy_system = synergy_system
 
 
+## Configures the stable content-access snapshot to latch on the next reset.
+## Empty preserves the Milestone 4 all-catalogue default used by existing
+## development fixtures and deterministic catalogue validation.
+func configure_equipment_access(allowed_equipment_ids: Array[StringName]) -> void:
+	_configured_allowed_equipment_ids.clear()
+	for equipment_id: StringName in allowed_equipment_ids:
+		if equipment_id != &"" and not _configured_allowed_equipment_ids.has(equipment_id):
+			_configured_allowed_equipment_ids.append(equipment_id)
+	_configured_allowed_equipment_ids.sort_custom(_string_name_before)
+
+
 func configure_cards(card_system: CardSystem) -> void:
 	_card_system = card_system
 	_clear_card_coordination()
@@ -149,6 +162,7 @@ func set_simulation_enabled(is_enabled: bool) -> void:
 
 
 func reset_for_run() -> void:
+	_active_allowed_equipment_ids = _configured_allowed_equipment_ids.duplicate()
 	_simulation_time_msec = 0
 	_sub_millisecond_remainder = 0.0
 	_coin_total = 0
@@ -427,6 +441,10 @@ func prepare_equipment_choices(encounter_instance_id: int) -> Array[EquipmentDef
 		if (
 			item == null
 			or item.id == &""
+			or (
+				not _active_allowed_equipment_ids.is_empty()
+				and not _active_allowed_equipment_ids.has(item.id)
+			)
 			or _synergy_system.owns_equipment(item.id)
 			or candidate_by_id.has(item.id)
 		):
@@ -455,6 +473,17 @@ func prepare_equipment_choices(encounter_instance_id: int) -> Array[EquipmentDef
 	_pending_equipment_choices[encounter_instance_id] = choices
 	equipment_choices_prepared.emit(encounter_instance_id, choices)
 	return choices
+
+
+func get_active_equipment_access_ids() -> Array[StringName]:
+	if not _active_allowed_equipment_ids.is_empty():
+		return _active_allowed_equipment_ids.duplicate()
+	var result: Array[StringName] = []
+	if _synergy_system != null:
+		for item: EquipmentDefinition in _synergy_system.get_sorted_catalogue():
+			if item != null:
+				result.append(item.id)
+	return result
 
 
 func apply_equipment_choice(
@@ -681,6 +710,22 @@ func process_until(requested_time_msec: int) -> void:
 	expired_awards.sort_custom(_award_expires_before)
 	for award: PendingCoinAward in expired_awards:
 		_resolve_cluster(award.cluster_id, false, award.expires_at_msec)
+
+
+func settle_pending_coin_clusters_as_base() -> int:
+	# A terminal run outcome must not turn the optional click window into a
+	# requirement. Resolve every still-visible cluster through the same
+	# authoritative at-most-once path, in the normal deterministic deadline/ID
+	# order, without granting a manual bonus or advancing the streak.
+	var pending_awards: Array[PendingCoinAward] = []
+	for award: PendingCoinAward in _active_awards.values():
+		pending_awards.append(award)
+	pending_awards.sort_custom(_award_expires_before)
+	var resolved_count: int = 0
+	for award: PendingCoinAward in pending_awards:
+		if _resolve_cluster(award.cluster_id, false, _simulation_time_msec):
+			resolved_count += 1
+	return resolved_count
 
 
 func get_current_time_msec() -> int:

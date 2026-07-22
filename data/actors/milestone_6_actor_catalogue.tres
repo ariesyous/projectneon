@@ -1,0 +1,54 @@
+[gd_resource type="Resource" script_class="ActorSceneCatalogue" load_steps=21 format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/actor_scene_catalogue.gd" id="1_catalogue"]
+[ext_resource type="Script" path="res://scripts/actors/actor_scene_entry.gd" id="2_entry"]
+[ext_resource type="PackedScene" path="res://scenes/actors/jax.tscn" id="3_jax"]
+[ext_resource type="PackedScene" path="res://scenes/actors/zoey.tscn" id="4_zoey"]
+[ext_resource type="PackedScene" path="res://scenes/actors/rex.tscn" id="5_rex"]
+[ext_resource type="PackedScene" path="res://scenes/actors/street_punk.tscn" id="6_punk"]
+[ext_resource type="PackedScene" path="res://scenes/actors/bat_thug.tscn" id="7_bat"]
+[ext_resource type="PackedScene" path="res://scenes/actors/bottle_thrower.tscn" id="8_bottle"]
+[ext_resource type="PackedScene" path="res://scenes/actors/viper_enforcer.tscn" id="9_enforcer"]
+[ext_resource type="PackedScene" path="res://scenes/actors/the_viper.tscn" id="10_viper"]
+[ext_resource type="PackedScene" path="res://scenes/actors/backup_runner.tscn" id="11_backup"]
+
+[sub_resource type="Resource" id="Entry_jax"]
+script = ExtResource("2_entry")
+id = &"jax"
+scene = ExtResource("3_jax")
+[sub_resource type="Resource" id="Entry_zoey"]
+script = ExtResource("2_entry")
+id = &"zoey"
+scene = ExtResource("4_zoey")
+[sub_resource type="Resource" id="Entry_rex"]
+script = ExtResource("2_entry")
+id = &"rex"
+scene = ExtResource("5_rex")
+[sub_resource type="Resource" id="Entry_punk"]
+script = ExtResource("2_entry")
+id = &"street_punk"
+scene = ExtResource("6_punk")
+[sub_resource type="Resource" id="Entry_bat"]
+script = ExtResource("2_entry")
+id = &"bat_thug"
+scene = ExtResource("7_bat")
+[sub_resource type="Resource" id="Entry_bottle"]
+script = ExtResource("2_entry")
+id = &"bottle_thrower"
+scene = ExtResource("8_bottle")
+[sub_resource type="Resource" id="Entry_enforcer"]
+script = ExtResource("2_entry")
+id = &"viper_enforcer"
+scene = ExtResource("9_enforcer")
+[sub_resource type="Resource" id="Entry_viper"]
+script = ExtResource("2_entry")
+id = &"the_viper"
+scene = ExtResource("10_viper")
+[sub_resource type="Resource" id="Entry_backup"]
+script = ExtResource("2_entry")
+id = &"backup_runner"
+scene = ExtResource("11_backup")
+
+[resource]
+script = ExtResource("1_catalogue")
+entries = Array[ActorSceneEntry]([SubResource("Entry_jax"), SubResource("Entry_zoey"), SubResource("Entry_rex"), SubResource("Entry_punk"), SubResource("Entry_bat"), SubResource("Entry_bottle"), SubResource("Entry_enforcer"), SubResource("Entry_viper"), SubResource("Entry_backup")])

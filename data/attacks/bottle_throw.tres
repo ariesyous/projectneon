@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="AttackDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/attack_definition.gd" id="1_attack"]
+[ext_resource type="Resource" path="res://data/projectiles/bottle_projectile.tres" id="2_projectile"]
+
+[resource]
+script = ExtResource("1_attack")
+id = &"bottle_throw"
+display_name = "Readable Bottle Throw"
+delivery_kind = 1
+impact_kind = 0
+damage_multiplier = 1.0
+windup_time = 0.62
+active_time = 0.08
+recovery_time = 0.45
+cooldown_time = 1.20
+attack_range = 180.0
+knockback_force = 40.0
+knockback_duration = 0.10
+hit_stop_duration = 0.035
+minimum_range = 125.0
+projectile_definition = ExtResource("2_projectile")

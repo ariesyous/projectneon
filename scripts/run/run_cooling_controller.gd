@@ -96,12 +96,19 @@ func request_subway_reroute() -> bool:
 		_run_director == null
 		or _patrol_controller == null
 		or _run_director.current_state != RunDirector.RunState.PATROLLING
-		or not _patrol_controller.request_reroute()
+		or not _patrol_controller.can_reroute()
 	):
 		cooling_rejected.emit(&"subway_reroute", &"invalid_state")
 		return false
+	# All rejection checks complete before mutation. Godot signal delivery is
+	# synchronous, so Heat and the finite charge commit before PatrolController
+	# emits the next authored occurrence; encounter eligibility therefore sees
+	# the cooled tier. No random stream or Night Pressure state is touched here.
 	_subway_charges -= 1
 	_run_director.apply_heat_delta(-maxi(tuning.subway_heat_reduction, 0))
+	if not _patrol_controller.request_reroute():
+		push_error("Validated Subway Reroute could not commit its authored route advance.")
+		return false
 	cooling_applied.emit(&"subway_reroute", maxi(tuning.subway_heat_reduction, 0))
 	cooling_state_changed.emit(_subway_charges, get_shop_purchases_remaining())
 	return true

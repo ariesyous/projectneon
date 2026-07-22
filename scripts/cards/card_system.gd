@@ -75,6 +75,8 @@ var _hand_revision: int = 0
 var _planning_active: bool = false
 var _planning_owns_pause: bool = false
 var _last_reward_candidate_order: Array[StringName] = []
+var _configured_allowed_card_ids: Array[StringName] = []
+var _active_allowed_card_ids: Array[StringName] = []
 
 
 func configure(
@@ -85,7 +87,18 @@ func configure(
 	_patrol_controller = patrol_controller
 
 
+## Configures the stable content-access snapshot to latch on the next reset.
+## An empty list preserves the Milestone 5 all-catalogue default.
+func configure_run_access(allowed_card_ids: Array[StringName]) -> void:
+	_configured_allowed_card_ids.clear()
+	for card_id: StringName in allowed_card_ids:
+		if card_id != &"" and not _configured_allowed_card_ids.has(card_id):
+			_configured_allowed_card_ids.append(card_id)
+	_configured_allowed_card_ids.sort_custom(_string_name_before)
+
+
 func reset_for_run() -> bool:
+	_active_allowed_card_ids = _configured_allowed_card_ids.duplicate()
 	_draw_pile.clear()
 	_hand.clear()
 	_discard_pile.clear()
@@ -109,14 +122,38 @@ func reset_for_run() -> bool:
 		_emit_snapshot()
 		return false
 	for card: DistrictCardDefinition in catalogue.get_sorted_cards():
+		if not _active_allowed_card_ids.is_empty() and not _active_allowed_card_ids.has(card.id):
+			continue
 		_draw_pile.append(card)
+	var accessible_card_count: int = _draw_pile.size()
 	for _draw_index: int in range(mini(OPENING_DRAW_COUNT, _draw_pile.size())):
 		var drawn: DistrictCardDefinition = _draw_one_from_pile(&"opening")
 		if drawn == null:
 			break
 		_hand.append(drawn)
 	_emit_snapshot()
-	return _hand.size() == mini(OPENING_DRAW_COUNT, catalogue.cards.size())
+	return _hand.size() == mini(OPENING_DRAW_COUNT, accessible_card_count)
+
+
+## Clears run-owned ledgers for the main menu without consuming the cards
+## stream or creating a hidden opening hand.
+func clear_for_main_menu() -> void:
+	_draw_pile.clear()
+	_hand.clear()
+	_discard_pile.clear()
+	_pending_placements.clear()
+	_resolved_placements.clear()
+	_resolved_placement_tokens.clear()
+	_resolved_reward_encounters.clear()
+	_staged_placement = null
+	_pending_reward_choice = null
+	_next_token = 1
+	_hand_revision = 0
+	_planning_active = false
+	_planning_owns_pause = false
+	_last_reward_candidate_order.clear()
+	_active_allowed_card_ids.clear()
+	_emit_snapshot()
 
 
 func begin_planning(owns_pause: bool) -> bool:
@@ -499,7 +536,17 @@ func get_snapshot() -> Dictionary:
 		"pending_reward_choices": get_pending_reward_choices(),
 		"reward_hand_full": _hand.size() >= HAND_CAPACITY,
 		"no_reshuffle": true,
+		"active_access_ids": get_active_access_ids(),
 	}
+
+
+func get_active_access_ids() -> Array[StringName]:
+	if not _active_allowed_card_ids.is_empty():
+		return _active_allowed_card_ids.duplicate()
+	var result: Array[StringName] = []
+	if catalogue != null:
+		result = catalogue.get_sorted_ids()
+	return result
 
 
 func _draw_one_from_pile(source_id: StringName) -> DistrictCardDefinition:

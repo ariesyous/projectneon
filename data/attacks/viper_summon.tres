@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="AttackDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/attack_definition.gd" id="1_attack"]
+
+[resource]
+script = ExtResource("1_attack")
+id = &"viper_summon"
+display_name = "Call the Vipers"
+delivery_kind = 4
+impact_kind = 2
+damage_multiplier = 0.0
+windup_time = 0.90
+active_time = 0.10
+recovery_time = 0.55
+cooldown_time = 0.40
+attack_range = 300.0
+knockback_force = 0.0
+knockback_duration = 0.0
+hit_stop_duration = 0.0
+special_cooldown_seconds = 8.0
+telegraph_seconds = 0.90
+summon_actor_ids = Array[StringName]([&"street_punk", &"bat_thug"])
+one_shot = true

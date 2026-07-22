@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/audio_presentation_controller.gd" id="1_controller"]
+[ext_resource type="Resource" path="res://data/audio/milestone_6_audio_catalogue.tres" id="2_catalogue"]
+
+[node name="AudioPresentationController" type="Node"]
+script = ExtResource("1_controller")
+catalogue = ExtResource("2_catalogue")

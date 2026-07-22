@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="AttackDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/attack_definition.gd" id="1_attack"]
+
+[resource]
+script = ExtResource("1_attack")
+id = &"backup_runner_punch"
+display_name = "Backup Jab"
+delivery_kind = 0
+impact_kind = 0
+damage_multiplier = 1.0
+windup_time = 0.20
+active_time = 0.07
+recovery_time = 0.28
+cooldown_time = 0.25
+attack_range = 52.0
+knockback_force = 80.0
+knockback_duration = 0.12
+hit_stop_duration = 0.04

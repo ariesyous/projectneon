@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ScreenShakeDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/effects/screen_shake_definition.gd" id="1_shake"]
+
+[resource]
+script = ExtResource("1_shake")
+light_hit_pixels = 1.5
+heavy_hit_pixels = 3.5
+environmental_hit_pixels = 5.0
+boss_hit_pixels = 6.0
+light_duration_seconds = 0.12
+heavy_duration_seconds = 0.2
+oscillations_per_second = 34.0

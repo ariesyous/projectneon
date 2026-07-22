@@ -9,6 +9,7 @@ signal target_changed(actor: ActorController, target: ActorController)
 signal health_changed(actor: ActorController, current_health: int, maximum_health: int)
 signal died(actor: ActorController)
 signal incapacitated(actor: ActorController)
+signal enrage_changed(actor: ActorController, enraged: bool)
 signal status_changed(
 	actor: ActorController,
 	status_id: StringName,
@@ -28,6 +29,7 @@ const POSITION_ARRIVAL_TOLERANCE: float = 2.0
 
 @export var actor_definition: ActorDefinition
 @export var attack_definition: AttackDefinition
+@export var special_attack_definitions: Array[AttackDefinition] = []
 @export var team: int = Team.ENEMY
 @export_range(0, 2, 1) var initial_lane: int = 1
 
@@ -45,15 +47,27 @@ var registration_order: int = -1
 var lane_index: int = 1
 var facing_direction: float = 1.0
 var _attack_cooldown_remaining: float = 0.0
+var _active_attack_definition: AttackDefinition = null
+var _planned_attack_definition: AttackDefinition = null
+var _special_cooldown_by_id: Dictionary[StringName, float] = {}
+var _used_one_shot_attack_ids: Dictionary[StringName, bool] = {}
+var _special_cycle_index: int = 0
+var _basic_attacks_since_special: int = 0
 var _knockback_remaining: float = 0.0
 var _knockback_velocity_x: float = 0.0
+var _knockback_initial_force: float = 0.0
+var _knockback_source_id: StringName = &"knockback"
+var _knockback_source_actor: ActorController = null
+var _environmental_collision_emitted: bool = false
 var _stun_remaining: float = 0.0
+var _control_lockout_remaining: float = 0.0
 var _cleanup_remaining: float = 0.0
 var _runtime_initialized: bool = false
 var _runtime_health_multiplier: float = 1.0
 var _runtime_damage_multiplier: float = 1.0
 var _build_flat_modifiers: Dictionary[StringName, float] = {}
 var _build_percent_modifiers: Dictionary[StringName, float] = {}
+var _enraged: bool = false
 
 
 func _ready() -> void:
@@ -87,6 +101,14 @@ func initialize_runtime() -> void:
 		return
 	_ensure_status_controller()
 	_runtime_initialized = true
+	_special_cooldown_by_id.clear()
+	_used_one_shot_attack_ids.clear()
+	_special_cycle_index = 0
+	_basic_attacks_since_special = 0
+	_enraged = false
+	for special_attack: AttackDefinition in special_attack_definitions:
+		if special_attack != null and special_attack.id != &"":
+			_special_cooldown_by_id[special_attack.id] = 0.0
 	var scaled_maximum_health: int = maxi(
 		int(floor(float(actor_definition.maximum_health) * _runtime_health_multiplier + 0.5)),
 		1
@@ -114,7 +136,12 @@ func configure_runtime_scaling(health_multiplier: float, damage_multiplier: floa
 
 
 func get_runtime_damage_multiplier() -> float:
-	return _runtime_damage_multiplier
+	var enrage_multiplier: float = (
+		actor_definition.enrage_damage_multiplier
+		if _enraged and actor_definition != null
+		else 1.0
+	)
+	return _runtime_damage_multiplier * enrage_multiplier
 
 
 func apply_build_modifiers(
@@ -153,7 +180,51 @@ func get_movement_speed() -> float:
 
 
 func get_attack_speed_multiplier() -> float:
-	return maxf(0.05, 1.0 + get_build_percent_modifier(&"attack_speed"))
+	var enrage_multiplier: float = (
+		actor_definition.enrage_attack_speed_multiplier
+		if _enraged and actor_definition != null
+		else 1.0
+	)
+	return maxf(
+		0.05,
+		(1.0 + get_build_percent_modifier(&"attack_speed")) * enrage_multiplier
+	)
+
+
+func get_intervention_cooldown_multiplier() -> float:
+	return (
+		actor_definition.intervention_cooldown_multiplier
+		if actor_definition != null
+		else 1.0
+	)
+
+
+func get_combat_role() -> int:
+	return (
+		actor_definition.combat_role
+		if actor_definition != null
+		else ActorDefinition.CombatRole.BASIC_ENEMY
+	)
+
+
+func is_permanent_crew() -> bool:
+	return actor_definition != null and actor_definition.is_permanent_crew()
+
+
+func is_elite() -> bool:
+	return actor_definition != null and actor_definition.is_elite()
+
+
+func is_boss() -> bool:
+	return actor_definition != null and actor_definition.is_boss()
+
+
+func is_enraged() -> bool:
+	return _enraged
+
+
+func get_control_lockout_remaining() -> float:
+	return _control_lockout_remaining
 
 
 func get_combat_space() -> CombatSpaceDefinition:
@@ -182,6 +253,12 @@ func step_simulation(delta: float) -> void:
 		return
 	state_machine.advance_time(delta)
 	_attack_cooldown_remaining = maxf(_attack_cooldown_remaining - delta, 0.0)
+	_control_lockout_remaining = maxf(_control_lockout_remaining - delta, 0.0)
+	for special_id: StringName in _special_cooldown_by_id.keys():
+		_special_cooldown_by_id[special_id] = maxf(
+			_special_cooldown_by_id.get(special_id, 0.0) - delta,
+			0.0
+		)
 
 	if _knockback_remaining > 0.0:
 		_step_knockback(delta)
@@ -191,8 +268,8 @@ func step_simulation(delta: float) -> void:
 		return
 
 	if current_target != null and not _coordinator_target_is_valid(current_target):
+		_cancel_active_attack()
 		clear_target()
-		attack_controller.cancel()
 
 	if attack_controller.is_attacking():
 		attack_controller.step(delta)
@@ -204,33 +281,151 @@ func step_simulation(delta: float) -> void:
 		if current_target == null:
 			return
 
-	if not _has_attack_position():
-		if not _reserve_attack_position():
-			state_machine.transition_to(ActorStateMachine.State.ACQUIRING_TARGET)
-			return
-
-	var destination: Vector2 = _get_attack_position()
-	if destination == Vector2.INF:
-		_release_attack_position()
-		state_machine.transition_to(ActorStateMachine.State.ACQUIRING_TARGET)
+	var planned_attack: AttackDefinition = _get_planned_attack_definition()
+	if planned_attack == null:
 		return
-	face_toward(current_target.global_position.x)
-	if global_position.distance_to(destination) > POSITION_ARRIVAL_TOLERANCE:
-		state_machine.transition_to(ActorStateMachine.State.APPROACHING_TARGET)
-		global_position = global_position.move_toward(destination, get_movement_speed() * delta)
-		global_position = combat_space.clamp_actor_position(global_position)
-		_refresh_lane_from_position()
-		return
-	global_position = combat_space.clamp_actor_position(destination)
-	_refresh_lane_from_position()
-
-	if not is_target_in_attack_range(current_target):
+	if not _approach_for_attack(planned_attack, delta):
 		state_machine.transition_to(ActorStateMachine.State.APPROACHING_TARGET)
 		return
 	if _attack_cooldown_remaining <= 0.0:
-		attack_controller.start_attack(attack_definition)
+		_start_planned_attack(planned_attack)
 	else:
 		state_machine.transition_to(ActorStateMachine.State.IDLE)
+
+
+func _get_planned_attack_definition() -> AttackDefinition:
+	if _planned_attack_definition != null:
+		return _planned_attack_definition
+	if _basic_attacks_since_special > 0:
+		var specials: Array[AttackDefinition] = _get_stable_special_attacks()
+		for offset: int in range(specials.size()):
+			var candidate_index: int = (special_cycle_index() + offset) % specials.size()
+			var candidate: AttackDefinition = specials[candidate_index]
+			if not _is_special_attack_available(candidate):
+				continue
+			_special_cycle_index = candidate_index
+			_planned_attack_definition = candidate
+			return candidate
+	_planned_attack_definition = attack_definition
+	return _planned_attack_definition
+
+
+func special_cycle_index() -> int:
+	var specials: Array[AttackDefinition] = _get_stable_special_attacks()
+	return 0 if specials.is_empty() else posmod(_special_cycle_index, specials.size())
+
+
+func _get_stable_special_attacks() -> Array[AttackDefinition]:
+	var result: Array[AttackDefinition] = []
+	var seen: Dictionary[StringName, bool] = {}
+	for candidate: AttackDefinition in special_attack_definitions:
+		if candidate == null or candidate.id == &"" or seen.has(candidate.id):
+			continue
+		seen[candidate.id] = true
+		result.append(candidate)
+	result.sort_custom(_attack_id_before)
+	return result
+
+
+func _is_special_attack_available(candidate: AttackDefinition) -> bool:
+	if candidate == null:
+		return false
+	if _special_cooldown_by_id.get(candidate.id, 0.0) > 0.0:
+		return false
+	return not candidate.one_shot or not _used_one_shot_attack_ids.has(candidate.id)
+
+
+func _approach_for_attack(planned_attack: AttackDefinition, delta: float) -> bool:
+	if current_target == null or planned_attack == null:
+		return false
+	face_toward(current_target.global_position.x)
+	if planned_attack.delivery_kind == AttackDefinition.DeliveryKind.MELEE:
+		return _approach_reserved_melee_position(planned_attack, delta)
+	_release_attack_position()
+	if planned_attack.delivery_kind == AttackDefinition.DeliveryKind.SUMMON:
+		return true
+
+	var distance: float = global_position.distance_to(current_target.global_position)
+	var minimum_range: float = maxf(
+		planned_attack.minimum_range,
+		actor_definition.preferred_minimum_range if actor_definition != null else 0.0
+	)
+	var maximum_range: float = planned_attack.attack_range
+	if actor_definition != null and actor_definition.preferred_maximum_range > 0.0:
+		maximum_range = minf(maximum_range, actor_definition.preferred_maximum_range)
+	if distance < minimum_range:
+		var retreat_direction: float = -1.0 if current_target.global_position.x > global_position.x else 1.0
+		var previous_position: Vector2 = global_position
+		global_position = combat_space.clamp_actor_position(
+			global_position + Vector2(retreat_direction * get_movement_speed() * delta, 0.0)
+		)
+		_refresh_lane_from_position()
+		return global_position.is_equal_approx(previous_position)
+	if distance > maximum_range:
+		global_position = combat_space.clamp_actor_position(
+			global_position.move_toward(current_target.global_position, get_movement_speed() * delta)
+		)
+		_refresh_lane_from_position()
+		return false
+	return true
+
+
+func _approach_reserved_melee_position(
+	planned_attack: AttackDefinition,
+	delta: float
+) -> bool:
+	if not _has_attack_position() and not _reserve_attack_position_for(planned_attack.attack_range):
+		return false
+	var destination: Vector2 = _get_attack_position()
+	if destination == Vector2.INF:
+		_release_attack_position()
+		return false
+	if global_position.distance_to(destination) > POSITION_ARRIVAL_TOLERANCE:
+		global_position = global_position.move_toward(destination, get_movement_speed() * delta)
+		global_position = combat_space.clamp_actor_position(global_position)
+		_refresh_lane_from_position()
+		return false
+	global_position = combat_space.clamp_actor_position(destination)
+	_refresh_lane_from_position()
+	return global_position.distance_to(current_target.global_position) <= planned_attack.attack_range
+
+
+func _start_planned_attack(planned_attack: AttackDefinition) -> void:
+	_active_attack_definition = planned_attack
+	if planned_attack.telegraph_seconds > 0.0:
+		_notify_attack_telegraph(planned_attack)
+	if not attack_controller.start_attack(planned_attack):
+		_active_attack_definition = null
+		return
+	if planned_attack == attack_definition:
+		_basic_attacks_since_special += 1
+	else:
+		_basic_attacks_since_special = 0
+		_special_cooldown_by_id[planned_attack.id] = maxf(
+			planned_attack.special_cooldown_seconds,
+			0.0
+		)
+		if planned_attack.one_shot:
+			_used_one_shot_attack_ids[planned_attack.id] = true
+		var specials: Array[AttackDefinition] = _get_stable_special_attacks()
+		if not specials.is_empty():
+			_special_cycle_index = (_special_cycle_index + 1) % specials.size()
+
+
+func _notify_attack_telegraph(planned_attack: AttackDefinition) -> void:
+	if combat_coordinator == null or not combat_coordinator.has_method("notify_attack_telegraph"):
+		return
+	combat_coordinator.call("notify_attack_telegraph", self, planned_attack)
+
+
+func _cancel_active_attack() -> void:
+	attack_controller.cancel()
+	_active_attack_definition = null
+	_planned_attack_definition = null
+
+
+func _attack_id_before(left: AttackDefinition, right: AttackDefinition) -> bool:
+	return String(left.id) < String(right.id)
 
 
 func assign_target(target: ActorController) -> bool:
@@ -239,6 +434,7 @@ func assign_target(target: ActorController) -> bool:
 	if target != null and not _coordinator_target_is_valid(target):
 		return false
 	_release_attack_position()
+	_planned_attack_definition = null
 	current_target = target
 	actor_visual.set_has_target(current_target != null)
 	if current_target != null:
@@ -254,12 +450,13 @@ func assign_target(target: ActorController) -> bool:
 
 func invalidate_target(invalid_actor: ActorController) -> void:
 	if current_target == invalid_actor:
-		attack_controller.cancel()
+		_cancel_active_attack()
 		clear_target()
 
 
 func clear_target() -> void:
 	_release_attack_position()
+	_planned_attack_definition = null
 	if current_target == null:
 		return
 	current_target = null
@@ -274,6 +471,11 @@ func receive_damage(amount: int) -> int:
 	if applied_damage > 0:
 		actor_visual.play_hit_flash()
 	return applied_damage
+
+
+func set_hit_flash_reduction(reduction: float) -> void:
+	if actor_visual != null:
+		actor_visual.set_hit_flash_reduction(reduction)
 
 
 func apply_status(
@@ -305,8 +507,16 @@ func is_knocked_back() -> bool:
 	return _knockback_remaining > 0.0
 
 
-func apply_knockback(direction_x: float, force: float, duration: float) -> void:
+func apply_knockback(
+	direction_x: float,
+	force: float,
+	duration: float,
+	source_id: StringName = &"knockback",
+	source_actor: ActorController = null
+) -> void:
 	if not can_act() or force <= 0.0 or duration <= 0.0:
+		return
+	if actor_definition != null and force <= actor_definition.light_stagger_armour:
 		return
 	var resistance: float = clampf(actor_definition.knockback_resistance, 0.0, 1.0)
 	var received_multiplier: float = maxf(
@@ -320,18 +530,47 @@ func apply_knockback(direction_x: float, force: float, duration: float) -> void:
 		* received_multiplier
 	)
 	_knockback_remaining = duration
-	attack_controller.cancel()
+	_knockback_initial_force = force
+	_knockback_source_id = source_id
+	_knockback_source_actor = source_actor
+	_environmental_collision_emitted = false
+	_cancel_active_attack()
 	_release_attack_position()
 	state_machine.transition_to(ActorStateMachine.State.KNOCKED_BACK)
 
 
 func apply_stun(duration: float) -> void:
+	request_stun(duration)
+
+
+func request_stun(duration: float) -> bool:
 	if not can_act() or duration <= 0.0:
-		return
-	_stun_remaining = maxf(_stun_remaining, duration)
-	attack_controller.cancel()
+		return false
+	if _control_lockout_remaining > 0.0:
+		return false
+	var resistance: float = (
+		clampf(actor_definition.stagger_resistance, 0.0, 1.0)
+		if actor_definition != null
+		else 0.0
+	)
+	var maximum_duration: float = (
+		maxf(actor_definition.maximum_stun_duration, 0.0)
+		if actor_definition != null
+		else duration
+	)
+	var applied_duration: float = minf(duration * (1.0 - resistance), maximum_duration)
+	if applied_duration <= 0.0:
+		return false
+	_stun_remaining = maxf(_stun_remaining, applied_duration)
+	_control_lockout_remaining = (
+		maxf(actor_definition.control_lockout_seconds, 0.0)
+		if actor_definition != null
+		else 0.0
+	)
+	_cancel_active_attack()
 	_release_attack_position()
 	state_machine.transition_to(ActorStateMachine.State.STUNNED)
+	return true
 
 
 func can_act() -> bool:
@@ -346,10 +585,14 @@ func can_be_targeted() -> bool:
 	return can_act() and not is_queued_for_deletion()
 
 
-func is_target_in_attack_range(target: ActorController) -> bool:
-	if target == null or not is_instance_valid(target) or attack_definition == null:
+func is_target_in_attack_range(
+	target: ActorController,
+	definition: AttackDefinition = null
+) -> bool:
+	var resolved_definition: AttackDefinition = definition if definition != null else attack_definition
+	if target == null or not is_instance_valid(target) or resolved_definition == null:
 		return false
-	return global_position.distance_to(target.global_position) <= attack_definition.attack_range
+	return global_position.distance_to(target.global_position) <= resolved_definition.attack_range
 
 
 func is_hitbox_active() -> bool:
@@ -396,6 +639,7 @@ func get_snapshot() -> Dictionary:
 		"registration_order": registration_order,
 		"definition_id": definition_id(),
 		"display_name": actor_definition.display_name if actor_definition != null else String(name),
+		"combat_role": get_combat_role(),
 		"team": team,
 		"state": state_machine.current_state,
 		"state_name": get_state_name(),
@@ -410,6 +654,11 @@ func get_snapshot() -> Dictionary:
 		"target_instance_id": current_target.get_instance_id() if current_target != null else -1,
 		"position": global_position,
 		"hitbox_active": is_hitbox_active(),
+		"active_attack_id": (
+			_active_attack_definition.id if _active_attack_definition != null else &""
+		),
+		"enraged": _enraged,
+		"control_lockout_remaining": _control_lockout_remaining,
 	}
 
 
@@ -434,8 +683,21 @@ func _coordinator_target_is_valid(target: ActorController) -> bool:
 
 
 func _reserve_attack_position() -> bool:
+	return _reserve_attack_position_for(
+		attack_definition.attack_range if attack_definition != null else 0.0
+	)
+
+
+func _reserve_attack_position_for(maximum_distance: float) -> bool:
 	if combat_coordinator == null or not combat_coordinator.has_method("reserve_attack_position"):
 		return false
+	if combat_coordinator.has_method("reserve_attack_position_with_range"):
+		return bool(combat_coordinator.call(
+			"reserve_attack_position_with_range",
+			self,
+			current_target,
+			maximum_distance
+		))
 	return bool(combat_coordinator.call("reserve_attack_position", self, current_target))
 
 
@@ -459,13 +721,38 @@ func _release_attack_position() -> void:
 
 func _step_knockback(delta: float) -> void:
 	var applied_time: float = minf(delta, _knockback_remaining)
-	global_position = combat_space.clamp_actor_position(
+	var requested_position: Vector2 = (
 		global_position + Vector2(_knockback_velocity_x * applied_time, 0.0)
 	)
+	var clamped_position: Vector2 = combat_space.clamp_actor_position(requested_position)
+	var hit_horizontal_boundary: bool = not is_equal_approx(
+		requested_position.x,
+		clamped_position.x
+	)
+	global_position = clamped_position
+	if hit_horizontal_boundary and not _environmental_collision_emitted:
+		_environmental_collision_emitted = true
+		_request_environmental_collision()
 	_knockback_remaining = maxf(_knockback_remaining - delta, 0.0)
 	_knockback_velocity_x = move_toward(_knockback_velocity_x, 0.0, 500.0 * delta)
 	if _knockback_remaining <= 0.0:
+		_knockback_source_actor = null
 		state_machine.transition_to(ActorStateMachine.State.APPROACHING_TARGET)
+
+
+func _request_environmental_collision() -> void:
+	if combat_coordinator == null or not combat_coordinator.has_method(
+		"request_environmental_collision"
+	):
+		return
+	combat_coordinator.call(
+		"request_environmental_collision",
+		_knockback_source_id,
+		_knockback_source_actor,
+		self,
+		global_position,
+		_knockback_initial_force
+	)
 
 
 func _step_stun(delta: float) -> void:
@@ -498,11 +785,27 @@ func _on_attack_phase_changed(_previous_phase: int, new_phase: int) -> void:
 func _on_attack_active_started() -> void:
 	if combat_coordinator == null or not combat_coordinator.has_method("request_attack_hit"):
 		return
-	combat_coordinator.call("request_attack_hit", self, current_target, attack_definition)
+	var resolved_attack: AttackDefinition = (
+		_active_attack_definition
+		if _active_attack_definition != null
+		else attack_definition
+	)
+	combat_coordinator.call("request_attack_hit", self, current_target, resolved_attack)
 
 
 func _on_attack_finished() -> void:
-	_attack_cooldown_remaining = attack_definition.cooldown_time / get_attack_speed_multiplier()
+	var resolved_attack: AttackDefinition = (
+		_active_attack_definition
+		if _active_attack_definition != null
+		else attack_definition
+	)
+	_attack_cooldown_remaining = (
+		resolved_attack.cooldown_time / get_attack_speed_multiplier()
+		if resolved_attack != null
+		else 0.0
+	)
+	_active_attack_definition = null
+	_planned_attack_definition = null
 	if current_target != null:
 		state_machine.transition_to(ActorStateMachine.State.APPROACHING_TARGET)
 	else:
@@ -521,13 +824,32 @@ func _set_hitbox_active(is_active: bool) -> void:
 
 func _on_health_component_changed(current_health: int, maximum_health: int) -> void:
 	actor_visual.set_health(current_health, maximum_health)
+	_evaluate_enrage(current_health, maximum_health)
 	health_changed.emit(self, current_health, maximum_health)
+
+
+func _evaluate_enrage(current_health: int, maximum_health: int) -> void:
+	if (
+		_enraged
+		or actor_definition == null
+		or not actor_definition.is_boss()
+		or actor_definition.enrage_health_ratio <= 0.0
+		or current_health <= 0
+	):
+		return
+	var health_ratio: float = float(current_health) / float(maxi(maximum_health, 1))
+	if health_ratio > actor_definition.enrage_health_ratio:
+		return
+	_enraged = true
+	enrage_changed.emit(self, true)
+	if combat_coordinator != null and combat_coordinator.has_method("notify_boss_enraged"):
+		combat_coordinator.call("notify_boss_enraged", self)
 
 
 func _on_health_depleted() -> void:
 	if status_controller != null:
 		status_controller.clear_all()
-	attack_controller.cancel()
+	_cancel_active_attack()
 	clear_target()
 	if team == Team.CREW:
 		state_machine.transition_to(ActorStateMachine.State.INCAPACITATED)

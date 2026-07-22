@@ -445,18 +445,22 @@ func test_convenience_store_allows_one_purchase_from_unchanged_finite_stock() ->
 	_expect_false(fixture.cooling.is_shop_visit_active(), "Store: no stale visit remains")
 
 
-func test_gang_hideout_uses_viper_signal_placeholder_guarantees_equipment_and_never_recurses() -> void:
+func test_gang_hideout_uses_viper_signal_elite_guarantees_equipment_and_never_recurses() -> void:
 	var fixture: FlowFixture = _new_fixture_with_opening([&"gang_hideout"])
 	var placed: Dictionary = _place_card(fixture, &"gang_hideout", _slot_at_occurrence(fixture, 0))
 	_expect_true(bool(placed.get("accepted", false)), "Hideout: placement accepted")
 	fixture.patrol.step_patrol(ROUTE_STEP_SECONDS)
-	_expect_equal(fixture.encounter.get_active_definition(), VIPER_SIGNAL, "Hideout: exact viper_signal placeholder starts")
-	_expect_true(VIPER_SIGNAL.elite_eligible, "Hideout: placeholder is elite-eligible")
-	_expect_equal(VIPER_SIGNAL.allowed_enemy_ids, [&"street_punk"], "Hideout: no Milestone 6 Viper actor introduced")
+	_expect_equal(fixture.encounter.get_active_definition(), VIPER_SIGNAL, "Hideout: exact viper_signal encounter starts")
+	_expect_true(VIPER_SIGNAL.elite_eligible, "Hideout: encounter remains elite-eligible")
+	_expect_equal(
+		VIPER_SIGNAL.allowed_enemy_ids,
+		[&"viper_enforcer", &"street_punk", &"bat_thug", &"bottle_thrower"],
+		"Hideout: Milestone 6 replaces the accepted placeholder with the authorized Enforcer roster"
+	)
 	_expect_true(fixture.run.calculate_spawn_budget(VIPER_SIGNAL) > 0, "Hideout: existing scaled budget applies")
 	var encounter_id: int = fixture.encounter.get_active_encounter_instance_id()
 	var cards_draw_before: int = fixture.run.get_random_streams().get_draw_count(RunRandomStreams.STREAM_CARDS)
-	_expect_true(fixture.encounter.complete_active(), "Hideout: elite placeholder completion published")
+	_expect_true(fixture.encounter.complete_active(), "Hideout: elite completion published")
 	_expect_true(not fixture.rewards.get_pending_equipment_choices(encounter_id).is_empty(), "Hideout: equipment choice guaranteed")
 	_expect_true(fixture.flow.decline_equipment_reward(), "Hideout: equipment reward can be safely declined")
 	_expect_false(bool(fixture.flow.get_snapshot().get("card_reward_phase_active", false)), "Hideout: elite does not recursively offer cards")

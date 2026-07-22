@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="RunEscalationDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/run/run_escalation_definition.gd" id="1_escalation"]
+
+[resource]
+script = ExtResource("1_escalation")
+passive_pressure_per_second = 0.07
+pressure_per_standard_encounter = 1.5
+pressure_per_elite_encounter = 3.0
+extraction_pressure_thresholds = PackedFloat32Array(18, 36)
+boss_pressure_threshold = 50.0
+health_multiplier_per_pressure = 0.01
+damage_multiplier_per_pressure = 0.005
+spawn_budget_multiplier_per_pressure = 0.0125
+global_enemy_concurrency_limit = 30

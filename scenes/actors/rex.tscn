@@ -1,0 +1,53 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/actor_controller.gd" id="1_controller"]
+[ext_resource type="Resource" path="res://data/crew/rex.tres" id="2_definition"]
+[ext_resource type="Resource" path="res://data/attacks/rex_heavy_hook.tres" id="3_attack"]
+[ext_resource type="Script" path="res://scripts/actors/actor_state_machine.gd" id="4_state"]
+[ext_resource type="Script" path="res://scripts/actors/health_component.gd" id="5_health"]
+[ext_resource type="Script" path="res://scripts/combat/attack_controller.gd" id="6_attack_controller"]
+[ext_resource type="Script" path="res://scripts/actors/actor_visual.gd" id="7_visual"]
+[ext_resource type="Script" path="res://scripts/actors/status_controller.gd" id="8_status"]
+[ext_resource type="Resource" path="res://data/equipment/bleed_status.tres" id="9_bleed"]
+[ext_resource type="Resource" path="res://data/equipment/shock_status.tres" id="10_shock"]
+
+[sub_resource type="RectangleShape2D" id="hitbox"]
+size = Vector2(38, 24)
+[sub_resource type="CapsuleShape2D" id="hurtbox"]
+radius = 12.0
+height = 50.0
+
+[node name="Rex" type="Node2D"]
+script = ExtResource("1_controller")
+actor_definition = ExtResource("2_definition")
+attack_definition = ExtResource("3_attack")
+team = 0
+initial_lane = 2
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("4_state")
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("5_health")
+[node name="StatusController" type="Node" parent="."]
+script = ExtResource("8_status")
+status_definitions = Array[StatusEffectDefinition]([ExtResource("9_bleed"), ExtResource("10_shock")])
+[node name="AttackController" type="Node" parent="."]
+script = ExtResource("6_attack_controller")
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+monitorable = false
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, -25)
+shape = SubResource("hurtbox")
+[node name="AttackHitbox" type="Area2D" parent="."]
+position = Vector2(20, -28)
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+monitorable = false
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackHitbox"]
+shape = SubResource("hitbox")
+[node name="ActorVisual" type="Node2D" parent="."]
+script = ExtResource("7_visual")
+variant_kind = 3

@@ -1,0 +1,711 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/vertical_slice_overlay.gd" id="1_overlay"]
+
+[sub_resource type="StyleBoxFlat" id="PanelDark"]
+bg_color = Color(0.018, 0.024, 0.065, 0.97)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.2, 0.86, 0.96, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="PanelMagenta"]
+bg_color = Color(0.025, 0.025, 0.075, 0.98)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.25, 0.65, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="PanelAmber"]
+bg_color = Color(0.035, 0.028, 0.07, 0.96)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.72, 0.25, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
+
+[sub_resource type="StyleBoxFlat" id="MeterBackground"]
+bg_color = Color(0.04, 0.055, 0.13, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.36, 0.44, 0.68, 1)
+
+[sub_resource type="StyleBoxFlat" id="BossFill"]
+bg_color = Color(1, 0.22, 0.43, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.78, 0.32, 1)
+
+[sub_resource type="StyleBoxFlat" id="SelectedButton"]
+bg_color = Color(0.13, 0.16, 0.3, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.9, 1, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="VerticalSliceOverlay" type="CanvasLayer"]
+layer = 60
+script = ExtResource("1_overlay")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="MainMenu" type="Control" parent="Root"]
+z_index = 20
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Dim" type="ColorRect" parent="Root/MainMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.005, 0.008, 0.025, 0.94)
+
+[node name="MenuPanel" type="Panel" parent="Root/MainMenu"]
+layout_mode = 0
+offset_left = 150.0
+offset_top = 55.0
+offset_right = 1130.0
+offset_bottom = 665.0
+theme_override_styles/panel = SubResource("PanelDark")
+
+[node name="Title" type="Label" parent="Root/MainMenu/MenuPanel"]
+layout_mode = 0
+offset_left = 36.0
+offset_top = 24.0
+offset_right = 944.0
+offset_bottom = 88.0
+theme_override_colors/font_color = Color(0.31, 0.92, 1, 1)
+theme_override_colors/font_outline_color = Color(0.01, 0.02, 0.06, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 46
+text = "NEON LOOP"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Root/MainMenu/MenuPanel"]
+layout_mode = 0
+offset_left = 36.0
+offset_top = 86.0
+offset_right = 944.0
+offset_bottom = 120.0
+theme_override_colors/font_color = Color(1, 0.42, 0.72, 1)
+theme_override_font_sizes/font_size = 20
+text = "DOWNTOWN VERTICAL SLICE - CHOOSE ONE STARTING CREW MEMBER"
+horizontal_alignment = 1
+
+[node name="ProfileStatus" type="Label" parent="Root/MainMenu/MenuPanel"]
+layout_mode = 0
+offset_left = 36.0
+offset_top = 126.0
+offset_right = 944.0
+offset_bottom = 158.0
+theme_override_colors/font_color = Color(1, 0.82, 0.4, 1)
+theme_override_font_sizes/font_size = 17
+text = "PROFILE READY"
+horizontal_alignment = 1
+
+[node name="Jax" type="Button" parent="Root/MainMenu/MenuPanel"]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 180.0
+offset_right = 324.0
+offset_bottom = 266.0
+toggle_mode = true
+theme_override_font_sizes/font_size = 20
+theme_override_styles/pressed = SubResource("SelectedButton")
+text = "JAX\nBRAWLER"
+
+[node name="Zoey" type="Button" parent="Root/MainMenu/MenuPanel"]
+layout_mode = 0
+offset_left = 360.0
+offset_top = 180.0
+offset_right = 620.0
+offset_bottom = 266.0
+toggle_mode = true
+theme_override_font_sizes/font_size = 20
+theme_override_styles/pressed = SubResource("SelectedButton")
+text = "ZOEY\nTECH FIGHTER"
+
+[node name="Rex" type="Button" parent="Root/MainMenu/MenuPanel"]
+layout_mode = 0
+offset_left = 656.0
+offset_top = 180.0
+offset_right = 916.0
+offset_bottom = 266.0
+toggle_mode = true
+theme_override_font_sizes/font_size = 20
+theme_override_styles/pressed = SubResource("SelectedButton")
+text = "REX\nBRUISER"
+
+[node name="CrewDetails" type="Label" parent="Root/MainMenu/MenuPanel"]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 290.0
+offset_right = 916.0
+offset_bottom = 420.0
+theme_override_colors/font_color = Color(0.83, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 19
+text = "SELECT AN AVAILABLE CREW MEMBER\nMECHANICAL TRAITS ARE AUTHORED PER RUN\nNO PERMANENT STAT BONUSES"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="StartRun" type="Button" parent="Root/MainMenu/MenuPanel"]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 450.0
+offset_right = 620.0
+offset_bottom = 526.0
+theme_override_colors/font_color = Color(0.35, 1, 0.68, 1)
+theme_override_font_sizes/font_size = 24
+disabled = true
+text = "START DOWNTOWN RUN"
+
+[node name="Settings" type="Button" parent="Root/MainMenu/MenuPanel"]
+layout_mode = 0
+offset_left = 656.0
+offset_top = 450.0
+offset_right = 916.0
+offset_bottom = 526.0
+theme_override_font_sizes/font_size = 19
+text = "SETTINGS"
+
+[node name="ResetSave" type="Button" parent="Root/MainMenu/MenuPanel"]
+visible = false
+layout_mode = 0
+offset_left = 656.0
+offset_top = 538.0
+offset_right = 916.0
+offset_bottom = 584.0
+theme_override_colors/font_color = Color(1, 0.68, 0.35, 1)
+theme_override_font_sizes/font_size = 16
+text = "RESET DEVELOPMENT SAVE"
+
+[node name="Footer" type="Label" parent="Root/MainMenu/MenuPanel"]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 540.0
+offset_right = 620.0
+offset_bottom = 584.0
+theme_override_colors/font_color = Color(0.62, 0.68, 0.86, 1)
+theme_override_font_sizes/font_size = 16
+text = "AUTO COMBAT - DIRECT INTERVENTIONS - FIXED AUTHORED ROUTE"
+vertical_alignment = 1
+
+[node name="PauseMenu" type="Control" parent="Root"]
+visible = false
+z_index = 25
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Dim" type="ColorRect" parent="Root/PauseMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.005, 0.008, 0.025, 0.86)
+
+[node name="PausePanel" type="Panel" parent="Root/PauseMenu"]
+layout_mode = 0
+offset_left = 390.0
+offset_top = 105.0
+offset_right = 890.0
+offset_bottom = 615.0
+theme_override_styles/panel = SubResource("PanelMagenta")
+
+[node name="Title" type="Label" parent="Root/PauseMenu/PausePanel"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 24.0
+offset_right = 470.0
+offset_bottom = 74.0
+theme_override_colors/font_color = Color(1, 0.42, 0.72, 1)
+theme_override_font_sizes/font_size = 34
+text = "RUN PAUSED"
+horizontal_alignment = 1
+
+[node name="Status" type="Label" parent="Root/PauseMenu/PausePanel"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 78.0
+offset_right = 470.0
+offset_bottom = 120.0
+theme_override_colors/font_color = Color(0.78, 0.86, 1, 1)
+theme_override_font_sizes/font_size = 17
+text = "ELIGIBLE TIME, COMBAT, AND NIGHT PRESSURE ARE STOPPED"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Resume" type="Button" parent="Root/PauseMenu/PausePanel"]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 145.0
+offset_right = 430.0
+offset_bottom = 215.0
+theme_override_font_sizes/font_size = 22
+text = "RESUME RUN"
+
+[node name="Settings" type="Button" parent="Root/PauseMenu/PausePanel"]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 230.0
+offset_right = 430.0
+offset_bottom = 300.0
+theme_override_font_sizes/font_size = 20
+text = "SETTINGS + ACCESSIBILITY"
+
+[node name="Restart" type="Button" parent="Root/PauseMenu/PausePanel"]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 315.0
+offset_right = 430.0
+offset_bottom = 385.0
+theme_override_font_sizes/font_size = 20
+text = "RESTART RUN - NEW SEED"
+
+[node name="MainMenu" type="Button" parent="Root/PauseMenu/PausePanel"]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 400.0
+offset_right = 430.0
+offset_bottom = 470.0
+theme_override_font_sizes/font_size = 20
+text = "RETURN TO MAIN MENU"
+
+[node name="SettingsPanel" type="Control" parent="Root"]
+visible = false
+z_index = 35
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Dim" type="ColorRect" parent="Root/SettingsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.005, 0.008, 0.025, 0.92)
+
+[node name="Panel" type="Panel" parent="Root/SettingsPanel"]
+layout_mode = 0
+offset_left = 230.0
+offset_top = 35.0
+offset_right = 1050.0
+offset_bottom = 685.0
+theme_override_styles/panel = SubResource("PanelDark")
+
+[node name="Title" type="Label" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 20.0
+offset_right = 790.0
+offset_bottom = 65.0
+theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 30
+text = "SETTINGS + ACCESSIBILITY"
+horizontal_alignment = 1
+
+[node name="MasterLabel" type="Label" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 45.0
+offset_top = 86.0
+offset_right = 320.0
+offset_bottom = 116.0
+theme_override_font_sizes/font_size = 18
+text = "MASTER VOLUME"
+
+[node name="MasterSlider" type="HSlider" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 345.0
+offset_top = 82.0
+offset_right = 760.0
+offset_bottom = 120.0
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="MusicLabel" type="Label" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 45.0
+offset_top = 137.0
+offset_right = 320.0
+offset_bottom = 167.0
+theme_override_font_sizes/font_size = 18
+text = "MUSIC VOLUME"
+
+[node name="MusicSlider" type="HSlider" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 345.0
+offset_top = 133.0
+offset_right = 760.0
+offset_bottom = 171.0
+max_value = 1.0
+step = 0.05
+value = 0.8
+
+[node name="SfxLabel" type="Label" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 45.0
+offset_top = 188.0
+offset_right = 320.0
+offset_bottom = 218.0
+theme_override_font_sizes/font_size = 18
+text = "SOUND-EFFECTS VOLUME"
+
+[node name="SfxSlider" type="HSlider" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 345.0
+offset_top = 184.0
+offset_right = 760.0
+offset_bottom = 222.0
+max_value = 1.0
+step = 0.05
+value = 0.9
+
+[node name="DisplayLabel" type="Label" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 45.0
+offset_top = 239.0
+offset_right = 320.0
+offset_bottom = 269.0
+theme_override_font_sizes/font_size = 18
+text = "DISPLAY MODE"
+
+[node name="DisplayMode" type="OptionButton" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 345.0
+offset_top = 232.0
+offset_right = 760.0
+offset_bottom = 276.0
+theme_override_font_sizes/font_size = 18
+
+[node name="ShakeLabel" type="Label" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 45.0
+offset_top = 290.0
+offset_right = 320.0
+offset_bottom = 320.0
+theme_override_font_sizes/font_size = 18
+text = "SCREEN-SHAKE INTENSITY"
+
+[node name="ShakeSlider" type="HSlider" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 345.0
+offset_top = 286.0
+offset_right = 760.0
+offset_bottom = 324.0
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="DamageNumbers" type="CheckButton" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 45.0
+offset_top = 338.0
+offset_right = 760.0
+offset_bottom = 382.0
+theme_override_font_sizes/font_size = 18
+button_pressed = true
+text = "SHOW DAMAGE NUMBERS"
+
+[node name="HitFlashLabel" type="Label" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 45.0
+offset_top = 398.0
+offset_right = 320.0
+offset_bottom = 428.0
+theme_override_font_sizes/font_size = 18
+text = "HIT-FLASH REDUCTION"
+
+[node name="HitFlashSlider" type="HSlider" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 345.0
+offset_top = 394.0
+offset_right = 760.0
+offset_bottom = 432.0
+max_value = 1.0
+step = 0.05
+
+[node name="FocusPause" type="CheckButton" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 45.0
+offset_top = 446.0
+offset_right = 760.0
+offset_bottom = 490.0
+theme_override_font_sizes/font_size = 18
+button_pressed = true
+text = "PAUSE ON FOCUS LOSS - MANUAL RESUME"
+
+[node name="ColourNote" type="Label" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 45.0
+offset_top = 500.0
+offset_right = 760.0
+offset_bottom = 536.0
+theme_override_colors/font_color = Color(1, 0.8, 0.38, 1)
+theme_override_font_sizes/font_size = 16
+text = "VALIDITY, WARNINGS, COOLDOWNS, AND BOSS TELEGRAPHS ALWAYS INCLUDE TEXT."
+horizontal_alignment = 1
+
+[node name="Status" type="Label" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 45.0
+offset_top = 540.0
+offset_right = 760.0
+offset_bottom = 570.0
+theme_override_colors/font_color = Color(0.54, 0.94, 0.76, 1)
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+
+[node name="Apply" type="Button" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 45.0
+offset_top = 580.0
+offset_right = 390.0
+offset_bottom = 628.0
+theme_override_font_sizes/font_size = 18
+text = "APPLY + SAVE"
+
+[node name="Back" type="Button" parent="Root/SettingsPanel/Panel"]
+layout_mode = 0
+offset_left = 415.0
+offset_top = 580.0
+offset_right = 760.0
+offset_bottom = 628.0
+theme_override_font_sizes/font_size = 18
+text = "BACK"
+
+[node name="SummaryPanel" type="Control" parent="Root"]
+visible = false
+z_index = 30
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Dim" type="ColorRect" parent="Root/SummaryPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.005, 0.008, 0.025, 0.91)
+
+[node name="Panel" type="Panel" parent="Root/SummaryPanel"]
+layout_mode = 0
+offset_left = 130.0
+offset_top = 35.0
+offset_right = 1150.0
+offset_bottom = 685.0
+theme_override_styles/panel = SubResource("PanelMagenta")
+
+[node name="Title" type="Label" parent="Root/SummaryPanel/Panel"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 20.0
+offset_right = 990.0
+offset_bottom = 68.0
+theme_override_colors/font_color = Color(1, 0.4, 0.72, 1)
+theme_override_font_sizes/font_size = 32
+text = "RUN COMPLETE"
+horizontal_alignment = 1
+
+[node name="LeftDetails" type="Label" parent="Root/SummaryPanel/Panel"]
+layout_mode = 0
+offset_left = 45.0
+offset_top = 86.0
+offset_right = 492.0
+offset_bottom = 492.0
+theme_override_colors/font_color = Color(0.82, 0.9, 1, 1)
+theme_override_constants/line_spacing = 6
+theme_override_font_sizes/font_size = 18
+text = "RESULT\nDURATION\nSEED\nSCHEMA\nMAX HEAT\nFINAL NIGHT PRESSURE\nENEMIES DEFEATED\nELITES DEFEATED\nBOSS RESULT"
+
+[node name="RightDetails" type="Label" parent="Root/SummaryPanel/Panel"]
+layout_mode = 0
+offset_left = 528.0
+offset_top = 86.0
+offset_right = 975.0
+offset_bottom = 510.0
+theme_override_colors/font_color = Color(0.9, 0.84, 1, 1)
+theme_override_constants/line_spacing = 3
+theme_override_font_sizes/font_size = 18
+text = "COINS\nMANUAL CLUSTERS\nMAX STREAK\nSCRAP SECURED\nHIGHEST COMBO\nEQUIPMENT BUILD\nNONE\nACTIVE SYNERGIES\nNONE"
+autowrap_mode = 2
+
+[node name="Replay" type="Button" parent="Root/SummaryPanel/Panel"]
+layout_mode = 0
+offset_left = 45.0
+offset_top = 520.0
+offset_right = 345.0
+offset_bottom = 604.0
+theme_override_font_sizes/font_size = 18
+text = "REPLAY SAME SEED\nSAME ACCESS SNAPSHOT"
+
+[node name="Restart" type="Button" parent="Root/SummaryPanel/Panel"]
+layout_mode = 0
+offset_left = 360.0
+offset_top = 520.0
+offset_right = 660.0
+offset_bottom = 604.0
+theme_override_font_sizes/font_size = 18
+text = "RESTART RUN\nNEW SEED"
+
+[node name="MainMenu" type="Button" parent="Root/SummaryPanel/Panel"]
+layout_mode = 0
+offset_left = 675.0
+offset_top = 520.0
+offset_right = 975.0
+offset_bottom = 604.0
+theme_override_font_sizes/font_size = 18
+text = "RETURN TO\nMAIN MENU"
+
+[node name="BossPanel" type="Panel" parent="Root"]
+visible = false
+z_index = 8
+layout_mode = 0
+offset_left = 340.0
+offset_top = 110.0
+offset_right = 940.0
+offset_bottom = 202.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("PanelAmber")
+
+[node name="Title" type="Label" parent="Root/BossPanel"]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 7.0
+offset_right = 586.0
+offset_bottom = 33.0
+theme_override_colors/font_color = Color(1, 0.76, 0.32, 1)
+theme_override_font_sizes/font_size = 18
+text = "THE VIPER - PHASE 1"
+horizontal_alignment = 1
+
+[node name="Health" type="ProgressBar" parent="Root/BossPanel"]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 35.0
+offset_right = 586.0
+offset_bottom = 58.0
+mouse_filter = 2
+theme_override_styles/background = SubResource("MeterBackground")
+theme_override_styles/fill = SubResource("BossFill")
+value = 100.0
+show_percentage = false
+
+[node name="Status" type="Label" parent="Root/BossPanel"]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 61.0
+offset_right = 586.0
+offset_bottom = 86.0
+theme_override_colors/font_color = Color(1, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 16
+text = "WATCH SHAPE + TEXT TELEGRAPHS"
+horizontal_alignment = 1
+
+[node name="TutorialPanel" type="Panel" parent="Root"]
+visible = false
+z_index = 9
+layout_mode = 0
+offset_left = 330.0
+offset_top = 510.0
+offset_right = 950.0
+offset_bottom = 568.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("PanelDark")
+
+[node name="Text" type="Label" parent="Root/TutorialPanel"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 608.0
+offset_bottom = 50.0
+theme_override_colors/font_color = Color(0.82, 0.94, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "CONTEXTUAL TUTORIAL PROMPT"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="ComboPanel" type="Panel" parent="Root"]
+visible = false
+z_index = 7
+layout_mode = 0
+offset_left = 510.0
+offset_top = 210.0
+offset_right = 770.0
+offset_bottom = 256.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("PanelMagenta")
+
+[node name="Text" type="Label" parent="Root/ComboPanel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 7.0
+offset_right = 252.0
+offset_bottom = 39.0
+theme_override_colors/font_color = Color(1, 0.46, 0.76, 1)
+theme_override_font_sizes/font_size = 18
+text = "COMBO 1 - BEST 1"
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -1,8 +1,11 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/game_hud.gd" id="1_hud"]
 [ext_resource type="Script" path="res://scripts/ui/equipment_drag_slot.gd" id="2_drag_slot"]
 [ext_resource type="Script" path="res://scripts/ui/district_card_drag_slot.gd" id="3_card_drag_slot"]
+[ext_resource type="Texture2D" path="res://assets/icons/interventions/fire_hydrant.svg" id="4_hydrant_icon"]
+[ext_resource type="Texture2D" path="res://assets/icons/interventions/call_backup.svg" id="5_backup_icon"]
+[ext_resource type="Texture2D" path="res://assets/icons/interventions/subway_reroute.svg" id="6_subway_icon"]
 
 [sub_resource type="StyleBoxFlat" id="PanelCyan"]
 bg_color = Color(0.018, 0.033, 0.09, 0.94)
@@ -964,29 +967,47 @@ text = "RUN ACTIONS • INTRO"
 layout_mode = 0
 offset_left = 18.0
 offset_top = 46.0
-offset_right = 246.0
+offset_right = 178.0
 offset_bottom = 116.0
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 16
 disabled = true
 text = "RUN STARTING\nSTAND BY"
 
+[node name="BackupButton" type="Button" parent="Root/CardsPanel"]
+layout_mode = 0
+offset_left = 190.0
+offset_top = 46.0
+offset_right = 350.0
+offset_bottom = 116.0
+theme_override_colors/font_color = Color(0.42, 0.95, 0.72, 1)
+theme_override_font_sizes/font_size = 16
+icon = ExtResource("5_backup_icon")
+expand_icon = true
+icon_max_width = 32
+text = "2 - BACKUP\nREADY - 2 LEFT"
+tooltip_text = "Call Backup: spawn two temporary allied NPCs for 12 eligible combat seconds. Requires an active enemy encounter."
+
 [node name="Card02" type="Button" parent="Root/CardsPanel"]
 layout_mode = 0
-offset_left = 260.0
+offset_left = 362.0
 offset_top = 46.0
-offset_right = 488.0
+offset_right = 522.0
 offset_bottom = 116.0
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 16
+icon = ExtResource("6_subway_icon")
+expand_icon = true
+icon_max_width = 32
 disabled = true
-text = "SUBWAY REROUTE\n2 LEFT • -15 HEAT"
+text = "3 - SUBWAY\n2 CHG / -15H"
+tooltip_text = "Subway Reroute: spend one finite charge during non-boss travel, reduce Heat by 15, and advance to the next authored route node. Night Pressure and progression latches never decrease."
 
 [node name="Card03" type="Button" parent="Root/CardsPanel"]
 layout_mode = 0
-offset_left = 502.0
+offset_left = 534.0
 offset_top = 46.0
 offset_right = 730.0
 offset_bottom = 116.0
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 16
 disabled = true
 text = "SHOP COOLING\n2 LEFT • 60 COINS"
 
@@ -1288,7 +1309,7 @@ offset_right = 234.0
 offset_bottom = 36.0
 theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 18
-text = "FIRE HYDRANT"
+text = "1 - FIRE HYDRANT"
 
 [node name="StateLabel" type="Label" parent="Root/InterventionsPanel"]
 layout_mode = 0
@@ -1309,6 +1330,9 @@ offset_bottom = 144.0
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(1, 0.72, 0.29, 1)
 theme_override_font_sizes/font_size = 20
+icon = ExtResource("4_hydrant_icon")
+expand_icon = true
+icon_max_width = 36
 text = "TRY HYDRANT"
 tooltip_text = "Fire Hydrant: light area damage and strong knockback. Requires readiness and an enemy in range."
 
@@ -1407,7 +1431,7 @@ offset_bottom = 118.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.84, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 16
-text = "JAX AUTO-FIGHTS.\nCLICKS ONLY INSPECT; NEVER DISCARD.\nCARDS: DRAG/CLICK; RIGHT-CLICK = CANCEL."
+text = "SELECTED CREW AUTO-FIGHTS.\nCLICKS ONLY INSPECT; NEVER DISCARD.\nCARDS: DRAG/CLICK; RIGHT-CLICK = CANCEL."
 
 [node name="InterventionHelp" type="Label" parent="Root/HelpPanel"]
 layout_mode = 0
@@ -1579,9 +1603,10 @@ offset_right = 712.0
 offset_bottom = 206.0
 theme_override_colors/font_color = Color(1, 0.86, 0.62, 1)
 theme_override_font_sizes/font_size = 20
-text = "NIGHT PRESSURE MADE THIS ENCOUNTER UNAVOIDABLE.\nFINAL BOSS ACTOR/BEHAVIOUR IS DELIBERATELY DEFERRED."
+text = "NIGHT PRESSURE MADE THIS ENCOUNTER UNAVOIDABLE.\nTHE LIVE VIPER FIGHT USES THE DEDICATED HEALTH AND TELEGRAPH STRIP."
 horizontal_alignment = 1
 vertical_alignment = 1
+autowrap_mode = 2
 
 [node name="RestartSameSeed" type="Button" parent="Root/BossTriggerPanel"]
 layout_mode = 0

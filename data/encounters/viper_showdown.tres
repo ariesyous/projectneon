@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://data/encounters/encounter_definition.gd" id="1_encounter"]
+[ext_resource type="Script" path="res://data/encounters/encounter_spawn_entry.gd" id="2_spawn"]
+
+[sub_resource type="Resource" id="Spawn_viper"]
+script = ExtResource("2_spawn")
+actor_id = &"the_viper"
+minimum_count = 1
+maximum_count = 1
+budget_cost = 1
+
+[resource]
+script = ExtResource("1_encounter")
+id = &"viper_showdown"
+display_name = "The Viper"
+minimum_heat_tier = 0
+minimum_night_pressure = 50.0
+base_spawn_budget = 1
+maximum_concurrent_enemies = 3
+allowed_enemy_ids = Array[StringName]([&"the_viper"])
+spawn_entries = Array[EncounterSpawnEntry]([SubResource("Spawn_viper")])
+spawn_position_ids = Array[StringName]([&"lane_1"])
+reward_table_ids = Array[StringName]([])
+completion_condition = &"boss_defeated"
+heat_gain_on_completion = 0
+elite_eligible = false
+boss = true

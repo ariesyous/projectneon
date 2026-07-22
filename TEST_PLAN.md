@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Testing is milestone-scoped. Milestone 0 verifies the project foundation; Milestone 1 verifies the narrow Combat Lab, automatic combat, and coin-cluster accounting; Milestone 2 verifies the Fire Hydrant intervention, combat-safe space, and targeted presentation/usability improvements; Milestone 3 verifies the complete run structure, escalation, thresholds, cooling, deterministic streams, standard rewards, outcomes, and restart cleanup; Milestone 4 verifies equipment, statuses, synergies, and deterministic choices; Milestone 4.1 verifies the authorized equipment-safety and HUD-readability correction; Milestone 4.2 verifies the bounded inventory-drag and one-backpack-clarity correction; and Milestone 5 verifies District Cards, deterministic finite deck state, future-route placement/resolution, supplemental card rewards, progression protections, and safe multimodal planning. Later checklists do not pretend that deferred gameplay systems are implemented.
+Testing is milestone-scoped. Milestone 0 verifies the project foundation; Milestone 1 verifies the narrow Combat Lab, automatic combat, and coin-cluster accounting; Milestone 2 verifies the Fire Hydrant intervention, combat-safe space, and targeted presentation/usability improvements; Milestone 3 verifies the complete run structure, escalation, thresholds, cooling, deterministic streams, standard rewards, outcomes, and restart cleanup; Milestone 4 verifies equipment, statuses, synergies, and deterministic choices; Milestone 4.1 verifies the authorized equipment-safety and HUD-readability correction; Milestone 4.2 verifies the bounded inventory-drag and one-backpack-clarity correction; Milestone 5 verifies District Cards, deterministic finite deck state, future-route placement/resolution, supplemental card rewards, progression protections, and safe multimodal planning; and Milestone 6 verifies the bounded vertical-slice crew/enemy/elite/boss content, all three interventions, combo/projectiles, final presentation/audio/tutorials, settings, minimal versioned persistence/unlocks, complete summaries, cadence measurement, complete outcomes, and cross-system cleanup. Later checklists do not pretend that deferred gameplay systems are implemented.
 
 ## Error policy
 
@@ -15,9 +15,10 @@ Testing is milestone-scoped. Milestone 0 verifies the project foundation; Milest
 
 - **Passed** means the recorded check was actually executed against the stated build.
 - **Planned** means the test is a downstream acceptance contract only; an unchecked planned item is not evidence that its system exists or works.
+- **Pending execution** means implementation and its test case exist, but no final pass result is recorded until that exact matrix is run against the finished working tree.
 - **Owner-recorded** means only the project owner may enter the result.
 
-Milestone 1 through Milestone 5 technical suites are recorded as executed. Milestone 6 and later suites remain **Planned**; their presence does not start or authorize those milestones. The Milestone 1 Human Validation Gate result remains separately labelled as an owner-recorded qualitative decision.
+Milestone 1 through Milestone 5 technical suites are recorded as executed. The authorized Milestone 6 implementation and seven-suite/56-test addition passed its final cumulative automated gate, and the configured headless `/GameRun` boot completed cleanly. Representative manual runs/interactions, exports, browser-console inspection, visual evidence, cleanup-diagnostic follow-up, and owner qualitative validation remain **Pending execution** until the checks below complete. The Milestone 1 Human Validation Gate result remains separately labelled as an owner-recorded qualitative decision and is neither repeated nor reopened.
 
 ## Milestone 0 static checks
 
@@ -577,20 +578,114 @@ All four effects, every invalid/current/past/occupied/stale/outside rejection, s
 
 **Milestone 5 technical result: Passed.** Milestone 6 and every later system remain unimplemented and unauthorized.
 
-### Milestone 6 — cadence and vertical-slice manual checks
+### Milestone 6 — Vertical-Slice Content and Presentation
 
-Status: **Planned — not implemented or executed**
+Status: **Implementation and cumulative automated coverage passed; manual/export technical acceptance remains pending.**
 
-- [ ] During a representative run, optional ambient opportunities occur approximately every 10–20 seconds of eligible active play.
-- [ ] Meaningful strategic decisions remain approximately 30–60 eligible active seconds apart and are not inflated by relabelling coin clicks as strategic choices.
-- [ ] Major risk decisions remain approximately 2–3 eligible active minutes apart.
-- [ ] Cadence measurements exclude paused time, modal reward/shop choices, and non-interactive introductions.
-- [ ] Ignoring all coin clusters preserves full base rewards and does not make the run substantially nonviable; manual collection remains a modest, capped benefit.
-- [ ] Coin prompts and hit areas do not obscure combat, require precision clicking, or interrupt automatic action.
+The working implementation is on `codex/milestone-6-vertical-slice`, based on the accepted Milestone 5/main documentation baseline `3ce274518c5ccf79e53ecd12764b5ae4cd822ebd`. Milestone 5 remains the last fully accepted and published milestone. Milestone 6's automated working-tree record is **244/244 tests, 3,234 assertions, 22 suites, 0 failed and 0 skipped**; this does not constitute complete Milestone 6 technical acceptance. Milestone 6 has not been committed, pushed, merged, published, or deployed, and this section does not imply otherwise.
 
-### Later persistence work
+The build under test must retain the owner's separate pre-existing changes: the tracked/enabled 17-file Godot-AI 3.0.5 update and the two `project.godot` deletions of `window/stretch/aspect="keep"` and `textures/default_filters/use_nearest_mipmap_filter=false`. Milestone 6's intentional `project.godot` additions are the non-gameplay `SaveService` and `AppState` Autoloads. Verification must not count the owner changes as M6 work or silently restore either deletion.
 
-Status: **Planned — not implemented or executed**
+#### Authored automated coverage matrix
 
-- [ ] Save defaulting, version migration, and corrupt-save handling fail safely.
-- [ ] Any future mid-run save or replay preserves the authoritative seed, build/content/schema versions, state or draw position for every named stream, authoritative run state, and ordered decisions with relevant timing.
+Every row below identifies automated coverage that exists in the repository and passed in the final cumulative Godot 4.7 run. Manual and qualitative criteria remain separately pending below.
+
+| Contract | Primary suite(s) | Current record |
+| --- | --- | --- |
+| Exact actor catalogue contains `jax`, `zoey`, `rex`, `street_punk`, `bat_thug`, `bottle_thrower`, `viper_enforcer`, `the_viper`, and temporary ally `backup_runner`, with valid typed scenes/resources and no roster expansion | `milestone_6_combat_content` | **Passed in cumulative automation** |
+| Jax, Zoey, and Rex lock their health/speed/damage/resistance/role distinctions, existing one-item starters, authored basic attacks, environmental/elite/boss modifiers, and Zoey intervention cooldown without actor-ID Shock logic | `milestone_6_combat_content`; `milestone_6_game_run` | **Passed in cumulative automation** |
+| Production menu access starts with Jax; locked selection rejects; same-seed restart reuses the latched access snapshot; new-seed start recaptures profile access; each run applies exactly one authored starter before any reward draw | `milestone_6_presentation`; `milestone_6_game_run` | **Passed in cumulative automation** |
+| Street Punk is low-health medium-speed melee, Bat Thug is slower/heavier with high knockback, and Bottle Thrower holds 125–180 range and launches a slow/readable projectile | `milestone_6_combat_content` | **Passed in cumulative automation** |
+| `bottle_projectile` moves at 105 px/s, lives 2.5 seconds, uses radius 8, resolves once, and performs deterministic swept collision so a crossed target is not skipped by a large step | `milestone_6_combat_content` | **Passed in cumulative automation** |
+| Viper Enforcer has one required elite spawn, 420 health, light-stagger armour, control resistance, heavy and 0.75-second-telegraphed charge attacks, 120-coin value, guaranteed normal equipment path, and distinct presentation | `milestone_6_combat_content`; preserved `milestone_5_route_effects`; `milestone_6_game_run` | **Passed in cumulative automation** |
+| The Viper has a three-hit combo, 0.80-second charge telegraph, one-shot two-basic-enemy summon, 1.10-second/92-radius area warning, 40% enrage with 1.20x damage/1.25x speed, reduced knockback, maximum stun/control lockout, dedicated bar/music transition, and exactly-once victory | `milestone_6_combat_content`; `milestone_6_game_run`; `milestone_6_audio_tutorial`; `milestone_6_presentation` | **Passed in cumulative automation** |
+| Boss charge, summon, and area warning expose distinct text plus ground markers; pause freezes their timers; terminal state/restart/main menu clears markers and boss music; old Milestone 3 boss modal does not cover the M6 boss HUD | `milestone_6_game_run`; `milestone_6_presentation` | **Passed in cumulative automation** |
+| Fire Hydrant retains the accepted inclusive authority, damage/knockback/cooldown/preview behavior, adds exact 4-second mechanics-neutral `wet`, and rejects invalid/no-target/cooling requests without mutation | preserved M2 suites; `milestone_6_game_run` | **Passed in cumulative automation** |
+| Call Backup spawns exactly two registered allies, consumes one of two charges only after full success, advances only through 12 eligible active-combat seconds, uses a 30-second cooldown, handles Zoey's multiplier, removes defeated/expired allies, rolls back failures, and clears on terminal/restart | `milestone_6_call_backup`; `milestone_6_game_run` | **Passed in cumulative automation** |
+| Subway validates charge/state/patrol first, applies -15 Heat before the next route dispatch, advances one non-boss travel segment, retains two finite charges, and cannot reduce Night Pressure or bypass extraction/boss precedence; every rejection is immutable | preserved M3/M5 suites; `milestone_6_game_run` | **Passed in cumulative automation** |
+| Numeric keys 1/2/3 and HUD buttons forward Hydrant/Backup/Subway intent to the same typed authorities; validity, charge/cooldown, names/icons/tooltips/feedback, ASCII dynamic text, and pixel fit remain presentation-only | `milestone_6_game_run`; `milestone_6_presentation` | **Passed in cumulative automation** |
+| Shared combo uses only eligible time, expires after 2.5 seconds, includes ordinary/environmental hits, records highest combo, and presents textual milestones 10/20/30/50 | `milestone_6_runtime_systems`; `milestone_6_presentation`; `milestone_6_game_run` | **Passed in cumulative automation** |
+| Vertical-slice lifecycle retains 1.25-second intro/1.0-second extraction, automates a 2.5-second boss intro, delays run completion for a 2.0-second victory presentation, and keeps pause focus-safe around unskippable transitions | `milestone_6_runtime_systems`; `milestone_6_game_run` | **Passed in cumulative automation** |
+| Complete summary reports outcome, duration, seed/schema, maximum Heat, final Night Pressure, encounter/enemy/elite counts, boss result, coins, manual collections/streak, secured Scrap, highest combo, build, and synergies; pending clusters settle as base exactly once before victory/extraction/defeat summaries | `milestone_6_runtime_systems`; `milestone_6_game_run`; `milestone_6_presentation` | **Passed in cumulative automation** |
+| Restart Run and Return to Main Menu clear actors, boss state, backup, projectiles, telegraphs, combo, interventions, audio, tutorials, modals, route/cards/equipment, stream state, and presentation; same-seed debug restart is inert at main menu | `milestone_6_game_run`; all preserved restart suites | **Passed in cumulative automation** |
+| Cadence tracker measures only `RunDirector` eligible active time, locks 10–20/30–60/120–180-second target bands, records only accepted opportunities, and refuses to classify a coin event as strategic | `milestone_6_runtime_systems`; `milestone_6_game_run` | **Passed in cumulative automation; long-form cadence violations remain TODO** |
+| Settings expose master/music/SFX volumes, fullscreen/windowed, screen shake, damage numbers, hit-flash reduction, and focus-loss pause; values sanitize/apply to correct buses/presentation and settings persistence reports failures truthfully | `milestone_6_persistence_settings`; `milestone_6_presentation`; `milestone_6_game_run` | **Passed in cumulative automation** |
+| Save version 1 supplies defaults for missing optional fields, filters/uniquifies stable IDs, round-trips atomically through an injected path, recovers malformed/wrong-root data in memory, rejects future-version writes, and resets only the configured profile path | `milestone_6_persistence_settings` | **Passed in cumulative automation** |
+| Unlock rules are exactly `first_completed_run_zoey`, `first_elite_defeat_hacker_deck`, `first_extraction_gang_hideout`, and `first_victory_rex`; development/test access remains 3 crew/9 equipment/4 cards; no permanent statistical bonus is serialized or applied | `milestone_6_persistence_settings`; `milestone_6_presentation`; `milestone_6_game_run` | **Passed in cumulative automation** |
+| Audio catalogue has district and boss music plus every required SFX category, stable Music/SFX buses, deterministic generated waveforms, boss transition/layer, and wired gameplay/UI cues without gameplay-stream consumption | `milestone_6_audio_tutorial`; `milestone_6_game_run` | **Passed in cumulative automation** |
+| Seven contextual prompts are typed, stable-priority, queued once per run, nonmodal, written rather than colour-only, and triggered for controls, coins, interventions, equipment, cards, extraction, and boss | `milestone_6_audio_tutorial`; `milestone_6_game_run` | **Passed in cumulative automation** |
+| HUD/menu/settings/summary/boss/tutorial/combo/intervention layouts remain contained and readable at native 1280×720 and representative 1920×1080/2560×1440 viewports, including long summary copy | `milestone_6_presentation` | **Automated bounds passed; manual visual inspection pending** |
+| Random schema version remains 1; the exact seven streams, stable filtering/sorting, same-seed replay, independent gameplay streams, and cosmetic isolation remain intact; M6 scheduling, persistence, settings, cadence, tutorials, audio, and presentation introduce no unseeded gameplay random call | preserved M3–M5 deterministic suites; `milestone_6_game_run`; static scan | **Passed in cumulative automation** |
+| All accepted equipment, synergy, status, reward, cooling, extraction/boss precedence, finite card, route-placement/effect, inventory drag, coin, Hydrant, Help, display, mouse/touch/keyboard, and restart contracts remain green | all 15 accepted Milestone 0–5 suites in cumulative runner | **Passed; accepted 188/188 baseline remained green** |
+
+#### M6 suite inventory and cumulative gate
+
+| Suite | Authored tests | Primary focus | Final result |
+| --- | ---: | --- | --- |
+| `milestone_6_runtime_systems` | 6 | lifecycle, summary extension, combo, cadence | **Passed** |
+| `milestone_6_call_backup` | 6 | authority, lifetime, rollback, cooldown/charges, cleanup | **Passed** |
+| `milestone_6_combat_content` | 9 | roster, crew/basic/elite/boss tuning, encounters, projectile/runtime resistance | **Passed** |
+| `milestone_6_persistence_settings` | 7 | defaults, version/corruption, atomic save/reset, unlocks, settings | **Passed** |
+| `milestone_6_audio_tutorial` | 6 | audio catalogue/generation/controller and contextual tutorials | **Passed** |
+| `milestone_6_presentation` | 9 | access/settings/summary/text cues, 720p/1080p/1440p containment, screen shake | **Passed** |
+| `milestone_6_game_run` | 13 | composed menu/run/intervention/pause/boss/outcome/summary/restart/spawn-staging integrations | **Passed** |
+| **Milestone 6 addition** | **56** | Seven suites | **Passed** |
+| **Cumulative result** | **244** | 188 accepted M0–M5 tests plus 56 M6 tests across 22 suites | **3,234 assertions; 0 failed; 0 skipped** |
+
+The final automated gate is `res://tests/run_milestone_6_cumulative.gd`. Godot 4.7 executed all 15 accepted suites followed by all seven M6 suites and exited 0 with **244/244 tests, 3,234 assertions, 0 failed, and 0 skipped across 22 suites**. The configured headless main-scene boot also opened `/GameRun` cleanly with no parser/runtime warnings, errors, leaked objects, or leaked resources. The cumulative single-process runner still printed the inherited/accepted shutdown diagnostic of **48 ObjectDB instances and 4 resources in use**; focused and long-form diagnostic runners also emitted shutdown-object warnings. Re-auditing runner-only cleanup remains a next-session TODO and these diagnostics must not be hidden or confused with the clean configured-project boot.
+
+#### Configured-project, representative-run, and interaction matrix
+
+- [x] Launch the configured Godot 4.7 project headlessly into `/GameRun` and inspect fresh startup output. The configured main scene boot completed with no parser/runtime warning, error, leaked object, or leaked resource.
+- [ ] In an interactive configured-project session, confirm the main menu appears before gameplay draws, start a run, and exercise the changed input/presentation paths below.
+- [ ] Complete a representative **8–12 minute Victory** run: select a crew member, decline extraction, reach the boss through ordinary safe-boundary progression, exercise combo/charge/summon/area/enrage/anti-lock behaviors, defeat The Viper, observe victory sequence/music transition, and validate every summary ledger field.
+- [ ] Complete a representative **8–12 minute Extracted** run: accept an authored extraction window, confirm no boss bypass/state corruption, settle pending base coins, preserve secured Scrap, and validate the extracted summary.
+- [ ] Complete a representative **8–12 minute Defeated** run: allow all permanent crew to become incapacitated through ordinary combat, confirm temporary allies cannot replace the crew result, settle pending base coins, and validate the defeated summary. If debug acceleration is used for a separate cleanup check, label it as debug rather than representative gameplay.
+- [ ] Exercise Jax, Zoey, and Rex and record visible/mechanical distinctions: Jax environmental knockback, Zoey speed/cooldown plus an authored Tech/Shock build, and Rex resilience plus elite/boss damage.
+- [ ] Exercise Street Punk punch, Bat Thug slow heavy/high-knockback swing, Bottle Thrower spacing/readable projectile, Viper Enforcer armour/heavy charge/reward, and every Viper phase/telegraph/summon/enrage behavior.
+- [ ] Exercise Hydrant, Call Backup, and Subway from mouse/touch/keyboard paths; include valid use, cooling/active/exhausted/invalid-state/no-target paths, Call Backup expiry and ally defeat, and proof that every rejection leaves charges/cooldown/Heat/Night Pressure/route/actors/streams unchanged.
+- [ ] Verify at least three viable equipment/synergy strategies across the representative paths, preserving all nine catalogue entries, active/backpack behavior, reward drag/Confirm, Skip Gear, statuses, and bridge choices.
+- [ ] Trigger all seven tutorials naturally without developer explanation; confirm their text is understandable, dismissible/nonmodal, once-per-run, and does not obscure required combat or interaction targets.
+- [ ] Exercise every settings control, pause/resume with Space and visible Pause Menu, focus-loss behavior inside and outside unskippable transitions, application of audio/screen-shake/damage-number/hit-flash settings, and persistence after process restart.
+- [ ] Exercise missing clean save, ordinary round trip, missing optional fields, malformed JSON, wrong-root JSON, future version/read-only rejection, and development reset. Safeguard any real production profile; test paths must remain injected/isolated. Confirm no active-run state or permanent stat bonus is saved.
+- [ ] Validate the complete summary for Victory, Extracted, and Defeated, including exact seed/schema, eligible duration, maximum Heat, final Night Pressure, enemy/elite/boss counts/result, coins/manual/streak, secured Scrap, highest combo, equipment build, and active synergies; click Restart Run and Return to Main Menu.
+- [ ] Repeat same-seed and new-seed restarts and confirm no stale run, actor, boss, projectile, telegraph, backup, intervention, combo, audio layer, tutorial, modal, route, random-stream, card, equipment, or save state.
+- [ ] Preserve Help, sound unlock, fullscreen/windowed, `F1`, `F2`, cards, inventory drag, Hydrant, coins, extraction, and existing keyboard/touch/mouse behavior.
+
+#### Cadence measurement procedure
+
+A fixed-seed technical probe (`6062026`) using Rex with starter equipment only reached the boss at 584.983 eligible seconds and naturally ended **Defeated** at 589.517 eligible seconds (9m49.5s). Its cadence snapshot was: ambient 47 opportunities, 12.446-second average, 9 violations, last gap 8.150; strategic 13 opportunities, 44.999-second average, 8 violations, last gap 82.650; major 3 opportunities, 194.994-second average, 3 violations, last gap 181.300. This is deterministic technical evidence, not a representative manual run, owner validation, or cadence acceptance; the individual violations remain next-session TODOs even where an average falls inside a target band.
+
+- [ ] Record the `RunCadenceTracker` snapshot from at least one representative ordinary run, using only `RunDirector.run_elapsed_seconds`/eligible active time rather than wall-clock time.
+- [ ] Confirm ambient optional opportunities are approximately 10–20 eligible active seconds apart. Coin **presentation** may be ambient; coin collection remains optional and must not be relabelled as strategic.
+- [ ] Confirm meaningful strategic decisions are approximately 30–60 eligible active seconds apart and correspond to accepted reward, equipment/card, or shop opportunities rather than repeated/rejected UI actions.
+- [ ] Confirm major risk decisions are approximately 120–180 eligible active seconds apart and correspond to extraction/boss-risk opportunities.
+- [ ] Exclude pause, reward/card/equipment/shop modals, introductions, extraction/boss/victory transitions, and every other ineligible period. Record early/late violations honestly rather than averaging them away.
+- [ ] Ignore all coin clusters during a representative segment and confirm every cluster still settles its full base value, manual collection remains only a modest capped bonus, and ignoring coins does not make the automatic run substantially nonviable.
+- [ ] Confirm coin prompts and hit areas do not obscure combat, require precision clicking, or interrupt automatic action.
+
+#### Resolution, export, runtime, and visual matrix
+
+- [ ] Inspect the HUD, main/pause/settings menus, three interventions, tutorial, equipment/cards, boss bar/telegraphs, and long summary at **1280×720**; record any overlap, clipping, colour-only communication, or illegible text.
+- [ ] Repeat containment/readability inspection at representative **1920×1080** and **2560×1440** presentation sizes.
+- [ ] Produce a fresh Windows release export at `build/milestone_6/windows/NeonLoop.exe` and a fresh Web release export at `build/milestone_6/web/index.html`; stale `build/desktop` or `build/web` output is not evidence.
+- [ ] Launch the exported Windows runtime, confirm `/GameRun`/main-menu startup, exercise a representative runtime path, exit cleanly, and inspect fresh console/runtime output.
+- [ ] Serve the fresh Web export locally; unlock sound; exercise keyboard, real pointer, and touch-equivalent paths for menus, interventions, Help, equipment/inventory drag, cards, settings, fullscreen, pause, boss, summary, and restart; inspect the final warning/error console.
+- [ ] Capture and inspect `res://docs/screenshots/milestone_6_vertical_slice.png`, preferably showing an active/enraged Viper, readable named telegraph and ground marker, dedicated boss bar, three labelled interventions, crew/build state, and contained native HUD.
+- [ ] Fix every M6-introduced parser error, runtime error, warning, failed/skipped test, export error, and browser-console warning/error. Record any inherited tooling-only diagnostic separately and do not suppress it.
+
+#### Technical-result boundary and owner validation
+
+Automated resource/runtime tests can establish typed authority, exact authored values, immutability, deterministic ordering, state cleanup, and layout bounds. They cannot decide whether the three crew members feel sufficiently distinct, whether boss telegraphs are readable in ordinary play, whether three builds are meaningfully viable, whether tutorials communicate the game without explanation, or whether 8–12 minute cadence is enjoyable. Those observations must remain **Pending owner validation** until the project owner records them; this plan does not invent a passing human result or reopen the accepted Milestone 1 Human Validation Gate.
+
+Current honest limitations while final verification is pending:
+
+- District/boss music and the SFX catalogue are deterministic generated prototype audio, not commissioned production recordings.
+- Actor art, icons, hit effects, telegraph markers, and animation are finished prototype presentation intended to be replaceable; final aesthetic quality is an owner judgment.
+- A technical Rex starter-only Defeated trace reached 589.517 eligible seconds, but its cadence snapshot still contains 9 ambient, 8 strategic, and 3 major target-band violations. Representative manual cadence quality remains pending.
+- Representative manual Victory, Extracted, and Defeated path timings; crew/enemy/boss/intervention feel and readability; three viable builds; tutorial comprehension; settings/save restart checks; resolution inspection; final exports; browser console; and visual evidence have no passing record in this section yet.
+- Cumulative automation passed, but the cumulative single-process runner retained 48 ObjectDB instances and 4 resources at shutdown, and focused/long-form diagnostic runners emitted shutdown-object warnings. Runner cleanup remains a TODO even though the configured `/GameRun` headless boot was clean.
+- Persistence is deliberately profile/settings/unlock-only. Mid-run saving/replay, permanent stat bonuses, advanced progression, a tenth equipment item, and a fifth card remain unimplemented and out of scope.
+- Reproduction remains limited to the same supported build, content revision, random-schema version, seed, ordered decisions/effect resolutions, and authoritative timing context; cross-version or bitwise physics replay is not promised.
+
+**Milestone 6 automated result: Passed — 244/244 tests and 3,234 assertions, 0 failed, 0 skipped. Full technical acceptance: Pending next-session manual/export/evidence TODOs and runner-cleanup audit.** Stop after that Milestone 6 gate; no post-M6 expansion or publication is authorized.

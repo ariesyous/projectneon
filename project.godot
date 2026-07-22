@@ -18,6 +18,8 @@ config/icon="res://icon.svg"
 [autoload]
 
 _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
+SaveService="*res://scripts/persistence/profile_save_service.gd"
+AppState="*res://scripts/app/app_state.gd"
 
 [display]
 

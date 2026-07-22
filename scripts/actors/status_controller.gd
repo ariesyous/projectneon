@@ -13,6 +13,9 @@ const BLEED_DEFINITION: StatusEffectDefinition = preload(
 const SHOCK_DEFINITION: StatusEffectDefinition = preload(
 	"res://data/equipment/shock_status.tres"
 )
+const WET_DEFINITION: StatusEffectDefinition = preload(
+	"res://data/effects/wet_status.tres"
+)
 
 @export var status_definitions: Array[StatusEffectDefinition] = []
 
@@ -23,12 +26,16 @@ var _tick_remaining_by_id: Dictionary[StringName, float] = {}
 
 
 func _init() -> void:
-	var defaults: Array[StatusEffectDefinition] = [BLEED_DEFINITION, SHOCK_DEFINITION]
-	status_definitions = defaults
+	status_definitions = []
+	_ensure_default_definitions()
 	_rebuild_index()
 
 
 func _ready() -> void:
+	# Authored actor scenes may explicitly list older statuses. Merge the
+	# versioned shared defaults by stable ID so future-compatible markers such
+	# as Wet cannot disappear when an existing scene is loaded.
+	_ensure_default_definitions()
 	_rebuild_index()
 
 
@@ -131,6 +138,21 @@ func _rebuild_index() -> void:
 		if definition == null or definition.id == &"" or _definition_by_id.has(definition.id):
 			continue
 		_definition_by_id[definition.id] = definition
+
+
+func _ensure_default_definitions() -> void:
+	var existing_ids: Dictionary[StringName, bool] = {}
+	for definition: StatusEffectDefinition in status_definitions:
+		if definition != null and definition.id != &"":
+			existing_ids[definition.id] = true
+	for definition: StatusEffectDefinition in [
+		BLEED_DEFINITION,
+		SHOCK_DEFINITION,
+		WET_DEFINITION,
+	]:
+		if not existing_ids.has(definition.id):
+			status_definitions.append(definition)
+			existing_ids[definition.id] = true
 
 
 func _clear_status(status_id: StringName) -> void:

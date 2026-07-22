@@ -107,6 +107,13 @@ func request_activation() -> bool:
 		)
 		if applied_damage > 0:
 			affected_count += 1
+			if target.can_be_targeted():
+				target.apply_status(
+					&"wet",
+					1,
+					_get_tuning().wet_duration_seconds,
+					1
+				)
 
 	activation_resolved.emit(
 		_activation_origin,

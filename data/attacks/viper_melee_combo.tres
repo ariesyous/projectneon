@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AttackDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/attack_definition.gd" id="1_attack"]
+
+[resource]
+script = ExtResource("1_attack")
+id = &"viper_melee_combo"
+display_name = "Viper Three-Hit Combo"
+delivery_kind = 0
+impact_kind = 2
+damage_multiplier = 1.0
+windup_time = 0.24
+active_time = 0.16
+recovery_time = 0.42
+cooldown_time = 0.42
+attack_range = 62.0
+knockback_force = 95.0
+knockback_duration = 0.12
+hit_stop_duration = 0.055
+combo_hit_count = 3

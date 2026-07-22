@@ -12,6 +12,7 @@ extends Resource
 @export_range(0.0, 2.0, 0.01) var knockback_duration: float = 0.30
 @export_range(-1.0, 1.0, 0.01) var knockback_direction_x: float = -1.0
 @export_range(0.0, 120.0, 0.1) var cooldown_seconds: float = 8.0
+@export_range(0.05, 60.0, 0.05) var wet_duration_seconds: float = 4.0
 @export_range(0.0, 5.0, 0.01) var water_duration: float = 0.55
 @export_range(0.0, 5.0, 0.01) var impact_duration: float = 0.28
 @export_range(0.0, 5.0, 0.01) var rejection_duration: float = 0.50

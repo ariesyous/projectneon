@@ -5,28 +5,61 @@ extends Node
 ## forwards intent, and contains no duplicated run/combat/reward calculations.
 
 const HYDRANT_COIN_EXCLUSION_RADIUS: float = 76.0
+const LOADOUT_DEFINITION: RunLoadoutDefinition = preload(
+	"res://data/run/milestone_6_starting_loadout.tres"
+)
+const JAX_DEFINITION: ActorDefinition = preload("res://data/crew/jax.tres")
+const ZOEY_DEFINITION: ActorDefinition = preload("res://data/crew/zoey.tres")
+const REX_DEFINITION: ActorDefinition = preload("res://data/crew/rex.tres")
+const BOSS_TELEGRAPH_MINIMUM_SECONDS: float = 0.45
+
+@export var loadout_definition: RunLoadoutDefinition = LOADOUT_DEFINITION
+var app_state_override: NeonAppState
 
 @onready var run_director: RunDirector = $RunDirector
 @onready var patrol_controller: PatrolController = $PatrolController
 @onready var combat_director: CombatDirector = $CombatDirector
 @onready var reward_director: RewardDirector = $RewardDirector
 @onready var fire_hydrant_controller: FireHydrantController = $FireHydrantController
+@onready var call_backup_controller: CallBackupController = $CallBackupController
+@onready var combo_tracker: ComboTracker = $ComboTracker
+@onready var cadence_tracker: RunCadenceTracker = $RunCadenceTracker
 @onready var cooling_controller: RunCoolingController = $RunCoolingController
 @onready var encounter_controller: RunEncounterController = $RunEncounterController
 @onready var run_flow_controller: RunFlowController = $RunFlowController
 @onready var card_system: CardSystem = $CardSystem
 @onready var synergy_system: SynergySystem = $SynergySystem
 @onready var display_controller: DisplayController = $DisplayController
+@onready var settings_controller: ApplicationSettingsController = $ApplicationSettingsController
+@onready var tutorial_controller: TutorialPromptController = $TutorialPromptController
+@onready var screen_shake_controller: ScreenShakeController = $ScreenShakeController
+@onready var audio_controller: AudioPresentationController = $AudioPresentationController
 @onready var downtown_loop: DowntownLoop = $DowntownLoop
 @onready var game_hud: GameHUD = $GameHUD
+@onready var vertical_slice_overlay: VerticalSliceOverlay = $VerticalSliceOverlay
 @onready var debug_overlay: DebugOverlay = $DebugOverlay
 @onready var fire_hydrant: FireHydrant = $DowntownLoop/Interactables/FireHydrant
 @onready var combat_feedback: CombatFeedback = $DowntownLoop/EffectsContainer/CombatFeedback
+@onready var app_state: NeonAppState = (
+	app_state_override
+	if app_state_override != null
+	else get_node_or_null("/root/AppState") as NeonAppState
+)
 
 var _last_coin_status: String = "AUTO = FULL VALUE"
 var _hydrant_feedback_override: String = ""
 var _hydrant_feedback_remaining: float = 0.0
 var _web_audio_unlocked: bool = false
+var _active_content_access: RunContentAccessSnapshot
+var _selected_crew_actor: ActorController
+var _boss_actor: ActorController
+var _boss_phase_text: String = "PHASE 1"
+var _boss_telegraph_text: String = ""
+var _boss_telegraph_remaining: float = 0.0
+var _tutorial_remaining: float = 0.0
+var _last_recorded_summary: RunSummaryRecord
+var _strategic_reward_encounters: Dictionary[int, bool] = {}
+var _hit_flash_reduction: float = 0.0
 
 
 func _ready() -> void:
@@ -36,20 +69,33 @@ func _ready() -> void:
 		run_flow_controller.force_advance_pressure_to_next_threshold
 	)
 	debug_overlay.force_defeat_requested.connect(run_flow_controller.force_defeat)
-	debug_overlay.restart_same_seed_requested.connect(run_flow_controller.restart_same_seed)
+	debug_overlay.restart_same_seed_requested.connect(_restart_same_seed)
 	debug_overlay.set_lane_visibility(downtown_loop.are_debug_lanes_visible())
 
 	combat_director.actor_registered.connect(_on_actor_registered)
 	combat_director.actor_died.connect(_on_actor_died)
+	combat_director.actor_incapacitated.connect(_on_actor_incapacitated)
 	combat_director.hit_landed.connect(_on_hit_landed)
 	combat_director.environmental_hit_landed.connect(_on_environmental_hit_landed)
+	combat_director.environmental_collision_landed.connect(_on_environmental_collision_landed)
+	combat_director.attack_telegraphed.connect(_on_attack_telegraphed)
+	combat_director.boss_phase_changed.connect(_on_boss_phase_changed)
 	combat_director.crew_status_changed.connect(_on_crew_status_changed)
+	encounter_controller.boss_encounter_started.connect(_on_boss_encounter_started)
+	encounter_controller.boss_defeated.connect(_on_boss_defeated)
+	encounter_controller.coin_cluster_presented.connect(_on_coin_cluster_presented)
 	reward_director.coins_changed.connect(_on_coins_changed)
 	reward_director.scrap_changed.connect(_on_scrap_changed)
 	reward_director.streak_changed.connect(_on_streak_changed)
 	reward_director.cluster_resolved.connect(_on_cluster_resolved)
 	reward_director.equipment_choice_resolved.connect(_on_equipment_choice_resolved)
-	run_director.run_summary_ready.connect(game_hud.present_run_summary)
+	cooling_controller.cooling_applied.connect(_on_cooling_audio_applied)
+	run_director.run_started.connect(_on_run_started)
+	run_director.run_state_changed.connect(_on_run_state_changed)
+	run_director.run_summary_ready.connect(_on_run_summary_ready)
+	run_director.heat_tier_changed.connect(_on_heat_tier_changed)
+	run_director.extraction_became_available.connect(_on_extraction_became_available)
+	run_director.boss_started.connect(_on_boss_intro_started)
 	synergy_system.build_changed.connect(_on_build_changed)
 	synergy_system.synergy_activated.connect(_on_synergy_activated)
 	synergy_system.synergy_deactivated.connect(_on_synergy_deactivated)
@@ -60,14 +106,15 @@ func _ready() -> void:
 	fire_hydrant.activation_requested.connect(_request_hydrant_activation)
 
 	game_hud.hydrant_activation_requested.connect(_request_hydrant_activation)
+	game_hud.backup_activation_requested.connect(_request_backup_activation)
 	game_hud.hydrant_preview_requested.connect(fire_hydrant.set_external_preview_visible)
 	game_hud.fullscreen_requested.connect(display_controller.toggle_fullscreen)
 	game_hud.primary_action_requested.connect(_on_primary_action_requested)
 	game_hud.extraction_requested.connect(run_flow_controller.confirm_extraction)
 	game_hud.subway_reroute_requested.connect(run_flow_controller.request_subway_reroute)
 	game_hud.shop_cooling_requested.connect(run_flow_controller.request_shop_cooling)
-	game_hud.restart_same_seed_requested.connect(run_flow_controller.restart_same_seed)
-	game_hud.restart_new_seed_requested.connect(run_flow_controller.restart_new_seed)
+	game_hud.restart_same_seed_requested.connect(_restart_same_seed)
+	game_hud.restart_new_seed_requested.connect(_restart_new_seed)
 	game_hud.equipment_acquisition_requested.connect(_on_equipment_acquisition_requested)
 	game_hud.equipment_reward_decline_requested.connect(_on_equipment_reward_decline_requested)
 	game_hud.inventory_swap_requested.connect(_on_inventory_swap_requested)
@@ -90,6 +137,25 @@ func _ready() -> void:
 	display_controller.landscape_state_changed.connect(game_hud.present_landscape_state)
 	display_controller.safe_area_changed.connect(game_hud.apply_safe_area)
 
+	call_backup_controller.state_changed.connect(game_hud.present_backup_state)
+	call_backup_controller.activation_accepted.connect(_on_backup_activation_accepted)
+	call_backup_controller.activation_rejected.connect(_on_backup_activation_rejected)
+	call_backup_controller.activation_ended.connect(_on_backup_activation_ended)
+	combo_tracker.snapshot_changed.connect(_on_combo_snapshot_changed)
+	tutorial_controller.prompt_presented.connect(_on_tutorial_prompt_presented)
+	tutorial_controller.prompt_dismissed.connect(_on_tutorial_prompt_dismissed)
+	settings_controller.focus_pause_intent_requested.connect(_on_focus_pause_intent_requested)
+	vertical_slice_overlay.start_run_requested.connect(_on_start_run_requested)
+	vertical_slice_overlay.resume_requested.connect(_resume_from_pause)
+	vertical_slice_overlay.restart_same_seed_requested.connect(_restart_same_seed)
+	vertical_slice_overlay.restart_new_seed_requested.connect(_restart_new_seed)
+	vertical_slice_overlay.return_to_main_menu_requested.connect(_return_to_main_menu)
+	vertical_slice_overlay.settings_apply_requested.connect(_on_settings_apply_requested)
+	vertical_slice_overlay.reset_save_requested.connect(_on_reset_save_requested)
+	vertical_slice_overlay.ui_confirmed.connect(_on_ui_confirmed)
+	vertical_slice_overlay.ui_hovered.connect(_on_ui_hovered)
+	card_system.card_placed.connect(_on_card_placed)
+
 	fire_hydrant_controller.configure(combat_director, fire_hydrant.global_position)
 	combat_director.configure_build_system(synergy_system, run_director.get_random_streams())
 	cooling_controller.configure(run_director, reward_director, patrol_controller)
@@ -107,6 +173,11 @@ func _ready() -> void:
 		$DowntownLoop/SpawnPoints/LeftSpawn,
 		$DowntownLoop/SpawnPoints/RightSpawn
 	)
+	call_backup_controller.configure(
+		_create_backup_ally,
+		_confirm_backup_ally_registered,
+		_remove_backup_ally
+	)
 	run_flow_controller.configure(
 		run_director,
 		patrol_controller,
@@ -116,52 +187,618 @@ func _ready() -> void:
 		combat_director,
 		fire_hydrant_controller,
 		synergy_system,
-		card_system
+		card_system,
+		call_backup_controller,
+		combo_tracker,
+		cadence_tracker
 	)
 	run_flow_controller.flow_status_changed.connect(_on_flow_status_changed)
 	run_flow_controller.action_feedback.connect(_on_action_feedback)
 	run_flow_controller.equipment_reward_ready.connect(_on_equipment_reward_ready)
 	run_flow_controller.card_reward_ready.connect(_on_card_reward_ready)
+	run_flow_controller.reward_ready.connect(_on_standard_reward_ready)
 	run_flow_controller.card_planning_changed.connect(
 		game_hud.present_district_card_planning_state
 	)
 
 	_web_audio_unlocked = not OS.has_feature("web")
 	game_hud.present_audio_unlock_required(not _web_audio_unlocked)
+	_route_existing_audio_to_sound_effects_bus()
+	if app_state != null:
+		app_state.settings_changed.connect(_apply_settings)
+		app_state.unlocks_granted.connect(_on_unlocks_granted)
+		app_state.persistence_rejected.connect(_on_persistence_rejected)
+		_apply_settings(app_state.profile.settings)
+	else:
+		_apply_settings(GameSettingsData.create_default())
 	display_controller.refresh_state(true)
 	_refresh_hydrant_presentation()
+	game_hud.present_backup_state(call_backup_controller.get_snapshot())
 	_on_build_changed(synergy_system.get_snapshot())
-	run_flow_controller.start_initial_run()
+	game_hud.visible = false
+	vertical_slice_overlay.set_development_reset_visible(
+		app_state != null and app_state.development_full_content_access
+	)
+	_show_main_menu()
 	_refresh_combat_presentation()
 
 
 func _process(delta: float) -> void:
-	if _hydrant_feedback_remaining <= 0.0:
-		return
-	_hydrant_feedback_remaining = maxf(0.0, _hydrant_feedback_remaining - maxf(delta, 0.0))
-	if _hydrant_feedback_remaining <= 0.0:
-		_hydrant_feedback_override = ""
-		_refresh_hydrant_presentation()
+	var safe_delta: float = maxf(delta, 0.0)
+	var presentation_delta: float = (
+		0.0 if run_director.current_state == RunDirector.RunState.PAUSED else safe_delta
+	)
+	if RunDirector.is_eligible_active_state(run_director.current_state):
+		combo_tracker.step_eligible_time(safe_delta)
+		call_backup_controller.step_eligible_time(safe_delta)
+	if _hydrant_feedback_remaining > 0.0:
+		_hydrant_feedback_remaining = maxf(
+			0.0,
+			_hydrant_feedback_remaining - presentation_delta
+		)
+		if _hydrant_feedback_remaining <= 0.0:
+			_hydrant_feedback_override = ""
+			_refresh_hydrant_presentation()
+	if _tutorial_remaining > 0.0:
+		_tutorial_remaining = maxf(_tutorial_remaining - presentation_delta, 0.0)
+		if _tutorial_remaining <= 0.0:
+			tutorial_controller.dismiss_current()
+	if _boss_telegraph_remaining > 0.0:
+		_boss_telegraph_remaining = maxf(
+			_boss_telegraph_remaining - presentation_delta,
+			0.0
+		)
+		if _boss_telegraph_remaining <= 0.0:
+			_boss_telegraph_text = ""
+	_refresh_boss_presentation()
 
 
 func _input(event: InputEvent) -> void:
 	if not _web_audio_unlocked and OS.has_feature("web") and _is_audio_unlock_gesture(event):
 		_web_audio_unlocked = true
 		combat_feedback.prime_audio()
+		audio_controller.stop_all_audio()
+		audio_controller.start_district_music()
+		audio_controller.set_boss_music_active(
+			run_director.current_state in [
+				RunDirector.RunState.BOSS_INTRO,
+				RunDirector.RunState.BOSS_ACTIVE,
+			]
+		)
 		game_hud.present_audio_unlocked()
 
 	var key_event: InputEventKey = event as InputEventKey
 	if key_event == null or not key_event.pressed or key_event.echo:
 		return
-	if key_event.keycode == KEY_SPACE:
-		run_director.toggle_pause()
+	if key_event.keycode == KEY_ESCAPE:
+		if display_controller.is_fullscreen():
+			return
+		_handle_escape_input()
+		get_viewport().set_input_as_handled()
+	elif key_event.keycode == KEY_SPACE:
+		if (
+			not vertical_slice_overlay.has_blocking_modal()
+			or (
+				run_director.current_state == RunDirector.RunState.PAUSED
+				and vertical_slice_overlay.is_pause_visible()
+			)
+		):
+			_toggle_pause_from_input()
 		get_viewport().set_input_as_handled()
 	elif key_event.keycode == KEY_E and run_director.current_state == RunDirector.RunState.EXTRACTION_AVAILABLE:
+		if vertical_slice_overlay.has_blocking_modal():
+			return
 		if card_system.is_planning_active():
 			_on_action_feedback("CLOSE DISTRICT CARD PLANNING BEFORE EXTRACTION")
 		else:
 			run_flow_controller.confirm_extraction()
 		get_viewport().set_input_as_handled()
+	elif key_event.keycode in [KEY_1, KEY_KP_1]:
+		if not vertical_slice_overlay.has_blocking_modal():
+			_request_hydrant_activation()
+		get_viewport().set_input_as_handled()
+	elif key_event.keycode in [KEY_2, KEY_KP_2]:
+		if not vertical_slice_overlay.has_blocking_modal():
+			_request_backup_activation()
+		get_viewport().set_input_as_handled()
+	elif key_event.keycode in [KEY_3, KEY_KP_3]:
+		if not vertical_slice_overlay.has_blocking_modal():
+			run_flow_controller.request_subway_reroute()
+		get_viewport().set_input_as_handled()
+	elif key_event.keycode == KEY_TAB:
+		if not vertical_slice_overlay.has_blocking_modal():
+			game_hud.toggle_build_details()
+		get_viewport().set_input_as_handled()
+
+
+func _show_main_menu() -> void:
+	game_hud.visible = false
+	vertical_slice_overlay.present_settings(_current_settings_dictionary())
+	vertical_slice_overlay.show_main_menu(_build_crew_menu_entries(), _profile_status_text())
+	audio_controller.set_boss_music_active(false)
+	screen_shake_controller.reset_presentation()
+	vertical_slice_overlay.hide_boss()
+	vertical_slice_overlay.hide_tutorial()
+
+
+func get_active_content_access_snapshot() -> RunContentAccessSnapshot:
+	return _active_content_access.duplicate_snapshot() if _active_content_access != null else null
+
+
+func get_active_content_access_identity() -> int:
+	return _active_content_access.get_instance_id() if _active_content_access != null else 0
+
+
+func get_selected_crew_actor() -> ActorController:
+	return _selected_crew_actor
+
+
+func _build_crew_menu_entries() -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	var accessible_ids: Array[StringName] = (
+		app_state.get_accessible_crew_ids()
+		if app_state != null
+		else [&"jax", &"zoey", &"rex"]
+	)
+	for definition: ActorDefinition in [JAX_DEFINITION, ZOEY_DEFINITION, REX_DEFINITION]:
+		var archetype: String = {
+			&"jax": "Brawler",
+			&"zoey": "Tech Fighter",
+			&"rex": "Bruiser",
+		}.get(definition.id, "Crew")
+		var summary: String = {
+			&"jax": "High knockback, medium health, short reach, and powerful wall collisions.",
+			&"zoey": "Fast attacks, lower health, shorter intervention cooldowns, and Shock builds.",
+			&"rex": "High health, slow heavy attacks, stagger resistance, and bonus elite/boss damage.",
+		}.get(definition.id, "Automatic street fighter.")
+		result.append({
+			"id": definition.id,
+			"display_name": definition.display_name,
+			"archetype": archetype,
+			"summary": summary,
+			"trait_text": "No permanent statistical bonuses are applied.",
+			"unlocked": accessible_ids.has(definition.id),
+			"unlock_hint": "Complete runs to unlock this crew member.",
+		})
+	return result
+
+
+func _profile_status_text() -> String:
+	if app_state == null:
+		return "PROFILE UNAVAILABLE - SAFE DEFAULTS ACTIVE"
+	var service: ProfileSaveService = app_state.get_save_service()
+	var load_status: String = (
+		String(service.last_load_status).replace("_", " ").to_upper()
+		if service != null
+		else "DEFAULTS"
+	)
+	var access_text: String = (
+		"DEVELOPMENT CATALOGUE ACCESS"
+		if app_state.development_full_content_access
+		else "VERSIONED UNLOCK PROFILE"
+	)
+	return "SAVE V%d - %s - %s" % [app_state.profile.save_version, load_status, access_text]
+
+
+func _on_start_run_requested(crew_id: StringName) -> void:
+	var accessible_ids: Array[StringName] = (
+		app_state.get_accessible_crew_ids()
+		if app_state != null
+		else [&"jax", &"zoey", &"rex"]
+	)
+	if crew_id not in accessible_ids or crew_id not in loadout_definition.selectable_crew_ids:
+		vertical_slice_overlay.present_profile_status("CREW SELECTION REJECTED")
+		return
+	_active_content_access = _capture_content_access(crew_id)
+	if not _apply_content_access(_active_content_access):
+		vertical_slice_overlay.present_profile_status("RUN CONTENT COULD NOT INITIALIZE")
+		return
+	_prepare_presentation_for_run()
+	run_flow_controller.start_initial_run()
+
+
+func _capture_content_access(crew_id: StringName) -> RunContentAccessSnapshot:
+	return RunContentAccessSnapshot.create(
+		crew_id,
+		app_state.get_accessible_equipment_ids() if app_state != null else [],
+		app_state.get_accessible_card_ids() if app_state != null else [],
+		app_state.profile.save_version if app_state != null else PersistentProfileData.SAVE_VERSION,
+		app_state.development_full_content_access if app_state != null else true
+	)
+
+
+func _apply_content_access(snapshot: RunContentAccessSnapshot) -> bool:
+	if snapshot == null:
+		return false
+	var crew_definition: ActorDefinition = _crew_definition_by_id(snapshot.selected_crew_id)
+	if crew_definition == null or crew_definition.starting_equipment.size() != 1:
+		return false
+	if crew_definition.starting_equipment[0].id not in snapshot.allowed_equipment_ids:
+		return false
+	card_system.configure_run_access(snapshot.allowed_card_ids)
+	reward_director.configure_equipment_access(snapshot.allowed_equipment_ids)
+	return (
+		run_flow_controller.configure_starting_equipment(crew_definition.starting_equipment)
+		and encounter_controller.configure_starting_crew([snapshot.selected_crew_id])
+	)
+
+
+func _crew_definition_by_id(crew_id: StringName) -> ActorDefinition:
+	for definition: ActorDefinition in [JAX_DEFINITION, ZOEY_DEFINITION, REX_DEFINITION]:
+		if definition.id == crew_id:
+			return definition
+	return null
+
+
+func _prepare_presentation_for_run() -> void:
+	game_hud.visible = true
+	_clear_combat_telegraphs()
+	vertical_slice_overlay.prepare_for_run()
+	vertical_slice_overlay.hide_boss()
+	vertical_slice_overlay.hide_tutorial()
+	_last_recorded_summary = null
+	_selected_crew_actor = null
+	_boss_actor = null
+	_boss_phase_text = "PHASE 1"
+	_boss_telegraph_text = ""
+	_boss_telegraph_remaining = 0.0
+	audio_controller.set_boss_music_active(false)
+	screen_shake_controller.reset_presentation()
+
+
+func _restart_same_seed() -> void:
+	if _active_content_access == null:
+		return
+	if not _apply_content_access(_active_content_access):
+		return
+	_prepare_presentation_for_run()
+	run_flow_controller.restart_same_seed()
+
+
+func _restart_new_seed() -> void:
+	if _active_content_access == null:
+		return
+	_active_content_access = _capture_content_access(_active_content_access.selected_crew_id)
+	if not _apply_content_access(_active_content_access):
+		return
+	_prepare_presentation_for_run()
+	run_flow_controller.restart_new_seed()
+
+
+func _return_to_main_menu() -> void:
+	if not run_flow_controller.return_to_main_menu():
+		return
+	_clear_combat_telegraphs()
+	_active_content_access = null
+	_selected_crew_actor = null
+	_boss_actor = null
+	tutorial_controller.clear_for_run_end()
+	_show_main_menu()
+
+
+func _toggle_pause_from_input() -> void:
+	if run_director.current_state == RunDirector.RunState.PAUSED:
+		_resume_from_pause()
+	elif RunDirector.is_pauseable_state(run_director.current_state):
+		run_director.toggle_pause()
+
+
+func _resume_from_pause() -> void:
+	if run_director.current_state != RunDirector.RunState.PAUSED:
+		return
+	if run_director.is_card_planning_pause_active():
+		_on_action_feedback("CLOSE DISTRICT CARD PLANNING TO RESUME")
+		return
+	if run_director.toggle_pause():
+		vertical_slice_overlay.hide_pause()
+
+
+func _handle_escape_input() -> void:
+	if vertical_slice_overlay.is_settings_visible():
+		if run_director.current_state == RunDirector.RunState.PAUSED:
+			vertical_slice_overlay.show_pause(_current_settings_dictionary())
+		else:
+			_show_main_menu()
+		return
+	if vertical_slice_overlay.is_main_menu_visible() or vertical_slice_overlay.is_summary_visible():
+		return
+	_toggle_pause_from_input()
+
+
+func _on_settings_apply_requested(values: Dictionary) -> void:
+	var settings: GameSettingsData = GameSettingsData.from_dictionary(values)
+	if app_state != null:
+		var saved: bool = app_state.update_settings(settings)
+		if saved:
+			vertical_slice_overlay.present_settings_status(
+				"SETTINGS SAVED - GAMEPLAY AUTHORITY UNCHANGED"
+			)
+		else:
+			vertical_slice_overlay.present_settings(
+				_current_settings_dictionary(),
+				"SETTINGS NOT SAVED - PROFILE IS READ-ONLY OR UNWRITABLE"
+			)
+	else:
+		_apply_settings(settings)
+		vertical_slice_overlay.present_settings_status(
+			"SETTINGS APPLIED FOR THIS SESSION"
+		)
+
+
+func _on_persistence_rejected(reason: StringName) -> void:
+	var readable_reason: String = String(reason).replace("_", " ").to_upper()
+	vertical_slice_overlay.present_profile_status("PROFILE SAVE REJECTED - %s" % readable_reason)
+
+
+func _apply_settings(settings: GameSettingsData) -> void:
+	var safe_settings: GameSettingsData = (
+		settings.sanitized_copy() if settings != null else GameSettingsData.create_default()
+	)
+	settings_controller.apply_settings(safe_settings, get_window())
+	screen_shake_controller.set_intensity(safe_settings.screen_shake_intensity)
+	combat_feedback.set_damage_numbers_enabled(safe_settings.damage_numbers_enabled)
+	_hit_flash_reduction = safe_settings.hit_flash_reduction
+	for actor: ActorController in combat_director.get_live_actors(ActorController.Team.CREW):
+		actor.set_hit_flash_reduction(_hit_flash_reduction)
+	for actor: ActorController in combat_director.get_live_actors(ActorController.Team.ENEMY):
+		actor.set_hit_flash_reduction(_hit_flash_reduction)
+	vertical_slice_overlay.present_settings(safe_settings.to_dictionary())
+	display_controller.refresh_state(true)
+
+
+func _current_settings_dictionary() -> Dictionary:
+	if app_state != null and app_state.profile != null and app_state.profile.settings != null:
+		return app_state.profile.settings.to_dictionary()
+	return settings_controller.current_settings.to_dictionary()
+
+
+func _on_focus_pause_intent_requested(should_pause: bool) -> void:
+	# Focus loss may request a pause, but focus regain never silently resumes a
+	# player who may have stepped away.
+	if (
+		should_pause
+		and run_director.current_state != RunDirector.RunState.PAUSED
+		and RunDirector.is_pauseable_state(run_director.current_state)
+	):
+		run_director.toggle_pause()
+
+
+func _on_reset_save_requested() -> void:
+	if app_state == null or not app_state.development_full_content_access:
+		vertical_slice_overlay.present_profile_status("DEVELOPMENT RESET UNAVAILABLE")
+		return
+	app_state.reset_profile_for_development()
+	_show_main_menu()
+
+
+func _on_unlocks_granted(content_ids: Array[StringName]) -> void:
+	if content_ids.is_empty():
+		return
+	_on_action_feedback("UNLOCKED: %s" % _join_string_names(content_ids))
+
+
+func _join_string_names(values: Array[StringName]) -> String:
+	var text_values: PackedStringArray = PackedStringArray()
+	for value: StringName in values:
+		text_values.append(String(value).replace("_", " ").to_upper())
+	return ", ".join(text_values)
+
+
+func _on_run_started(seed: int, _schema_version: int) -> void:
+	_strategic_reward_encounters.clear()
+	_last_coin_status = "AUTO = FULL VALUE"
+	_boss_actor = null
+	_boss_phase_text = "PHASE 1"
+	_boss_telegraph_text = ""
+	_boss_telegraph_remaining = 0.0
+	tutorial_controller.begin_run(seed)
+	tutorial_controller.request_trigger(&"run_started")
+	audio_controller.set_boss_music_active(false)
+	audio_controller.start_district_music()
+	_refresh_combat_presentation()
+
+
+func _on_run_state_changed(previous_state: int, new_state: int) -> void:
+	_set_combat_telegraphs_suspended(new_state == RunDirector.RunState.PAUSED)
+	if new_state == RunDirector.RunState.PAUSED:
+		if not run_director.is_card_planning_pause_active():
+			vertical_slice_overlay.show_pause(_current_settings_dictionary())
+	elif previous_state == RunDirector.RunState.PAUSED:
+		vertical_slice_overlay.hide_pause()
+	match new_state:
+		RunDirector.RunState.PATROLLING:
+			if not card_system.get_hand().is_empty():
+				tutorial_controller.request_trigger(&"card_planning_available")
+		RunDirector.RunState.ENCOUNTER_ACTIVE:
+			tutorial_controller.request_trigger(&"intervention_available")
+		RunDirector.RunState.BOSS_INTRO:
+			audio_controller.set_boss_music_active(true)
+			audio_controller.play_cue(&"sfx_boss_introduction")
+			tutorial_controller.request_trigger(&"boss_intro")
+		RunDirector.RunState.VICTORY:
+			_clear_combat_telegraphs()
+			audio_controller.set_boss_music_active(false)
+			audio_controller.play_cue(&"sfx_victory")
+		RunDirector.RunState.DEFEAT:
+			_clear_combat_telegraphs()
+			audio_controller.set_boss_music_active(false)
+			audio_controller.play_cue(&"sfx_defeat")
+		RunDirector.RunState.INITIALIZING:
+			audio_controller.set_boss_music_active(false)
+			screen_shake_controller.reset_presentation()
+	if (
+		new_state != RunDirector.RunState.PAUSED
+		and settings_controller.is_focus_pause_intent_active()
+		and RunDirector.is_pauseable_state(new_state)
+	):
+		call_deferred("_apply_latched_focus_pause_if_needed", new_state)
+	_refresh_boss_presentation()
+
+
+func _apply_latched_focus_pause_if_needed(expected_state: int) -> void:
+	if (
+		run_director.current_state == expected_state
+		and settings_controller.is_focus_pause_intent_active()
+		and RunDirector.is_pauseable_state(expected_state)
+	):
+		run_director.toggle_pause()
+
+
+func _on_run_summary_ready(summary: RunSummaryRecord) -> void:
+	game_hud.present_run_summary(summary)
+	vertical_slice_overlay.present_run_summary(summary)
+	tutorial_controller.clear_for_run_end()
+	if app_state != null and summary != _last_recorded_summary:
+		_last_recorded_summary = summary
+		app_state.record_completed_run(_summary_outcome_id(summary.result), summary.elites_defeated)
+
+
+func _summary_outcome_id(result: int) -> StringName:
+	match result:
+		RunDirector.RunResult.VICTORY:
+			return &"victory"
+		RunDirector.RunResult.EXTRACTED:
+			return &"extracted"
+		RunDirector.RunResult.DEFEATED:
+			return &"defeated"
+	return &""
+
+
+func _request_backup_activation() -> void:
+	call_backup_controller.request_activation()
+
+
+func _create_backup_ally(_activation_token: int, ally_index: int) -> Node2D:
+	var lane: int = 0 if ally_index == 0 else 2
+	return encounter_controller.spawn_temporary_ally(&"backup_runner", lane)
+
+
+func _confirm_backup_ally_registered(ally: Node2D) -> bool:
+	var actor: ActorController = ally as ActorController
+	return (
+		actor != null
+		and actor in combat_director.get_live_actors(ActorController.Team.CREW)
+	)
+
+
+func _remove_backup_ally(ally: Node2D, _reason: StringName) -> void:
+	var actor: ActorController = ally as ActorController
+	if actor != null:
+		encounter_controller.remove_temporary_ally(actor)
+
+
+func _on_backup_activation_accepted(
+	_activation_token: int,
+	_allies: Array[Node2D],
+	charges_remaining: int
+) -> void:
+	audio_controller.play_cue(&"sfx_intervention_activation")
+	_on_action_feedback("BACKUP DEPLOYED - %d CHARGE%s LEFT" % [
+		charges_remaining,
+		"" if charges_remaining == 1 else "S",
+	])
+
+
+func _on_backup_activation_rejected(reason: StringName) -> void:
+	_on_action_feedback("CALL BACKUP REJECTED - %s" % String(reason).replace("_", " ").to_upper())
+
+
+func _on_backup_activation_ended(_activation_token: int, reason: StringName) -> void:
+	_on_action_feedback("BACKUP LEFT - %s" % String(reason).replace("_", " ").to_upper())
+
+
+func _on_actor_incapacitated(actor: ActorController) -> void:
+	if actor != null and actor.actor_definition != null and actor.actor_definition.is_temporary_ally():
+		call_backup_controller.notify_ally_defeated(actor)
+
+
+func _on_combo_snapshot_changed(snapshot: Dictionary) -> void:
+	vertical_slice_overlay.present_combo(
+		int(snapshot.get("current_combo", 0)),
+		int(snapshot.get("highest_combo", 0))
+	)
+
+
+func _on_tutorial_prompt_presented(prompt: TutorialPromptDefinition) -> void:
+	if prompt == null:
+		return
+	_tutorial_remaining = prompt.display_seconds
+	vertical_slice_overlay.present_tutorial(
+		prompt.id,
+		"%s - %s" % [prompt.heading.to_upper(), prompt.body]
+	)
+
+
+func _on_tutorial_prompt_dismissed(_prompt_id: StringName) -> void:
+	_tutorial_remaining = 0.0
+	vertical_slice_overlay.hide_tutorial()
+
+
+func _on_coin_cluster_presented(cluster: CoinCluster) -> void:
+	if cluster == null:
+		return
+	cadence_tracker.record_coin_cluster_presented(
+		cluster.get_cluster_id(),
+		run_director.run_elapsed_seconds
+	)
+	tutorial_controller.request_trigger(&"coin_cluster_available")
+
+
+func _on_standard_reward_ready(
+	encounter_instance_id: int,
+	_reward: StandardRewardDefinition
+) -> void:
+	if _strategic_reward_encounters.has(encounter_instance_id):
+		return
+	_strategic_reward_encounters[encounter_instance_id] = true
+	cadence_tracker.record_strategic_opportunity(
+		StringName("encounter_reward:%d" % encounter_instance_id),
+		run_director.run_elapsed_seconds
+	)
+
+
+func _on_extraction_became_available(threshold_index: int) -> void:
+	cadence_tracker.record_major_opportunity(
+		StringName("extraction:%d" % threshold_index),
+		run_director.run_elapsed_seconds
+	)
+	tutorial_controller.request_trigger(&"extraction_available")
+	audio_controller.play_cue(&"sfx_night_pressure_warning")
+	audio_controller.play_cue(&"sfx_extraction_available")
+
+
+func _on_boss_intro_started() -> void:
+	cadence_tracker.record_major_opportunity(
+		&"boss_commitment",
+		run_director.run_elapsed_seconds
+	)
+	audio_controller.play_cue(&"sfx_night_pressure_warning")
+
+
+func _on_heat_tier_changed(_previous_tier: int, _new_tier: int) -> void:
+	audio_controller.play_cue(&"sfx_heat_tier_increase")
+
+
+func _on_card_placed(_record: CardPlacementRecord) -> void:
+	audio_controller.play_cue(&"sfx_card_placement")
+
+
+func _on_ui_confirmed() -> void:
+	if _web_audio_unlocked:
+		audio_controller.play_cue(&"sfx_ui_confirm")
+
+
+func _on_ui_hovered() -> void:
+	if _web_audio_unlocked:
+		audio_controller.play_cue(&"sfx_ui_hover")
+
+
+func _route_existing_audio_to_sound_effects_bus() -> void:
+	AudioBusContract.ensure_required_buses()
+	for node: Node in combat_feedback.find_children("*", "AudioStreamPlayer", true, false):
+		var player: AudioStreamPlayer = node as AudioStreamPlayer
+		if player != null:
+			player.bus = AudioBusContract.BUS_SOUND_EFFECTS
 
 
 func _on_primary_action_requested() -> void:
@@ -205,12 +842,23 @@ func _on_action_feedback(message: String) -> void:
 
 func _on_build_changed(snapshot: Dictionary) -> void:
 	game_hud.present_build_snapshot(snapshot)
-	var cooldown_multiplier: float = maxf(
+	_refresh_intervention_cooldown_multiplier()
+	_refresh_hydrant_presentation()
+
+
+func _refresh_intervention_cooldown_multiplier() -> void:
+	var equipment_multiplier: float = maxf(
 		0.05,
 		1.0 + synergy_system.get_percent_modifier(&"intervention_cooldown")
 	)
+	var crew_multiplier: float = (
+		_selected_crew_actor.get_intervention_cooldown_multiplier()
+		if _selected_crew_actor != null and is_instance_valid(_selected_crew_actor)
+		else 1.0
+	)
+	var cooldown_multiplier: float = maxf(crew_multiplier * equipment_multiplier, 0.05)
 	fire_hydrant_controller.set_cooldown_multiplier(cooldown_multiplier)
-	_refresh_hydrant_presentation()
+	call_backup_controller.set_cooldown_multiplier(cooldown_multiplier)
 
 
 func _on_equipment_reward_ready(
@@ -230,6 +878,8 @@ func _on_equipment_reward_ready(
 			)
 		previews_by_choice.append({"by_slot": by_slot})
 	game_hud.present_equipment_reward(encounter_instance_id, choices, previews_by_choice)
+	if not choices.is_empty():
+		tutorial_controller.request_trigger(&"equipment_choice_available")
 
 
 func _on_equipment_acquisition_requested(
@@ -458,6 +1108,14 @@ func _on_lane_visibility_requested(lanes_are_visible: bool) -> void:
 
 
 func _on_actor_registered(actor: ActorController) -> void:
+	actor.set_hit_flash_reduction(_hit_flash_reduction)
+	if (
+		actor.is_permanent_crew()
+		and _active_content_access != null
+		and actor.definition_id() == _active_content_access.selected_crew_id
+	):
+		_selected_crew_actor = actor
+		_refresh_intervention_cooldown_multiplier()
 	combat_feedback.show_spawn(actor.global_position + Vector2(0.0, -24.0))
 
 
@@ -466,17 +1124,137 @@ func _on_actor_died(actor: ActorController) -> void:
 	_refresh_combat_presentation()
 
 
+func _on_boss_encounter_started(
+	_encounter_instance_id: int,
+	_definition: EncounterDefinition,
+	boss: ActorController
+) -> void:
+	_boss_actor = boss
+	_boss_phase_text = "PHASE 1"
+	_boss_telegraph_text = "READ THE NAMED WARNING"
+	_boss_telegraph_remaining = BOSS_TELEGRAPH_MINIMUM_SECONDS
+	if not boss.health_changed.is_connected(_on_boss_health_changed):
+		boss.health_changed.connect(_on_boss_health_changed)
+	_refresh_boss_presentation()
+
+
+func _on_boss_health_changed(
+	_actor: ActorController,
+	_current_health: int,
+	_maximum_health: int
+) -> void:
+	_refresh_boss_presentation()
+
+
+func _on_boss_defeated(_boss: ActorController) -> void:
+	_boss_phase_text = "DEFEATED"
+	_boss_telegraph_text = "VIPER DOWN"
+	_boss_telegraph_remaining = 2.0
+	_refresh_boss_presentation()
+
+
+func _on_attack_telegraphed(
+	attacker: ActorController,
+	attack: AttackDefinition,
+	duration_seconds: float,
+	world_position: Vector2,
+	area_radius: float
+) -> void:
+	if attacker == null or attack == null or not attacker.is_boss():
+		return
+	_boss_telegraph_text = "WARNING: %s" % attack.display_name.to_upper()
+	_boss_telegraph_remaining = maxf(duration_seconds, BOSS_TELEGRAPH_MINIMUM_SECONDS)
+	var marker_radius: float = area_radius
+	if marker_radius <= 0.0:
+		match attack.delivery_kind:
+			AttackDefinition.DeliveryKind.CHARGE:
+				marker_radius = 48.0
+			AttackDefinition.DeliveryKind.SUMMON:
+				marker_radius = 64.0
+	if marker_radius > 0.0:
+		var telegraph: CombatTelegraph = CombatTelegraph.new()
+		$DowntownLoop/EffectsContainer.add_child(telegraph)
+		telegraph.present(
+			world_position,
+			marker_radius,
+			_boss_telegraph_remaining,
+			attack.display_name
+		)
+	_refresh_boss_presentation()
+
+
+func _set_combat_telegraphs_suspended(suspended: bool) -> void:
+	for child: Node in $DowntownLoop/EffectsContainer.get_children():
+		var telegraph: CombatTelegraph = child as CombatTelegraph
+		if telegraph != null:
+			telegraph.set_suspended(suspended)
+
+
+func _clear_combat_telegraphs() -> void:
+	for child: Node in $DowntownLoop/EffectsContainer.get_children():
+		if child is CombatTelegraph:
+			child.free()
+
+
+func _on_cooling_audio_applied(source_id: StringName, _heat_reduction: int) -> void:
+	if source_id == &"subway_reroute":
+		audio_controller.play_cue(&"sfx_intervention_activation")
+
+
+func _on_boss_phase_changed(boss: ActorController, phase_id: StringName) -> void:
+	if boss == null or boss != _boss_actor:
+		return
+	_boss_phase_text = String(phase_id).replace("_", " ").to_upper()
+	_boss_telegraph_text = "ENRAGED - FASTER, HARDER HITS"
+	_boss_telegraph_remaining = 2.0
+	audio_controller.play_cue(&"sfx_night_pressure_warning")
+	_refresh_boss_presentation()
+
+
+func _refresh_boss_presentation() -> void:
+	if (
+		_boss_actor == null
+		or not is_instance_valid(_boss_actor)
+		or run_director.current_state not in [
+			RunDirector.RunState.BOSS_ACTIVE,
+			RunDirector.RunState.VICTORY,
+		]
+	):
+		vertical_slice_overlay.hide_boss()
+		return
+	var snapshot: Dictionary = _boss_actor.get_snapshot()
+	vertical_slice_overlay.present_boss(
+		str(snapshot.get("display_name", "The Viper")),
+		int(snapshot.get("current_health", 0)),
+		int(snapshot.get("maximum_health", 1)),
+		_boss_phase_text,
+		_boss_telegraph_text
+	)
+
+
 func _on_hit_landed(
-	_attacker: ActorController,
-	_target: ActorController,
+	attacker: ActorController,
+	target: ActorController,
 	damage: int,
 	world_position: Vector2,
 	hit_stop_duration: float
 ) -> void:
+	if attacker != null and attacker.team == ActorController.Team.CREW and damage > 0:
+		combo_tracker.record_crew_hit()
+	var heavy_hit: bool = hit_stop_duration >= 0.06
+	if target != null and target.is_boss():
+		screen_shake_controller.request_boss_hit()
+	elif heavy_hit:
+		screen_shake_controller.request_heavy_hit()
+	else:
+		screen_shake_controller.request_light_hit()
+	audio_controller.play_cue(&"sfx_heavy_hit" if heavy_hit else &"sfx_light_hit")
+	if target != null and target.is_knocked_back():
+		audio_controller.play_cue(&"sfx_knockback")
 	combat_feedback.show_hit(
 		world_position + Vector2(0.0, -28.0),
 		float(damage),
-		hit_stop_duration >= 0.06
+		heavy_hit
 	)
 
 
@@ -487,11 +1265,31 @@ func _on_environmental_hit_landed(
 	world_position: Vector2,
 	_knockback_force: float
 ) -> void:
+	if damage > 0:
+		combo_tracker.record_environmental_hit()
+		screen_shake_controller.request_environmental_hit()
+	if _target != null and _knockback_force > 0.0 and _target.is_knocked_back():
+		audio_controller.play_cue(&"sfx_knockback")
 	combat_feedback.show_hydrant_impact(
 		world_position + Vector2(0.0, -28.0),
 		float(damage),
 		fire_hydrant_controller.tuning.impact_duration
 	)
+
+
+func _on_environmental_collision_landed(
+	_source_id: StringName,
+	_source_actor: ActorController,
+	_target: ActorController,
+	damage: int,
+	_world_position: Vector2,
+	_impact_force: float
+) -> void:
+	if damage <= 0:
+		return
+	combo_tracker.record_environmental_hit()
+	screen_shake_controller.request_environmental_hit()
+	audio_controller.play_cue(&"sfx_environment_collision")
 
 
 func _on_crew_status_changed(
@@ -500,7 +1298,10 @@ func _on_crew_status_changed(
 	maximum_health: int,
 	state: int
 ) -> void:
-	game_hud.present_jax_status(
+	if actor == null or not actor.is_permanent_crew() or actor != _selected_crew_actor:
+		return
+	game_hud.present_crew_status(
+		actor.actor_definition.display_name,
 		float(current_health),
 		float(maximum_health),
 		StringName(ActorStateMachine.state_name(state)),
@@ -533,6 +1334,11 @@ func _on_cluster_resolved(
 	resulting_streak: int
 ) -> void:
 	combat_feedback.play_coin(manual, resulting_streak)
+	audio_controller.play_cue(
+		&"sfx_coin_manual_collect" if manual else &"sfx_coin_auto_collect"
+	)
+	if manual and resulting_streak > 1:
+		audio_controller.play_cue(&"sfx_coin_streak_increase")
 	_last_coin_status = (
 		"CLICK +%d%s" % [
 			base_value + bonus_value,
@@ -569,6 +1375,8 @@ func _on_hydrant_activation_resolved(
 ) -> void:
 	fire_hydrant.play_activation()
 	combat_feedback.play_hydrant_activation()
+	audio_controller.play_cue(&"sfx_intervention_activation")
+	screen_shake_controller.request_environmental_hit()
 	_hydrant_feedback_override = "%d ENEM%s BLASTED" % [
 		affected_count,
 		"Y" if affected_count == 1 else "IES",
@@ -627,7 +1435,7 @@ func _refresh_combat_presentation() -> void:
 		display_name_by_id[int(snapshot.get("instance_id", -1))] = _snapshot_display_name(snapshot)
 
 	var enemy_lines: PackedStringArray = PackedStringArray()
-	var found_jax: bool = false
+	var found_selected_crew: bool = false
 	for snapshot: Dictionary in snapshots:
 		var instance_id: int = int(snapshot.get("instance_id", -1))
 		var target_name: String = display_name_by_id.get(
@@ -637,15 +1445,25 @@ func _refresh_combat_presentation() -> void:
 		var slot_index: int = reservation_by_attacker.get(instance_id, -1)
 		var slot_text: String = str(slot_index) if slot_index >= 0 else "NONE"
 		if int(snapshot.get("team", ActorController.Team.ENEMY)) == ActorController.Team.CREW:
-			found_jax = true
+			if int(snapshot.get("combat_role", -1)) != ActorDefinition.CombatRole.PERMANENT_CREW:
+				continue
+			if (
+				_active_content_access != null
+				and StringName(snapshot.get("definition_id", &""))
+				!= _active_content_access.selected_crew_id
+			):
+				continue
+			found_selected_crew = true
 			var actor_state_name: StringName = StringName(str(snapshot.get("state_name", "UNKNOWN")))
-			game_hud.present_jax_status(
+			game_hud.present_crew_status(
+				str(snapshot.get("display_name", "Crew")),
 				float(snapshot.get("current_health", 0)),
 				float(snapshot.get("maximum_health", 1)),
 				actor_state_name,
 				target_name
 			)
-			debug_overlay.present_jax_debug(
+			debug_overlay.present_crew_debug(
+				str(snapshot.get("display_name", "Crew")),
 				actor_state_name,
 				target_name,
 				int(snapshot.get("lane", 1)),
@@ -659,9 +1477,24 @@ func _refresh_combat_presentation() -> void:
 				int(snapshot.get("lane", 1)),
 				slot_text,
 			])
-	if not found_jax:
-		debug_overlay.present_jax_debug(&"INCAPACITATED", "NONE", 1, "NONE")
+	if not found_selected_crew:
+		debug_overlay.present_crew_debug(
+			_selected_crew_debug_name(),
+			&"INCAPACITATED",
+			"NONE",
+			1,
+			"NONE"
+		)
 	debug_overlay.present_enemy_debug(enemy_lines)
+
+
+func _selected_crew_debug_name() -> String:
+	if _active_content_access == null:
+		return "CREW"
+	for definition: ActorDefinition in [JAX_DEFINITION, ZOEY_DEFINITION, REX_DEFINITION]:
+		if definition.id == _active_content_access.selected_crew_id:
+			return definition.display_name
+	return String(_active_content_access.selected_crew_id).to_upper()
 
 
 func _actor_display_name(actor: ActorController) -> String:

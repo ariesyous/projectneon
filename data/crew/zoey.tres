@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="ActorDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/actor_definition.gd" id="1_definition"]
+[ext_resource type="Resource" path="res://data/equipment/shock_gloves.tres" id="2_starter"]
+
+[resource]
+script = ExtResource("1_definition")
+id = &"zoey"
+display_name = "Zoey"
+combat_role = 0
+maximum_health = 400
+movement_speed = 124.0
+base_damage = 12
+damage_multiplier = 1.0
+damage_taken_multiplier = 1.0
+knockback_resistance = 0.10
+stagger_resistance = 0.10
+light_stagger_armour = 35.0
+intervention_cooldown_multiplier = 0.85
+grants_coin_reward = false
+authored_coin_value = 0
+cleanup_delay = 0.0
+starting_equipment = Array[EquipmentDefinition]([ExtResource("2_starter")])

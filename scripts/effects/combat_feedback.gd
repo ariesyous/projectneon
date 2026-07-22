@@ -27,6 +27,8 @@ const CORE_COLOR: Color = Color(1.0, 1.0, 0.86, 1.0)
 @onready var hydrant_rejection_audio: AudioStreamPlayer = $HydrantRejectionAudio
 @onready var audio_unlock_audio: AudioStreamPlayer = $AudioUnlockAudio
 
+var _damage_numbers_enabled: bool = true
+
 var _light_hit_stream: AudioStreamWAV
 var _heavy_hit_stream: AudioStreamWAV
 var _death_stream: AudioStreamWAV
@@ -56,7 +58,8 @@ func show_hit(world_position: Vector2, damage: float, heavy: bool = false) -> vo
 		0.19 if heavy else 0.14,
 		heavy
 	)
-	_spawn_damage_number(world_position, damage, heavy)
+	if _damage_numbers_enabled:
+		_spawn_damage_number(world_position, damage, heavy)
 	play_hit(heavy)
 
 
@@ -85,12 +88,21 @@ func show_hydrant_impact(
 		maxf(impact_duration, 0.01),
 		true
 	)
-	_spawn_damage_number(world_position, damage, true)
+	if _damage_numbers_enabled:
+		_spawn_damage_number(world_position, damage, true)
 	if not is_node_ready():
 		return
 	hydrant_impact_audio.stream = _hydrant_impact_stream
 	hydrant_impact_audio.pitch_scale = 1.0
 	hydrant_impact_audio.play()
+
+
+func set_damage_numbers_enabled(is_enabled: bool) -> void:
+	_damage_numbers_enabled = is_enabled
+
+
+func are_damage_numbers_enabled() -> bool:
+	return _damage_numbers_enabled
 
 
 func play_hit(heavy: bool = false) -> void:

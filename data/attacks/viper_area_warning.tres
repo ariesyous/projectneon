@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="AttackDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/attack_definition.gd" id="1_attack"]
+
+[resource]
+script = ExtResource("1_attack")
+id = &"viper_area_warning"
+display_name = "Venom Ring"
+delivery_kind = 3
+impact_kind = 2
+damage_multiplier = 2.1
+windup_time = 1.10
+active_time = 0.12
+recovery_time = 0.60
+cooldown_time = 0.55
+attack_range = 100.0
+knockback_force = 150.0
+knockback_duration = 0.20
+hit_stop_duration = 0.09
+special_cooldown_seconds = 6.0
+telegraph_seconds = 1.10
+area_radius = 92.0

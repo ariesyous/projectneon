@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3]
+[gd_scene load_steps=44 format=3]
 
 [ext_resource type="Script" path="res://scripts/run/game_run.gd" id="1_game"]
 [ext_resource type="PackedScene" path="res://scenes/stages/downtown_loop.tscn" id="2_stage"]
@@ -30,12 +30,28 @@
 [ext_resource type="Resource" path="res://data/rewards/viper_cache.tres" id="28_reward"]
 [ext_resource type="Resource" path="res://data/routes/downtown_loop_route.tres" id="29_route"]
 [ext_resource type="Resource" path="res://data/cards/milestone_5_district_card_catalogue.tres" id="30_cards"]
+[ext_resource type="Resource" path="res://data/run/milestone_6_vertical_slice_escalation.tres" id="31_m6_escalation"]
+[ext_resource type="Resource" path="res://data/run/milestone_6_run_lifecycle.tres" id="32_m6_lifecycle"]
+[ext_resource type="Script" path="res://scripts/interventions/call_backup_controller.gd" id="33_backup"]
+[ext_resource type="Resource" path="res://data/interventions/milestone_6_call_backup.tres" id="34_backup_definition"]
+[ext_resource type="Script" path="res://scripts/combat/combo_tracker.gd" id="35_combo"]
+[ext_resource type="Script" path="res://scripts/run/run_cadence_tracker.gd" id="36_cadence"]
+[ext_resource type="Script" path="res://scripts/app/application_settings_controller.gd" id="37_settings"]
+[ext_resource type="Script" path="res://scripts/tutorial/tutorial_prompt_controller.gd" id="38_tutorial"]
+[ext_resource type="Script" path="res://scripts/effects/screen_shake_controller.gd" id="39_shake"]
+[ext_resource type="PackedScene" path="res://scenes/audio/audio_presentation_controller.tscn" id="40_audio"]
+[ext_resource type="PackedScene" path="res://scenes/ui/vertical_slice_overlay.tscn" id="41_overlay"]
+[ext_resource type="Resource" path="res://data/encounters/viper_showdown.tres" id="42_boss"]
+[ext_resource type="Resource" path="res://data/run/milestone_6_starting_loadout.tres" id="43_loadout"]
 
 [node name="GameRun" type="Node"]
 script = ExtResource("1_game")
+loadout_definition = ExtResource("43_loadout")
 
 [node name="RunDirector" type="Node" parent="."]
 script = ExtResource("3_run")
+escalation_definition = ExtResource("31_m6_escalation")
+lifecycle_definition = ExtResource("32_m6_lifecycle")
 
 [node name="RunRandomStreams" type="Node" parent="RunDirector"]
 script = ExtResource("18_random")
@@ -56,6 +72,16 @@ standard_rewards = [ExtResource("26_reward"), ExtResource("27_reward"), ExtResou
 script = ExtResource("15_hydrant_controller")
 tuning = ExtResource("16_hydrant_tuning")
 
+[node name="CallBackupController" type="Node" parent="."]
+script = ExtResource("33_backup")
+definition = ExtResource("34_backup_definition")
+
+[node name="ComboTracker" type="Node" parent="."]
+script = ExtResource("35_combo")
+
+[node name="RunCadenceTracker" type="Node" parent="."]
+script = ExtResource("36_cadence")
+
 [node name="RunCoolingController" type="Node" parent="."]
 script = ExtResource("20_cooling")
 tuning = ExtResource("21_cooling_tuning")
@@ -69,6 +95,7 @@ coin_cluster_scene = ExtResource("14_coin")
 [node name="RunFlowController" type="Node" parent="."]
 script = ExtResource("22_flow")
 encounter_candidates = [ExtResource("23_encounter"), ExtResource("24_encounter"), ExtResource("25_encounter")]
+boss_encounter_definition = ExtResource("42_boss")
 
 [node name="CardSystem" type="Node" parent="."]
 script = ExtResource("7_cards")
@@ -80,6 +107,17 @@ script = ExtResource("8_synergy")
 [node name="DisplayController" type="Node" parent="."]
 script = ExtResource("17_display")
 
+[node name="ApplicationSettingsController" type="Node" parent="."]
+script = ExtResource("37_settings")
+
+[node name="TutorialPromptController" type="Node" parent="."]
+script = ExtResource("38_tutorial")
+
+[node name="ScreenShakeController" type="Node" parent="."]
+script = ExtResource("39_shake")
+
+[node name="AudioPresentationController" parent="." instance=ExtResource("40_audio")]
+
 [node name="DowntownLoop" parent="." instance=ExtResource("2_stage")]
 
 [node name="Camera2D" type="Camera2D" parent="."]
@@ -87,5 +125,7 @@ position = Vector2(320, 180)
 zoom = Vector2(2, 2)
 
 [node name="GameHUD" parent="." instance=ExtResource("9_hud")]
+
+[node name="VerticalSliceOverlay" parent="." instance=ExtResource("41_overlay")]
 
 [node name="DebugOverlay" parent="." instance=ExtResource("10_debug")]

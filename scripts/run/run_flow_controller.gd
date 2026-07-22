@@ -28,6 +28,7 @@ const SHOP_SOURCE_BASELINE: StringName = &"baseline_shop"
 const SHOP_SOURCE_CONVENIENCE_STORE: StringName = &"convenience_store"
 
 @export var encounter_candidates: Array[EncounterDefinition] = []
+@export var boss_encounter_definition: EncounterDefinition
 
 class RouteEntryContext:
 	extends RefCounted
@@ -57,7 +58,12 @@ var _combat_director: CombatDirector
 var _fire_hydrant_controller: FireHydrantController
 var _synergy_system: SynergySystem
 var _card_system: CardSystem
+var _call_backup_controller: CallBackupController
+var _combo_tracker: ComboTracker
+var _cadence_tracker: RunCadenceTracker
+var _starting_equipment: Array[EquipmentDefinition] = []
 var _next_encounter_instance_id: int = 1
+var _next_shop_opportunity_id: int = 1
 var _pending_reward_encounter_id: int = -1
 var _pending_card_reward_eligible: bool = false
 var _card_reward_phase_active: bool = false
@@ -75,7 +81,10 @@ func configure(
 	combat_director: CombatDirector,
 	fire_hydrant_controller: FireHydrantController,
 	synergy_system: SynergySystem = null,
-	card_system: CardSystem = null
+	card_system: CardSystem = null,
+	call_backup_controller: CallBackupController = null,
+	combo_tracker: ComboTracker = null,
+	cadence_tracker: RunCadenceTracker = null
 ) -> void:
 	_run_director = run_director
 	_patrol_controller = patrol_controller
@@ -86,6 +95,9 @@ func configure(
 	_fire_hydrant_controller = fire_hydrant_controller
 	_synergy_system = synergy_system
 	_card_system = card_system
+	_call_backup_controller = call_backup_controller
+	_combo_tracker = combo_tracker
+	_cadence_tracker = cadence_tracker
 	_reward_director.configure_equipment(_synergy_system)
 	_reward_director.configure_cards(_card_system)
 	if _card_system != null:
@@ -100,12 +112,20 @@ func configure(
 	_patrol_controller.route_slots_changed.connect(_on_route_slots_changed)
 	_encounter_controller.encounter_completed.connect(_on_encounter_completed)
 	_encounter_controller.crew_defeated.connect(_on_crew_defeated)
+	_encounter_controller.boss_defeated.connect(_on_boss_defeated)
 	_encounter_controller.status_changed.connect(_on_encounter_status_changed)
 	_cooling_controller.cooling_state_changed.connect(_on_cooling_state_changed)
 	_cooling_controller.cooling_applied.connect(_on_cooling_applied)
 	_cooling_controller.cooling_rejected.connect(_on_cooling_rejected)
 	if _card_system != null:
 		_card_system.snapshot_changed.connect(_on_card_snapshot_changed)
+
+
+func configure_starting_equipment(items: Array[EquipmentDefinition]) -> bool:
+	if items.size() != 1 or items[0] == null or items[0].id == &"":
+		return false
+	_starting_equipment = items.duplicate()
+	return true
 
 
 func start_initial_run(supplied_seed: int = 0, use_supplied_seed: bool = false) -> int:
@@ -385,6 +405,37 @@ func restart_new_seed() -> int:
 	return _run_director.restart_new_seed()
 
 
+func return_to_main_menu() -> bool:
+	if not _run_director.return_to_initializing():
+		return false
+	_resetting_run = true
+	_next_encounter_instance_id = 1
+	_next_shop_opportunity_id = 1
+	_pending_reward_encounter_id = -1
+	_pending_card_reward_eligible = false
+	_card_reward_phase_active = false
+	_active_encounter_context = null
+	_deferred_route_entry = null
+	_encounter_controller.reset_for_run()
+	_reward_director.reset_for_run()
+	if _synergy_system != null:
+		_synergy_system.reset_for_run()
+	_cooling_controller.reset_for_run()
+	_fire_hydrant_controller.reset_for_run()
+	if _card_system != null:
+		_card_system.clear_for_main_menu()
+	if _call_backup_controller != null:
+		_call_backup_controller.reset_for_run()
+	if _combo_tracker != null:
+		_combo_tracker.reset_for_run()
+	if _cadence_tracker != null:
+		_cadence_tracker.reset_for_run()
+	_starting_equipment.clear()
+	_resetting_run = false
+	_emit_status()
+	return true
+
+
 func force_add_heat(amount: int = 10) -> void:
 	_run_director.apply_heat_delta(amount)
 
@@ -396,9 +447,11 @@ func force_advance_pressure_to_next_threshold() -> void:
 
 func force_defeat() -> bool:
 	var crew: Array[ActorController] = _combat_director.get_live_actors(ActorController.Team.CREW)
-	if crew.is_empty():
-		return false
-	return crew[0].receive_damage(1000000) > 0
+	var affected: bool = false
+	for actor: ActorController in crew:
+		if actor.is_permanent_crew():
+			affected = actor.receive_damage(1000000) > 0 or affected
+	return affected
 
 
 func get_snapshot() -> Dictionary:
@@ -410,6 +463,13 @@ func get_snapshot() -> Dictionary:
 		"cooling": _cooling_controller.get_snapshot() if _cooling_controller != null else {},
 		"build": _synergy_system.get_snapshot() if _synergy_system != null else {},
 		"cards": _card_system.get_snapshot() if _card_system != null else {},
+		"backup": (
+			_call_backup_controller.get_snapshot()
+			if _call_backup_controller != null
+			else {}
+		),
+		"combo": _combo_tracker.get_snapshot() if _combo_tracker != null else {},
+		"cadence": _cadence_tracker.get_snapshot() if _cadence_tracker != null else {},
 		"pending_reward_encounter_id": _pending_reward_encounter_id,
 		"card_reward_phase_active": _card_reward_phase_active,
 		"pending_card_reward_eligible": _pending_card_reward_eligible,
@@ -422,6 +482,7 @@ func get_snapshot() -> Dictionary:
 func _on_run_started(_seed: int, _schema_version: int) -> void:
 	_resetting_run = true
 	_next_encounter_instance_id = 1
+	_next_shop_opportunity_id = 1
 	_pending_reward_encounter_id = -1
 	_pending_card_reward_eligible = false
 	_card_reward_phase_active = false
@@ -431,6 +492,15 @@ func _on_run_started(_seed: int, _schema_version: int) -> void:
 	_reward_director.reset_for_run()
 	if _synergy_system != null:
 		_synergy_system.reset_for_run()
+		for item: EquipmentDefinition in _starting_equipment:
+			if not _synergy_system.equip(item):
+				push_error("Starting equipment '%s' could not be equipped." % item.id)
+	if _call_backup_controller != null:
+		_call_backup_controller.reset_for_run()
+	if _combo_tracker != null:
+		_combo_tracker.reset_for_run()
+	if _cadence_tracker != null:
+		_cadence_tracker.reset_for_run()
 	_cooling_controller.reset_for_run()
 	_patrol_controller.start_patrol()
 	if _card_system != null:
@@ -452,8 +522,43 @@ func _on_run_state_changed(_previous_state: int, new_state: int) -> void:
 	_combat_director.set_simulation_enabled(simulation_active)
 	_reward_director.set_simulation_enabled(simulation_active)
 	_fire_hydrant_controller.set_simulation_enabled(simulation_active)
+	if _call_backup_controller != null:
+		_call_backup_controller.set_simulation_enabled(simulation_active)
+		_call_backup_controller.set_combat_available(
+			new_state in [
+				RunDirector.RunState.ENCOUNTER_ACTIVE,
+				RunDirector.RunState.BOSS_ACTIVE,
+			]
+		)
+		if new_state in [
+			RunDirector.RunState.EXTRACTING,
+			RunDirector.RunState.VICTORY,
+			RunDirector.RunState.DEFEAT,
+			RunDirector.RunState.RUN_SUMMARY,
+			RunDirector.RunState.INITIALIZING,
+		]:
+			_call_backup_controller.cleanup_for_terminal_state()
 	_patrol_controller.set_simulation_enabled(new_state == RunDirector.RunState.PATROLLING)
+	if new_state == RunDirector.RunState.BOSS_ACTIVE:
+		_start_boss_encounter()
 	_emit_status()
+
+
+func _start_boss_encounter() -> bool:
+	if boss_encounter_definition == null or not boss_encounter_definition.boss:
+		push_error("Milestone 6 boss encounter definition is missing or invalid.")
+		return false
+	if _encounter_controller.has_active_encounter():
+		return _encounter_controller.get_active_definition() == boss_encounter_definition
+	var encounter_instance_id: int = _next_encounter_instance_id
+	_next_encounter_instance_id += 1
+	if not _encounter_controller.start_boss_encounter(
+		encounter_instance_id,
+		boss_encounter_definition
+	):
+		push_error("The Viper boss encounter failed to start.")
+		return false
+	return true
 
 
 func _on_route_node_entered(
@@ -589,6 +694,12 @@ func _open_shop_visit(source_id: StringName, maximum_purchases: int) -> bool:
 	if not _run_director.open_shop():
 		_cooling_controller.end_shop_visit()
 		return false
+	if _cadence_tracker != null:
+		_cadence_tracker.record_strategic_opportunity(
+			StringName("shop:%s:%d" % [source_id, _next_shop_opportunity_id]),
+			_run_director.run_elapsed_seconds
+		)
+	_next_shop_opportunity_id += 1
 	return true
 
 
@@ -674,7 +785,15 @@ func _on_crew_defeated() -> void:
 	_run_director.notify_all_crew_incapacitated()
 
 
+func _on_boss_defeated(_boss: ActorController) -> void:
+	_run_director.notify_boss_defeated()
+
+
 func _on_run_completed(_result: int) -> void:
+	# Optional coin input never gates base rewards. Terminal outcomes can arrive
+	# before a visible cluster's ordinary timeout (notably extraction or defeat),
+	# so settle those awards before freezing the summary ledger.
+	_reward_director.settle_pending_coin_clusters_as_base()
 	_run_director.finalize_summary(
 		_encounter_controller.get_total_enemies_defeated(),
 		_reward_director.get_coin_total(),
@@ -682,7 +801,10 @@ func _on_run_completed(_result: int) -> void:
 		_reward_director.get_maximum_manual_streak(),
 		_reward_director.get_scrap_total(),
 		_synergy_system.get_build_summary() if _synergy_system != null else "None",
-		_synergy_system.get_active_synergy_summary() if _synergy_system != null else "None"
+		_synergy_system.get_active_synergy_summary() if _synergy_system != null else "None",
+		_encounter_controller.get_total_elites_defeated(),
+		_combo_tracker.get_highest_combo() if _combo_tracker != null else 0,
+		""
 	)
 
 

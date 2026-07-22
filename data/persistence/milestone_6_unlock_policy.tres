@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="UnlockPolicyDefinition" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/persistence/unlock_policy_definition.gd" id="1_policy"]
+[ext_resource type="Script" path="res://scripts/persistence/unlock_rule_definition.gd" id="2_rule"]
+
+[sub_resource type="Resource" id="UnlockRule_zoey"]
+script = ExtResource("2_rule")
+id = &"first_completed_run_zoey"
+content_kind = 0
+content_id = &"zoey"
+trigger = 0
+description = "Complete a run with any final result to unlock Zoey."
+
+[sub_resource type="Resource" id="UnlockRule_hacker"]
+script = ExtResource("2_rule")
+id = &"first_elite_defeat_hacker_deck"
+content_kind = 1
+content_id = &"hacker_deck"
+trigger = 1
+description = "Defeat at least one elite during a completed run to unlock Hacker Deck."
+
+[sub_resource type="Resource" id="UnlockRule_hideout"]
+script = ExtResource("2_rule")
+id = &"first_extraction_gang_hideout"
+content_kind = 2
+content_id = &"gang_hideout"
+trigger = 2
+description = "Complete an extraction to unlock the existing Gang Hideout district card."
+
+[sub_resource type="Resource" id="UnlockRule_rex"]
+script = ExtResource("2_rule")
+id = &"first_victory_rex"
+content_kind = 0
+content_id = &"rex"
+trigger = 3
+description = "Defeat The Viper and complete a victory to unlock Rex."
+
+[resource]
+script = ExtResource("1_policy")
+rules = Array[UnlockRuleDefinition]([SubResource("UnlockRule_zoey"), SubResource("UnlockRule_hacker"), SubResource("UnlockRule_hideout"), SubResource("UnlockRule_rex")])

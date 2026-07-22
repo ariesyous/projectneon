@@ -128,7 +128,19 @@ func present_jax_debug(
 	lane: int,
 	reservation: String
 ) -> void:
-	jax_debug_label.text = "JAX  STATE %s\nTARGET %s  |  LANE %d  |  SLOT %s" % [
+	present_crew_debug("JAX", state_name, target_name, lane, reservation)
+
+
+func present_crew_debug(
+	display_name: String,
+	state_name: StringName,
+	target_name: String,
+	lane: int,
+	reservation: String
+) -> void:
+	var safe_name: String = display_name.to_upper() if not display_name.is_empty() else "CREW"
+	jax_debug_label.text = "%s  STATE %s\nTARGET %s  |  LANE %d  |  SLOT %s" % [
+		safe_name,
 		String(state_name),
 		target_name if not target_name.is_empty() else "NONE",
 		lane,

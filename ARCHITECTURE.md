@@ -2,9 +2,11 @@
 
 ## Status
 
-This document describes the implemented **Milestone 0 — Project Foundation**, **Milestone 1 — Combat Lab**, **Milestone 2 — Player Intervention**, **Milestone 3 — Complete Run Structure**, **Milestone 4 — Equipment and Synergies**, **Milestone 4.1 equipment usability/readability correction**, **Milestone 4.2 inventory drag/backpack-clarity correction**, and **Milestone 5 — District Cards**. It remains deliberately smaller than the complete vertical-slice architecture in `GameSpecifications.md`: Milestone 6 and later crew/enemy/final-boss content, broader presentation/audio/tutorial/settings work, progression, persistence, procedural generation, additional districts/cards, rarity/unique/set itemization, and a broader equipment economy remain deferred.
+This document describes the implemented **Milestone 0 — Project Foundation**, **Milestone 1 — Combat Lab**, **Milestone 2 — Player Intervention**, **Milestone 3 — Complete Run Structure**, **Milestone 4 — Equipment and Synergies**, **Milestone 4.1 equipment usability/readability correction**, **Milestone 4.2 inventory drag/backpack-clarity correction**, **Milestone 5 — District Cards**, and the authorized **Milestone 6 — Vertical-Slice Content and Presentation** implementation. Milestone 6 adds only the specification's three crew members, three basic enemies, one elite, one boss, three interventions, prototype presentation/audio/tutorial/settings, minimal versioned persistence/unlocks, cadence measurement, and final summary. Its automated gate is complete; manual, export, visual, cadence-acceptance, and owner-qualitative results remain explicitly deferred TODOs.
 
-Milestone 4, including M4.1 and M4.2, was committed to `main`, pushed, and published from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9`; the current live build is [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/). This supersedes the earlier Milestone 3 deployment from `725cd373e2732b0dd6967a24a16e717e21ef8487` without changing any historical technical acceptance record. The Milestone 5 working-branch implementation described here is technically verified but has not been committed, pushed, merged, published, or deployed.
+Milestone 5 was merged through PR #4 and published from `main` merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`; the current live build is [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/). The current documentation baseline is `3ce274518c5ccf79e53ecd12764b5ae4cd822ebd`. The Milestone 6 work is local on `codex/milestone-6-vertical-slice` and remains uncommitted, unpushed, unmerged, unpublished, and undeployed.
+
+The working tree also carries owner changes that are not Milestone 6 authorship: the tracked 17-file Godot-AI 3.0.5 update remains enabled, and `project.godot` retains the owner's deletions of `window/stretch/aspect="keep"` and `textures/default_filters/use_nearest_mipmap_filter=false`. Milestone 6 adds only the specification-authorized `SaveService` and `AppState` Autoload entries to that file. The deleted display keys are not silently restored: the project still explicitly configures a 1280 × 720 viewport/window override, viewport stretch mode, integer scale mode, nearest canvas texture filtering, and pixel snapping, while the two omitted keys use Godot's defaults.
 
 The rationale for the revised downstream boundaries is recorded in `docs/decisions/0001-run-engagement-escalation-and-randomness.md`.
 
@@ -25,7 +27,7 @@ The rationale for the revised downstream boundaries is recorded in `docs/decisio
 
 The current presentation viewport is a true **1280 x 720** at **16:9**. The established stage, combat space, actors, effects, and authored positions remain in the same logical **640 x 360** world coordinates: `GameRun` centers `Camera2D` at `(320, 180)` with `Vector2(2, 2)` zoom. This preserves every Milestone 0–4 world-space acceptance decision while allowing `GameHUD` and `DebugOverlay` to render natively at 1280 x 720 rather than rasterizing tiny text into a 640 x 360 canvas and enlarging the blur.
 
-The project preserves viewport stretch mode, 16:9 aspect, integer scale mode, nearest-neighbour canvas texture filtering, the explicit default mipmap-filter setting, and 2D pixel snapping. Letterboxing is preferable to distortion. HUD labels and buttons use at least 16-pixel text at the native viewport, ordinary controls generally use 18 pixels where space permits, and headings/primary values use a larger hierarchy.
+The project explicitly preserves viewport stretch mode, integer scale mode, nearest-neighbour canvas texture filtering, 2D pixel snapping, and the 1280 × 720 16:9 viewport/window dimensions. The owner's two pre-existing `project.godot` deletions mean the aspect and nearest-mipmap-filter values are no longer written as explicit overrides; they use engine defaults and are not Milestone 6 changes. Letterboxing remains preferable to distortion. HUD labels and buttons use at least 16-pixel text at the native viewport, ordinary controls generally use 18 pixels where space permits, and headings/primary values use a larger hierarchy.
 
 The browser playtest uses a source-controlled Godot 4.7 Web export preset with thread support disabled, so the generated build can run on ordinary GitHub Pages without cross-origin-isolation headers. GitHub Actions creates and deploys the generated artifact; exported binaries are not committed to the gameplay source tree.
 
@@ -45,15 +47,23 @@ GameRun
 |- CombatDirector
 |- RewardDirector
 |- FireHydrantController
+|- CallBackupController
+|- ComboTracker
+|- RunCadenceTracker
 |- RunCoolingController
 |- RunEncounterController
 |- RunFlowController
 |- CardSystem
 |- SynergySystem
 |- DisplayController
+|- ApplicationSettingsController
+|- TutorialPromptController
+|- ScreenShakeController
+|- AudioPresentationController
 |- DowntownLoop
 |- Camera2D
 |- GameHUD
+|- VerticalSliceOverlay
 `- DebugOverlay
 ```
 
@@ -64,10 +74,20 @@ Canonical scene locations:
 - `res://scenes/ui/game_hud.tscn`
 - `res://scenes/debug/debug_overlay.tscn`
 - `res://scenes/actors/jax.tscn`
+- `res://scenes/actors/zoey.tscn`
+- `res://scenes/actors/rex.tscn`
 - `res://scenes/actors/street_punk.tscn`
+- `res://scenes/actors/bat_thug.tscn`
+- `res://scenes/actors/bottle_thrower.tscn`
+- `res://scenes/actors/viper_enforcer.tscn`
+- `res://scenes/actors/the_viper.tscn`
+- `res://scenes/actors/backup_runner.tscn`
+- `res://scenes/combat/combat_projectile.tscn`
+- `res://scenes/audio/audio_presentation_controller.tscn`
 - `res://scenes/effects/combat_feedback.tscn`
 - `res://scenes/interactables/coin_cluster.tscn`
 - `res://scenes/interactables/fire_hydrant.tscn`
+- `res://scenes/ui/vertical_slice_overlay.tscn`
 
 Their composition/presentation scripts live at:
 
@@ -76,6 +96,8 @@ Their composition/presentation scripts live at:
 - `res://scripts/run/run_random_streams.gd`
 - `res://scripts/run/run_cooling_controller.gd`
 - `res://scripts/run/run_flow_controller.gd`
+- `res://scripts/run/run_cadence_tracker.gd`
+- `res://scripts/run/run_content_access_snapshot.gd`
 - `res://scripts/patrol/patrol_controller.gd`
 - `res://scripts/encounters/run_encounter_controller.gd`
 - `res://scripts/stages/downtown_loop.gd`
@@ -83,19 +105,29 @@ Their composition/presentation scripts live at:
 - `res://scripts/stages/debug_lane_markers.gd`
 - `res://scripts/stages/route_markers.gd`
 - `res://scripts/ui/game_hud.gd`
+- `res://scripts/ui/vertical_slice_overlay.gd`
 - `res://scripts/ui/equipment_drag_payload.gd`
 - `res://scripts/ui/equipment_drag_slot.gd`
 - `res://scripts/ui/district_card_drag_payload.gd`
 - `res://scripts/ui/district_card_drag_slot.gd`
 - `res://scripts/ui/debug_overlay.gd`
 - `res://scripts/actors/actor_controller.gd`
+- `res://scripts/actors/actor_scene_catalogue.gd`
 - `res://scripts/combat/combat_director.gd`
+- `res://scripts/combat/combat_projectile.gd`
+- `res://scripts/combat/combo_tracker.gd`
 - `res://scripts/rewards/reward_director.gd`
 - `res://scripts/effects/combat_feedback.gd`
 - `res://scripts/interactables/coin_cluster.gd`
 - `res://scripts/interactables/fire_hydrant.gd`
 - `res://scripts/interventions/fire_hydrant_controller.gd`
+- `res://scripts/interventions/call_backup_controller.gd`
 - `res://scripts/ui/display_controller.gd`
+- `res://scripts/app/application_settings_controller.gd`
+- `res://scripts/audio/audio_presentation_controller.gd`
+- `res://scripts/effects/combat_telegraph.gd`
+- `res://scripts/effects/screen_shake_controller.gd`
+- `res://scripts/tutorial/tutorial_prompt_controller.gd`
 - `res://scripts/cards/card_system.gd`
 - `res://scripts/cards/card_effect_definition.gd`
 - `res://scripts/cards/district_card_definition.gd`
@@ -103,7 +135,7 @@ Their composition/presentation scripts live at:
 - `res://scripts/cards/card_placement_record.gd`
 - `res://scripts/cards/card_resolution_record.gd`
 
-The four authored card Resources and their catalogue live under `res://data/cards/`; their replaceable placeholder icons live under `res://assets/ui/cards/icons/`. Content data names effects and tuning, while the runtime owners below validate and execute them.
+The four authored card Resources and their catalogue live under `res://data/cards/`; their replaceable placeholder icons live under `res://assets/ui/cards/icons/`. Milestone 6 actor, attack, encounter, intervention, audio, tutorial, persistence, cadence, lifecycle, and presentation tuning live in the matching `res://data/` families. The validated actor-scene catalogue maps nine stable IDs to composed scenes. Content data names effects and tuning, while the runtime owners below validate and execute them.
 
 `res://scripts/stages/` is an intentional, narrow addition to the recommended
 directory list: it owns only the fixed stage's replaceable presentation and
@@ -111,16 +143,18 @@ debug-marker drawing.
 
 `GameRun` owns assembly only. It is the place to connect explicit cross-owner signals when later milestones require them; it must not grow into a second implementation of each child system.
 
-The tree above is the implemented Milestone 5 composition. M5 fills the existing run-scoped `CardSystem` authority and adds typed data/record/presentation helpers without adding another authority node or gameplay Autoload. `RunRandomStreams` is instantiated as a direct child of `RunDirector`, is reset for each run, and is never an Autoload.
+The tree above is the implemented Milestone 6 composition. All run, combat, encounter, intervention, cadence, combo, tutorial, audio, and presentation nodes remain scene-scoped. `RunRandomStreams` is a direct child of `RunDirector`, resets for each run, and is never an Autoload. Only the specification-authorized profile/settings services are global; neither may own active-run state.
 
 ## Scene ownership
 
 ### `GameRun`
 
-- Composes the run-scoped systems, encounter runtime, District Card authority, Fire Hydrant authority, display integration, stage, camera, HUD, debug presentation, and combat feedback.
+- Composes the run-scoped systems, encounter runtime, District Card/equipment authorities, all three intervention authorities, combo/cadence observers, application-settings bridge, tutorial/audio/screen-effect presentation, stage, camera, HUD, vertical-slice overlay, debug presentation, and combat feedback.
 - Keeps all run-scoped state in the scene tree rather than a run singleton.
-- Connects typed run/patrol/encounter/combat/reward/card/intervention/display signals without calculating their owned results.
-- Begins and restarts composed runs, synchronously clears run-owned actors, reservations, rewards, card modal/token/pile/pending-route state, patrol modifications, thresholds, timers, cooling stock, and random-stream state, and forwards presentation intent to the correct authority.
+- Captures one immutable-by-convention `RunContentAccessSnapshot` before the first gameplay draw. It validates the selected unlocked crew member, exactly one existing starter item, and stable allowed equipment/card IDs; same-seed restart reuses that snapshot while new-seed restart refreshes it from the profile.
+- Connects typed run/patrol/encounter/combat/reward/card/intervention/settings/tutorial/audio/display signals without calculating their owned results.
+- Begins and restarts composed runs, synchronously clears run-owned actors, summons, projectiles, telegraphs, reservations, rewards, combo/cadence state, card modal/token/pile/pending-route state, patrol modifications, thresholds, timers, intervention ledgers, cooling stock, and random-stream state, and forwards presentation intent to the correct authority.
+- Records a completed run with `AppState` only after `RunDirector` publishes the final summary; persistent unlock/lifetime accounting never changes the already-completed run.
 
 ### `DowntownLoop`
 
@@ -134,7 +168,7 @@ The lane guides and route markers are development visualization, not movement or
 
 ### `GameHUD`
 
-- Presents authoritative run state, route progress, Heat/tier, Night Pressure, timer, extraction, cooling, summary, Jax health/state/target, coin total, manual streak, Hydrant readiness/cooldown, active equipment, ordered backpack storage, tag counts, synergy thresholds/effects, reward previews, onboarding, sound-unlock status, landscape guidance, and fullscreen state.
+- Presents authoritative run state, route progress, Heat/tier, Night Pressure, timer, extraction, cooling, selected-crew health/state/target, coin total, manual streak, all three intervention states, active equipment, ordered backpack storage, tag counts, synergy thresholds/effects, reward previews, onboarding, sound-unlock status, landscape guidance, and fullscreen state.
 - Uses native 1280 x 720 typography and panel geometry, with a 16-pixel minimum for labels/buttons, so glyphs are rendered clearly rather than enlarged from the logical 640 x 360 world canvas.
 - Presents the existing run lifecycle as a persistent `HIDEOUT → PATROL → FIGHT → GEAR → EXIT/BOSS` journey strip with current stage/next objective and an expanded opening Help panel. This is orientation only; it does not own route or progression authority.
 - The equipment/synergy and District Card regions are live. The card panel observes the finite hand, draw/discard counts, pending/resolved route snapshot, and reward-choice state from authority; every card shows its name, replaceable icon, `FREE` cost, Heat delta, node effect, tags, and major progression implications.
@@ -145,8 +179,17 @@ The lane guides and route markers are development visualization, not movement or
 - Ordinary equipment clicks inspect, while typed `EquipmentDragSlot` controls provide built-in `Control` drag/drop for owned items and reward choices. A valid drop stages the same destination/action state as the click/tap/keyboard fallback and never mutates inventory at drop time.
 - Keeps dynamic reward targets compact as `ACTIVE n` / `BACKPACK [n]`, uses compact inventory targets `ACTIVE` / `STORE SLOT` / `SWAP SLOT`, bounds key inventory consequence prompts to two lines, states `CLICKS ONLY INSPECT; NEVER DISCARD` in Help, and uses ASCII action wording so the same glyphs render in desktop and Web builds. Longest-catalogue-name pixel-fit tests protect all six reward destinations, all six inventory action-target states, and key two-line prompts, not only static scene bounds.
 - Reward selection, destination selection, inventory actions, card planning, and named confirmations are presentation state; the HUD forwards typed player intent with the inspected inventory/hand/route revisions and reward/placement tokens and never mutates ownership itself.
-- Forwards run actions, equipment acquisition/management intent, card acquisition/placement/cancel intent, Hydrant activation/preview, Help, and fullscreen intent through typed signals.
-- Does not own authoritative Heat, Night Pressure, time, cooling, rewards, equipment, synergies, extraction, cards, or crew state.
+- Shows replaceable icons, written names, exact charge/cooldown or target requirements, textual validity, tooltips, and activation/rejection feedback for Fire Hydrant, Call Backup, and Subway Reroute. Hydrant hover/focus exposes the same 112-pixel preview used by authority.
+- Forwards run actions, equipment acquisition/management intent, card acquisition/placement/cancel intent, all intervention requests, Hydrant preview, Help, and fullscreen intent through typed signals.
+- Does not own authoritative Heat, Night Pressure, time, cooling, rewards, equipment, synergies, extraction, cards, crew, combo, boss, or intervention state.
+
+### `VerticalSliceOverlay`
+
+- Owns presentation and typed intent for the pre-run crew menu, pause menu, settings panel, boss health/phase/warning strip, contextual tutorial strip, combo celebration, victory presentation, and complete run summary.
+- Displays Jax, Zoey, and Rex availability and written mechanical roles. It cannot unlock content or start an inaccessible crew ID; `GameRun` revalidates intent against `AppState` and `RunLoadoutDefinition`.
+- Presents all eight settings fields, but emits a settings dictionary rather than writing buses, windows, effects, focus pause, or save data itself. Save success/failure text comes back from authority.
+- Presents result, duration, seed/schema, maximum Heat, final Night Pressure, enemy/elite counts, boss result, coins, manual clusters, maximum streak, scrap, highest combo, equipment build, active synergies, Restart Run, and Return to Main Menu from the immutable summary snapshot.
+- Uses explicit text alongside colour for locked/valid states, warnings, cooldowns, boss phase, and telegraphs.
 
 ### `DebugOverlay`
 
@@ -154,13 +197,15 @@ The lane guides and route markers are development visualization, not movement or
 - Handles the `F1` development key to toggle its own visibility.
 - Emits a typed `lane_visibility_requested(bool)` request from its lane button or `F2` shortcut.
 - Does not take ownership of stage or combat state: `GameRun` forwards the request and `DowntownLoop` remains the sole owner of lane-marker visibility.
-- Must be hidden or disabled for release behavior in a later production milestone.
+- Is forced hidden and ignores its development controls when `OS.is_debug_build()` is false; development/test profiles retain full catalogue access and the reset-save control.
 
 ### Actors and automatic combat
 
-`ActorController` composes `ActorStateMachine`, `HealthComponent`, `AttackController`, `StatusController`, an active-phase logical hitbox, and replaceable `ActorVisual` presentation. `ActorDefinition` and `AttackDefinition` Resources hold authored Jax, Street Punk, and basic-attack tuning. The actor state machine exposes the required idle, patrol, acquisition, approach, windup, active, recovery, stun, knockback, incapacitated, and dead states. `StatusController` owns deterministic Bleed/Shock duration, stacking, tick application, snapshots, and cleanup; `ActorVisual` only renders their marks.
+`ActorController` composes `ActorStateMachine`, `HealthComponent`, `AttackController`, `StatusController`, an active-phase logical hitbox, and replaceable `ActorVisual` presentation. The same controller runs Jax, Zoey, Rex, Backup Runner, Street Punk, Bat Thug, Bottle Thrower, Viper Enforcer, and The Viper from typed `ActorDefinition`/`AttackDefinition` data. The actor state machine exposes idle, patrol, acquisition, approach, windup, active, recovery, stun, knockback, incapacitated, and dead states. Stable-ID special attacks are sorted before a deterministic authored cycle: a basic attack opens the next available special, per-special cooldowns gate reuse, and `one_shot` prevents The Viper's summon from repeating. No gameplay RNG chooses attack order.
 
-`CombatDirector` remains the combat authority. It owns stable actor registration, opposing-team target validity, deterministic nearest-target acquisition, attack-position reservations, damage resolution, combat-local hit-stop, synchronous dead-target invalidation, reservation cleanup, and application of aggregated equipment modifiers and triggered effects. It resolves heavy-hit, bleeding/shocked-target, knockback, follow-up, and environmental modifiers through shared modifier/effect interfaces rather than equipment-ID branches. Milestone 2's stable live-enemy circle query and typed environmental-hit seam remain in use by the Hydrant. `AttackPositionRegistry` exposes six reachable positions spanning the three authored lane centers. Actors never own reward, equipment, intervention, or UI state.
+`ActorDefinition` owns role-specific health, speed, damage, knockback/stagger resistance, light-stagger armour, control-duration/lockout, preferred ranged distance, elite/boss damage multipliers, intervention-cooldown multiplier, environmental-collision multiplier, enrage threshold/multipliers, coin value, cleanup delay, and exactly one existing starter item for each selectable crew member. `StatusController` owns stable Bleed, Shock, and mechanics-neutral Wet duration/stack/tick state. `ActorVisual` observes state/status and draws replaceable palette/silhouette variants plus idle, walk, windup, active, recovery, knockback, incapacitated, and death poses; it is never attack timing or state authority.
+
+`CombatDirector` remains the combat authority. It owns stable actor registration, opposing-team target validity, deterministic nearest-target acquisition, attack-position reservations, damage resolution, combat-local hit-stop, synchronous dead-target invalidation, reservation cleanup, projectiles, charge/area/summon dispatch, boss phase notification, and application of aggregated equipment modifiers/effects. Projectiles are stepped in stable spawn order and resolve once or expire; charge and area attacks reuse the direct-hit path. Light knockback at or below authored armour is ignored. Stun duration is reduced and capped by actor data, and a control lockout prevents permanent restunning of the elite/boss. Rex's target-role bonus and Jax's environmental-collision multiplier are applied by role/data rather than actor-ID branches. `AttackPositionRegistry` exposes six reachable positions spanning the three authored lane centers. Actors never own rewards, equipment inventory, intervention ledgers, run progression, or UI state.
 
 ### Combat-safe space
 
@@ -168,39 +213,56 @@ The lane guides and route markers are development visualization, not movement or
 
 ### `RunEncounterController`
 
-- Owns encounter start/completion identity, scaled Street Punk spawns, stable lane selection, per-encounter and global concurrency caps, and transition-safe cleanup.
+- Owns encounter start/completion identity, the stable actor-scene catalogue, permanent-crew/temporary-ally/enemy spawning, deterministic mixed-enemy plans and lanes, authored staged-spawn timing, per-encounter/global caps, boss summons, defeat/elite/boss accounting, coin-cluster presentation requests, and transition-safe cleanup.
 - Applies the `RunDirector` health, damage, and spawn-budget scales to fresh encounter actors without moving combat calculations into run state.
 - Reports one typed completion notification per encounter token; `RunDirector` independently rejects duplicate or retried completion IDs.
 - Requests the existing standard reward preparation after completion and exposes the typed baseline/non-elite source context used to decide whether a supplemental card opportunity is eligible; authoritative reward and card accounting remain outside this controller.
-- Uses the current Street Punk/scaled placeholder infrastructure for baseline and card-created encounters, including Gang Hideout's elite-flagged placeholder. The Milestone 6 Viper Enforcer actor and later enemy/final-boss content are deliberately absent.
+- Filters and sorts typed `EncounterSpawnEntry` actor IDs before using `enemy_variants` for budgeted roster choices and `spawns` for lane choices. Minimum entries guarantee required actors: baseline fights include Street Punk with optional Bat Thug/Bottle Thrower, `viper_signal` guarantees one Viper Enforcer, and `viper_showdown` contains one boss. The three non-boss definitions build their complete deterministic actor-ID queue at encounter start, wait 3.0 eligible encounter seconds before the first actor, and then release one queued actor every 12.0 eligible encounter seconds; a full concurrency cap leaves the elapsed delay at zero and retries when a stable slot is available. Completion waits for both the pending queue and all live enemies. Boss entry remains immediate after its separate intro, and The Viper's one-shot summon requests `bat_thug` and `street_punk` in stable ID order within the boss encounter cap.
 
 ### Combat and reward presentation
 
-`CombatFeedback` observes resolved events and owns code-drawn hit sparks, damage numbers, death/spawn/water effects, and deterministic reusable placeholder PCM tones. It builds the small audio set before the run starts, registers Web sample playback up front, and exposes a one-shot gesture-unlock cue; it cannot change combat outcomes. `CoinCluster` is a generous mouse/touch `Area2D` under `LootContainer`; it forwards intent and presents a pulse, pointer, and click/tap countdown but never credits coins itself.
+`CombatFeedback` observes resolved events and owns code-drawn hit sparks, optional damage numbers, death/spawn/water effects, and the preserved Web gesture-unlock path; it cannot change combat outcomes. `ScreenShakeController` applies deterministic presentation-only camera offsets from authored hit categories and the 0–1 accessibility intensity. `CombatTelegraph` draws a labelled world warning circle/crosshair for The Viper's area, charge, and summon attacks, freezes while paused, and clears synchronously on terminal/restart/menu transitions. Gameplay radius/timing remain in `AttackDefinition`/`CombatDirector`.
+
+`AudioPresentationController` prebuilds 22,050 Hz mono 16-bit prototype PCM from 19 typed cue definitions without any random draw. Eight SFX voices share the `SFX` bus; district and boss-loop players share `Music`. District music runs throughout ordinary play, the boss layer starts for boss intro/active states, and terminal/menu cleanup removes it. `ApplicationSettingsController` applies Master/Music/SFX levels through the versioned bus layout. Audio remains replaceable presentation, not timing or combat authority.
+
+`CoinCluster` is a generous mouse/touch `Area2D` under `LootContainer`; it forwards intent and presents a pulse, pointer, and click/tap countdown but never credits coins itself.
 
 ### Fire Hydrant intervention
 
-`FireHydrantController` is the run-scoped Milestone 2 authority. A `FireHydrantTuning` Resource owns its 112-pixel circle, 18 damage, fixed leftward 300-force/0.30-second knockback, 8-second cooldown, and feedback timings. The controller validates live registered enemies in stable registration order, rejects no-target and cooldown requests, locks before resolving callbacks to prevent duplicate activation, applies damage/knockback through `CombatDirector`, and owns cooldown progression. It emits typed snapshots/results only.
+`FireHydrantController` remains the run-scoped authority. A `FireHydrantTuning` Resource owns its 112-pixel circle, 18 damage, fixed leftward 300-force/0.30-second knockback, four-second Wet application to surviving targets, eight-second base cooldown, and feedback timings. The controller validates live registered enemies in stable registration order, rejects no-target and cooldown requests, locks before resolving callbacks to prevent duplicate activation, applies damage/knockback through `CombatDirector`, and owns cooldown progression. Successful environmental hits continue the shared presentation-only combo. Zoey, Hacker Deck, and Tech 2 scale its remaining cooldown proportionally through one composed multiplier; they do not add charges or bypass validity.
 
-The `FireHydrant` world scene and `GameHUD` are presentation and input surfaces. Both forward the same activation intent, and the world preview reads the exact tuning Resource used by authority. The world scene owns hover/tap bounds, highlighting, the range drawing, authored placeholder hydrant/water art, and local presentation timers. Neither can choose targets, apply damage, or consume cooldown. The environmental source ID is a clean future compatibility seam for Wet/combo continuation without implementing a status-effect or combo system in Milestone 2.
+The `FireHydrant` world scene and `GameHUD` are presentation and input surfaces. Both forward the same activation intent, and the world preview reads the exact tuning Resource used by authority. The world scene owns hover/tap bounds, highlighting, range drawing, replaceable hydrant/water art, and local presentation timers. Neither can choose targets, apply damage, or consume cooldown.
+
+### Call Backup and Subway Reroute
+
+`CallBackupController` owns a transactional, finite two-charge ledger, 30-second base cooldown, activation tokens, exactly two temporary `backup_runner` allies, 12 eligible-combat-second lifetime, defeat notification, rollback on spawn/registration failure, and terminal/restart cleanup. Cooldown consumes eligible active time; promised ally lifetime consumes only active combat time. Invalid state, active instance, no-charge, cooldown, spawn, or registration rejection changes no accepted token, charge, cooldown, or ally ledger. `RunEncounterController` creates/registers/removes the actual allies, while `GameHUD` only presents the typed snapshot and forwards intent.
+
+`RunCoolingController` remains Subway Reroute authority. It accepts only safe non-boss `PATROLLING` travel when `PatrolController.can_reroute()` is true and a finite charge remains. After all rejection checks, it commits one of two charges and -15 Heat before synchronously advancing to the next authored occurrence, so the next encounter sees the cooled tier. It cannot run during an active boss, mutate Night Pressure, clear/reopen progression latches, consume a card-owned Subway skip, or draw randomness. Exhausted/invalid requests are immutable rejections.
 
 ## Run-system ownership
 
-Milestone 5 fills the existing run-scoped `CardSystem` and composes it with the preserved Milestone 3–4.2 authorities. No presentation node becomes a gameplay owner.
+Milestone 6 extends the preserved run-scoped authorities through composition. No presentation node becomes a gameplay owner, and neither persistent Autoload may own an active run.
 
 | Class | Path | Authoritative ownership |
 | --- | --- | --- |
-| `RunDirector` | `res://scripts/run/run_director.gd` | State-transition graph, eligible run time, Heat, irreversible Night Pressure, threshold latches/precedence, owned card-planning pause, outcomes, summary record, run seed, and scaling calculations |
+| `RunDirector` | `res://scripts/run/run_director.gd` | State-transition graph, eligible run time, Heat, irreversible Night Pressure, threshold latches/precedence, owned card-planning pause, ordinary/focus pause authority, boss/victory timing, outcomes, summary record, run seed, and scaling calculations |
 | `RunRandomStreams` | `res://scripts/run/run_random_streams.gd` | Seven isolated deterministic stream states and stable-ID selection |
 | `PatrolController` | `res://scripts/patrol/patrol_controller.gd` | Authored route sequence, authoritative current position, monotonic stable occurrence/slot identities, five-slot future snapshot, route revision, one-per-occurrence pending/resolved modifications, encounter pauses, safe boundaries, and finite reroute progression |
-| `RunEncounterController` | `res://scripts/encounters/run_encounter_controller.gd` | Encounter lifecycle/source identity, deterministic spawn/lane selection, scaled actor creation, baseline card-reward eligibility context, concurrency caps, and completion notification |
-| `RunCoolingController` | `res://scripts/run/run_cooling_controller.gd` | Finite Subway charges and finite priced shop-cooling stock |
-| `RunFlowController` | `res://scripts/run/run_flow_controller.gd` | Typed coordination between run, patrol, encounter, reward, cards, cooling, route-effect resolution, safe-boundary progression precedence, and presentation intent |
-| `CombatDirector` | `res://scripts/combat/combat_director.gd` | Actor combat, environmental hits, stable targeting/reservations, and complete run-owned combat cleanup |
-| `FireHydrantController` | `res://scripts/interventions/fire_hydrant_controller.gd` | Hydrant target validation, area resolution, rejection, and cooldown |
+| `RunEncounterController` | `res://scripts/encounters/run_encounter_controller.gd` | Encounter/source identity, actor-catalogue spawning, deterministic roster/lane selection, 3.0s/12.0s non-boss staged-spawn queues, scaled actor creation, temporary allies, boss summons/results, enemy/elite counts, baseline card-reward eligibility, caps, and cleanup |
+| `RunCoolingController` | `res://scripts/run/run_cooling_controller.gd` | Finite Subway charges/route advance and finite priced shop-cooling stock; Heat-only cooling |
+| `RunFlowController` | `res://scripts/run/run_flow_controller.gd` | Typed coordination between run, patrol, encounters, rewards, cards, cooling, route effects, boss/victory flow, starter equipment, summary settlement, safe-boundary precedence, and presentation intent |
+| `CombatDirector` | `res://scripts/combat/combat_director.gd` | Actor combat, projectiles, charge/area/summon dispatch, boss phase edges, environmental hits, stable targeting/reservations, and complete run-owned combat cleanup |
+| `FireHydrantController` | `res://scripts/interventions/fire_hydrant_controller.gd` | Hydrant target validation, area damage/knockback/Wet resolution, immutable rejection, and scalable cooldown |
+| `CallBackupController` | `res://scripts/interventions/call_backup_controller.gd` | Finite charges, activation tokens, two-ally transaction, eligible-time cooldown, combat-only 12-second lifetime, defeat/terminal/restart cleanup, and immutable rejection |
+| `ComboTracker` | `res://scripts/combat/combo_tracker.gd` | Shared crew/environmental hit count, 2.5-second eligible-time expiry, highest value, and presentation-only milestones |
+| `RunCadenceTracker` | `res://scripts/run/run_cadence_tracker.gd` | Measurement-only eligible-time records for ambient, strategic, and major opportunities; no scheduling and no coin-as-strategy relabelling |
 | `RewardDirector` | `res://scripts/rewards/reward_director.gd` | Standard reward selection/accounting, deterministic equipment choice generation/application coordination, supplemental card-reward presentation/application delegation without card selection authority, authored reward-quality tier advancement, coin ledger, at-most-once clusters, and manual streak |
 | `CardSystem` | `res://scripts/cards/card_system.gd` | Finite draw pile/hand/discard state, capacity/no-reshuffle rules, `cards`-stream selection, planning state, revisioned placement validation/staging, pending effects, card-reward tokens/acquisition, exactly-once resolution coordination, and restart cleanup |
 | `SynergySystem` | `res://scripts/synergies/synergy_system.gd` | Three active equipment slots, three ordered backpack slots, unique ownership, stable active-only aggregation, revisioned inventory transactions, threshold evaluation, previews, and activation/deactivation signaling |
+| `ApplicationSettingsController` | `res://scripts/app/application_settings_controller.gd` | Applies sanitized presentation/audio/display settings and forwards focus-pause intent to `RunDirector`; never pauses the tree directly |
+| `TutorialPromptController` | `res://scripts/tutorial/tutorial_prompt_controller.gd` | Stable-ID, priority-ordered, once-per-run nonmodal contextual prompts |
+| `AudioPresentationController` | `res://scripts/audio/audio_presentation_controller.gd` | Generated district/boss music and SFX playback only |
+| `ScreenShakeController` | `res://scripts/effects/screen_shake_controller.gd` | Deterministic presentation-only camera impulses and reset |
 
 ## Run lifecycle
 
@@ -215,9 +277,12 @@ safe boundary with queued boss -> BOSS_INTRO -> BOSS_ACTIVE -> VICTORY -> RUN_SU
 active run states -> DEFEAT -> RUN_SUMMARY
 eligible active states <-> PAUSED
 RUN_SUMMARY -> INITIALIZING (clean same-seed or new-seed restart)
+RUN_SUMMARY -> INITIALIZING (clean return to non-running main menu)
 ```
 
-The run timer and Night Pressure time gain advance only while `is_eligible_active_time()` is true. Intro, pause, reward selection, shop, extraction transition, boss intro, terminal states, and summary do not advance either value. Card planning is accepted only from the safe `PATROLLING`, `SHOP`, or `EXTRACTION_AVAILABLE` states. Planning entered from `PATROLLING` uses a `RunDirector`-owned `PAUSED` transition; an ordinary pause toggle cannot release that card-owned pause, so eligible time and Night Pressure remain stopped until the player closes card planning through the typed flow. Active combat and other unsafe/modal/terminal states reject planning without mutation. If progression nevertheless moves into an unsafe state, `RunFlowController` synchronously ends planning and clears the staged token; confirmation additionally rechecks the active planning state, so stale authority cannot apply Heat or mutate the route. `RunDirector` coordinates state but does not absorb patrol, encounter, combat, reward, card, or UI details.
+The run timer and Night Pressure time gain advance only while `is_eligible_active_time()` is true. Intro, pause, reward selection, shop, extraction transition, 2.5-second boss intro, two-second victory presentation, terminal states, and summary do not advance either value. Card planning is accepted only from the safe `PATROLLING`, `SHOP`, or `EXTRACTION_AVAILABLE` states. Planning entered from `PATROLLING` uses a `RunDirector`-owned `PAUSED` transition; an ordinary pause toggle cannot release that card-owned pause. Ordinary pause and focus-loss requests also pass through `RunDirector`; focus loss during unskippable intro/boss-intro is latched and applied only after a safe pauseable transition. `RunDirector` coordinates state but does not absorb patrol, encounter, combat, reward, card, persistence, or UI details.
+
+Main-menu presentation occurs before a run begins and before any gameplay draw. Selecting an accessible crew ID captures content access, installs that crew's single starter item, then starts the ordinary run initialization. The Viper's defeat enters `VICTORY`, waits for the authored presentation duration, settles every unresolved coin cluster at full base value, builds the summary, and only then records idempotent unlock/lifetime data. Extraction and defeat use the same pending-base-coin settlement before summary publication.
 
 ## Heat and Night Pressure
 
@@ -228,7 +293,7 @@ The run timer and Night Pressure time gain advance only while `is_eligible_activ
 
 Extraction and boss thresholds belong to Night Pressure, not Heat. Once crossed, thresholds latch and cannot be reopened or cleared by cooling. `RunDirector` must queue a boss crossed at an unsafe moment and begin it at the next valid transition boundary. If an extraction threshold and the boss threshold are crossed by the same authoritative update, the boss wins unless extraction was already confirmed before that update.
 
-Heat uses exact tiers 0: 0–19, 1: 20–39, 2: 40–59, 3: 60–79, 4: 80–99, and 5: 100. Its Resource controls immediate spawn additions, enemy damage, elite eligibility, reward quality, reward multiplier, and HUD presentation. Night Pressure gains 0.25 per eligible active second plus exactly-once completion gains of 6 (standard) or 10 (elite-flagged). Its Resource scales health by 1% per point, damage by 0.5% per point, and spawn budget by 1.25% per point. Spawn budgets use non-negative round-half-up: `floor(scaled_value + 0.5)`, then encounter and global caps are applied.
+Heat uses exact tiers 0: 0–19, 1: 20–39, 2: 40–59, 3: 60–79, 4: 80–99, and 5: 100. Its preserved Resource controls immediate spawn additions, enemy damage, elite eligibility, reward quality, reward multiplier, and HUD presentation. The configured Milestone 6 escalation Resource tunes Night Pressure to 0.07 per eligible active second plus exactly-once completion gains of 1.5 (standard) or 3.0 (elite-flagged), while preserving extraction thresholds 18/36 and boss threshold 50. It retains +1% health, +0.5% damage, and +1.25% spawn budget per Pressure plus the global cap 30. Spawn budgets use non-negative round-half-up: `floor(scaled_value + 0.5)`, then encounter and global caps are applied. The older `milestone_3_escalation` Resource remains tracked as the historical accepted M3 tuning but is not assigned to the configured M6 `GameRun`.
 
 Extraction latches at Night Pressure 18 and 36; the boss latches at 50. A first-crossed extraction is queued until a safe route boundary and becomes spent when declined or confirmed. A boss crossed at an unsafe moment remains queued until the next valid transition boundary. If extraction and boss thresholds cross in the same authoritative update, the boss wins unless extraction was already confirmed. Cooling never mutates Night Pressure, reopens a spent window, clears a boss latch/queue, or regenerates stock.
 
@@ -236,7 +301,7 @@ Extraction latches at Night Pressure 18 and 36; the boss latches at 50. A first-
 
 ## Coin-cluster ownership
 
-Coin clusters are optional ambient interactions implemented only for the Milestone 1 Combat Lab. `RewardDirector` owns the authoritative coin ledger, each cluster's resolution state, and the manual-collection streak. Combat requests an authored award and presentation displays a cluster, but neither may directly credit the ledger.
+Coin clusters are the vertical slice's optional ambient interactions. `RewardDirector` owns the authoritative coin ledger, each cluster's resolution state, and the manual-collection streak. Defeated rewarding enemies request their authored award and presentation displays one cluster, but neither combat actors nor UI may directly credit the ledger. Terminal settlement resolves still-visible clusters at full base value before the summary, without a manual bonus or streak increment.
 
 Manual click and the approximately 2.5-second timeout converge on one authoritative at-most-once resolution. Either path credits the full base value exactly once. Only a successful manual resolution advances the approximately 3-second streak and may add the data-driven bonus, capped at 10% of that cluster's base value; auto-collection grants no manual bonus. The presentation lives under `LootContainer`, remains non-authoritative, and is offset outside the immediate melee silhouette.
 
@@ -258,9 +323,11 @@ Every run has one authoritative signed integer seed owned by `RunDirector`. A su
 
 Random schema version **1** uses algorithm ID `fnv1a32_utf8_v1`: FNV-1a 32-bit over the UTF-8 bytes of `neon-loop|schema:<version>|seed:<integer>|stream:<name>`, with unsigned 32-bit wrap after every multiply. Locked known vectors cover every stream. Gameplay owners receive only their declared stream and do not use global unseeded random calls. Candidates are filtered, empty/duplicate IDs are rejected, and remaining stable content IDs are sorted before drawing; scene-tree insertion order, dictionary iteration order, Resource order, and presentation order are not selection contracts.
 
+Milestone 6 changes neither derivation nor draw semantics, so random schema version 1 remains unchanged. `RunDirector` still selects eligible encounter IDs with `encounters`; `RunEncounterController` sorts typed roster entries and consumes `enemy_variants` while constructing the complete ordered actor-ID plan at encounter start, then uses `spawns` for a stable lane ID when each queued actor is actually released. Authored 3.0-second entry and 12.0-second interval timers consume no random draw. Boss special order, one-shot summon IDs, ally lanes, projectile stepping, combo, cadence, audio synthesis, tutorial order, screen shake, settings, save handling, and unlock application consume no gameplay stream. Equipment/card access filtering is profile decision context captured before the first draw; same-seed claims therefore require the same content-access snapshot in addition to the same build/content/schema, ordered gameplay decisions, and authoritative timing.
+
 `CardSystem` constructs one copy of each valid catalogue card in stable card-ID order, then draws the opening two without replacement using only `cards`. A card reward re-filters the remaining draw pile, sorts by stable card ID, and uses only `cards` to draw up to three choices without replacement. Acquisition removes only the selected card; skip/full-hand handling does not draw again or mutate the pile. Placement, invalid/stale/current/past/occupied/outside rejection, route resolution, and card-created rewards consume no random stream. Neither `RewardDirector`'s `rewards` stream nor `encounters`, `spawns`, `equipment`, `enemy_variants`, or `cosmetic` selects cards.
 
-The `cosmetic` stream is isolated: adding cosmetic draws cannot change encounter, spawn, reward, equipment, card, or enemy-variant outcomes. Same-seed restart resets every generator, including `cards`, to its derived initial state. Equipment proc chances and equipment reward choices intentionally share the single specification-owned `equipment` stream, so reproducing later choices also requires the same ordered equipment effects and authoritative combat timing. Card reproduction likewise requires the same build/content revision, schema, seed, ordered acquisitions/placements, and authoritative route timing. Reproduction claims are limited to the same supported build, content revision, random schema, seed, ordered player decisions/effect resolutions, and authoritative timing context; physics or cross-version bitwise replay is not promised. Random schema version 1 is unchanged: M4.1 ownership filtering and M5's use of the already-defined `cards` stream retain the existing derivation, stable sorting, and draw-without-replacement semantics.
+The `cosmetic` stream is isolated: adding cosmetic draws cannot change encounter, spawn, reward, equipment, card, or enemy-variant outcomes. Same-seed restart resets every generator, including `cards`, to its derived initial state. Equipment proc chances and equipment reward choices intentionally share the single specification-owned `equipment` stream, so reproducing later choices also requires the same ordered equipment effects and authoritative combat timing. Card reproduction likewise requires the same build/content revision, schema, seed, ordered acquisitions/placements, and authoritative route timing. Reproduction claims are limited to the same supported build/content revision, random schema, captured access snapshot, seed, ordered player decisions/effect resolutions, and authoritative timing context; physics or cross-version bitwise replay is not promised.
 
 ## District Card ownership and route resolution
 
@@ -270,7 +337,7 @@ The `cosmetic` stream is isolated: adding cosmetic draws cannot change encounter
 | --- | --- | --- | ---: | --- |
 | `arcade` | `FREE`; `FIGHT`, `REWARD` | `travel` | +10 | Starts one standard-only placeholder fight. Its standard reward advances exactly one available authored quality tier on the existing 0/1/3 tier ladder and clamps at the catalogue maximum; it creates no general upgrade system and no card reward. |
 | `convenience_store` | `FREE`; `SHOP`, `RECOVERY` | `travel` | -10 | Opens one purchase using the existing finite shop/cooling stock (two run-stock purchases total, each 60 coins for 18 Heat cooling). The card visit allows at most one of those purchases, never replenishes stock, and creates no broader economy. |
-| `gang_hideout` | `FREE`; `ELITE`, `EQUIPMENT` | `encounter` | +20 | Starts the existing scaled, elite-eligible `viper_signal` placeholder and guarantees the normal equipment-choice phase from eligible catalogue items. It does not add the Milestone 6 Viper Enforcer actor and grants no card reward. |
+| `gang_hideout` | `FREE`; `ELITE`, `EQUIPMENT` | `encounter` | +20 | Starts the scaled `viper_signal` encounter, now authored with one required Viper Enforcer plus budgeted basic enemies, and guarantees the normal equipment-choice phase from eligible catalogue items. It grants no recursive card reward. |
 | `subway_entrance` | `FREE`; `REROUTE`, `SKIP` | `encounter` | -15 | Reroutes that future occurrence past exactly one baseline standard encounter. It never calls the finite Subway intervention, so it consumes/replenishes no Subway charge and grants no encounter/card reward. |
 
 `CardSystem` owns a finite draw pile, hand, discard pile, pending placement/effect records, bounded resolved history, resolved-placement token and resolved-reward encounter latches, hand revision, planning state, and pending reward choice. Each run begins with the four-card one-copy deck and draws two into a hand whose capacity is three. Confirmed play moves the card from hand to discard immediately and exactly once; the separate pending route record persists until its target occurrence resolves. Discarded cards are never reshuffled during M5. A selected reward card enters the hand exactly once and is removed from the draw pile only on successful acquisition. A full hand retains a clear **Skip / Keep Hand** path, and restart synchronously clears every pile, pending/resolved record, modal, revision/token latch, route modification, and `cards`-stream draw state before rebuilding the same-seed opening state.
@@ -299,35 +366,65 @@ Tag counts are accumulated in stable slot/content order. Modifiers are aggregate
 
 Choice previews clone the three active slots into a non-mutating candidate evaluation. They report current and prospective counts, immediate activations, deactivations caused by active-slot replacement, and progress toward every inactive primary threshold. The reward modal separately names the active destination, outgoing active item, backpack destination, and any exact stored item that would be left behind. The same aggregation/evaluation path powers previews and authoritative active changes. `GameHUD` forwards the chosen equipment index, destination positions, replacement confirmation, and inventory revision; it never equips directly. **Keep Current Build** clears the pending equipment choice while still granting the paired standard reward.
 
-Bleed is an actor-owned stackable status: base maximum three stacks, four-second duration, one-second ticks, and two damage per stack per tick. Bleed 2 adds two maximum stacks and +20% crew damage against bleeding enemies; Serrated Wraps independently adds one maximum stack and +15% such damage. Shock is a non-damaging actor-owned status with one stack and a three-second base duration. Shock Gloves apply it at 25%; Hacker Deck and Tech 2 each add 1.5 seconds. Status timers and effects clear on actor/run cleanup.
+Bleed is an actor-owned stackable status: base maximum three stacks, four-second duration, one-second ticks, and two damage per stack per tick. Bleed 2 adds two maximum stacks and +20% crew damage against bleeding enemies; Serrated Wraps independently adds one maximum stack and +15% such damage. Shock is a non-damaging actor-owned status with one stack and a three-second base duration. Shock Gloves apply it at 25%; Hacker Deck and Tech 2 each add 1.5 seconds. Wet is a mechanics-neutral one-stack, four-second status applied by a successful Hydrant hit for future compatibility; it changes no damage, Pressure, Heat, or stream state. Status timers and effects clear on actor/run cleanup.
+
+Each selectable crew definition supplies exactly one existing accessible starter item, resolving the specification's run-entry requirement without a tenth item or permanent bonus: Jax starts with Spiked Bat, Zoey with Shock Gloves, and Rex with Reinforced Jacket. `RunFlowController` installs the selected definition's item immediately after resetting `SynergySystem`; subsequent equipment and backpack rules are unchanged.
+
+## Boss, combo, cadence, and summary ownership
+
+`viper_showdown` is a separate boss-only encounter begun only after `RunDirector` completes the existing threshold latch, safe-boundary queue, and 2.5-second intro. The Viper owns no run outcome: its 1,800-health actor exposes typed melee, charge, area, summon, and enrage events through combat; `RunEncounterController` reports the one boss defeat; `RunFlowController` asks `RunDirector` for victory. The dedicated overlay health bar, named warnings, ground markers, enraged text, boss music layer, and two-second victory presentation observe those events. Reduced knockback, light-stagger armour, capped stun, and a two-second control lockout protect against permanent control without a blanket invulnerability branch.
+
+`ComboTracker` observes successful crew and environmental hits only. It expires after 2.5 eligible active seconds, accepts contributions from all crew/environmental sources, stores the run's highest value, and emits visual milestones at 10/20/30/50. Combo never changes damage, rewards, Heat, Night Pressure, encounter selection, or random streams.
+
+`RunCadenceTracker` is measurement-only. It timestamps coin-cluster presentation as ambient, ordinary encounter rewards and accepted shop visits as strategic, and extraction windows/boss commitment as major, all against `RunDirector.run_elapsed_seconds`. Target bands are 10–20, 30–60, and 120–180 eligible seconds. The non-boss encounters' 3.0-second entry beat and 12.0-second staged actor interval are authored content pacing intended to space potential rewarding defeats; actual coin-cluster gaps still depend on deterministic roster choices and combat duration. The tracker explicitly rejects any coin-labelled event as strategic, never schedules content, and does not count pause/modal/introduction time because that clock does not advance. Empirical 8–12-minute cadence and outcome verification remains in progress and must not be inferred from the existence of this observer.
+
+`RunSummaryRecord` is assembled once from `RunDirector`, encounter, reward, combo, equipment, and synergy authorities after unresolved clusters settle at full base value. It records result, duration, seed/schema, maximum Heat, final Night Pressure, encounters, enemies/elites, boss result, coins, manual clusters/maximum streak, scrap, highest combo, equipment build, and active synergies. `VerticalSliceOverlay` adds Restart Run and Return to Main Menu controls; it cannot change the record.
+
+## Settings, persistence, and unlock ownership
+
+Milestone 6 uses the two specification-authorized non-gameplay Autoloads:
+
+- `SaveService` (`ProfileSaveService`) owns atomic JSON read/write/reset at `user://neon_loop_profile_v1.json`, save version 1, missing/default status, corrupt/IO recovery to safe defaults, future-version read-only handling, and `.tmp`/`.bak` replacement files. Active runs are never serialized.
+- `AppState` (`NeonAppState`) owns the loaded profile, settings updates, idempotent completed-run unlock application, lifetime counts, development full-catalogue access, and typed persistence feedback. It owns no run state, Heat, Night Pressure, seed, stream, actor, reward, route, or outcome authority.
+
+Production defaults grant Jax, the eight existing equipment items other than Hacker Deck, and the three existing cards other than Gang Hideout. Exactly four data rules add Zoey after the first completed run, Hacker Deck after a completed run with at least one elite defeat, Gang Hideout after extraction, and Rex after victory. Debug/test profiles expose all three crew, all nine equipment items, and all four cards without modifying the stored unlock arrays. No unlock grants actor statistics, currency, run modifiers, or a new catalogue entry.
+
+`GameSettingsData` owns sanitized 0–1 Master/Music/SFX volume, fullscreen/windowed, screen-shake intensity, damage-number visibility, hit-flash reduction, and pause-on-focus-loss values. `ApplicationSettingsController` applies only presentation/audio/display state and forwards focus intent; `RunDirector` remains pause authority. `VerticalSliceOverlay` presents values and save feedback. Missing optional fields take typed defaults and out-of-range numeric values clamp; a future-version profile loads a sanitized read-only projection and cannot be overwritten.
+
+`TutorialPromptController` owns seven stable-ID, once-per-run, nonmodal contextual prompts for run controls, coins, interventions, equipment, cards, extraction, and boss warnings. It queues stable/priority-ordered definitions, never pauses play, and clears on run end/restart. The overlay only presents or dismisses the active prompt.
 
 ## Dependency direction
 
 ```text
 Player input
-    -> GameHUD / FireHydrant / DebugOverlay (presentation and intent)
+    -> GameHUD / VerticalSliceOverlay / FireHydrant / DebugOverlay (presentation and intent)
     -> GameRun wiring (typed signal connections)
     -> run-scoped systems (authority)
     -> stage/actor presentation (results)
+
+Completed summary -> AppState -> SaveService (versioned profile only)
+Saved settings -> ApplicationSettingsController -> audio/display/effect presentation
 ```
 
-Presentation may observe authoritative state, but authoritative gameplay code must not depend on concrete HUD controls. Stage containers host actors, but the stage does not implement actor behavior.
+Presentation may observe authoritative state, but authoritative gameplay code must not depend on concrete HUD controls. Stage containers host actors, but the stage does not implement actor behavior. Persistent services may filter available content before run initialization and record a completed summary afterward; they cannot mutate an active run.
 
 ## Autoload policy
 
-Milestone 4, its 4.1/4.2 corrections, and Milestone 5 add no Neon Loop gameplay Autoloads. The existing `_mcp_game_helper` entry belongs to the Godot AI/MCP development plugin and is not run state or shipped gameplay architecture. Future `AppState` or `SaveService` Autoloads are allowed by the specification only when their milestones require them and their reason is documented. The active run is never managed as a singleton, and `RunRandomStreams` remains owned by its `RunDirector`.
+Milestone 6 adds exactly the two Autoload roles allowed by `GameSpecifications.md`: `SaveService` for versioned persistent JSON and `AppState` for the loaded profile/settings/content-access policy. They are non-gameplay application services. The active run is never managed as a singleton, `RunDirector` remains the only run-state/Heat/Night Pressure/outcome authority, and `RunRandomStreams` remains owned by its scene-scoped `RunDirector`.
+
+The existing `_mcp_game_helper` entry and the tracked 17-file Godot-AI 3.0.5 working-tree update belong to owner-carried development tooling. Milestone 6 neither removes nor converts that plugin into gameplay authority.
 
 ## Deferred architecture
 
-These are intentionally absent until their owning milestones:
+The vertical slice stops at Milestone 6. The following remain intentionally absent:
 
-- Call Backup, Wet, combo-meter behavior, and statuses beyond the Milestone 4 Bleed/Shock subset
-- Milestone 6 crew/enemy content, including the Viper Enforcer actor, additional elite/final-boss actors and encounters, later interventions, production presentation/audio/tutorial/settings/final-summary work, and the production victory path
-- Additional districts or cards, procedural route generation, production shop content, save services, broad progression, and persistence
-- Equipment selling, salvage, buyback, auto-sell/auto-salvage rules, and a broader equipment-shop economy
-- Equipment rarity tiers, uniques, affixes, set items/set bonuses, and category-locked equipment slots
+- Procedural route generation, additional districts/cards, a card currency/shop/economy, or broader production shop content
+- Additional crew, enemy, elite, boss, intervention, equipment, synergy, or status content beyond the specified vertical-slice catalogues
+- Multiplayer, controller support, localization, achievements, daily scheduling/rewards, leaderboards, replay infrastructure, or mid-run saving
+- Advanced meta-progression, permanent statistical bonuses/trees, or a larger unlock graph
+- Equipment selling, salvage, buyback, auto-sell/auto-salvage, rarity, uniques, affixes, sets, category-locked slots, or a broader equipment economy
 
-Milestone 6 and later work is not authorized by the Milestone 5 implementation. Any change that crosses these scope boundaries should first update `IMPLEMENTATION_PLAN.md` and obtain a separate owner authorization.
+No post-Milestone-6 expansion is authorized. These boundaries may be changed only by a later explicit owner request and specification/architecture update.
 
 ## Foundation verification
 
@@ -389,4 +486,10 @@ Godot 4.7 launched the configured main scene directly into `/GameRun`. The confi
 
 Fresh release Windows and Web exports completed with exit code 0. The exported Windows runtime startup smoke exited 0 with no diagnostic. The local 1280 x 720 Web build unlocked sound, remained within panel borders, and ended with an empty browser warning/error console. Evidence: `res://docs/screenshots/milestone_5_district_cards.png`.
 
-Remaining limits are intentional: the four icons and Gang Hideout actor are replaceable placeholders; the route overlay is the fixed authored route with a rolling five-future-occurrence window and separate history, not procedural generation; the four-card one-copy deck has capacity three and no reshuffle, currency, economy, or persistence; and reproduction is bounded to the same supported build, content revision, schema, seed, decisions, and authoritative timing. The M5 working branch remains uncommitted, unpushed, unmerged, unpublished, and undeployed. Milestone 6 and later content remain unauthorized.
+Remaining M5 limits are intentional: the four icons are replaceable placeholders; the route overlay is the fixed authored route with a rolling five-future-occurrence window and separate history, not procedural generation; the four-card one-copy deck has capacity three and no reshuffle, currency, or economy; and reproduction is bounded to the same supported build, content revision, schema, seed, decisions, and authoritative timing. Milestone 5 was subsequently merged through PR #4 and published from `main` commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`. Milestone 6 replaces only the former `viper_signal` actor placeholder with the specified Viper Enforcer and adds the bounded profile gate around the same four-card catalogue.
+
+## Vertical-Slice Content and Presentation verification
+
+Milestone 6 implementation is present on `codex/milestone-6-vertical-slice`. Godot 4.7 passed **244/244 cumulative tests and 3,234 assertions with no failures or skips across 22 suites**, and a configured headless boot opened `/GameRun` without parser/runtime warnings, errors, or leaks. The cumulative single-process harness nevertheless emitted 48 ObjectDB-instance and four resource-in-use shutdown diagnostics; because the configured production boot did not reproduce them, harness cleanup is retained as a diagnostic TODO rather than hidden.
+
+A fixed-seed Rex/starter-only technical probe naturally reached Defeated at 589.517 eligible seconds (9m49.5s), after reaching the boss at 584.983 seconds. It did not establish representative Victory/Extraction, per-gap cadence acceptance, boss readability, crew feel, tutorial comprehension, three-build viability, or any owner qualitative result. Those checks, manual resolution inspection, fresh Windows/Web exports and runtime/browser-console checks, and visual evidence are explicitly deferred to the next Milestone 6 session in `TEST_PLAN.md`; this record invents no pass.

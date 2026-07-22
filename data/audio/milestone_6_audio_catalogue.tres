@@ -1,0 +1,226 @@
+[gd_resource type="Resource" script_class="AudioCueCatalogue" load_steps=22 format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/audio_cue_catalogue.gd" id="1_catalogue"]
+[ext_resource type="Script" path="res://scripts/audio/audio_cue_definition.gd" id="2_cue"]
+
+[sub_resource type="Resource" id="Cue_district_music"]
+script = ExtResource("2_cue")
+id = &"music_district_loop"
+bus = &"Music"
+waveform = 1
+base_frequency_hz = 110.0
+note_pattern_hz = PackedFloat32Array(110, 138.59, 164.81, 138.59, 123.47, 146.83, 174.61, 146.83)
+note_seconds = 0.5
+duration_seconds = 4.0
+gain = 0.18
+secondary_frequency_ratio = 2.0
+attack_seconds = 0.0
+release_seconds = 0.0
+loop = true
+
+[sub_resource type="Resource" id="Cue_boss_music"]
+script = ExtResource("2_cue")
+id = &"music_boss_layer"
+bus = &"Music"
+waveform = 1
+base_frequency_hz = 55.0
+note_pattern_hz = PackedFloat32Array(55, 65.41, 73.42, 82.41, 55, 73.42, 87.31, 98)
+note_seconds = 0.25
+duration_seconds = 4.0
+gain = 0.16
+secondary_frequency_ratio = 1.5
+attack_seconds = 0.0
+release_seconds = 0.0
+loop = true
+
+[sub_resource type="Resource" id="Cue_light_hit"]
+script = ExtResource("2_cue")
+id = &"sfx_light_hit"
+base_frequency_hz = 760.0
+note_pattern_hz = PackedFloat32Array(760, 520)
+note_seconds = 0.035
+duration_seconds = 0.09
+gain = 0.32
+secondary_frequency_ratio = 1.35
+release_seconds = 0.035
+
+[sub_resource type="Resource" id="Cue_heavy_hit"]
+script = ExtResource("2_cue")
+id = &"sfx_heavy_hit"
+waveform = 1
+base_frequency_hz = 210.0
+note_pattern_hz = PackedFloat32Array(210, 120)
+note_seconds = 0.07
+duration_seconds = 0.18
+gain = 0.46
+secondary_frequency_ratio = 0.5
+release_seconds = 0.07
+
+[sub_resource type="Resource" id="Cue_knockback"]
+script = ExtResource("2_cue")
+id = &"sfx_knockback"
+waveform = 1
+base_frequency_hz = 330.0
+note_pattern_hz = PackedFloat32Array(330, 220, 145)
+note_seconds = 0.055
+duration_seconds = 0.19
+gain = 0.38
+secondary_frequency_ratio = 0.75
+release_seconds = 0.05
+
+[sub_resource type="Resource" id="Cue_environment"]
+script = ExtResource("2_cue")
+id = &"sfx_environment_collision"
+waveform = 2
+base_frequency_hz = 95.0
+note_pattern_hz = PackedFloat32Array(95, 72)
+note_seconds = 0.08
+duration_seconds = 0.2
+gain = 0.24
+secondary_frequency_ratio = 1.8
+release_seconds = 0.08
+
+[sub_resource type="Resource" id="Cue_coin_auto"]
+script = ExtResource("2_cue")
+id = &"sfx_coin_auto_collect"
+base_frequency_hz = 520.0
+note_pattern_hz = PackedFloat32Array(520, 660)
+note_seconds = 0.055
+duration_seconds = 0.12
+gain = 0.22
+release_seconds = 0.04
+
+[sub_resource type="Resource" id="Cue_coin_manual"]
+script = ExtResource("2_cue")
+id = &"sfx_coin_manual_collect"
+base_frequency_hz = 660.0
+note_pattern_hz = PackedFloat32Array(660, 880)
+note_seconds = 0.055
+duration_seconds = 0.13
+gain = 0.3
+secondary_frequency_ratio = 2.0
+release_seconds = 0.04
+
+[sub_resource type="Resource" id="Cue_coin_streak"]
+script = ExtResource("2_cue")
+id = &"sfx_coin_streak_increase"
+base_frequency_hz = 780.0
+note_pattern_hz = PackedFloat32Array(780, 980, 1170)
+note_seconds = 0.045
+duration_seconds = 0.15
+gain = 0.27
+release_seconds = 0.03
+
+[sub_resource type="Resource" id="Cue_card"]
+script = ExtResource("2_cue")
+id = &"sfx_card_placement"
+waveform = 1
+base_frequency_hz = 390.0
+note_pattern_hz = PackedFloat32Array(390, 585, 780)
+note_seconds = 0.06
+duration_seconds = 0.2
+gain = 0.25
+release_seconds = 0.045
+
+[sub_resource type="Resource" id="Cue_intervention"]
+script = ExtResource("2_cue")
+id = &"sfx_intervention_activation"
+waveform = 1
+base_frequency_hz = 180.0
+note_pattern_hz = PackedFloat32Array(180, 270, 405)
+note_seconds = 0.08
+duration_seconds = 0.27
+gain = 0.34
+secondary_frequency_ratio = 2.0
+release_seconds = 0.06
+
+[sub_resource type="Resource" id="Cue_heat"]
+script = ExtResource("2_cue")
+id = &"sfx_heat_tier_increase"
+waveform = 2
+base_frequency_hz = 245.0
+note_pattern_hz = PackedFloat32Array(245, 245, 330)
+note_seconds = 0.09
+duration_seconds = 0.3
+gain = 0.2
+release_seconds = 0.05
+
+[sub_resource type="Resource" id="Cue_pressure"]
+script = ExtResource("2_cue")
+id = &"sfx_night_pressure_warning"
+waveform = 1
+base_frequency_hz = 96.0
+note_pattern_hz = PackedFloat32Array(96, 128, 96)
+note_seconds = 0.13
+duration_seconds = 0.42
+gain = 0.3
+secondary_frequency_ratio = 2.0
+release_seconds = 0.08
+
+[sub_resource type="Resource" id="Cue_extraction"]
+script = ExtResource("2_cue")
+id = &"sfx_extraction_available"
+base_frequency_hz = 440.0
+note_pattern_hz = PackedFloat32Array(440, 554.37, 659.25)
+note_seconds = 0.11
+duration_seconds = 0.38
+gain = 0.3
+secondary_frequency_ratio = 2.0
+release_seconds = 0.08
+
+[sub_resource type="Resource" id="Cue_boss_intro"]
+script = ExtResource("2_cue")
+id = &"sfx_boss_introduction"
+waveform = 2
+base_frequency_hz = 82.41
+note_pattern_hz = PackedFloat32Array(82.41, 73.42, 65.41, 55)
+note_seconds = 0.13
+duration_seconds = 0.56
+gain = 0.23
+secondary_frequency_ratio = 1.5
+release_seconds = 0.1
+
+[sub_resource type="Resource" id="Cue_victory"]
+script = ExtResource("2_cue")
+id = &"sfx_victory"
+base_frequency_hz = 440.0
+note_pattern_hz = PackedFloat32Array(440, 554.37, 659.25, 880)
+note_seconds = 0.1
+duration_seconds = 0.45
+gain = 0.32
+secondary_frequency_ratio = 2.0
+release_seconds = 0.08
+
+[sub_resource type="Resource" id="Cue_defeat"]
+script = ExtResource("2_cue")
+id = &"sfx_defeat"
+waveform = 1
+base_frequency_hz = 220.0
+note_pattern_hz = PackedFloat32Array(220, 174.61, 130.81, 98)
+note_seconds = 0.11
+duration_seconds = 0.5
+gain = 0.3
+secondary_frequency_ratio = 0.5
+release_seconds = 0.1
+
+[sub_resource type="Resource" id="Cue_ui_hover"]
+script = ExtResource("2_cue")
+id = &"sfx_ui_hover"
+base_frequency_hz = 620.0
+duration_seconds = 0.055
+gain = 0.14
+release_seconds = 0.02
+
+[sub_resource type="Resource" id="Cue_ui_confirm"]
+script = ExtResource("2_cue")
+id = &"sfx_ui_confirm"
+base_frequency_hz = 540.0
+note_pattern_hz = PackedFloat32Array(540, 720)
+note_seconds = 0.05
+duration_seconds = 0.12
+gain = 0.2
+release_seconds = 0.03
+
+[resource]
+script = ExtResource("1_catalogue")
+cues = Array[AudioCueDefinition]([SubResource("Cue_district_music"), SubResource("Cue_boss_music"), SubResource("Cue_light_hit"), SubResource("Cue_heavy_hit"), SubResource("Cue_knockback"), SubResource("Cue_environment"), SubResource("Cue_coin_auto"), SubResource("Cue_coin_manual"), SubResource("Cue_coin_streak"), SubResource("Cue_card"), SubResource("Cue_intervention"), SubResource("Cue_heat"), SubResource("Cue_pressure"), SubResource("Cue_extraction"), SubResource("Cue_boss_intro"), SubResource("Cue_victory"), SubResource("Cue_defeat"), SubResource("Cue_ui_hover"), SubResource("Cue_ui_confirm")])

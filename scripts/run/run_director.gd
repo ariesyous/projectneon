@@ -22,6 +22,9 @@ signal run_completed(result: int)
 signal run_summary_ready(summary: RunSummaryRecord)
 signal snapshot_changed(snapshot: Dictionary)
 signal card_planning_pause_changed(is_active: bool)
+signal boss_intro_timing_started(duration_seconds: float)
+signal victory_presentation_started(duration_seconds: float)
+signal victory_presentation_completed()
 
 enum RunState {
 	INITIALIZING,
@@ -59,6 +62,10 @@ const GENERATED_SEED_MODULUS: int = 2147483647
 
 @export var heat_definition: HeatDefinition = DEFAULT_HEAT
 @export var escalation_definition: RunEscalationDefinition = DEFAULT_ESCALATION
+## Null preserves the accepted Milestone 3 behavior: boss intro waits for the
+## explicit completion call and victory completes immediately. GameRun assigns
+## the Milestone 6 Resource when the vertical-slice composition is enabled.
+@export var lifecycle_definition: RunLifecycleDefinition
 
 var current_state: int = RunState.INITIALIZING
 var run_seed: int = 0
@@ -72,6 +79,8 @@ var _run_result: int = RunResult.NONE
 var _state_before_pause: int = RunState.PATROLLING
 var _intro_remaining: float = 0.0
 var _extraction_remaining: float = 0.0
+var _boss_intro_remaining: float = 0.0
+var _victory_presentation_remaining: float = 0.0
 var _snapshot_remaining: float = 0.0
 var _boss_threshold_latched: bool = false
 var _boss_queued: bool = false
@@ -87,6 +96,7 @@ var _last_summary: RunSummaryRecord
 var _random_streams: RunRandomStreams
 var _card_planning_pause_owned: bool = false
 var _ending_card_planning_pause: bool = false
+var _run_completion_emitted: bool = false
 
 
 func _ready() -> void:
@@ -114,7 +124,23 @@ func step_run(delta: float) -> void:
 		_extraction_remaining = maxf(_extraction_remaining - safe_delta, 0.0)
 		if _extraction_remaining <= 0.0 and _run_result == RunResult.NONE:
 			_run_result = RunResult.EXTRACTED
-			run_completed.emit(_run_result)
+			_emit_run_completed_once()
+	elif current_state == RunState.BOSS_INTRO and _boss_intro_remaining > 0.0:
+		_boss_intro_remaining = maxf(_boss_intro_remaining - safe_delta, 0.0)
+		if _boss_intro_remaining <= 0.0:
+			complete_boss_intro()
+	elif (
+		current_state == RunState.VICTORY
+		and _run_result == RunResult.VICTORY
+		and not _run_completion_emitted
+	):
+		_victory_presentation_remaining = maxf(
+			_victory_presentation_remaining - safe_delta,
+			0.0
+		)
+		if _victory_presentation_remaining <= 0.0:
+			victory_presentation_completed.emit()
+			_emit_run_completed_once()
 	elif is_eligible_active_state(current_state):
 		run_elapsed_seconds += safe_delta
 		add_night_pressure(safe_delta * escalation_definition.passive_pressure_per_second)
@@ -132,7 +158,7 @@ func start_run(supplied_seed: int = 0, use_supplied_seed: bool = false) -> int:
 	_random_streams.reset_for_seed(run_seed)
 	run_started.emit(run_seed, _random_streams.get_random_schema_version())
 	request_transition(RunState.INTRO)
-	_intro_remaining = INTRO_DURATION_SECONDS
+	_intro_remaining = get_intro_duration_seconds()
 	snapshot_changed.emit(get_snapshot())
 	return run_seed
 
@@ -146,6 +172,17 @@ func restart_same_seed() -> int:
 func restart_new_seed() -> int:
 	run_reset_requested.emit(false)
 	return start_run()
+
+
+## Explicit run abandonment used by the owner-authorized main-menu flow. It
+## publishes the same INITIALIZING boundary as a restart but does not create a
+## result, summary, seed draw, or persistence record.
+func return_to_initializing() -> bool:
+	if current_state == RunState.INITIALIZING:
+		return true
+	_reset_authoritative_state()
+	snapshot_changed.emit(get_snapshot())
+	return current_state == RunState.INITIALIZING
 
 
 func generate_run_seed() -> int:
@@ -309,33 +346,41 @@ func confirm_extraction() -> bool:
 	_current_extraction_threshold_index = -1
 	if not request_transition(RunState.EXTRACTING):
 		return false
-	_extraction_remaining = EXTRACTION_DURATION_SECONDS
+	_extraction_remaining = get_extraction_duration_seconds()
 	return true
 
 
 func complete_boss_intro() -> bool:
 	if current_state != RunState.BOSS_INTRO:
 		return false
+	_boss_intro_remaining = 0.0
 	return request_transition(RunState.BOSS_ACTIVE)
 
 
 func notify_boss_defeated() -> bool:
 	if current_state != RunState.BOSS_ACTIVE:
 		return false
-	if not request_transition(RunState.VICTORY):
-		return false
 	_run_result = RunResult.VICTORY
-	run_completed.emit(_run_result)
+	_victory_presentation_remaining = get_victory_presentation_duration_seconds()
+	if not request_transition(RunState.VICTORY):
+		_run_result = RunResult.NONE
+		_victory_presentation_remaining = 0.0
+		return false
+	victory_presentation_started.emit(_victory_presentation_remaining)
+	if _victory_presentation_remaining <= 0.0:
+		victory_presentation_completed.emit()
+		_emit_run_completed_once()
 	return true
 
 
 func notify_all_crew_incapacitated() -> bool:
 	if current_state not in [RunState.ENCOUNTER_ACTIVE, RunState.BOSS_ACTIVE]:
 		return false
-	if not request_transition(RunState.DEFEAT):
-		return false
 	_run_result = RunResult.DEFEATED
-	run_completed.emit(_run_result)
+	if not request_transition(RunState.DEFEAT):
+		_run_result = RunResult.NONE
+		return false
+	_emit_run_completed_once()
 	return true
 
 
@@ -346,7 +391,10 @@ func finalize_summary(
 	maximum_manual_streak: int,
 	scrap_secured: int,
 	equipment_build: String = "NOT AVAILABLE IN MILESTONE 3",
-	active_synergies: String = "NOT AVAILABLE IN MILESTONE 3"
+	active_synergies: String = "NOT AVAILABLE IN MILESTONE 3",
+	elites_defeated: int = 0,
+	highest_combo: int = 0,
+	boss_result: String = ""
 ) -> RunSummaryRecord:
 	if current_state not in [RunState.EXTRACTING, RunState.VICTORY, RunState.DEFEAT]:
 		return null
@@ -360,8 +408,13 @@ func finalize_summary(
 	summary.final_night_pressure = night_pressure
 	summary.encounters_completed = encounters_completed
 	summary.enemies_defeated = maxi(enemies_defeated, 0)
-	summary.elites_defeated = 0
+	summary.elites_defeated = maxi(elites_defeated, 0)
 	summary.boss_defeated = _run_result == RunResult.VICTORY
+	summary.boss_result = (
+		boss_result.strip_edges()
+		if not boss_result.strip_edges().is_empty()
+		else _derived_boss_result()
+	)
 	summary.coins_collected = maxi(coins_collected, 0)
 	summary.manual_clusters_collected = maxi(manual_clusters_collected, 0)
 	summary.maximum_manual_streak = maxi(maximum_manual_streak, 0)
@@ -369,6 +422,7 @@ func finalize_summary(
 	summary.equipment_build = equipment_build
 	summary.active_synergies = active_synergies
 	summary.boss_triggered = _boss_started
+	summary.highest_combo = maxi(highest_combo, 0)
 	_last_summary = summary
 	request_transition(RunState.RUN_SUMMARY)
 	run_summary_ready.emit(summary)
@@ -524,6 +578,38 @@ func get_random_schema_version() -> int:
 	return _random_streams.get_random_schema_version()
 
 
+func get_intro_duration_seconds() -> float:
+	return (
+		maxf(lifecycle_definition.intro_duration_seconds, 0.0)
+		if lifecycle_definition != null
+		else INTRO_DURATION_SECONDS
+	)
+
+
+func get_extraction_duration_seconds() -> float:
+	return (
+		maxf(lifecycle_definition.extraction_duration_seconds, 0.0)
+		if lifecycle_definition != null
+		else EXTRACTION_DURATION_SECONDS
+	)
+
+
+func get_boss_intro_duration_seconds() -> float:
+	return (
+		maxf(lifecycle_definition.boss_intro_duration_seconds, 0.0)
+		if lifecycle_definition != null
+		else 0.0
+	)
+
+
+func get_victory_presentation_duration_seconds() -> float:
+	return (
+		maxf(lifecycle_definition.victory_presentation_duration_seconds, 0.0)
+		if lifecycle_definition != null
+		else 0.0
+	)
+
+
 func get_next_major_threshold() -> float:
 	for threshold_index: int in range(escalation_definition.extraction_pressure_thresholds.size()):
 		if not _latched_extraction_thresholds.has(threshold_index):
@@ -547,6 +633,8 @@ func get_snapshot() -> Dictionary:
 		"boss_threshold": escalation_definition.boss_pressure_threshold,
 		"boss_queued": _boss_queued,
 		"boss_started": _boss_started,
+		"boss_intro_remaining": _boss_intro_remaining,
+		"victory_presentation_remaining": _victory_presentation_remaining,
 		"extraction_available": current_state == RunState.EXTRACTION_AVAILABLE,
 		"current_extraction_threshold_index": _current_extraction_threshold_index,
 		"encounters_completed": encounters_completed,
@@ -554,6 +642,7 @@ func get_snapshot() -> Dictionary:
 		"card_planning_pause_active": is_card_planning_pause_active(),
 		"pause_origin_state": _state_before_pause if current_state == RunState.PAUSED else -1,
 		"result": _run_result,
+		"run_completion_emitted": _run_completion_emitted,
 		"random_draw_counts": get_random_streams().get_debug_snapshot().get("draw_counts", {}),
 	}
 
@@ -566,6 +655,8 @@ static func is_pauseable_state(state: int) -> bool:
 	return state in [
 		RunState.PATROLLING,
 		RunState.ENCOUNTER_ACTIVE,
+		RunState.REWARD_SELECTION,
+		RunState.SHOP,
 		RunState.EXTRACTION_AVAILABLE,
 		RunState.BOSS_ACTIVE,
 	]
@@ -660,11 +751,15 @@ func _begin_pending_progression() -> bool:
 		_current_extraction_threshold_index = -1
 		_boss_queued = false
 		_boss_started = true
+		_boss_intro_remaining = get_boss_intro_duration_seconds()
 		if request_transition(RunState.BOSS_INTRO):
 			boss_started.emit()
+			if _boss_intro_remaining > 0.0:
+				boss_intro_timing_started.emit(_boss_intro_remaining)
 			return true
 		_boss_queued = true
 		_boss_started = false
+		_boss_intro_remaining = 0.0
 		return false
 
 	while not _pending_extraction_thresholds.is_empty():
@@ -698,6 +793,8 @@ func _reset_authoritative_state() -> void:
 	_state_before_pause = RunState.PATROLLING
 	_intro_remaining = 0.0
 	_extraction_remaining = 0.0
+	_boss_intro_remaining = 0.0
+	_victory_presentation_remaining = 0.0
 	_snapshot_remaining = 0.0
 	_boss_threshold_latched = false
 	_boss_queued = false
@@ -709,6 +806,7 @@ func _reset_authoritative_state() -> void:
 	_pending_extraction_thresholds.clear()
 	_completed_encounter_ids.clear()
 	_last_summary = null
+	_run_completion_emitted = false
 	if card_planning_was_active:
 		card_planning_pause_changed.emit(false)
 
@@ -744,12 +842,14 @@ func _is_transition_allowed(from_state: int, to_state: int) -> bool:
 				RunState.PATROLLING,
 				RunState.EXTRACTION_AVAILABLE,
 				RunState.BOSS_INTRO,
+				RunState.PAUSED,
 			]
 		RunState.SHOP:
 			return to_state in [
 				RunState.PATROLLING,
 				RunState.EXTRACTION_AVAILABLE,
 				RunState.BOSS_INTRO,
+				RunState.PAUSED,
 			]
 		RunState.EXTRACTION_AVAILABLE:
 			return to_state in [
@@ -771,3 +871,19 @@ func _is_transition_allowed(from_state: int, to_state: int) -> bool:
 		RunState.PAUSED:
 			return to_state == _state_before_pause
 	return false
+
+
+func _emit_run_completed_once() -> bool:
+	if _run_completion_emitted or _run_result == RunResult.NONE:
+		return false
+	_run_completion_emitted = true
+	run_completed.emit(_run_result)
+	return true
+
+
+func _derived_boss_result() -> String:
+	if _run_result == RunResult.VICTORY:
+		return "DEFEATED"
+	if _boss_started and _run_result == RunResult.DEFEATED:
+		return "CREW DEFEATED"
+	return "NOT REACHED"

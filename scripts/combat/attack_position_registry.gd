@@ -36,11 +36,6 @@ func reserve(attacker: ActorController, target: ActorController, maximum_distanc
 	for slot_index: int in range(_slot_x_offsets.size()):
 		if slots.has(slot_index):
 			continue
-		# Milestone 1 has one crew actor. Keeping its reservation on the
-		# middle-lane pair gives reciprocal crew/enemy engagements equal X
-		# offsets while enemies still occupy all three authored lanes.
-		if attacker.team == ActorController.Team.CREW and slot_index not in [2, 3]:
-			continue
 		var slot_position: Vector2 = _slot_world_position(attacker, target, slot_index)
 		if target.global_position.distance_to(slot_position) > maximum_distance:
 			continue
@@ -103,9 +98,10 @@ func _slot_world_position(
 	target: ActorController,
 	slot_index: int
 ) -> Vector2:
-	var slot_lane: int = 1
-	if attacker.team == ActorController.Team.ENEMY:
-		slot_lane = int(floor(float(slot_index) / 2.0))
+	# Both teams can use all six stable slots. This preserves the original
+	# middle-lane preference through nearest-distance selection while allowing
+	# all three permanent crew members to engage one elite or boss.
+	var slot_lane: int = int(floor(float(slot_index) / 2.0))
 	return _combat_space.clamp_actor_position(
 		Vector2(
 			target.global_position.x + _slot_x_offsets[slot_index],

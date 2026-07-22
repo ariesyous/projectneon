@@ -1,0 +1,64 @@
+[gd_resource type="Resource" script_class="TutorialPromptCatalogue" load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/tutorial/tutorial_prompt_catalogue.gd" id="1_catalogue"]
+[ext_resource type="Script" path="res://scripts/tutorial/tutorial_prompt_definition.gd" id="2_prompt"]
+
+[sub_resource type="Resource" id="Prompt_controls"]
+script = ExtResource("2_prompt")
+id = &"tutorial_run_controls"
+trigger_id = &"run_started"
+heading = "AUTO-BRAWL, YOUR DECISIONS"
+body = "Your crew fights automatically. Use interventions and route choices when their labelled prompts appear. The labelled HELP button explains controls."
+priority = 100
+
+[sub_resource type="Resource" id="Prompt_coins"]
+script = ExtResource("2_prompt")
+id = &"tutorial_coin_cluster"
+trigger_id = &"coin_cluster_available"
+heading = "COIN CLUSTER"
+body = "Click or tap for a streak bonus. Ignore it safely and the full base value auto-collects."
+priority = 80
+
+[sub_resource type="Resource" id="Prompt_interventions"]
+script = ExtResource("2_prompt")
+id = &"tutorial_interventions"
+trigger_id = &"intervention_available"
+heading = "INTERVENTIONS"
+body = "Choose Hydrant, Backup, or Reroute when its text says VALID. Rejected or exhausted requests spend nothing."
+priority = 90
+
+[sub_resource type="Resource" id="Prompt_equipment"]
+script = ExtResource("2_prompt")
+id = &"tutorial_equipment"
+trigger_id = &"equipment_choice_available"
+heading = "BUILD YOUR CREW"
+body = "Active gear grants effects; Backpack gear is inactive. Inspect tags and the written synergy preview before confirming."
+priority = 70
+
+[sub_resource type="Resource" id="Prompt_cards"]
+script = ExtResource("2_prompt")
+id = &"tutorial_district_cards"
+trigger_id = &"card_planning_available"
+heading = "DISTRICT CARDS"
+body = "Place a card only on a future slot labelled VALID, then confirm. Heat changes; Night Pressure never cools."
+priority = 75
+
+[sub_resource type="Resource" id="Prompt_extraction"]
+script = ExtResource("2_prompt")
+id = &"tutorial_extraction"
+trigger_id = &"extraction_available"
+heading = "EXTRACTION WINDOW"
+body = "Extract now to secure Scrap, or continue toward greater risk and The Viper. The choice is written beside both actions."
+priority = 95
+
+[sub_resource type="Resource" id="Prompt_boss"]
+script = ExtResource("2_prompt")
+id = &"tutorial_boss"
+trigger_id = &"boss_intro"
+heading = "THE VIPER"
+body = "Watch the named warning and ground marker before each major attack. The boss bar shows health and ENRAGED state."
+priority = 100
+
+[resource]
+script = ExtResource("1_catalogue")
+prompts = Array[TutorialPromptDefinition]([SubResource("Prompt_controls"), SubResource("Prompt_coins"), SubResource("Prompt_interventions"), SubResource("Prompt_equipment"), SubResource("Prompt_cards"), SubResource("Prompt_extraction"), SubResource("Prompt_boss")])

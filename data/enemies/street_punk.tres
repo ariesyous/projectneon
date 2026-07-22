@@ -6,6 +6,7 @@
 script = ExtResource("1_definition")
 id = &"street_punk"
 display_name = "Street Punk"
+combat_role = 2
 maximum_health = 58
 movement_speed = 86.0
 base_damage = 2

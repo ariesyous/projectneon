@@ -12,9 +12,26 @@ Repository: [github.com/ariesyous/projectneon](https://github.com/ariesyous/proj
 
 ## Project status
 
-**Milestone 5 — District Cards: technically implemented, verified, merged, and published**
+**Milestone 6 — Vertical-Slice Content and Presentation: implemented in the local working tree; final technical acceptance is pending**
 
-The current public build adds:
+The authorized local Milestone 6 implementation adds:
+
+- Three selectable, mechanically distinct crew members with authored starters: Jax (`jax`), the high-knockback Brawler with Spiked Bat; Zoey (`zoey`), the fast Tech Fighter with reduced intervention cooldowns and Shock Gloves; and Rex (`rex`), the high-health, control-resistant Bruiser with elite/boss damage and Reinforced Jacket
+- Three distinct basics—Street Punk (`street_punk`), Bat Thug (`bat_thug`), and ranged Bottle Thrower (`bottle_thrower`)—plus the armoured, charge-capable Viper Enforcer (`viper_enforcer`) elite
+- The Viper (`the_viper`) boss with a three-hit combo, charge, one-shot two-enemy summon, warned area attack, 40%-health enrage, reduced knockback, bounded control locks, dedicated health/telegraph presentation, boss-music layer, and victory sequence
+- Finished Fire Hydrant presentation over its preserved authority; tokenized Call Backup with two charges, a 30-second base cooldown, exactly two temporary allies, and a 12-second eligible-combat lifetime; and the preserved two-charge Subway Reroute contract that advances one authored non-boss route occurrence and removes 15 Heat without changing Night Pressure or threshold precedence
+- A native 1280 x 720 vertical-slice overlay with crew selection, intervention state, boss bar/telegraphs, contextual nonmodal tutorials, combo/high-combo display, pause/settings, complete terminal summaries, and same-seed/new-seed/menu actions
+- Replaceable actor visuals with clearer movement/attack/hit/death animation, deterministic combat effects and screen shake, generated district music plus a boss layer, and authored UI/combat/progression sound categories
+- Version-1 settings and profile persistence at `user://neon_loop_profile_v1.json`, including safe missing/corrupt/future-version handling, atomic replacement, development-only reset, and no mid-run save or permanent statistical bonuses
+- The exact bounded unlock path: any completed run unlocks Zoey; a completed run with an elite defeat unlocks existing Hacker Deck; extraction unlocks existing Gang Hideout; and victory unlocks Rex. Development/test access still exposes all three crew, all nine existing equipment entries, and all four existing cards
+- Presentation-only combo tracking and measurement-only cadence records for 10–20-second ambient, 30–60-second strategic, and 120–180-second major-risk targets; coin clicks remain ambient and ignoring them preserves the full base reward
+- The unchanged deterministic schema version 1 and the same seven named streams; Milestone 6 boss actions, summons, projectiles, interventions, tutorials, combo/cadence, audio synthesis, and screen shake add no unseeded gameplay randomness
+
+Godot 4.7 passed the local cumulative automated gate at **244/244 tests and 3,234 assertions with no failures or skips across 22 suites**. A configured headless boot opened `/GameRun` cleanly. A fixed-seed Rex/starter-only technical probe naturally reached Defeated at 589.517 eligible seconds (9m49.5s), but representative Victory/Extraction and owner-facing manual validation were not completed. Exact cadence conformance, interaction/settings/save/restart checks, 1280 x 720 and 1080p/1440p visual inspection, fresh Windows/Web exports, exported-runtime/browser-console checks, and new Milestone 6 visual evidence are documented as next-session TODOs. The cumulative harness's 48 ObjectDB and four resource-in-use shutdown diagnostics also remain a cleanup-audit TODO; the configured boot did not reproduce them.
+
+**Milestone 5 — District Cards remains the technically verified, merged, and published public baseline.**
+
+The current public Milestone 5 build adds:
 
 - Typed card/effect Resources and exactly four stable-ID, one-copy cards: Arcade, Convenience Store, Gang Hideout, and Subway Entrance; all display `FREE`
 - A finite four-card deck, deterministic two-card opening hand, hand capacity three, discard pile, no reshuffle, and clean restart
@@ -42,19 +59,22 @@ The published Pages build was smoke-checked at its native 1280 x 720 presentatio
 2. Open `project.godot` in the Godot editor.
 3. Run the project with <kbd>F5</kbd> or the editor's Run Project button.
 
-The configured main scene opens directly into `GameRun`.
+The configured main scene opens directly into `GameRun`; the Milestone 6 working tree presents its crew-selecting main menu inside that scene before a run begins.
 
 ### Player controls
 
 - Click or tap a coin cluster to collect immediately and build a manual streak; ignoring it still grants the full base value
-- Click or tap the Fire Hydrant when it is ready and a Street Punk is inside its preview circle
-- Use the visible run-action controls to claim rewards, spend finite Subway or shop cooling, continue, extract, and advance the boss trigger
+- Click/tap the intervention buttons or press <kbd>1</kbd>, <kbd>2</kbd>, or <kbd>3</kbd> for Fire Hydrant, Call Backup, or Subway Reroute; invalid, cooling-down, active, or exhausted requests leave authoritative state unchanged
+- Use the visible run-action controls to claim rewards, spend finite shop cooling, continue, extract, and advance the boss trigger
 - Use **PLAN CARDS** at a safe route-planning state, then click/tap or drag a hand card to one of the five future route slots; review and press **Confirm** before authority changes
 - Right-click to cancel an active card drag; invalid or outside drops return the card to the hand without changing Heat, route state, piles, rewards, or deterministic streams
 - Use **Skip / Keep Hand** to decline a card reward, including when the three-card hand is full
 - Inspect or manage the three generic active equipment slots and one three-slot inactive backpack through the existing drag or click/tap/keyboard flows; destructive discard remains separately named and confirmed
 - Press <kbd>Space</kbd> to pause or resume eligible run time
 - Press <kbd>E</kbd> to confirm extraction while an extraction window is available
+- Press <kbd>Tab</kbd> to show or hide build details
+- Use the main-menu and pause settings panels for Master/Music/SFX volume, fullscreen/windowed mode, screen-shake intensity, damage numbers, hit-flash reduction, and pause-on-focus-loss
+- At a terminal summary, choose same-seed restart, new-seed restart, or Return to Main Menu
 - Use **Help** to reopen the nonmodal guidance
 - Use **Fullscreen** as the primary desktop and mobile presentation control; Escape exits fullscreen where supported
 
@@ -69,11 +89,17 @@ Reward and run-action buttons respond to one ordinary click or tap.
 
 ## Current scope
 
-Milestone 5 District Cards is technically complete and is the current public release from `main` merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`. The accepted Milestone 4–4.2 baseline from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9` is preserved as historical context.
+Milestone 6 Vertical-Slice Content and Presentation is authorized and implemented in the local `codex/milestone-6-vertical-slice` working tree. Its automated gate is green; the manual/export/evidence TODOs listed above remain before full technical acceptance. Milestone 5 District Cards remains the current public release from `main` merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`; the accepted Milestone 4–4.2 publication from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9` remains historical context.
 
-Milestone 5 stops at the four-card catalogue, finite deck/hand/discard model, supplemental card reward source, five fixed future-route slots, four bounded effects, deterministic `cards`-stream selection, and safe planning UI. The boss scope still ends at threshold latching, safe queueing, `BOSS_INTRO`, and `BOSS_ACTIVE`.
+Milestone 6 ends at the three-member crew, three-basic/one-elite/one-boss roster, three interventions, finished prototype presentation/audio/tutorial/settings/profile/summary layers, four bounded unlocks over existing content, fixed authored route, and complete victory/extraction/defeat paths. It adds no route generation, fifth card, tenth required equipment entry, permanent stat bonus, or broad progression tree.
 
-Milestone 6 crew/enemy/elite-actor/boss/intervention/presentation/audio/tutorial/settings/persistence/final-summary work; procedural route generation; additional districts/cards; equipment selling/salvage/rarity/uniques/affixes/sets; a card currency/economy; broad progression; and final-boss content remain unimplemented and unauthorized.
+Stop after Milestone 6. Additional districts/cards/crew/enemies/bosses; procedural routes; multiplayer; controller support; localization; achievements; daily-run systems; leaderboards; advanced meta-progression; permanent stat trees; mid-run saving/replays; equipment selling, salvage, rarity, uniques, affixes, or sets; a card currency/shop/economy; and every other post-vertical-slice system remain unauthorized. Milestone 6 has not been committed, pushed, merged, published, or deployed.
+
+### Working-tree provenance
+
+- The tracked, enabled Godot-AI addon carries a pre-existing owner update to 3.0.5 across 17 addon files. It remains development tooling and is not Milestone 6 gameplay work.
+- The pre-existing owner deletions of `window/stretch/aspect="keep"` and `textures/default_filters/use_nearest_mipmap_filter=false` remain preserved in `project.godot`; they are not Milestone 6 changes.
+- The Milestone 6 `SaveService` and `AppState` Autoload entries are separate authorized application/profile additions. They own no active-run Heat, Night Pressure, outcome, or random stream.
 
 ## Documentation
 

@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="RunLoadoutDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/run/run_loadout_definition.gd" id="1_loadout"]
+
+[resource]
+script = ExtResource("1_loadout")
+starting_crew_size = 1
+maximum_active_crew_size = 3
+selectable_crew_ids = Array[StringName]([&"jax", &"zoey", &"rex"])

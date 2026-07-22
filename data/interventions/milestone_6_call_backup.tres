@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CallBackupDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/interventions/call_backup_definition.gd" id="1_backup"]
+[ext_resource type="Texture2D" path="res://assets/icons/interventions/call_backup.svg" id="2_icon"]
+
+[resource]
+script = ExtResource("1_backup")
+id = &"call_backup"
+display_name = "Call Backup"
+description = "Deploy two temporary allies. They fight for 12 active combat seconds or until defeated."
+icon = ExtResource("2_icon")
+ally_count = 2
+active_combat_duration_seconds = 12.0
+initial_charges = 2
+cooldown_seconds = 30.0

@@ -1,17 +1,23 @@
-[gd_resource type="Resource" script_class="ActorDefinition" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="ActorDefinition" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/actors/actor_definition.gd" id="1_definition"]
+[ext_resource type="Resource" path="res://data/equipment/spiked_bat.tres" id="2_starter"]
 
 [resource]
 script = ExtResource("1_definition")
 id = &"jax"
 display_name = "Jax"
+combat_role = 0
 maximum_health = 520
 movement_speed = 112.0
 base_damage = 20
 damage_multiplier = 1.0
 damage_taken_multiplier = 1.0
 knockback_resistance = 0.18
+stagger_resistance = 0.15
+light_stagger_armour = 55.0
+environmental_collision_damage_multiplier = 1.25
 grants_coin_reward = false
 authored_coin_value = 0
 cleanup_delay = 0.0
+starting_equipment = Array[EquipmentDefinition]([ExtResource("2_starter")])

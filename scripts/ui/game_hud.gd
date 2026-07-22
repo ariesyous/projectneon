@@ -11,6 +11,7 @@ signal fullscreen_requested()
 signal primary_action_requested()
 signal extraction_requested()
 signal subway_reroute_requested()
+signal backup_activation_requested()
 signal shop_cooling_requested()
 signal restart_same_seed_requested()
 signal restart_new_seed_requested()
@@ -115,6 +116,7 @@ const DISTRICT_ROUTE_SLOT_COUNT: int = 5
 @onready var landscape_panel: Panel = $Root/LandscapePanel
 @onready var run_actions_title: Label = $Root/CardsPanel/Title
 @onready var primary_action_button: Button = $Root/CardsPanel/Card01
+@onready var backup_button: Button = $Root/CardsPanel/BackupButton
 @onready var subway_reroute_button: Button = $Root/CardsPanel/Card02
 @onready var shop_cooling_button: Button = $Root/CardsPanel/Card03
 @onready var district_card_compact_panel: Panel = (
@@ -159,6 +161,7 @@ const DISTRICT_ROUTE_SLOT_COUNT: int = 5
 @onready var boss_trigger_panel: Panel = $Root/BossTriggerPanel
 @onready var boss_same_seed_button: Button = $Root/BossTriggerPanel/RestartSameSeed
 @onready var boss_new_seed_button: Button = $Root/BossTriggerPanel/RestartNewSeed
+@onready var auto_help_label: Label = $Root/HelpPanel/AutoHelp
 @onready var build_title_button: LinkButton = $Root/BuildPanel/Title
 @onready var build_slot_01: LinkButton = $Root/BuildPanel/Slot01
 @onready var build_slot_02: LinkButton = $Root/BuildPanel/Slot02
@@ -274,6 +277,8 @@ var _district_card_reward_can_skip: bool = true
 var _district_card_action_in_flight: bool = false
 var _district_card_stage_in_flight: bool = false
 var _district_card_drag_cancelled: bool = false
+var _crew_display_name: String = "JAX"
+var _backup_snapshot: Dictionary = {}
 var _route_journey_text: String = (
 	"HIDEOUT>PATROL>FIGHT\nGEAR>EXIT/BOSS\nN0 00% L0 > PATROL"
 )
@@ -288,6 +293,7 @@ func _ready() -> void:
 	help_button.pressed.connect(_toggle_help)
 	fullscreen_button.pressed.connect(_on_fullscreen_button_pressed)
 	primary_action_button.pressed.connect(_on_primary_action_pressed)
+	backup_button.pressed.connect(_on_backup_pressed)
 	subway_reroute_button.pressed.connect(_on_subway_reroute_pressed)
 	shop_cooling_button.pressed.connect(_on_shop_cooling_pressed)
 	extraction_button.pressed.connect(_on_extraction_pressed)
@@ -479,14 +485,83 @@ func present_jax_status(
 	state_name: StringName,
 	target_name: String
 ) -> void:
+	present_crew_status("JAX", current_health, maximum_health, state_name, target_name)
+
+
+func present_crew_status(
+	display_name: String,
+	current_health: float,
+	maximum_health: float,
+	state_name: StringName,
+	target_name: String
+) -> void:
+	_crew_display_name = display_name.to_upper() if not display_name.is_empty() else "CREW"
 	var safe_maximum: float = maxf(1.0, maximum_health)
 	var safe_current: float = clampf(current_health, 0.0, safe_maximum)
 	health_meter.max_value = safe_maximum
 	health_meter.value = safe_current
 	health_label.text = "HEALTH %d / %d" % [int(round(safe_current)), int(round(safe_maximum))]
 	crew_state_label.text = _compact_state_name(state_name)
+	var initials: String = _crew_display_name.left(2)
+	($Root/CrewPanel/Title as Label).text = "%s • AUTO FIGHT" % _crew_display_name
+	($Root/CrewPanel/Portrait/PortraitGlyph as Label).text = initials
+	($Root/CrewPanel/CrewName as Label).text = _crew_display_name
+	($Root/BuildDetailsPanel/Title as Label).text = "%s EQUIPMENT • DRAG OR CLICK" % _crew_display_name
+	auto_help_label.text = (
+		"%s AUTO-FIGHTS.\n" % _crew_display_name
+		+ "CLICKS ONLY INSPECT; NEVER DISCARD.\n"
+		+ "CARDS: DRAG/CLICK; RIGHT-CLICK = CANCEL."
+	)
 	crew_status_label.text = "TARGET\n%s\nAUTO FIGHTING" % (
 		target_name if not target_name.is_empty() else "NONE"
+	)
+
+
+func present_backup_state(snapshot: Dictionary) -> void:
+	_backup_snapshot = snapshot.duplicate(true)
+	var active_allies: int = maxi(
+		int(snapshot.get("active_ally_count", snapshot.get("active_allies", 0))),
+		0
+	)
+	var charges: int = maxi(int(snapshot.get("charges_remaining", snapshot.get("charges", 0))), 0)
+	var cooldown_remaining: float = maxf(float(snapshot.get("cooldown_remaining", 0.0)), 0.0)
+	var duration_remaining: float = maxf(
+		float(snapshot.get("active_duration_remaining", snapshot.get("duration_remaining", 0.0))),
+		0.0
+	)
+	var can_activate: bool = bool(snapshot.get("can_activate", false))
+	var reason: String = str(
+		snapshot.get("validity_text", snapshot.get("validity_reason", "NEEDS ACTIVE ENEMY"))
+	).replace("_", " ")
+	var compact_reason: String = {
+		"invalid state": "NEEDS FIGHT",
+		"no charges": "EXHAUSTED",
+		"already active": "ACTIVE",
+		"cooldown": "COOLING DOWN",
+		"unconfigured": "UNAVAILABLE",
+		"spawn failed": "SPAWN FAILED",
+		"registration failed": "REG FAILED",
+	}.get(reason.to_lower(), reason.to_upper())
+	backup_button.disabled = false
+	if active_allies > 0:
+		backup_button.text = "2 - BACKUP\n%d ALLIES - %ds" % [
+			active_allies,
+			int(ceil(duration_remaining)),
+		]
+	elif cooldown_remaining > 0.0:
+		backup_button.text = "2 - BACKUP\n%ds - %d LEFT" % [
+			int(ceil(cooldown_remaining)),
+			charges,
+		]
+	elif can_activate:
+		backup_button.text = "2 - BACKUP\nREADY - %d" % [
+			charges,
+		]
+	else:
+		backup_button.text = "2 - BACKUP\n%s" % compact_reason
+	backup_button.tooltip_text = (
+		"Call Backup: two temporary allied NPCs fight for 12 eligible combat seconds. "
+		+ "State: %s. Invalid requests do not consume a charge or cooldown." % reason
 	)
 
 
@@ -546,6 +621,14 @@ func present_flow_snapshot(snapshot: Dictionary) -> void:
 	]
 
 	var state: int = int(run.get("state", RunDirector.RunState.INITIALIZING))
+	var reward_modal_context: bool = (
+		state == RunDirector.RunState.REWARD_SELECTION
+		or (
+			state == RunDirector.RunState.PAUSED
+			and int(run.get("pause_origin_state", -1))
+			== RunDirector.RunState.REWARD_SELECTION
+		)
+	)
 	_district_patrol_snapshot = patrol.duplicate(true)
 	_district_card_route_revision = int(patrol.get("route_revision", -1))
 	_district_card_planning_allowed = _card_planning_available_for_state(state)
@@ -583,7 +666,7 @@ func present_flow_snapshot(snapshot: Dictionary) -> void:
 		dismiss_district_card_panel()
 	elif (
 		_district_card_panel_mode == DistrictCardPanelMode.REWARD
-		and state != RunDirector.RunState.REWARD_SELECTION
+		and not reward_modal_context
 	):
 		dismiss_district_card_panel()
 	if build_details_panel.visible:
@@ -600,7 +683,7 @@ func present_flow_snapshot(snapshot: Dictionary) -> void:
 	]
 	_refresh_route_label_with_card_markers()
 
-	if state != RunDirector.RunState.REWARD_SELECTION:
+	if not reward_modal_context:
 		dismiss_equipment_reward()
 	var encounter_name: String = String(encounter.get("active_encounter_name", "Patrolling"))
 	_refresh_run_actions(state, encounter_name, cooling, rewards)
@@ -614,7 +697,10 @@ func present_flow_snapshot(snapshot: Dictionary) -> void:
 			float(run.get("reward_multiplier", 1.0)),
 		]
 	summary_panel.visible = state == RunDirector.RunState.RUN_SUMMARY
-	boss_trigger_panel.visible = state == RunDirector.RunState.BOSS_ACTIVE
+	# Milestone 6 presents the live Viper through VerticalSliceOverlay's
+	# dedicated health/phase/telegraph strip. The Milestone 3 placeholder modal
+	# must never cover or intercept input from the authored boss encounter.
+	boss_trigger_panel.visible = false
 
 
 func present_build_snapshot(snapshot: Dictionary) -> void:
@@ -896,7 +982,7 @@ func present_run_summary(summary: RunSummaryRecord) -> void:
 		summary.encounters_completed,
 		summary.enemies_defeated,
 		summary.elites_defeated,
-		"DEFEATED" if summary.boss_defeated else "NO",
+		summary.boss_result,
 		summary.highest_combo,
 		summary.coins_collected,
 		summary.scrap_secured,
@@ -1112,6 +1198,10 @@ func _on_fullscreen_button_pressed() -> void:
 
 func _on_primary_action_pressed() -> void:
 	primary_action_requested.emit()
+
+
+func _on_backup_pressed() -> void:
+	backup_activation_requested.emit()
 
 
 func _on_subway_reroute_pressed() -> void:
@@ -1394,6 +1484,10 @@ func _on_inventory_item_pressed(area: StringName, slot_index: int) -> void:
 	_pending_inventory_action = &""
 	_pending_inventory_target = -1
 	_refresh_build_presentation()
+
+
+func toggle_build_details() -> void:
+	_toggle_build_details()
 
 
 func _on_inventory_action_target_pressed(target_slot: int) -> void:
@@ -2263,10 +2357,9 @@ func _refresh_run_actions(
 			primary_disabled = false
 			primary_text = "CONTINUE\nRUN (+6 HEAT)"
 		RunDirector.RunState.BOSS_INTRO:
-			primary_disabled = false
-			primary_text = "ENTER\nBOSS THRESHOLD"
+			primary_text = "THE VIPER\nAPPROACHING"
 		RunDirector.RunState.BOSS_ACTIVE:
-			primary_text = "BOSS TRIGGERED\nCONTENT DEFERRED"
+			primary_text = "THE VIPER\nDEFEAT THE BOSS"
 		RunDirector.RunState.PAUSED:
 			primary_text = (
 				"CARD PLANNING\nCLOSE TO RESUME"
@@ -2281,7 +2374,7 @@ func _refresh_run_actions(
 	var subway_disabled: bool = (
 		state != RunDirector.RunState.PATROLLING or subway_charges <= 0
 	)
-	var subway_text: String = "SUBWAY REROUTE\n%d LEFT  •  -%d HEAT" % [
+	var subway_text: String = "3 - SUBWAY\n%d CHG / -%dH" % [
 		subway_charges,
 		int(cooling.get("subway_heat_reduction", 0)),
 	]
@@ -2459,7 +2552,7 @@ func _refresh_build_details(slots: Array) -> void:
 			equipment_details_label.text = (
 			"SELECT AN ITEM TO INSPECT.\n\n"
 			+ "ITEM CLICKS NEVER DROP EQUIPMENT.\n"
-			+ "ONLY EQUIPPED ITEMS POWER JAX. STORED ITEMS ARE INACTIVE.\n\n"
+			+ "ONLY EQUIPPED ITEMS POWER %s. STORED ITEMS ARE INACTIVE.\n\n" % _crew_display_name
 			+ "DRAG BETWEEN COLUMNS OR USE CLICK/TAP. CONFIRM APPLIES."
 		)
 	else:

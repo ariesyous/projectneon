@@ -12,6 +12,7 @@ knockback_force = 300.0
 knockback_duration = 0.3
 knockback_direction_x = -1.0
 cooldown_seconds = 8.0
+wet_duration_seconds = 4.0
 water_duration = 0.55
 impact_duration = 0.28
 rejection_duration = 0.5

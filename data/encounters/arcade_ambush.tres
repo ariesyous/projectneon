@@ -1,6 +1,26 @@
-[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://data/encounters/encounter_definition.gd" id="1_encounter"]
+[ext_resource type="Script" path="res://data/encounters/encounter_spawn_entry.gd" id="2_spawn"]
+
+[sub_resource type="Resource" id="Spawn_street"]
+script = ExtResource("2_spawn")
+actor_id = &"street_punk"
+minimum_count = 1
+maximum_count = 30
+budget_cost = 1
+[sub_resource type="Resource" id="Spawn_bat"]
+script = ExtResource("2_spawn")
+actor_id = &"bat_thug"
+minimum_count = 0
+maximum_count = 3
+budget_cost = 1
+[sub_resource type="Resource" id="Spawn_bottle"]
+script = ExtResource("2_spawn")
+actor_id = &"bottle_thrower"
+minimum_count = 0
+maximum_count = 30
+budget_cost = 1
 
 [resource]
 script = ExtResource("1_encounter")
@@ -10,7 +30,10 @@ minimum_heat_tier = 1
 minimum_night_pressure = 8.0
 base_spawn_budget = 4
 maximum_concurrent_enemies = 4
-allowed_enemy_ids = Array[StringName]([&"street_punk"])
+initial_spawn_delay_seconds = 3.0
+spawn_interval_seconds = 12.0
+allowed_enemy_ids = Array[StringName]([&"street_punk", &"bat_thug", &"bottle_thrower"])
+spawn_entries = Array[EncounterSpawnEntry]([SubResource("Spawn_street"), SubResource("Spawn_bat"), SubResource("Spawn_bottle")])
 spawn_position_ids = Array[StringName]([&"lane_0", &"lane_1", &"lane_2"])
 reward_table_ids = Array[StringName]([&"street_cache", &"neon_stash"])
 completion_condition = &"all_required_defeated"

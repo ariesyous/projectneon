@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="GameSettingsData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/persistence/game_settings_data.gd" id="1_settings"]
+
+[resource]
+script = ExtResource("1_settings")
+master_volume = 0.8
+music_volume = 0.65
+sound_effects_volume = 0.8
+fullscreen = false
+screen_shake_intensity = 0.75
+damage_numbers_enabled = true
+hit_flash_reduction = 0.0
+pause_on_focus_loss = true

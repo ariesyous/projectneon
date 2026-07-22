@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="RunLifecycleDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/run/run_lifecycle_definition.gd" id="1_lifecycle"]
+
+[resource]
+script = ExtResource("1_lifecycle")
+id = &"milestone_6_run_lifecycle"
+intro_duration_seconds = 1.25
+extraction_duration_seconds = 1.0
+boss_intro_duration_seconds = 2.5
+victory_presentation_duration_seconds = 2.0
