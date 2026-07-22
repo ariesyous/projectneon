@@ -2,7 +2,7 @@
 
 ## Status
 
-This document describes the implemented **Milestone 0 — Project Foundation**, **Milestone 1 — Combat Lab**, **Milestone 2 — Player Intervention**, **Milestone 3 — Complete Run Structure**, **Milestone 4 — Equipment and Synergies**, **Milestone 4.1 equipment usability/readability correction**, **Milestone 4.2 inventory drag/backpack-clarity correction**, **Milestone 5 — District Cards**, and the authorized **Milestone 6 — Vertical-Slice Content and Presentation** implementation. Milestone 6 adds only the specification's three crew members, three basic enemies, one elite, one boss, three interventions, prototype presentation/audio/tutorial/settings, minimal versioned persistence/unlocks, cadence measurement, and final summary. Its automated gate is complete; manual, export, visual, cadence-acceptance, and owner-qualitative results remain explicitly deferred TODOs.
+This document describes the implemented **Milestones 0–6**. Milestone 6 adds only the specification's three crew members, three basic enemies, one elite, one boss, three interventions, prototype presentation/audio/tutorial/settings, minimal versioned persistence/unlocks, cadence measurement, and final summary. Its automated gate is complete, and the owner marked it tentatively complete for Pages playtesting; manual, browser/device, cadence-acceptance, and final owner-qualitative results remain explicitly pending under `MILESTONE_6_PLAYTEST.md`.
 
 Milestone 5 was merged through PR #4 and published from `main` merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`; the current live build is [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/). The current documentation baseline is `3ce274518c5ccf79e53ecd12764b5ae4cd822ebd`. The Milestone 6 work is local on `codex/milestone-6-vertical-slice` and remains uncommitted, unpushed, unmerged, unpublished, and undeployed.
 
@@ -141,7 +141,7 @@ The four authored card Resources and their catalogue live under `res://data/card
 directory list: it owns only the fixed stage's replaceable presentation and
 debug-marker drawing.
 
-`GameRun` owns assembly only. It is the place to connect explicit cross-owner signals when later milestones require them; it must not grow into a second implementation of each child system.
+`GameRun` owns assembly only. It connects explicit cross-owner signals required by the implemented systems; it must not grow into a second implementation of each child system.
 
 The tree above is the implemented Milestone 6 composition. All run, combat, encounter, intervention, cadence, combo, tutorial, audio, and presentation nodes remain scene-scoped. `RunRandomStreams` is a direct child of `RunDirector`, resets for each run, and is never an Autoload. Only the specification-authorized profile/settings services are global; neither may own active-run state.
 

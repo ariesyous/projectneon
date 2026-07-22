@@ -18,11 +18,11 @@
 
 **Milestone 5 — District Cards: technical implementation and verification complete**
 
-**Milestone 6 — Vertical-Slice Content and Presentation: implementation and cumulative automation complete; manual/export verification remains pending**
+**Milestone 6 — Vertical-Slice Content and Presentation: tentatively complete; external playtest and final owner acceptance remain**
 
 The Combat Lab foundation and Fire Hydrant intervention are preserved inside a complete run lifecycle with the verified Milestone 4 equipment/synergy layer, Milestone 4.1 usability/readability correction, bounded Milestone 4.2 drag/backpack-clarity implementation, and the separately authorized and technically verified Milestone 5 District Cards implementation. Technical Milestone 1 acceptance is complete. On 2026-07-18, the project owner recorded the five-person Human Validation Gate as **PASSED**, satisfying the Milestone 2 entry condition; this owner qualitative decision remains distinct from all automated and coding-agent verification. Milestones 2–4.2 retain their recorded technical acceptance. Milestone 5 passed 188/188 cumulative tests and 2,450 assertions plus configured-project, Windows, Web, console, and visual-evidence checks. The authorized Milestone 6 implementation now exists on `codex/milestone-6-vertical-slice`; its cumulative automated gate and clean configured headless `/GameRun` boot are recorded below, while representative manual paths, exports, browser-console inspection, visual evidence, and owner qualitative validation remain next-session TODOs.
 
-**Accepted published baseline:** Milestone 5 was merged through PR #4 at `main` commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`; the current baseline documentation commit is `3ce274518c5ccf79e53ecd12764b5ae4cd822ebd`, and the live accepted build is [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/). The Milestone 6 branch has not been committed, pushed, merged, published, or deployed.
+**Accepted baseline and playtest publication:** Milestone 5 was merged through PR #4 at `main` commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`; its documentation baseline is `3ce274518c5ccf79e53ecd12764b5ae4cd822ebd`. Milestone 6 was committed on `codex/milestone-6-vertical-slice` as `9c1cdaa` plus `ca3fe18`, and the owner authorized its `main`/Pages playtest publication on 2026-07-22. Milestone 5 remains the last fully accepted result until the owner closes the M6 playtest record.
 
 ## Milestone 0 implementation
 
@@ -314,7 +314,7 @@ Milestone 5 deliberately excludes Milestone 6 crew/enemy/elite-actor/boss/interv
 
 ### Milestone 6 — Vertical-Slice Content and Presentation
 
-**Status: Authorized implementation and cumulative automation complete on `codex/milestone-6-vertical-slice`; manual/export verification remains pending.** This status describes the code, authored tests, automated result, and clean configured headless boot now recorded. It does not claim complete Milestone 6 technical acceptance, representative manual 8–12 minute paths, configured-project interaction acceptance, exports, browser-console inspection, visual acceptance, or owner qualitative validation.
+**Status: Tentatively complete for external Pages playtesting.** Implementation, authored coverage, the cumulative automated result, and the clean configured headless boot are recorded. The owner-authorized playtest uses `MILESTONE_6_PLAYTEST.md` to collect representative outcome, interaction, browser/device, cadence, presentation, and qualitative evidence without claiming final acceptance in advance.
 
 Implemented vertical-slice content:
 
@@ -384,3 +384,5 @@ Working-tree provenance remains separate from Milestone 6: the owner's pre-exist
 ## Scope gate
 
 Milestone 6 is the stopping boundary. Procedural generation, additional districts/cards, larger crew or enemy rosters, multiplayer, controller support, localization, achievements, daily scheduling/leaderboards/rewards, advanced meta-progression, permanent stat trees, mid-run saving/replay, broader equipment/card economies, and every undocumented post-vertical-slice system remain out of scope. Run-seed and named-stream infrastructure remains schema version 1 from Milestone 3; no post-M6 implementation, commit, push, merge, publication, or deployment is authorized by this plan.
+
+The owner authorized merging and publishing the tentative Milestone 6 playtest build on 2026-07-22. There are no planned future milestones. Publication permits only Milestone 6 verification and bounded correctness, clarity, balance, presentation, and compatibility fixes informed by the playtest; it does not authorize post-M6 content or systems.

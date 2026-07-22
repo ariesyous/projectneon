@@ -4,7 +4,7 @@ Neon Loop is a Godot 4.x pixel-art auto-brawler about shaping an automatic stree
 
 ## Play online
 
-Play the technically verified Milestone 5 build at **[ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/)**.
+Play the tentative Milestone 6 playtest build at **[ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/)**. Playtesters and feedback curators should use the [Milestone 6 Playtest Guide](MILESTONE_6_PLAYTEST.md).
 
 Milestone 5 was implemented in feature commit `7ac7fa0794e79cfc60781b84ce7181f61e16bf7f`, merged through [PR #4](https://github.com/ariesyous/projectneon/pull/4), and published from `main` at merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`. [GitHub Pages run 29713282074](https://github.com/ariesyous/projectneon/actions/runs/29713282074) completed successfully. This records the actual release state without assigning a semantic version.
 
@@ -12,7 +12,7 @@ Repository: [github.com/ariesyous/projectneon](https://github.com/ariesyous/proj
 
 ## Project status
 
-**Milestone 6 — Vertical-Slice Content and Presentation: implemented in the local working tree; final technical acceptance is pending**
+**Milestone 6 — Vertical-Slice Content and Presentation: tentatively complete; external playtesting and final owner acceptance remain**
 
 The authorized local Milestone 6 implementation adds:
 
@@ -29,9 +29,9 @@ The authorized local Milestone 6 implementation adds:
 
 Godot 4.7 passed the local cumulative automated gate at **244/244 tests and 3,234 assertions with no failures or skips across 22 suites**. A configured headless boot opened `/GameRun` cleanly. A fixed-seed Rex/starter-only technical probe naturally reached Defeated at 589.517 eligible seconds (9m49.5s), but representative Victory/Extraction and owner-facing manual validation were not completed. Exact cadence conformance, interaction/settings/save/restart checks, 1280 x 720 and 1080p/1440p visual inspection, fresh Windows/Web exports, exported-runtime/browser-console checks, and new Milestone 6 visual evidence are documented as next-session TODOs. The cumulative harness's 48 ObjectDB and four resource-in-use shutdown diagnostics also remain a cleanup-audit TODO; the configured boot did not reproduce them.
 
-**Milestone 5 — District Cards remains the technically verified, merged, and published public baseline.**
+**Milestone 5 — District Cards remains the last fully accepted baseline; Milestone 6 is the tentative final playtest release.**
 
-The current public Milestone 5 build adds:
+The accepted Milestone 5 baseline adds:
 
 - Typed card/effect Resources and exactly four stable-ID, one-copy cards: Arcade, Convenience Store, Gang Hideout, and Subway Entrance; all display `FREE`
 - A finite four-card deck, deterministic two-card opening hand, hand capacity three, discard pile, no reshuffle, and clean restart
@@ -89,11 +89,11 @@ Reward and run-action buttons respond to one ordinary click or tap.
 
 ## Current scope
 
-Milestone 6 Vertical-Slice Content and Presentation is authorized and implemented in the local `codex/milestone-6-vertical-slice` working tree. Its automated gate is green; the manual/export/evidence TODOs listed above remain before full technical acceptance. Milestone 5 District Cards remains the current public release from `main` merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`; the accepted Milestone 4–4.2 publication from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9` remains historical context.
+Milestone 6 Vertical-Slice Content and Presentation is the tentative final milestone. Its automated gate is green, and the owner has authorized publication of the build for external playtesting. The remaining manual, qualitative, browser/device, cadence, and outcome checks are organized in [MILESTONE_6_PLAYTEST.md](MILESTONE_6_PLAYTEST.md); they remain distinct from final owner acceptance. Milestone 5 District Cards remains the last fully accepted baseline from `main` merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`.
 
 Milestone 6 ends at the three-member crew, three-basic/one-elite/one-boss roster, three interventions, finished prototype presentation/audio/tutorial/settings/profile/summary layers, four bounded unlocks over existing content, fixed authored route, and complete victory/extraction/defeat paths. It adds no route generation, fifth card, tenth required equipment entry, permanent stat bonus, or broad progression tree.
 
-Stop after Milestone 6. Additional districts/cards/crew/enemies/bosses; procedural routes; multiplayer; controller support; localization; achievements; daily-run systems; leaderboards; advanced meta-progression; permanent stat trees; mid-run saving/replays; equipment selling, salvage, rarity, uniques, affixes, or sets; a card currency/shop/economy; and every other post-vertical-slice system remain unauthorized. Milestone 6 has not been committed, pushed, merged, published, or deployed.
+Stop after Milestone 6. There are no planned future milestones. Additional districts/cards/crew/enemies/bosses; procedural routes; multiplayer; controller support; localization; achievements; daily-run systems; leaderboards; advanced meta-progression; permanent stat trees; mid-run saving/replays; equipment selling, salvage, rarity, uniques, affixes, or sets; a card currency/shop/economy; and every other post-vertical-slice system remain out of scope. Publication for Milestone 6 playtesting does not authorize expansion.
 
 ### Working-tree provenance
 
@@ -108,6 +108,7 @@ Stop after Milestone 6. Additional districts/cards/crew/enemies/bosses; procedur
 - [ARCHITECTURE.md](ARCHITECTURE.md) — scene and system ownership
 - [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) — milestone status and next work
 - [TEST_PLAN.md](TEST_PLAN.md) — verification history and planned coverage
+- [MILESTONE_6_PLAYTEST.md](MILESTONE_6_PLAYTEST.md) — non-leading tester prompt, curator matrix, and feedback template
 - [CONTENT_CATALOG.md](CONTENT_CATALOG.md) — implemented and specified content
 - [CHANGELOG.md](CHANGELOG.md) — project history
 - [ADR 0001](docs/decisions/0001-run-engagement-escalation-and-randomness.md) — engagement, escalation, randomness, and validation decisions

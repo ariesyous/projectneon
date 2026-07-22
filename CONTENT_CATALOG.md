@@ -2,9 +2,9 @@
 
 ## Catalog status
 
-This catalog reflects the implemented and technically verified **Milestones 0–5** plus the authorized **Milestone 6 — Vertical-Slice Content and Presentation** working-tree implementation. Milestone 5 remains the accepted and published 188-test/2,450-assertion baseline. Milestone 6 passed its 244-test/3,234-assertion automated gate and configured headless boot; representative Victory/Extraction, cadence acceptance, resolution/export/runtime/console/visual checks, and owner-manual verification remain explicit next-session TODOs. This catalogue records authored code/data and does not invent a passing qualitative result.
+This catalog reflects the implemented **Milestones 0–6**. Milestone 5 remains the last fully accepted 188-test/2,450-assertion baseline. Milestone 6 passed its 244-test/3,234-assertion automated gate and configured headless boot, and the owner marked it tentatively complete for Pages playtesting. Representative outcomes, cadence acceptance, browser/device/presentation checks, and final owner-manual acceptance remain explicit `MILESTONE_6_PLAYTEST.md` work; this catalogue does not invent a qualitative result.
 
-Milestone 5 was merged through PR #4 and published from `main` commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`; the current live build is [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/). The current feature work is local on `codex/milestone-6-vertical-slice` at documentation baseline `3ce274518c5ccf79e53ecd12764b5ae4cd822ebd` and has not been committed, pushed, merged, published, or deployed.
+Milestone 5 was merged through PR #4 and published from `main` commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`; it remains the last fully accepted baseline. Milestone 6 was committed on `codex/milestone-6-vertical-slice` as `9c1cdaa` plus `ca3fe18`, and the owner authorized its tentative [GitHub Pages playtest](https://ariesyous.github.io/projectneon/) publication on 2026-07-22.
 
 The working tree separately carries the owner's tracked 17-file Godot-AI 3.0.5 update and the owner's `project.godot` deletions of `window/stretch/aspect="keep"` and `textures/default_filters/use_nearest_mipmap_filter=false`. Godot-AI remains enabled development tooling, not Neon Loop content or run authority. Milestone 6 adds only the specification-authorized `SaveService` and `AppState` Autoloads; it does not claim the owner-carried changes as milestone content.
 
@@ -453,7 +453,7 @@ The native 1280 x 720 HUD shows all three active slots and all three slots in on
 
 Owner playtesting favors a fuller Diablo II-style character inventory in which the automatic fight remains visible while the character sheet is open. M4.2 now supplies the small baseline: one unambiguous backpack, three generic equipped cells, non-destructive cross-area drag staging, and click/tap/keyboard fallback. The current full-six-position answer is **Skip Gear / Keep Current Build**: the new item is skipped and the paired ordinary reward still resolves. No sale or salvage occurs.
 
-Future itemization work may evaluate explicit sell/salvage, opt-in auto-salvage rules, rarity tiers, uniques, affixes, and typed data-driven set items/set bonuses. The implemented non-destructive drag/snap-back and click/tap/keyboard confirmation contracts must be preserved. A larger character sheet, combat-time management policy, category-specific equipment slots, deterministic item-instance rolls, economy values, and set thresholds remain unresolved design decisions. This backlog record does not add implemented content or authorize a later milestone.
+Historical out-of-scope itemization notes considered sell/salvage, auto-salvage, rarity, uniques, affixes, sets, a larger character sheet, category slots, item-instance rolls, and broader economy values. None are planned or authorized: Milestone 6 is the stopping boundary, and the implemented non-destructive drag/snap-back plus click/tap/keyboard confirmation contracts remain final-scope requirements.
 
 ### District cards
 

@@ -4,6 +4,14 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 
 ## [Unreleased]
 
+### 2026-07-22 — Milestone 6 tentative playtest release
+
+- The owner marked Milestone 6 tentatively complete and authorized merging it to `main` for GitHub Pages playtesting. This is a release/playtest decision, not a fabricated result for the remaining qualitative checks.
+- Added `MILESTONE_6_PLAYTEST.md` with a non-leading first-run prompt, assigned-session matrix, curator checklist, browser/device and outcome metadata, reproducible defect template, and interpretation guidance.
+- External feedback targets ordinary Victory/Extraction/Defeat paths, crew/enemy/boss readability and feel, interventions, builds/cards, tutorials, settings/accessibility, persistence/unlocks, summaries/restarts, cadence, resolutions, browser compatibility, and touch input.
+- The pre-publication Godot 4.7 cumulative rerun passed **244/244 tests and 3,234 assertions with no failures or skips**. It reproduced the already documented runner-only shutdown report of 48 ObjectDB instances and four resources in use; the configured production boot remains clean.
+- Milestone 6 remains the stopping boundary and tentative final milestone. There are no planned later milestones; publication does not authorize roster, route, progression, economy, or other post-M6 expansion.
+
 ### 2026-07-22 — Milestone 6: Vertical-Slice Content and Presentation (Implementation)
 
 #### Added
@@ -63,7 +71,7 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 
 - The tracked, enabled Godot-AI 3.0.5 update across 17 addon files predates Milestone 6 and remains an owner-carried development-tooling change. It is not removed, untracked, ignored, replaced, or attributed to Milestone 6 gameplay work.
 - The owner-carried `project.godot` deletions of `window/stretch/aspect="keep"` and `textures/default_filters/use_nearest_mipmap_filter=false` remain preserved and separate from the Milestone 6 `SaveService`/`AppState` additions.
-- Milestone 5 remains the published live build from `main` merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`. Milestone 6 has not been committed, pushed, merged, published, or deployed.
+- Milestone 5 remains the last fully accepted live baseline from `main` merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`. Milestone 6 was subsequently committed as `9c1cdaa` plus `ca3fe18` and authorized for the tentative Pages playtest release recorded above.
 - Stop after Milestone 6. Procedural routes; additional districts/cards/crew/enemies/bosses; multiplayer; controller support; localization; achievements; daily-run systems; leaderboards; advanced meta-progression; permanent stat trees; mid-run saves/replays; equipment selling/salvage/rarity/uniques/affixes/sets; a card currency/shop/economy; and every other post-vertical-slice system remain unauthorized.
 
 ### 2026-07-19 — Milestone 5: District Cards (Technical)

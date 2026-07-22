@@ -574,15 +574,17 @@ All four effects, every invalid/current/past/occupied/stale/outside rejection, s
 - The generated Web shell retains the established focused-canvas/browser shortcut limitations; the visible fullscreen control remains the cross-platform presentation path.
 - The portable headless export editor may report its known ObjectDB-profiler `user://` directory message after a successful export. That tooling-only message is not suppressed and must be distinguished from exported-runtime output.
 - Reproduction is limited to the same supported build, content revision, random-schema version, seed, ordered decisions/effect resolutions, and authoritative timing context; cross-version or bitwise physics replay is not promised.
-- The Milestone 5 work remains local to `codex/milestone-5-district-cards`. It has not been committed, pushed, merged, published, or deployed. The public Pages build remains the Milestone 4–4.2 baseline from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9`.
+- At the time of this historical M5 verification record, the work was local to `codex/milestone-5-district-cards`. It was subsequently merged through PR #4 and published from `main` commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`; Milestone 6 later became the tentative Pages playtest release.
 
 **Milestone 5 technical result: Passed.** Milestone 6 and every later system remain unimplemented and unauthorized.
 
 ### Milestone 6 — Vertical-Slice Content and Presentation
 
-Status: **Implementation and cumulative automated coverage passed; manual/export technical acceptance remains pending.**
+Status: **Tentatively complete: implementation and cumulative automation passed; external playtest and final owner acceptance remain.**
 
-The working implementation is on `codex/milestone-6-vertical-slice`, based on the accepted Milestone 5/main documentation baseline `3ce274518c5ccf79e53ecd12764b5ae4cd822ebd`. Milestone 5 remains the last fully accepted and published milestone. Milestone 6's automated working-tree record is **244/244 tests, 3,234 assertions, 22 suites, 0 failed and 0 skipped**; this does not constitute complete Milestone 6 technical acceptance. Milestone 6 has not been committed, pushed, merged, published, or deployed, and this section does not imply otherwise.
+Milestone 6 was implemented on `codex/milestone-6-vertical-slice` from the accepted Milestone 5/main documentation baseline `3ce274518c5ccf79e53ecd12764b5ae4cd822ebd`. Its automated record is **244/244 tests, 3,234 assertions, 22 suites, 0 failed and 0 skipped**. The owner has marked the milestone tentatively complete and authorized a Pages playtest release; this does not substitute for the remaining external playtest record or final owner acceptance.
+
+External sessions use `MILESTONE_6_PLAYTEST.md`. Its short tester prompt is intentionally non-leading; the curator-only matrix covers representative Victory/Extraction/Defeat, crew/enemy/boss identity, interventions, builds/cards, tutorials, settings/accessibility, persistence/unlocks, summaries/restarts, cadence, resolutions, browsers, and touch. Feedback must retain device/browser, outcome, summary duration, seed, reproduction steps, and qualitative wording rather than inventing a pass.
 
 The build under test must retain the owner's separate pre-existing changes: the tracked/enabled 17-file Godot-AI 3.0.5 update and the two `project.godot` deletions of `window/stretch/aspect="keep"` and `textures/default_filters/use_nearest_mipmap_filter=false`. Milestone 6's intentional `project.godot` additions are the non-gameplay `SaveService` and `AppState` Autoloads. Verification must not count the owner changes as M6 work or silently restore either deletion.
 
@@ -688,4 +690,4 @@ Current honest limitations while final verification is pending:
 - Persistence is deliberately profile/settings/unlock-only. Mid-run saving/replay, permanent stat bonuses, advanced progression, a tenth equipment item, and a fifth card remain unimplemented and out of scope.
 - Reproduction remains limited to the same supported build, content revision, random-schema version, seed, ordered decisions/effect resolutions, and authoritative timing context; cross-version or bitwise physics replay is not promised.
 
-**Milestone 6 automated result: Passed — 244/244 tests and 3,234 assertions, 0 failed, 0 skipped. Full technical acceptance: Pending next-session manual/export/evidence TODOs and runner-cleanup audit.** Stop after that Milestone 6 gate; no post-M6 expansion or publication is authorized.
+**Milestone 6 automated result: Passed — 244/244 tests and 3,234 assertions, 0 failed, 0 skipped. Milestone status: Tentatively complete for external Pages playtesting; final owner acceptance remains pending the documented playtest/manual evidence and runner-cleanup audit.** Stop after Milestone 6; there are no planned future milestones, and publication does not authorize feature expansion.
