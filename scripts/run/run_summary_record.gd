@@ -24,6 +24,12 @@ var boss_triggered: bool = false
 var highest_combo: int = 0
 var equipment_build: String = "NOT AVAILABLE IN MILESTONE 3"
 var active_synergies: String = "NOT AVAILABLE IN MILESTONE 3"
+var laps_completed: int = 0
+var blocks_completed: int = 0
+var boss_committed: bool = false
+var final_lap_id: StringName = &""
+var final_block_id: StringName = &""
+var lap_decisions: Array[Dictionary] = []
 
 
 func to_dictionary() -> Dictionary:
@@ -48,4 +54,10 @@ func to_dictionary() -> Dictionary:
 		"highest_combo": highest_combo,
 		"equipment_build": equipment_build,
 		"active_synergies": active_synergies,
+		"laps_completed": laps_completed,
+		"blocks_completed": blocks_completed,
+		"boss_committed": boss_committed,
+		"final_lap_id": final_lap_id,
+		"final_block_id": final_block_id,
+		"lap_decisions": lap_decisions.duplicate(true),
 	}

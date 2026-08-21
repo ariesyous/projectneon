@@ -16,7 +16,11 @@ const VIPER_SIGNAL: EncounterDefinition = preload("res://data/encounters/viper_s
 const STREET_CACHE: StandardRewardDefinition = preload("res://data/rewards/street_cache.tres")
 const NEON_STASH: StandardRewardDefinition = preload("res://data/rewards/neon_stash.tres")
 const VIPER_CACHE: StandardRewardDefinition = preload("res://data/rewards/viper_cache.tres")
-const ROUTE_STEP_SECONDS: float = 5.0
+const ROUTE_TUNING: PatrolRouteDefinition = preload(
+	"res://data/routes/downtown_loop_route.tres"
+)
+
+var _route_step_seconds: float = ROUTE_TUNING.travel_seconds_per_segment + 1.0
 
 
 class TestEncounterController:
@@ -263,7 +267,7 @@ func test_safe_planning_pause_freezes_time_and_pressure_and_space_cannot_release
 	_expect_equal(fixture.run.current_state, RunDirector.RunState.PAUSED, "planning: state remains paused")
 	_expect_true(fixture.flow.end_card_planning(), "planning: explicit close resumes")
 	_expect_equal(fixture.run.current_state, RunDirector.RunState.PATROLLING, "planning: returns to patrol")
-	fixture.patrol.step_patrol(ROUTE_STEP_SECONDS)
+	fixture.patrol.step_patrol(_route_step_seconds)
 	_expect_equal(fixture.run.current_state, RunDirector.RunState.ENCOUNTER_ACTIVE, "planning: baseline combat started")
 	_expect_false(fixture.flow.begin_card_planning(), "planning: active combat rejects planning")
 
@@ -272,7 +276,7 @@ func test_unsafe_progression_transition_clears_planning_and_rejects_stale_confir
 	var fixture: FlowFixture = _new_fixture_with_opening([&"subway_entrance"])
 	var threshold: float = fixture.run.escalation_definition.extraction_pressure_thresholds[0]
 	fixture.run.add_night_pressure(threshold + 0.1)
-	fixture.patrol.step_patrol(ROUTE_STEP_SECONDS)
+	fixture.patrol.step_patrol(_route_step_seconds)
 	_expect_equal(
 		fixture.run.current_state,
 		RunDirector.RunState.EXTRACTION_AVAILABLE,
@@ -377,15 +381,15 @@ func test_future_route_effect_waits_for_exact_occurrence_and_resolves_once() -> 
 	var target: RouteSlotSnapshot = _slot_at_occurrence(fixture, 2)
 	var placed: Dictionary = _place_card(fixture, &"subway_entrance", target)
 	_expect_true(bool(placed.get("accepted", false)), "timing: Subway placed on occurrence two")
-	fixture.patrol.step_patrol(ROUTE_STEP_SECONDS)
+	fixture.patrol.step_patrol(_route_step_seconds)
 	_expect_equal(fixture.patrol.get_current_occurrence_index(), 0, "timing: first occurrence reached")
 	_expect_equal(fixture.cards.get_snapshot().get("resolved_route_effects", []).size(), 0, "timing: future effect not early")
 	_settle_current_route_state(fixture)
-	fixture.patrol.step_patrol(ROUTE_STEP_SECONDS)
+	fixture.patrol.step_patrol(_route_step_seconds)
 	_expect_equal(fixture.run.current_state, RunDirector.RunState.SHOP, "timing: intervening shop remains baseline")
 	_expect_equal(fixture.cards.get_snapshot().get("pending_route_effects", []).size(), 1, "timing: effect remains pending")
 	fixture.flow.leave_shop()
-	fixture.patrol.step_patrol(ROUTE_STEP_SECONDS)
+	fixture.patrol.step_patrol(_route_step_seconds)
 	_expect_equal(fixture.patrol.get_current_occurrence_index(), 2, "timing: target occurrence reached")
 	_expect_equal(fixture.cards.get_snapshot().get("pending_route_effects", []).size(), 0, "timing: pending effect consumed")
 	_expect_equal(fixture.cards.get_snapshot().get("resolved_route_effects", []).size(), 1, "timing: resolved card snapshot retained")
@@ -449,7 +453,7 @@ func test_gang_hideout_uses_viper_signal_elite_guarantees_equipment_and_never_re
 	var fixture: FlowFixture = _new_fixture_with_opening([&"gang_hideout"])
 	var placed: Dictionary = _place_card(fixture, &"gang_hideout", _slot_at_occurrence(fixture, 0))
 	_expect_true(bool(placed.get("accepted", false)), "Hideout: placement accepted")
-	fixture.patrol.step_patrol(ROUTE_STEP_SECONDS)
+	fixture.patrol.step_patrol(_route_step_seconds)
 	_expect_equal(fixture.encounter.get_active_definition(), VIPER_SIGNAL, "Hideout: exact viper_signal encounter starts")
 	_expect_true(VIPER_SIGNAL.elite_eligible, "Hideout: encounter remains elite-eligible")
 	_expect_equal(
@@ -477,16 +481,16 @@ func test_subway_skips_exact_target_without_charge_pressure_or_progression_mutat
 	_expect_true(bool(placed.get("accepted", false)), "Subway card: placement accepted")
 	_expect_equal(fixture.run.heat, 15, "Subway card: -15 Heat applies once")
 	_expect_approx(fixture.run.night_pressure, pressure_before, "Subway card: placement does not lower pressure")
-	fixture.patrol.step_patrol(ROUTE_STEP_SECONDS)
+	fixture.patrol.step_patrol(_route_step_seconds)
 	_expect_equal(fixture.patrol.get_current_occurrence_index(), 0, "Subway card: exact targeted occurrence reached")
 	_expect_equal(fixture.encounter.started_count, 0, "Subway card: targeted standard encounter skipped")
 	_expect_equal(fixture.run.current_state, RunDirector.RunState.PATROLLING, "Subway card: reroute returns to travel")
 	_expect_equal(fixture.cooling.get_subway_charges(), charges_before, "Subway card: intervention charge untouched")
 	_expect_approx(fixture.run.night_pressure, pressure_before, "Subway card: resolution does not lower pressure")
-	fixture.patrol.step_patrol(ROUTE_STEP_SECONDS)
+	fixture.patrol.step_patrol(_route_step_seconds)
 	_expect_equal(fixture.run.current_state, RunDirector.RunState.SHOP, "Subway card: following shop is not skipped")
 	fixture.flow.leave_shop()
-	fixture.patrol.step_patrol(ROUTE_STEP_SECONDS)
+	fixture.patrol.step_patrol(_route_step_seconds)
 	_expect_equal(fixture.run.current_state, RunDirector.RunState.ENCOUNTER_ACTIVE, "Subway card: next standard encounter still occurs")
 	_expect_equal(fixture.encounter.started_count, 1, "Subway card: exactly one encounter was skipped")
 
@@ -498,7 +502,7 @@ func test_extraction_defers_exact_current_effect_and_boss_precedence_cannot_be_b
 	var threshold: float = extraction.run.escalation_definition.extraction_pressure_thresholds[0]
 	extraction.run.add_night_pressure(threshold + 0.1)
 	var pressure_before: float = extraction.run.night_pressure
-	extraction.patrol.step_patrol(ROUTE_STEP_SECONDS)
+	extraction.patrol.step_patrol(_route_step_seconds)
 	_expect_equal(extraction.run.current_state, RunDirector.RunState.EXTRACTION_AVAILABLE, "progression: extraction has boundary precedence")
 	_expect_equal(extraction.flow.get_snapshot().get("deferred_route_occurrence_id"), extraction.patrol.get_current_occurrence_id(), "progression: exact current occurrence is deferred")
 	_expect_equal(extraction.cards.get_snapshot().get("pending_route_effects", []).size(), 1, "progression: card remains pending during extraction offer")
@@ -514,7 +518,7 @@ func test_extraction_defers_exact_current_effect_and_boss_precedence_cannot_be_b
 	boss.run.add_night_pressure(boss.run.escalation_definition.boss_pressure_threshold + 0.1)
 	_expect_true(boss.run.is_boss_queued(), "progression: boss queued before route boundary")
 	var boss_pressure: float = boss.run.night_pressure
-	boss.patrol.step_patrol(ROUTE_STEP_SECONDS)
+	boss.patrol.step_patrol(_route_step_seconds)
 	_expect_equal(boss.run.current_state, RunDirector.RunState.BOSS_INTRO, "progression: boss outranks pending card effect")
 	_expect_true(boss.run.was_boss_started(), "progression: boss start latch preserved")
 	_expect_equal(boss.cards.get_snapshot().get("pending_route_effects", []).size(), 1, "progression: queued boss does not clear card state")
@@ -525,7 +529,7 @@ func test_extraction_defers_exact_current_effect_and_boss_precedence_cannot_be_b
 
 func test_supplemental_card_reward_is_baseline_only_and_consumes_only_cards_stream() -> void:
 	var fixture: FlowFixture = _new_fixture(5111)
-	fixture.patrol.step_patrol(ROUTE_STEP_SECONDS)
+	fixture.patrol.step_patrol(_route_step_seconds)
 	_expect_equal(fixture.run.current_state, RunDirector.RunState.ENCOUNTER_ACTIVE, "supplemental: baseline encounter starts")
 	var encounter_id: int = fixture.encounter.get_active_encounter_instance_id()
 	_expect_true(fixture.encounter.complete_active(), "supplemental: baseline completion published")
@@ -553,7 +557,7 @@ func test_restart_clears_route_card_modal_tokens_and_restores_cards_stream_state
 	var fixture: FlowFixture = _new_fixture_with_opening([&"subway_entrance"])
 	var opening_ids: Array[StringName] = _card_ids(fixture.cards.get_hand())
 	_place_card(fixture, &"subway_entrance", _slot_at_occurrence(fixture, 2))
-	fixture.patrol.step_patrol(ROUTE_STEP_SECONDS)
+	fixture.patrol.step_patrol(_route_step_seconds)
 	fixture.encounter.complete_active()
 	fixture.flow.decline_equipment_reward()
 	_expect_equal(fixture.cards.get_discard_pile().size(), 1, "restart: precondition discard populated")
@@ -797,7 +801,7 @@ func _advance_to_occurrence(fixture: FlowFixture, occurrence_index: int) -> void
 		_settle_current_route_state(fixture)
 		if fixture.run.current_state != RunDirector.RunState.PATROLLING:
 			return
-		fixture.patrol.step_patrol(ROUTE_STEP_SECONDS)
+		fixture.patrol.step_patrol(_route_step_seconds)
 		if fixture.patrol.get_current_occurrence_index() < occurrence_index:
 			_settle_current_route_state(fixture)
 

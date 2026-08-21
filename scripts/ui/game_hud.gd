@@ -10,6 +10,8 @@ signal hydrant_preview_requested(is_visible: bool)
 signal fullscreen_requested()
 signal primary_action_requested()
 signal extraction_requested()
+signal lap_extract_requested(decision_token: int)
+signal lap_push_requested(decision_token: int)
 signal subway_reroute_requested()
 signal backup_activation_requested()
 signal shop_cooling_requested()
@@ -298,6 +300,7 @@ var _inventory_action_in_flight: bool = false
 var _inventory_management_enabled: bool = false
 var _district_card_snapshot: Dictionary = {}
 var _district_patrol_snapshot: Dictionary = {}
+var _district_loop_snapshot: Dictionary = {}
 var _district_card_hand: Array[DistrictCardDefinition] = []
 var _district_card_choices: Array[DistrictCardDefinition] = []
 var _district_route_slots: Array[Dictionary] = []
@@ -343,7 +346,7 @@ func _ready() -> void:
 	extraction_button.pressed.connect(_on_extraction_pressed)
 	shop_cooling_choice.pressed.connect(_on_shop_cooling_pressed)
 	shop_leave_choice.pressed.connect(_on_primary_action_pressed)
-	extraction_continue_button.pressed.connect(_on_primary_action_pressed)
+	extraction_continue_button.pressed.connect(_on_extraction_continue_pressed)
 	shop_plan_button.pressed.connect(_on_district_card_open_pressed)
 	extraction_plan_button.pressed.connect(_on_district_card_open_pressed)
 	summary_same_seed_button.pressed.connect(_on_restart_same_seed_pressed)
@@ -1011,6 +1014,7 @@ func present_flow_snapshot(snapshot: Dictionary) -> void:
 	var encounter: Dictionary = snapshot.get("encounter", {})
 	var rewards: Dictionary = snapshot.get("rewards", {})
 	var cooling: Dictionary = snapshot.get("cooling", {})
+	_district_loop_snapshot = run.get("district_loop", {}).duplicate(true)
 	_last_run_snapshot = {
 		"coins": int(rewards.get("coin_total", 0)),
 		"streak_count": int(rewards.get("streak_count", 0)),
@@ -1035,12 +1039,25 @@ func present_flow_snapshot(snapshot: Dictionary) -> void:
 	var boss_threshold: float = maxf(float(run.get("boss_threshold", 1.0)), 0.001)
 	night_pressure_meter.max_value = boss_threshold
 	night_pressure_meter.value = pressure
-	night_pressure_label.text = "NIGHT %.1f  /  IRREVERSIBLE" % pressure
-	threshold_label.text = "NEXT %.1f  •  BOSS %.1f%s" % [
-		float(run.get("next_major_threshold", boss_threshold)),
-		boss_threshold,
-		"  •  QUEUED" if bool(run.get("boss_queued", false)) else "",
-	]
+	if bool(_district_loop_snapshot.get("enabled", false)):
+		var current_lap: Dictionary = _district_loop_snapshot.get("current_lap", {})
+		night_pressure_label.text = "NIGHT %.1f  /  LOCKED  /  x%.2f" % [
+			pressure,
+			float(current_lap.get("pressure_gain_multiplier", 1.0)),
+		]
+		night_pressure_label.tooltip_text = (
+			"NIGHT PRESSURE IS IRREVERSIBLE  /  CURRENT LAP GAIN x%.2f"
+			% float(current_lap.get("pressure_gain_multiplier", 1.0))
+		)
+		threshold_label.text = "RISK: LAP END  •  BOSS: FINAL COMMIT"
+	else:
+		night_pressure_label.text = "NIGHT %.1f  /  IRREVERSIBLE" % pressure
+		night_pressure_label.tooltip_text = "NIGHT PRESSURE IS IRREVERSIBLE"
+		threshold_label.text = "NEXT %.1f  •  BOSS %.1f%s" % [
+			float(run.get("next_major_threshold", boss_threshold)),
+			boss_threshold,
+			"  •  QUEUED" if bool(run.get("boss_queued", false)) else "",
+		]
 
 	var state: int = int(run.get("state", RunDirector.RunState.INITIALIZING))
 	var reward_modal_context: bool = (
@@ -1094,15 +1111,31 @@ func present_flow_snapshot(snapshot: Dictionary) -> void:
 	if build_details_panel.visible:
 		_refresh_build_details(_build_snapshot.get("slots", []))
 		_refresh_inventory_action_presentation()
-	route_title.text = "ROUTE • %s" % _journey_stage_for_state(state)
+	route_title.text = (
+		"DISTRICT • LAP %d/%d • BLOCK %d/%d"
+		% [
+			int(_district_loop_snapshot.get("lap_index", 1)),
+			int(_district_loop_snapshot.get("lap_count", 3)),
+			int(_district_loop_snapshot.get("block_index", 1)),
+			int(_district_loop_snapshot.get("blocks_per_lap", 3)),
+		]
+		if bool(_district_loop_snapshot.get("enabled", false))
+		else "ROUTE • %s" % _journey_stage_for_state(state)
+	)
 	var route_index: int = int(patrol.get("route_index", -1))
 	var route_progress: float = float(patrol.get("route_progress", 0.0))
-	_route_journey_text = "HIDEOUT>PATROL>FIGHT\nGEAR>EXIT/BOSS\nN%d %02d%% L%d > %s" % [
-		route_index + 1,
-		int(round(route_progress * 100.0)),
-		int(patrol.get("loop_count", 0)),
-		_journey_next_objective(state),
-	]
+	if bool(_district_loop_snapshot.get("enabled", false)):
+		_route_journey_text = "PLAN>BLOCK/FIGHT>REWARD\nLAP DECISION>EXTRACTION/BOSS\n%s • %s" % [
+			str(_district_loop_snapshot.get("phase_name", "PLAN")),
+			str((_district_loop_snapshot.get("current_lap", {}) as Dictionary).get("modifier_label", "STREET WATCH")),
+		]
+	else:
+		_route_journey_text = "HIDEOUT>PATROL>FIGHT\nGEAR>EXIT/BOSS\nN%d %02d%% L%d > %s" % [
+			route_index + 1,
+			int(round(route_progress * 100.0)),
+			int(patrol.get("loop_count", 0)),
+			_journey_next_objective(state),
+		]
 	_refresh_route_label_with_card_markers()
 
 	if not reward_modal_context:
@@ -1139,21 +1172,30 @@ func _present_wp01_phase_banner(
 	var status_value: String = _format_time(float(run.get("run_elapsed_seconds", 0.0)))
 	var warning: bool = false
 	var phase_icon: Texture2D = ICON_PHASE_PLAN
+	var district_enabled: bool = bool(_district_loop_snapshot.get("enabled", false))
+	if district_enabled:
+		progress_text = "LAP %d/%d  •  BLOCK %d/%d  •  %s" % [
+			int(_district_loop_snapshot.get("lap_index", 1)),
+			int(_district_loop_snapshot.get("lap_count", 3)),
+			int(_district_loop_snapshot.get("block_index", 1)),
+			int(_district_loop_snapshot.get("blocks_per_lap", 3)),
+			str((_district_loop_snapshot.get("current_lap", {}) as Dictionary).get("modifier_label", "STREET WATCH")),
+		]
 
 	match state:
 		RunDirector.RunState.INITIALIZING, RunDirector.RunState.INTRO:
 			phase_text = "RUN INTRO"
 			next_event = "CREW ENTERS THE DISTRICT"
 			status_title = "NEXT"
-			status_value = "PATROL"
+			status_value = "PLAN" if district_enabled else "PATROL"
 			phase_icon = ICON_PHASE_PLAN
 		RunDirector.RunState.PATROLLING:
-			phase_text = "PATROL"
-			next_event = "ROUTE BOUNDARY  /  %s" % str(
+			phase_text = "PLAN" if district_enabled else "PATROL"
+			next_event = "NEXT BLOCK  /  %s" % str(
 				patrol.get("route_node_type", "NEXT BLOCK")
 			).replace("_", " ").to_upper()
-			status_title = "APPROACH"
-			status_value = "%d%%" % int(round(route_progress * 100.0))
+			status_title = "ACTION"
+			status_value = "PLAN OR WATCH APPROACH" if district_enabled else "%d%%" % int(round(route_progress * 100.0))
 			phase_icon = ICON_PHASE_PLAN
 		RunDirector.RunState.ENCOUNTER_ACTIVE:
 			phase_text = "FIGHT"
@@ -1177,25 +1219,30 @@ func _present_wp01_phase_banner(
 			phase_icon = ICON_PHASE_REWARD
 		RunDirector.RunState.SHOP:
 			phase_text = "SHOP"
-			next_event = "BUY FROM FINITE STOCK OR LEAVE"
+			next_event = "BUY FROM FINITE STOCK OR LEAVE  /  THEN COMPLETE BLOCK"
 			status_title = "ACTION"
 			status_value = "ONE PURCHASE"
 			phase_icon = ICON_PHASE_SHOP
 		RunDirector.RunState.EXTRACTION_AVAILABLE:
-			phase_text = "EXTRACT OR PUSH"
-			next_event = "SECURE THE RUN OR CONTINUE AT HIGHER HEAT"
+			phase_text = "LAP DECISION" if district_enabled else "EXTRACT OR PUSH"
+			var push_preview: Dictionary = _district_loop_snapshot.get("push_preview", {})
+			next_event = (
+				"EXTRACT OR COMMIT TO FINAL LAP AND THE VIPER"
+				if bool(push_preview.get("final_lap_commitment", false))
+				else "EXTRACT OR PUSH DEEPER INTO LAP %d" % int(push_preview.get("lap_index", 0))
+			) if district_enabled else "SECURE THE RUN OR CONTINUE AT HIGHER HEAT"
 			status_title = "DECISION"
 			status_value = "FINAL ON CONFIRM"
 			warning = true
 			phase_icon = ICON_PHASE_EXTRACT
 		RunDirector.RunState.EXTRACTING:
-			phase_text = "EXTRACTING"
+			phase_text = "EXTRACTION"
 			next_event = "RUN SUMMARY"
 			status_title = "TRANSITION"
 			status_value = "IN PROGRESS"
 			phase_icon = ICON_PHASE_EXTRACT
 		RunDirector.RunState.BOSS_INTRO:
-			phase_text = "BOSS INTRO"
+			phase_text = "BOSS" if district_enabled else "BOSS INTRO"
 			next_event = "THE VIPER ENTERS"
 			status_title = "ARRIVAL"
 			status_value = "%.1fs" % maxf(float(run.get("boss_intro_remaining", 0.0)), 0.0)
@@ -1287,25 +1334,67 @@ func _refresh_wp01_focused_shells(
 	if extraction_panel.visible:
 		extraction_panel.move_to_front()
 		var current_heat: int = int(run.get("heat", 0))
-		var pushed_heat: int = mini(current_heat + 6, 100)
+		var district_enabled: bool = bool(_district_loop_snapshot.get("enabled", false))
+		var push_preview: Dictionary = _district_loop_snapshot.get("push_preview", {})
+		var push_heat_delta: int = int(push_preview.get("push_heat_delta", 6))
+		var pushed_heat: int = mini(current_heat + push_heat_delta, 100)
 		var current_coins: int = maxi(int(rewards.get("coin_total", 0)), 0)
 		var current_scrap: int = maxi(int(rewards.get("scrap_total", 0)), 0)
 		var reward_multiplier: float = maxf(float(run.get("reward_multiplier", 1.0)), 0.0)
-		extraction_button.text = (
-			"EXTRACT  /  SECURE CURRENT RESULT\n%d COINS  /  %d SCRAP  /  x%.2f"
-			% [current_coins, current_scrap, reward_multiplier]
-		)
-		extraction_continue_button.text = (
-			"PUSH ON  /  CONTINUE CURRENT ROUTE\nHEAT %d -> %d  /  NIGHT PRESSURE CONTINUES"
-			% [current_heat, pushed_heat]
-		)
-		extraction_preview.present(
-			"DECISION PREVIEW",
-			"CURRENT RESULT",
-			"EXTRACTED OR CONTINUING",
-			"Continue keeps the current route. Night Pressure remains irreversible.",
-			false
-		)
+		if district_enabled:
+			var completed_lap: int = int(_district_loop_snapshot.get("completed_laps", 0))
+			var completed_blocks: int = int(_district_loop_snapshot.get("completed_blocks", 0))
+			var next_lap: int = int(push_preview.get("lap_index", completed_lap + 1))
+			var final_commitment: bool = bool(push_preview.get("final_lap_commitment", false))
+			extraction_title.text = "LAP %d COMPLETE  /  EXTRACT OR %s" % [
+				completed_lap,
+				"COMMIT TO BOSS" if final_commitment else "PUSH DEEPER",
+			]
+			extraction_instruction.text = (
+				"This confirmation is final. Lap %d has no routine extraction."
+				% next_lap
+				if final_commitment
+				else "This confirmation is final. Preview the next lap before choosing."
+			)
+			extraction_button.text = (
+				"EXTRACT  /  SECURE CURRENT RESULT\n%d LAPS  /  %d BLOCKS  /  %d COINS  /  %d SCRAP"
+				% [completed_lap, completed_blocks, current_coins, current_scrap]
+			)
+			extraction_continue_button.text = (
+				"%s\nHEAT %d -> %d  /  %s\nREWARD TIER +%d  /  PRESSURE x%.2f\nNEXT: %s"
+				% [
+					"COMMIT TO FINAL LAP + BOSS" if final_commitment else "PUSH DEEPER  /  ENTER LAP %d" % next_lap,
+					current_heat,
+					pushed_heat,
+					str(push_preview.get("modifier_label", "HIGHER RISK")),
+					int(push_preview.get("reward_quality_tier_bonus", 0)),
+					float(push_preview.get("pressure_gain_multiplier", 1.0)),
+					str(push_preview.get("next_threat", "UNKNOWN")),
+				]
+			)
+			extraction_preview.present(
+				"AUTHORITATIVE CONSEQUENCE",
+				"EXTRACT  /  %d LAPS SECURED" % completed_lap,
+				"PUSH  /  LAP %d  /  %s" % [next_lap, str(push_preview.get("modifier_label", "HIGHER RISK"))],
+				"Night Pressure is unchanged and irreversible. %s" % str(push_preview.get("risk_label", "HIGHER RISK")),
+				final_commitment
+			)
+		else:
+			extraction_button.text = (
+				"EXTRACT  /  SECURE CURRENT RESULT\n%d COINS  /  %d SCRAP  /  x%.2f"
+				% [current_coins, current_scrap, reward_multiplier]
+			)
+			extraction_continue_button.text = (
+				"PUSH ON  /  CONTINUE CURRENT ROUTE\nHEAT %d -> %d  /  NIGHT PRESSURE CONTINUES"
+				% [current_heat, pushed_heat]
+			)
+			extraction_preview.present(
+				"DECISION PREVIEW",
+				"CURRENT RESULT",
+				"EXTRACTED OR CONTINUING",
+				"Continue keeps the current route. Night Pressure remains irreversible.",
+				false
+			)
 
 
 func present_build_snapshot(snapshot: Dictionary) -> void:
@@ -1868,7 +1957,17 @@ func _on_shop_cooling_pressed() -> void:
 
 
 func _on_extraction_pressed() -> void:
-	extraction_requested.emit()
+	if bool(_district_loop_snapshot.get("enabled", false)):
+		lap_extract_requested.emit(int(_district_loop_snapshot.get("decision_token", -1)))
+	else:
+		extraction_requested.emit()
+
+
+func _on_extraction_continue_pressed() -> void:
+	if bool(_district_loop_snapshot.get("enabled", false)):
+		lap_push_requested.emit(int(_district_loop_snapshot.get("decision_token", -1)))
+	else:
+		primary_action_requested.emit()
 
 
 func _on_restart_same_seed_pressed() -> void:

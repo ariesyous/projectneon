@@ -1,0 +1,20 @@
+# WP02 Current-to-Target Authority Map
+
+Status: implemented authority handoff, 2026-08-21; owner comprehension gate pending
+
+This map records the bounded owner-authorized WP02 migration from the M6/WP01 baseline to the implemented WP02 authority. Historical Milestone 0–6 and WP01 evidence remain true for their builds; `WP02_ACCEPTANCE_EVIDENCE.md` records the executed technical/runtime/visual result.
+
+| Concern | M6/WP01 baseline authority | Implemented WP02 authority | Preserved boundary |
+| --- | --- | --- | --- |
+| Run lifecycle | `RunDirector` owns pressure-threshold extraction/boss states | `RunDirector` owns an enabled three-lap, three-block lifecycle with stable lap/block identities and a narrowly composed run-owned lifecycle ledger | UI never advances a lap, block, decision, boss, or result |
+| Route, pacing, and safe boundaries | `PatrolController` owns fixed authored occurrences; `RunFlowController` defers an exact occurrence when threshold progression wins | Fixed route occurrences remain internal dispatch/safe boundaries; only encounter, shop, or authored card outcomes resolve one authoritative block. The same stable route/node order uses a 21.0-second represented approach and feeds eligible-time cadence measurement | No procedural route generation; M5 occurrence IDs/revisions remain intact; timing schedules no prompt and draws no randomness |
+| District Cards | `CardSystem` owns the finite run deck, hand, five future slots, revision/token ledgers, and exact-once effects | Unchanged behind the WP01 District Plan compatibility shell | WP03 alone owns focused next-block offers and lap-deck migration |
+| Lap decision | Extraction windows are queued at Night Pressure 18/36; decline adds six Heat; boss queues at 50 | After blocks 3 and 6, `RunDirector` issues one revisioned decision token. Extract ends the run; Push enters the next lap; the second Push commits to lap three and the boss. Block 9 starts the boss at a safe boundary | Heat remains tactical, Night Pressure irreversible, and final boss precedence is safe-boundary-only |
+| Escalation | Heat tier and Night Pressure scale encounters/rewards | Typed lap tuning adds an exact pressure multiplier and reward-tier bonus per lap, surfaced in the authoritative Push preview | Schema 1 and all seven random streams remain unchanged |
+| Rewards/shop | Existing reward and finite cooling authorities close their own focused states | Their successful close also resolves exactly one active district block; shop is visibly an authored block outcome | No WP04 economy/item rebalance |
+| Crew/profile access | Stored v1 unlock facts gate Zoey/Rex in production | `PersistentProfileData` access policy exposes all three crew without rewriting stored legacy facts on load; `NeonAppState` retires future Zoey/Rex grants while retaining Hacker Deck/Gang Hideout breadth rules | Save version/path, corrupt/future handling, atomic writes, IDs, and lifetime facts remain compatible |
+| Same-seed restart | `GameRun` reuses the exact `RunContentAccessSnapshot` object | Same behavior, now with all three crew in production access; new-seed restart recaptures policy access | No active-run persistence |
+| Presentation/input | `GameHUD` derives broad labels from `RunState`; WP01 focused shells forward legacy intents | HUD consumes the authoritative lifecycle snapshot for PLAN/FIGHT/REWARD/SHOP/LAP DECISION/EXTRACTION/BOSS/RESULT and forwards the exact decision token for mouse, keyboard, and touch activation | No UI gameplay calculations or hidden fallback decisions |
+| Summary/cleanup | `RunSummaryRecord` captures M6 outcome/build/combat ledgers; restart clears systems | Summary additionally freezes completed laps/blocks, boss commitment, and accepted decision trail; every restart/menu/terminal path clears lifecycle tokens and identities | Existing complete summary fields and synchronous cleanup remain |
+
+Executed order: lifecycle transitions, precedence, replay rejection, reset, summary, profile migration, and stream-isolation vectors were locked first; WP01 presentation was connected only after those authority tests passed.

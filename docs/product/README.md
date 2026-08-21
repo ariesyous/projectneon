@@ -1,6 +1,6 @@
 # Neon Loop Product Rebaseline
 
-Status: **WP00 owner-approved and canonical — 2026-08-20; WP01 technically complete — 2026-08-21**
+Status: **WP00 owner-approved and canonical; WP01 complete; WP02 technical/runtime/visual gate passed — 2026-08-21; WP02 human gate pending**
 Prepared: 2026-08-20
 
 This folder turns the August 2026 owner playtest into a research-backed product direction and an executable roadmap. It does not authorize post-Milestone-6 gameplay work by itself. The existing specification remains canonical until the owner approves a direction and Work Package 00 updates the specification and architecture records.
@@ -29,6 +29,6 @@ The current vertical slice is mechanically substantial and technically verified,
 
 The owner approved the complete recommended D1–D7 package on 2026-08-20. The canonical target is three laps of three blocks; Extract/Push after laps one and two; a lap-two push that commits to the final boss lap; a focused two-choice District Plan backed by a four-card one-copy lap deck; all three crew available on fresh profiles; breadth/cosmetic/challenge progression only; Environment/Focus/Backup combat roles; and the measurable five-person and timing gates in `TEST_PLAN.md`.
 
-See the [owner decision packet](WP00_DECISION_PACKET.md), [WP00 acceptance evidence](WP00_ACCEPTANCE_EVIDENCE.md), [WP01 acceptance evidence](WP01_ACCEPTANCE_EVIDENCE.md), [wireframes](wireframes/README.md), and [accepted architecture decision](../decisions/0002-wp00-product-rebaseline.md).
+See the [owner decision packet](WP00_DECISION_PACKET.md), [WP00 acceptance evidence](WP00_ACCEPTANCE_EVIDENCE.md), [WP01 acceptance evidence](WP01_ACCEPTANCE_EVIDENCE.md), [WP02 acceptance evidence](WP02_ACCEPTANCE_EVIDENCE.md), [WP02 authority map](WP02_CURRENT_TO_TARGET_AUTHORITY_MAP.md), [WP02 comprehension template](WP02_UNBRIEFED_COMPREHENSION_CHECK.md), [wireframes](wireframes/README.md), and [accepted architecture decision](../decisions/0002-wp00-product-rebaseline.md).
 
-WP00 is documentation-only. WP01 has now changed presentation only: gameplay authority remains the Milestone 6 implementation until the owning later packages land. WP02 has not started, and no later package begins without a separate explicit task.
+WP00 is documentation-only. WP01 changed presentation only. WP02 now implements the authoritative three-lap/three-block lifecycle, exact-once lap decisions, all-crew production access, state clarity, cadence instrumentation, and lifecycle result fields while preserving the M5 card compatibility boundary. Its five-person owner comprehension gate remains pending. WP03 has not started, and no later package begins without a separate explicit task.

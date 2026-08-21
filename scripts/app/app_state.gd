@@ -76,8 +76,8 @@ func update_settings(settings: GameSettingsData) -> bool:
 	return true
 
 
-## Call exactly once when RunDirector finalizes a run summary. The four authored
-## content grants are idempotent; lifetime counters record each completed run.
+## Call exactly once when RunDirector finalizes a run summary. The two retained
+## breadth grants are idempotent; retired crew-rule IDs remain historical only.
 func record_completed_run(outcome_id: StringName, elites_defeated: int) -> Array[StringName]:
 	var no_grants: Array[StringName] = []
 	if _save_service == null:

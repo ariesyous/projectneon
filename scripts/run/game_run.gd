@@ -96,6 +96,7 @@ func _ready() -> void:
 	run_director.heat_tier_changed.connect(_on_heat_tier_changed)
 	run_director.extraction_became_available.connect(_on_extraction_became_available)
 	run_director.boss_started.connect(_on_boss_intro_started)
+	run_director.district_block_completed.connect(_on_district_block_completed)
 	synergy_system.build_changed.connect(_on_build_changed)
 	synergy_system.synergy_activated.connect(_on_synergy_activated)
 	synergy_system.synergy_deactivated.connect(_on_synergy_deactivated)
@@ -111,6 +112,8 @@ func _ready() -> void:
 	game_hud.fullscreen_requested.connect(display_controller.toggle_fullscreen)
 	game_hud.primary_action_requested.connect(_on_primary_action_requested)
 	game_hud.extraction_requested.connect(run_flow_controller.confirm_extraction)
+	game_hud.lap_extract_requested.connect(run_flow_controller.confirm_extraction)
+	game_hud.lap_push_requested.connect(run_flow_controller.decline_extraction)
 	game_hud.subway_reroute_requested.connect(run_flow_controller.request_subway_reroute)
 	game_hud.shop_cooling_requested.connect(run_flow_controller.request_shop_cooling)
 	game_hud.restart_same_seed_requested.connect(_restart_same_seed)
@@ -291,7 +294,9 @@ func _input(event: InputEvent) -> void:
 		if card_system.is_planning_active():
 			_on_action_feedback("CLOSE DISTRICT CARD PLANNING BEFORE EXTRACTION")
 		else:
-			run_flow_controller.confirm_extraction()
+			run_flow_controller.confirm_extraction(
+				run_director.get_district_decision_token()
+			)
 		get_viewport().set_input_as_handled()
 	elif key_event.keycode in [KEY_1, KEY_KP_1]:
 		if not vertical_slice_overlay.has_blocking_modal():
@@ -358,7 +363,7 @@ func _build_crew_menu_entries() -> Array[Dictionary]:
 			"summary": summary,
 			"trait_text": "No permanent statistical bonuses are applied.",
 			"unlocked": accessible_ids.has(definition.id),
-			"unlock_hint": "Complete runs to unlock this crew member.",
+			"unlock_hint": "Core crew available from first launch.",
 		})
 	return result
 
@@ -375,7 +380,7 @@ func _profile_status_text() -> String:
 	var access_text: String = (
 		"DEVELOPMENT CATALOGUE ACCESS"
 		if app_state.development_full_content_access
-		else "VERSIONED UNLOCK PROFILE"
+		else "ALL CREW + VERSIONED BREADTH PROFILE"
 	)
 	return "SAVE V%d - %s - %s" % [app_state.profile.save_version, load_status, access_text]
 
@@ -748,11 +753,24 @@ func _on_standard_reward_ready(
 	encounter_instance_id: int,
 	_reward: StandardRewardDefinition
 ) -> void:
+	if run_director.is_district_loop_enabled():
+		return
 	if _strategic_reward_encounters.has(encounter_instance_id):
 		return
 	_strategic_reward_encounters[encounter_instance_id] = true
 	cadence_tracker.record_strategic_opportunity(
 		StringName("encounter_reward:%d" % encounter_instance_id),
+		run_director.run_elapsed_seconds
+	)
+
+
+func _on_district_block_completed(
+	lap_index: int,
+	block_index: int,
+	block_id: StringName
+) -> void:
+	cadence_tracker.record_strategic_opportunity(
+		StringName("district_block:%s:%d:%d" % [block_id, lap_index, block_index]),
 		run_director.run_elapsed_seconds
 	)
 
@@ -817,7 +835,7 @@ func _on_primary_action_requested() -> void:
 		RunDirector.RunState.SHOP:
 			run_flow_controller.leave_shop()
 		RunDirector.RunState.EXTRACTION_AVAILABLE:
-			run_flow_controller.decline_extraction()
+			run_flow_controller.decline_extraction(run_director.get_district_decision_token())
 		RunDirector.RunState.BOSS_INTRO:
 			run_flow_controller.enter_boss_trigger()
 

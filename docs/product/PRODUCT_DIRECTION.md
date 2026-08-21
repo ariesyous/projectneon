@@ -1,6 +1,6 @@
 # Approved Product Direction
 
-Status: owner-approved through WP00
+Status: owner-approved through WP00; WP01/WP02 implementation recorded; WP02 human gate pending
 Prepared: 2026-08-20
 Approved: 2026-08-20
 
@@ -31,7 +31,7 @@ If the player is waiting, the game must turn that time into anticipation with a 
 
 ## Approved nested loop
 
-Target timings are acceptance hypotheses to validate during WP02–WP07, not implemented WP00 balance values.
+Target timings remain acceptance hypotheses to validate through representative WP02/WP07 sessions. WP02 now instruments the 10–20/45–90/120–180 bands, but instrumentation alone is not a timing pass.
 
 ### Encounter loop: roughly 20–45 seconds
 
@@ -227,4 +227,4 @@ Icons are never the sole carrier of unfamiliar meaning. New icons ship with labe
 
 ## Approval record
 
-On 2026-08-20 the owner explicitly approved the complete recommended D1–D7 package: this north star; the exact three-by-three lap loop and commitment; the focused District Plan; all-crew default availability; breadth/cosmetic/challenge-only progression; Environment/Focus/Backup; and the acceptance metrics recorded in `TEST_PLAN.md`. See [WP00 acceptance evidence](WP00_ACCEPTANCE_EVIDENCE.md). This approval makes the direction canonical but does not claim that WP01–WP07 are implemented.
+On 2026-08-20 the owner explicitly approved the complete recommended D1–D7 package: this north star; the exact three-by-three lap loop and commitment; the focused District Plan; all-crew default availability; breadth/cosmetic/challenge-only progression; Environment/Focus/Backup; and the acceptance metrics recorded in `TEST_PLAN.md`. See [WP00 acceptance evidence](WP00_ACCEPTANCE_EVIDENCE.md). WP01 and WP02 now implement their recorded boundaries; the WP02 owner comprehension gate and all WP03–WP07 work remain pending.

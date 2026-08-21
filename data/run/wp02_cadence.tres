@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="RunCadenceDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/run/run_cadence_definition.gd" id="1_cadence"]
+
+[resource]
+script = ExtResource("1_cadence")
+id = &"wp02_block_lap_cadence"
+ambient_minimum_seconds = 10.0
+ambient_maximum_seconds = 20.0
+strategic_minimum_seconds = 45.0
+strategic_maximum_seconds = 90.0
+major_minimum_seconds = 120.0
+major_maximum_seconds = 180.0

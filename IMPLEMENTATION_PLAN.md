@@ -22,7 +22,9 @@
 
 **WP00 — Product Rebaseline: owner-approved and documentation-complete on 2026-08-20**
 
-**WP01 — Interface and Visual Language: implemented and technically evidenced on 2026-08-21; owner qualitative checkpoint remains separate; WP02 not started**
+**WP01 — Interface and Visual Language: implemented and technically evidenced on 2026-08-21; owner qualitative checkpoint remains separate**
+
+**WP02 — Core Run Loop and State Clarity: implemented and technically evidenced on 2026-08-21; owner five-person comprehension gate remains pending; WP03 not started**
 
 The Combat Lab foundation and Fire Hydrant intervention are preserved inside a complete run lifecycle with the verified Milestone 4 equipment/synergy layer, Milestone 4.1 usability/readability correction, bounded Milestone 4.2 drag/backpack-clarity implementation, and the separately verified Milestone 5 District Cards implementation. Technical Milestone 1 acceptance remains the unchanged owner record. Milestone 6 passed its cumulative automated gate, configured headless `/GameRun` boot, and GitHub Pages Web export/deployment. Representative manual paths, real-input browser/device checks, Windows export/runtime, visual evidence, cadence acceptance, and final owner qualitative validation remain under the playtest guide.
 
@@ -36,14 +38,14 @@ WP00 preserves all Milestone 0–6 implementation and verification records while
 | --- | --- | --- |
 | WP00 | Product, architecture, wireframe, and acceptance rebaseline | **Complete; owner approved** |
 | WP01 | Interface and visual language | **Implemented and technically evidenced; no gameplay authority change** |
-| WP02 | Core three-lap run loop and state clarity | Planned; not started |
+| WP02 | Core three-lap run loop and state clarity | **Implemented and technically evidenced; five-person comprehension gate pending** |
 | WP03 | Focused District Plan | Planned; not started |
 | WP04 | Builds, rewards, and shop consequence | Planned; not started |
 | WP05 | Intervention and encounter-variety prototypes | Planned; not started |
 | WP06 | World, combat, and presentation polish | Planned; not started |
 | WP07 | Integration, balance, and release acceptance | Planned; not started |
 
-The current gameplay/content authority remains Milestone 6 with the WP01 presentation migration integrated. A target statement is not evidence that its owning later work package exists. Each later package requires its own explicit task, branch discipline, tests, runtime verification, documentation, and owner gate where specified.
+The current gameplay/content authority is Milestone 6 migrated through the WP01 presentation layer and WP02 district lifecycle/profile-access authority. The M5 card planner remains the compatibility authority behind that shell until WP03. A target statement is not evidence that its owning later work package exists. Each later package requires its own explicit task, branch discipline, tests, runtime verification, documentation, and owner gate where specified.
 
 ## WP01 implementation — Interface and Visual Language
 
@@ -59,7 +61,22 @@ The current gameplay/content authority remains Milestone 6 with the WP01 present
 - [x] Rendered/inspected eight native states, native safe-area combat, 2560×1440 Web integer scaling, and configured `/GameRun` evidence.
 - [x] Passed **254/254 tests and 3,376 assertions** with no failures/skips. The fresh configured `/GameRun` interaction log contains no warning/error/debugger entry.
 
-WP01 intentionally implements no lap/block authority, fresh-profile crew migration, District Plan scheduling/legality migration, Focus mechanic, gameplay content, final WP06 stage art, project-setting change, profile mutation, publication, or deployment. WP02 remains unstarted.
+WP01 intentionally implements no lap/block authority, fresh-profile crew migration, District Plan scheduling/legality migration, Focus mechanic, gameplay content, final WP06 stage art, project-setting change, profile mutation, publication, or deployment. WP02 subsequently owns only the lifecycle/profile changes below.
+
+## WP02 implementation — Core Run Loop and State Clarity
+
+**Status: Technical/runtime/visual gate passed on 2026-08-21.** The owner five-person unbriefed comprehension gate remains pending and is not fabricated. Evidence: `docs/product/WP02_ACCEPTANCE_EVIDENCE.md`.
+
+- [x] Added exact three-lap × three-block authority with stable IDs, explicit phases, lifecycle/decision revisions, accepted decision history, and at-most-once Extract/Push tokens.
+- [x] Added lap-one/lap-two decisions, +6 Push Heat, pressure multipliers `1.00/1.15/1.30`, reward implications `+0/+1/+2`, named risk/next-threat copy, second-Push boss commitment, and block-nine boss precedence.
+- [x] Preserved irreversible Night Pressure/scaling and Heat cooling while preventing configured pressure thresholds from bypassing lap authority. Legacy isolated M3 fixtures retain their historical threshold mode when no district definition is configured.
+- [x] Made Jax, Zoey, and Rex available on fresh production access before any draw without rewriting version-1 save facts on load; retired crew rules remain historical facts while Hacker Deck/Gang Hideout breadth grants remain active.
+- [x] Connected PLAN, FIGHT/arrival, REWARD, SHOP, LAP DECISION, EXTRACTION, BOSS, and RESULT presentation to authoritative snapshots and exact tokens; corrected native and 2× clipping found during visual review.
+- [x] Preserved current M5 card placement/effect authority, safe-boundary precedence, card-owned pause, focus pause, seven streams/schema 1, same-seed access snapshots, terminal/restart cleanup, and input parity.
+- [x] Passed **264/264 cumulative tests and 3,646 assertions** with no failures/skips; focused/affected/configured checks are clean, including exact-token `E` extraction. A fixed-seed composed trace reached lap decisions at 121.267/292.683 eligible seconds and a boss result at 599.883 seconds, with every block-gap outlier disclosed in `TEST_PLAN.md`. The pre-existing aggregate-runner 48-ObjectDB/four-resource shutdown audit remains disclosed.
+- [x] Produced clean release Windows/Web exports, an exit-0 exported Windows runtime smoke, an empty production Web warning/error console, real pointer crew/start input, native/safe-area/configured captures, and 2560×1440 integer-scale evidence.
+
+WP02 adds no WP03 District Plan migration, new gameplay content, new stream/schema, save version, or permanent progression. Its implementation task performed no commit, publication, or deployment; on 2026-08-21 the owner separately authorized the evidenced WP02 boundary for a `main` and GitHub Pages browser-playtest release. That release does not close the comprehension gate or authorize WP03.
 
 ## Milestone 0 implementation
 
@@ -421,6 +438,6 @@ Working-tree provenance remains separate from Milestone 6: the owner's pre-exist
 
 ## Scope gate
 
-Milestone 6 remains the implemented runtime boundary. WP00 supersedes only its former **prospective** stopping-boundary language with the approved WP01–WP07 roadmap; it does not start or implement any package. Procedural generation, additional districts/cards/crew/enemies/bosses, multiplayer, controller support, localization, achievements, daily scheduling/leaderboards/rewards, advanced meta-progression, permanent stat trees, mid-run saving/replay, broader equipment/card economies, and every undocumented system remain out of scope. Run-seed and named-stream infrastructure remains schema version 1 unless a later owning package proves and records an incompatible semantics change.
+WP02 is the implemented runtime boundary on top of the preserved Milestone 6 content baseline and WP01 presentation layer. The Milestone 5 card planner remains the compatibility authority until a separately authorized WP03. Procedural generation, additional districts/cards/crew/enemies/bosses, multiplayer, controller support, localization, achievements, daily scheduling/leaderboards/rewards, advanced meta-progression, permanent stat trees, mid-run saving/replay, broader equipment/card economies, and every undocumented system remain out of scope. Run-seed and named-stream infrastructure remains schema version 1 unless a later owning package proves and records an incompatible semantics change.
 
-The owner-authorized 2026-07-22 Milestone 6 Pages publication remains a historical tentative-playtest record. The 2026-08-20 WP00 approval authorizes the bounded roadmap as planning, not implementation, commits, pushes, publication, deployment, or unreviewed content expansion. WP01 may begin only under a separate explicit request.
+The owner-authorized 2026-07-22 Milestone 6 Pages publication remains a historical tentative-playtest record. The 2026-08-20 WP00 approval authorizes the bounded roadmap as planning, not implementation, commits, pushes, publication, deployment, or unreviewed content expansion. WP01 and WP02 began only under separate explicit tasks; WP03 remains unstarted and requires separate authorization.

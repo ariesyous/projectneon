@@ -58,8 +58,8 @@ func test_main_scene_waits_for_valid_menu_selection_without_gameplay_draws() -> 
 		&"jax",
 		"menu: production profile selects its one unlocked crew"
 	)
-	_expect_true(fixture.game.vertical_slice_overlay.zoey_button.disabled, "menu: Zoey is textually locked")
-	_expect_true(fixture.game.vertical_slice_overlay.rex_button.disabled, "menu: Rex is textually locked")
+	_expect_false(fixture.game.vertical_slice_overlay.zoey_button.disabled, "menu: WP02 exposes Zoey from first launch")
+	_expect_false(fixture.game.vertical_slice_overlay.rex_button.disabled, "menu: WP02 exposes Rex from first launch")
 	var draw_counts: Dictionary = fixture.game.run_director.get_random_streams().get_debug_snapshot().get(
 		"draw_counts",
 		{}
@@ -313,8 +313,8 @@ func test_shop_cadence_records_only_successful_unique_visits() -> void:
 	)
 	_expect_equal(
 		fixture.game.cadence_tracker.get_event_count(RunCadenceTracker.CATEGORY_STRATEGIC),
-		1,
-		"cadence shop: successful visit records one strategic opportunity"
+		0,
+		"cadence shop: WP02 measures complete blocks, not shop entry"
 	)
 	var snapshot_before: Dictionary = fixture.game.cadence_tracker.get_snapshot()
 	_expect_false(
@@ -325,6 +325,12 @@ func test_shop_cadence_records_only_successful_unique_visits() -> void:
 		fixture.game.cadence_tracker.get_snapshot(),
 		snapshot_before,
 		"cadence shop: rejected visit cannot mutate cadence"
+	)
+	_expect_true(fixture.game.run_flow_controller.leave_shop(), "cadence shop: leave resolves the shop block")
+	_expect_equal(
+		fixture.game.cadence_tracker.get_event_count(RunCadenceTracker.CATEGORY_STRATEGIC),
+		1,
+		"cadence shop: exactly one completed block is recorded"
 	)
 
 
@@ -410,7 +416,8 @@ func test_viper_dispatch_victory_summary_and_return_to_menu_cleanup() -> void:
 	fixture.game.run_director.add_night_pressure(
 		fixture.game.run_director.escalation_definition.boss_pressure_threshold + 0.1
 	)
-	fixture.game.patrol_controller.step_patrol(100.0)
+	_expect_false(fixture.game.run_director.is_boss_queued(), "boss: pressure alone cannot bypass district laps")
+	_advance_director_to_wp02_boss(fixture.game)
 	_expect_equal(
 		fixture.game.run_director.current_state,
 		RunDirector.RunState.BOSS_INTRO,
@@ -523,7 +530,7 @@ func test_extraction_settles_pending_passive_coin_before_summary() -> void:
 	fixture.game.run_director.add_night_pressure(
 		fixture.game.run_director.escalation_definition.extraction_pressure_thresholds[0] + 0.1
 	)
-	fixture.game.patrol_controller.step_patrol(100.0)
+	_advance_director_to_wp02_lap_decision(fixture.game, 1)
 	_expect_equal(
 		fixture.game.run_director.current_state,
 		RunDirector.RunState.EXTRACTION_AVAILABLE,
@@ -533,7 +540,12 @@ func test_extraction_settles_pending_passive_coin_before_summary() -> void:
 		fixture.game.reward_director.register_coin_cluster(9002, 85),
 		"extraction coins: visible optional cluster staged"
 	)
-	_expect_true(fixture.game.run_flow_controller.confirm_extraction(), "extraction coins: extraction accepted")
+	_expect_true(
+		fixture.game.run_flow_controller.confirm_extraction(
+			fixture.game.run_director.get_district_decision_token()
+		),
+		"extraction coins: extraction accepted"
+	)
 	fixture.game.run_director.step_run(
 		fixture.game.run_director.get_extraction_duration_seconds() + 0.1
 	)
@@ -662,6 +674,28 @@ func _new_game(full_content_access: bool) -> GameFixture:
 	if tree != null:
 		tree.root.add_child(fixture.viewport)
 	return fixture
+
+
+func _advance_director_to_wp02_lap_decision(game: GameRun, target_lap: int) -> void:
+	while int(game.run_director.get_district_loop_snapshot().get("completed_laps", 0)) < target_lap:
+		var loop: Dictionary = game.run_director.get_district_loop_snapshot()
+		var lap_index: int = int(loop.get("lap_index", 1))
+		var block_index: int = int(loop.get("block_index", 1))
+		var encounter_id: int = (lap_index - 1) * 3 + block_index + 6000
+		game.run_director.begin_district_block(
+			StringName("m6_compat::lap_%d::block_%d" % [lap_index, block_index]),
+			&"encounter"
+		)
+		game.run_director.begin_encounter(STANDARD_ENCOUNTER)
+		game.run_director.notify_encounter_completed(encounter_id, STANDARD_ENCOUNTER)
+		game.run_director.complete_reward_selection()
+
+
+func _advance_director_to_wp02_boss(game: GameRun) -> void:
+	for target_lap: int in range(1, 4):
+		_advance_director_to_wp02_lap_decision(game, target_lap)
+		if target_lap < 3:
+			game.run_director.decline_extraction(game.run_director.get_district_decision_token())
 
 
 func _count_telegraphs(game: GameRun) -> int:

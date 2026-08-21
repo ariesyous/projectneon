@@ -38,7 +38,12 @@ func test_production_defaults_and_development_access_are_exact() -> void:
 	_expect_equal(
 		profile.unlocked_crew_ids,
 		[&"jax"],
-		"defaults: only Jax is production-unlocked"
+		"defaults: legacy v1 fact ledger remains Jax-only"
+	)
+	_expect_equal(
+		profile.get_accessible_crew_ids(false),
+		PersistentProfileData.ALL_CREW_IDS,
+		"defaults: WP02 production access exposes all three crew"
 	)
 	_expect_equal(
 		profile.unlocked_equipment_ids,
@@ -213,14 +218,14 @@ func test_authored_unlocks_and_lifetime_counters_apply_once_without_stat_bonuses
 	var service: ProfileSaveService = track(ProfileSaveService.new(path)) as ProfileSaveService
 	var app_state: NeonAppState = track(NeonAppState.new()) as NeonAppState
 	app_state.initialize(service, false)
-	_expect_equal(app_state.get_accessible_crew_ids(), [&"jax"], "unlocks: production crew filter")
-	_expect_equal(app_state.record_completed_run(&"defeated", 0), [&"zoey"], "unlocks: first completion grants Zoey")
+	_expect_equal(app_state.get_accessible_crew_ids(), PersistentProfileData.ALL_CREW_IDS, "unlocks: production exposes every core crew style")
+	_expect_equal(app_state.record_completed_run(&"defeated", 0), [], "unlocks: retired Zoey rule grants nothing")
 	_expect_equal(app_state.record_completed_run(&"defeated", 1), [&"hacker_deck"], "unlocks: first elite grants existing gear")
 	_expect_equal(app_state.record_completed_run(&"extracted", 0), [&"gang_hideout"], "unlocks: first extraction grants existing card")
-	_expect_equal(app_state.record_completed_run(&"victory", 0), [&"rex"], "unlocks: first victory grants Rex")
+	_expect_equal(app_state.record_completed_run(&"victory", 0), [], "unlocks: retired Rex rule grants nothing")
 	_expect_equal(app_state.record_completed_run(&"victory", 3), [], "unlocks: all grants are idempotent")
-	_expect_equal(app_state.profile.unlocked_crew_ids.count(&"zoey"), 1, "unlocks: Zoey appears once")
-	_expect_equal(app_state.profile.unlocked_crew_ids.count(&"rex"), 1, "unlocks: Rex appears once")
+	_expect_equal(app_state.profile.unlocked_crew_ids.count(&"zoey"), 0, "unlocks: retired rule does not invent Zoey fact")
+	_expect_equal(app_state.profile.unlocked_crew_ids.count(&"rex"), 0, "unlocks: retired rule does not invent Rex fact")
 	_expect_equal(app_state.profile.unlocked_equipment_ids.count(&"hacker_deck"), 1, "unlocks: Hacker Deck appears once")
 	_expect_equal(app_state.profile.unlocked_card_ids.count(&"gang_hideout"), 1, "unlocks: Gang Hideout appears once")
 	_expect_equal(app_state.profile.lifetime_statistics.completed_runs, 5, "lifetime: every completed run counted")

@@ -25,6 +25,13 @@ signal card_planning_pause_changed(is_active: bool)
 signal boss_intro_timing_started(duration_seconds: float)
 signal victory_presentation_started(duration_seconds: float)
 signal victory_presentation_completed()
+signal lap_decision_became_available(completed_lap_index: int, decision_token: int)
+signal lap_decision_resolved(
+	completed_lap_index: int,
+	decision_id: StringName,
+	decision_token: int
+)
+signal district_block_completed(lap_index: int, block_index: int, block_id: StringName)
 
 enum RunState {
 	INITIALIZING,
@@ -66,6 +73,9 @@ const GENERATED_SEED_MODULUS: int = 2147483647
 ## explicit completion call and victory completes immediately. GameRun assigns
 ## the Milestone 6 Resource when the vertical-slice composition is enabled.
 @export var lifecycle_definition: RunLifecycleDefinition
+## Null preserves the pressure-threshold Milestone 3/Milestone 6 lifecycle for
+## isolated legacy fixtures. The configured GameRun assigns the WP02 contract.
+@export var district_loop_definition: DistrictLoopDefinition
 
 var current_state: int = RunState.INITIALIZING
 var run_seed: int = 0
@@ -97,6 +107,7 @@ var _random_streams: RunRandomStreams
 var _card_planning_pause_owned: bool = false
 var _ending_card_planning_pause: bool = false
 var _run_completion_emitted: bool = false
+var _district_lifecycle: DistrictRunLifecycle
 
 
 func _ready() -> void:
@@ -104,6 +115,7 @@ func _ready() -> void:
 		heat_definition = DEFAULT_HEAT
 	if escalation_definition == null:
 		escalation_definition = DEFAULT_ESCALATION
+	_ensure_district_lifecycle()
 	_ensure_random_streams()
 	set_process(true)
 
@@ -124,6 +136,8 @@ func step_run(delta: float) -> void:
 		_extraction_remaining = maxf(_extraction_remaining - safe_delta, 0.0)
 		if _extraction_remaining <= 0.0 and _run_result == RunResult.NONE:
 			_run_result = RunResult.EXTRACTED
+			if _district_lifecycle != null:
+				_district_lifecycle.mark_result()
 			_emit_run_completed_once()
 	elif current_state == RunState.BOSS_INTRO and _boss_intro_remaining > 0.0:
 		_boss_intro_remaining = maxf(_boss_intro_remaining - safe_delta, 0.0)
@@ -143,7 +157,11 @@ func step_run(delta: float) -> void:
 			_emit_run_completed_once()
 	elif is_eligible_active_state(current_state):
 		run_elapsed_seconds += safe_delta
-		add_night_pressure(safe_delta * escalation_definition.passive_pressure_per_second)
+		add_night_pressure(
+			safe_delta
+			* escalation_definition.passive_pressure_per_second
+			* get_district_pressure_gain_multiplier()
+		)
 
 	_snapshot_remaining -= safe_delta
 	if _snapshot_remaining <= 0.0:
@@ -156,6 +174,8 @@ func start_run(supplied_seed: int = 0, use_supplied_seed: bool = false) -> int:
 	_reset_authoritative_state()
 	run_seed = supplied_seed if use_supplied_seed else generate_run_seed()
 	_random_streams.reset_for_seed(run_seed)
+	if _district_lifecycle != null:
+		_district_lifecycle.start_run()
 	run_started.emit(run_seed, _random_streams.get_random_schema_version())
 	request_transition(RunState.INTRO)
 	_intro_remaining = get_intro_duration_seconds()
@@ -219,6 +239,8 @@ func request_transition(new_state: int) -> bool:
 func complete_intro() -> bool:
 	if current_state != RunState.INTRO:
 		return false
+	if _district_lifecycle != null and not _district_lifecycle.complete_intro():
+		return false
 	_intro_remaining = 0.0
 	return request_transition(RunState.PATROLLING)
 
@@ -272,8 +294,17 @@ func is_card_planning_pause_active() -> bool:
 
 
 func begin_encounter(_definition: EncounterDefinition) -> bool:
-	if _definition == null:
+	if _definition == null or current_state != RunState.PATROLLING:
 		return false
+	if _district_lifecycle != null:
+		if _district_lifecycle.phase == DistrictRunLifecycle.Phase.PLAN:
+			var direct_occurrence: StringName = StringName(
+				"direct_encounter_%03d" % (encounters_completed + 1)
+			)
+			if not begin_district_block(direct_occurrence, &"encounter"):
+				return false
+		if not _district_lifecycle.enter_fight():
+			return false
 	return request_transition(RunState.ENCOUNTER_ACTIVE)
 
 
@@ -286,6 +317,10 @@ func notify_encounter_completed(
 		or encounter_instance_id < 0
 		or _completed_encounter_ids.has(encounter_instance_id)
 		or current_state != RunState.ENCOUNTER_ACTIVE
+		or (
+			_district_lifecycle != null
+			and _district_lifecycle.phase != DistrictRunLifecycle.Phase.FIGHT
+		)
 	):
 		return false
 	_completed_encounter_ids[encounter_instance_id] = true
@@ -296,7 +331,9 @@ func notify_encounter_completed(
 		if definition.elite_eligible
 		else escalation_definition.pressure_per_standard_encounter
 	)
-	add_night_pressure(completion_gain)
+	add_night_pressure(completion_gain * get_district_pressure_gain_multiplier())
+	if _district_lifecycle != null and not _district_lifecycle.enter_reward():
+		return false
 	encounter_completed_authoritatively.emit(encounter_instance_id, definition)
 	return request_transition(RunState.REWARD_SELECTION)
 
@@ -304,18 +341,33 @@ func notify_encounter_completed(
 func complete_reward_selection() -> bool:
 	if current_state != RunState.REWARD_SELECTION:
 		return false
+	if _district_lifecycle != null:
+		return _complete_district_block_from_state()
 	if _begin_pending_progression():
 		return true
 	return request_transition(RunState.PATROLLING)
 
 
 func open_shop() -> bool:
+	if current_state != RunState.PATROLLING:
+		return false
+	if _district_lifecycle != null:
+		if _district_lifecycle.phase == DistrictRunLifecycle.Phase.PLAN:
+			var direct_occurrence: StringName = StringName(
+				"direct_shop_%03d" % (_district_lifecycle.completed_blocks + 1)
+			)
+			if not begin_district_block(direct_occurrence, &"shop"):
+				return false
+		if not _district_lifecycle.enter_shop():
+			return false
 	return request_transition(RunState.SHOP)
 
 
 func leave_shop() -> bool:
 	if current_state != RunState.SHOP:
 		return false
+	if _district_lifecycle != null:
+		return _complete_district_block_from_state()
 	if _begin_pending_progression():
 		return true
 	return request_transition(RunState.PATROLLING)
@@ -324,12 +376,33 @@ func leave_shop() -> bool:
 func notify_safe_transition_boundary() -> bool:
 	if current_state != RunState.PATROLLING:
 		return false
+	if _district_lifecycle != null:
+		return false
 	return _begin_pending_progression()
 
 
-func decline_extraction() -> bool:
+func decline_extraction(decision_token_value: int = -1) -> bool:
 	if current_state != RunState.EXTRACTION_AVAILABLE:
 		return false
+	if _district_lifecycle != null:
+		var decision_result: Dictionary = _district_lifecycle.accept_lap_decision(
+			decision_token_value,
+			DistrictRunLifecycle.DECISION_PUSH
+		)
+		if not bool(decision_result.get("accepted", false)):
+			return false
+		var record: Dictionary = decision_result.get("record", {})
+		var completed_lap: int = int(record.get("completed_lap_index", 0))
+		_spend_current_extraction_window()
+		apply_heat_delta(district_loop_definition.push_heat_delta)
+		if not request_transition(RunState.PATROLLING):
+			return false
+		lap_decision_resolved.emit(
+			completed_lap,
+			DistrictRunLifecycle.DECISION_PUSH,
+			decision_token_value
+		)
+		return true
 	if _current_extraction_threshold_index >= 0:
 		_spent_extraction_thresholds[_current_extraction_threshold_index] = true
 	_current_extraction_threshold_index = -1
@@ -337,16 +410,31 @@ func decline_extraction() -> bool:
 	return request_transition(RunState.PATROLLING)
 
 
-func confirm_extraction() -> bool:
+func confirm_extraction(decision_token_value: int = -1) -> bool:
 	if current_state != RunState.EXTRACTION_AVAILABLE or _boss_queued:
 		return false
+	var completed_lap: int = 0
+	if _district_lifecycle != null:
+		var decision_result: Dictionary = _district_lifecycle.accept_lap_decision(
+			decision_token_value,
+			DistrictRunLifecycle.DECISION_EXTRACT
+		)
+		if not bool(decision_result.get("accepted", false)):
+			return false
+		completed_lap = int(
+			(decision_result.get("record", {}) as Dictionary).get("completed_lap_index", 0)
+		)
 	_extraction_confirmed = true
-	if _current_extraction_threshold_index >= 0:
-		_spent_extraction_thresholds[_current_extraction_threshold_index] = true
-	_current_extraction_threshold_index = -1
+	_spend_current_extraction_window()
 	if not request_transition(RunState.EXTRACTING):
 		return false
 	_extraction_remaining = get_extraction_duration_seconds()
+	if _district_lifecycle != null:
+		lap_decision_resolved.emit(
+			completed_lap,
+			DistrictRunLifecycle.DECISION_EXTRACT,
+			decision_token_value
+		)
 	return true
 
 
@@ -366,6 +454,8 @@ func notify_boss_defeated() -> bool:
 		_run_result = RunResult.NONE
 		_victory_presentation_remaining = 0.0
 		return false
+	if _district_lifecycle != null:
+		_district_lifecycle.mark_result()
 	victory_presentation_started.emit(_victory_presentation_remaining)
 	if _victory_presentation_remaining <= 0.0:
 		victory_presentation_completed.emit()
@@ -380,6 +470,8 @@ func notify_all_crew_incapacitated() -> bool:
 	if not request_transition(RunState.DEFEAT):
 		_run_result = RunResult.NONE
 		return false
+	if _district_lifecycle != null:
+		_district_lifecycle.mark_result()
 	_emit_run_completed_once()
 	return true
 
@@ -423,6 +515,14 @@ func finalize_summary(
 	summary.active_synergies = active_synergies
 	summary.boss_triggered = _boss_started
 	summary.highest_combo = maxi(highest_combo, 0)
+	if _district_lifecycle != null:
+		var district_snapshot: Dictionary = _district_lifecycle.get_snapshot()
+		summary.laps_completed = int(district_snapshot.get("completed_laps", 0))
+		summary.blocks_completed = int(district_snapshot.get("completed_blocks", 0))
+		summary.boss_committed = bool(district_snapshot.get("boss_committed", false))
+		summary.final_lap_id = StringName(district_snapshot.get("lap_id", &""))
+		summary.final_block_id = StringName(district_snapshot.get("block_id", &""))
+		summary.lap_decisions = _district_lifecycle.get_accepted_decisions()
 	_last_summary = summary
 	request_transition(RunState.RUN_SUMMARY)
 	run_summary_ready.emit(summary)
@@ -525,7 +625,16 @@ func get_heat_tier() -> int:
 
 
 func get_reward_quality_tier() -> int:
-	return heat_definition.reward_quality_for_tier(get_heat_tier())
+	var heat_quality: int = heat_definition.reward_quality_for_tier(get_heat_tier())
+	if _district_lifecycle == null:
+		return heat_quality
+	return clampi(
+		heat_quality + district_loop_definition.reward_tier_bonus_for_lap(
+			_district_lifecycle.lap_index
+		),
+		0,
+		4
+	)
 
 
 func get_reward_multiplier() -> float:
@@ -566,6 +675,50 @@ func get_result() -> int:
 
 func get_last_summary() -> RunSummaryRecord:
 	return _last_summary
+
+
+func is_district_loop_enabled() -> bool:
+	return _district_lifecycle != null
+
+
+func get_district_loop_snapshot() -> Dictionary:
+	return _district_lifecycle.get_snapshot() if _district_lifecycle != null else {}
+
+
+func get_district_decision_token() -> int:
+	return _district_lifecycle.decision_token if _district_lifecycle != null else -1
+
+
+func get_district_pressure_gain_multiplier() -> float:
+	if _district_lifecycle == null:
+		return 1.0
+	return district_loop_definition.pressure_multiplier_for_lap(
+		_district_lifecycle.lap_index
+	)
+
+
+func begin_district_block(
+	route_occurrence_id: StringName,
+	block_kind: StringName
+) -> bool:
+	if (
+		_district_lifecycle == null
+		or current_state != RunState.PATROLLING
+		or not _district_lifecycle.begin_block(route_occurrence_id, block_kind)
+	):
+		return false
+	snapshot_changed.emit(get_snapshot())
+	return true
+
+
+func complete_district_utility_block() -> bool:
+	if (
+		_district_lifecycle == null
+		or current_state != RunState.PATROLLING
+		or _district_lifecycle.phase != DistrictRunLifecycle.Phase.BLOCK
+	):
+		return false
+	return _complete_district_block_from_state()
 
 
 func get_random_streams() -> RunRandomStreams:
@@ -644,6 +797,7 @@ func get_snapshot() -> Dictionary:
 		"result": _run_result,
 		"run_completion_emitted": _run_completion_emitted,
 		"random_draw_counts": get_random_streams().get_debug_snapshot().get("draw_counts", {}),
+		"district_loop": get_district_loop_snapshot(),
 	}
 
 
@@ -727,7 +881,10 @@ func _evaluate_threshold_crossings(previous_value: float, new_value: float) -> v
 	)
 	if boss_crossed:
 		_boss_threshold_latched = true
-		_boss_queued = not _extraction_confirmed
+		# WP02 keeps Night Pressure irreversible and records the historical
+		# threshold, but the boss is player-facing only after the committed
+		# third lap. Null district tuning preserves the accepted legacy path.
+		_boss_queued = not _extraction_confirmed and _district_lifecycle == null
 		if _boss_queued:
 			boss_queued.emit()
 			for pending_index: int in _pending_extraction_thresholds:
@@ -739,8 +896,77 @@ func _evaluate_threshold_crossings(previous_value: float, new_value: float) -> v
 			_spent_extraction_thresholds[threshold_index] = true
 		elif boss_crossed:
 			_spent_extraction_thresholds[threshold_index] = true
-		else:
+		elif _district_lifecycle == null:
 			_pending_extraction_thresholds.append(threshold_index)
+
+
+func _complete_district_block_from_state() -> bool:
+	if _district_lifecycle == null:
+		return false
+	var completed_lap: int = _district_lifecycle.lap_index
+	var completed_block: int = _district_lifecycle.block_index
+	var completed_block_id: StringName = district_loop_definition.block_id(
+		completed_lap,
+		completed_block
+	)
+	var next_phase: int = _district_lifecycle.complete_block()
+	if next_phase < 0:
+		return false
+	district_block_completed.emit(completed_lap, completed_block, completed_block_id)
+	match next_phase:
+		DistrictRunLifecycle.Phase.PLAN:
+			if current_state == RunState.PATROLLING:
+				snapshot_changed.emit(get_snapshot())
+				return true
+			return request_transition(RunState.PATROLLING)
+		DistrictRunLifecycle.Phase.LAP_DECISION:
+			return _open_district_lap_decision()
+		DistrictRunLifecycle.Phase.BOSS:
+			return _start_district_boss_at_safe_boundary()
+	return false
+
+
+func _open_district_lap_decision() -> bool:
+	if (
+		_district_lifecycle == null
+		or _district_lifecycle.phase != DistrictRunLifecycle.Phase.LAP_DECISION
+	):
+		return false
+	_current_extraction_threshold_index = _district_lifecycle.completed_laps - 1
+	_pending_extraction_thresholds.erase(_current_extraction_threshold_index)
+	if not request_transition(RunState.EXTRACTION_AVAILABLE):
+		_current_extraction_threshold_index = -1
+		return false
+	extraction_became_available.emit(_current_extraction_threshold_index)
+	lap_decision_became_available.emit(
+		_district_lifecycle.completed_laps,
+		_district_lifecycle.decision_token
+	)
+	return true
+
+
+func _start_district_boss_at_safe_boundary() -> bool:
+	if (
+		_district_lifecycle == null
+		or _district_lifecycle.phase != DistrictRunLifecycle.Phase.BOSS
+		or _extraction_confirmed
+	):
+		return false
+	_boss_threshold_latched = true
+	if not _boss_queued:
+		_boss_queued = true
+		boss_queued.emit()
+	for pending_index: int in _pending_extraction_thresholds:
+		_spent_extraction_thresholds[pending_index] = true
+	_pending_extraction_thresholds.clear()
+	return _begin_pending_progression()
+
+
+func _spend_current_extraction_window() -> void:
+	if _current_extraction_threshold_index >= 0:
+		_spent_extraction_thresholds[_current_extraction_threshold_index] = true
+	_pending_extraction_thresholds.erase(_current_extraction_threshold_index)
+	_current_extraction_threshold_index = -1
 
 
 func _begin_pending_progression() -> bool:
@@ -807,6 +1033,8 @@ func _reset_authoritative_state() -> void:
 	_completed_encounter_ids.clear()
 	_last_summary = null
 	_run_completion_emitted = false
+	if _district_lifecycle != null:
+		_district_lifecycle.reset()
 	if card_planning_was_active:
 		card_planning_pause_changed.emit(false)
 
@@ -819,6 +1047,18 @@ func _ensure_random_streams() -> void:
 		_random_streams = RunRandomStreams.new()
 		_random_streams.name = "RunRandomStreams"
 		add_child(_random_streams)
+
+
+func _ensure_district_lifecycle() -> void:
+	if district_loop_definition == null:
+		_district_lifecycle = null
+		return
+	var errors: PackedStringArray = district_loop_definition.validation_errors()
+	if not errors.is_empty():
+		push_error("Invalid WP02 district loop definition: %s" % "; ".join(errors))
+		_district_lifecycle = null
+		return
+	_district_lifecycle = DistrictRunLifecycle.new(district_loop_definition)
 
 
 func _is_transition_allowed(from_state: int, to_state: int) -> bool:

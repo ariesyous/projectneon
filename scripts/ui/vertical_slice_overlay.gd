@@ -337,15 +337,18 @@ func present_run_summary(summary: RunSummaryRecord) -> void:
 	tutorial_panel.visible = false
 	combo_panel.visible = false
 	summary_title.text = "%s - RUN COMPLETE" % summary.result_label.to_upper()
-	summary_highlight.text = "BUILD EXPRESSION  /  %s\nHIGHLIGHT  /  %d COMBO  /  %d ELITES  /  %d COINS" % [
+	summary_highlight.text = "LOOP  /  %d LAPS  /  %d BLOCKS  /  %s\nBUILD EXPRESSION  /  %s  •  HIGHLIGHT  /  %d COMBO" % [
+		summary.laps_completed,
+		summary.blocks_completed,
+		"BOSS COMMITTED" if summary.boss_committed else summary.result_label.to_upper(),
 		summary.active_synergies if not summary.active_synergies.is_empty() else summary.equipment_build,
 		summary.highest_combo,
-		summary.elites_defeated,
-		summary.coins_collected,
 	]
 	summary_left.text = "\n".join([
 		"RESULT  %s" % summary.result_label.to_upper(),
 		"DURATION  %s" % _format_time(summary.duration_seconds),
+		"DISTRICT LAPS  %d / 3" % summary.laps_completed,
+		"BLOCKS RESOLVED  %d / 9" % summary.blocks_completed,
 		"SEED  %d" % summary.run_seed,
 		"SCHEMA  %d" % summary.random_schema_version,
 		"MAX HEAT  %d" % summary.maximum_heat,
@@ -360,12 +363,22 @@ func present_run_summary(summary: RunSummaryRecord) -> void:
 		"MAX STREAK  %d" % summary.maximum_manual_streak,
 		"SCRAP SECURED  %d" % summary.scrap_secured,
 		"HIGHEST COMBO  %d" % summary.highest_combo,
+		"LAP DECISIONS  %s" % _lap_decision_summary(summary.lap_decisions),
 		"EQUIPMENT BUILD",
 		summary.equipment_build,
 		"ACTIVE SYNERGIES",
 		summary.active_synergies,
 	])
 	replay_button.grab_focus()
+
+
+func _lap_decision_summary(decisions: Array[Dictionary]) -> String:
+	if decisions.is_empty():
+		return "NONE"
+	var labels: PackedStringArray = PackedStringArray()
+	for decision: Dictionary in decisions:
+		labels.append(str(decision.get("decision", &"unknown")).to_upper())
+	return " > ".join(labels)
 
 
 func is_main_menu_visible() -> bool:

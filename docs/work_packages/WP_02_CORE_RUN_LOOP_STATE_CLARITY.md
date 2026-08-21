@@ -1,6 +1,6 @@
 # WP02 — Core Run Loop and State Clarity
 
-Status: proposed; requires completed WP00
+Status: technical/runtime/visual implementation complete on 2026-08-21; owner five-person comprehension gate pending
 Branch suggestion: `codex/wp-02-core-run-loop`
 
 ## Outcome
@@ -36,6 +36,8 @@ Make every run visibly and repeatedly follow the approved plan → fight → rew
 - Pauses, planning, focus loss, restart, terminal cleanup, and same/new-seed restart remain correct.
 - Deterministic replay/isolation and cumulative lifecycle tests pass.
 - An unbriefed loop playtest meets the WP00 comprehension target.
+
+Executed technical evidence: `docs/product/WP02_ACCEPTANCE_EVIDENCE.md`. The first seven criteria above are technically evidenced; the final five-person qualitative criterion remains pending and must use `docs/product/WP02_UNBRIEFED_COMPREHENSION_CHECK.md`. No participant result is inferred from automation.
 
 ## Recommended parts
 

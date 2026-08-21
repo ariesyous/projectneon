@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Testing is milestone- and work-package-scoped. Milestone 0 verifies the project foundation; Milestone 1 verifies the narrow Combat Lab, automatic combat, and coin-cluster accounting; Milestone 2 verifies the Fire Hydrant intervention, combat-safe space, and targeted presentation/usability improvements; Milestone 3 verifies the complete run structure, escalation, thresholds, cooling, deterministic streams, standard rewards, outcomes, and restart cleanup; Milestone 4 verifies equipment, statuses, synergies, and deterministic choices; Milestone 4.1 verifies the authorized equipment-safety and HUD-readability correction; Milestone 4.2 verifies the bounded inventory-drag and one-backpack-clarity correction; Milestone 5 verifies District Cards, deterministic finite deck state, future-route placement/resolution, supplemental card rewards, progression protections, and safe multimodal planning; and Milestone 6 verifies the bounded vertical-slice crew/enemy/elite/boss content, all three interventions, combo/projectiles, final presentation/audio/tutorials, settings, minimal versioned persistence/unlocks, complete summaries, cadence measurement, complete outcomes, and cross-system cleanup. WP00 defines the approved prospective acceptance contract; WP01 now verifies its presentation-only implementation without pretending WP02–WP07 authority/content exists.
+Testing is milestone- and work-package-scoped. Milestone 0 verifies the project foundation; Milestone 1 verifies the narrow Combat Lab, automatic combat, and coin-cluster accounting; Milestone 2 verifies the Fire Hydrant intervention, combat-safe space, and targeted presentation/usability improvements; Milestone 3 verifies the complete run structure, escalation, thresholds, cooling, deterministic streams, standard rewards, outcomes, and restart cleanup; Milestone 4 verifies equipment, statuses, synergies, and deterministic choices; Milestone 4.1 verifies the authorized equipment-safety and HUD-readability correction; Milestone 4.2 verifies the bounded inventory-drag and one-backpack-clarity correction; Milestone 5 verifies District Cards, deterministic finite deck state, future-route placement/resolution, supplemental card rewards, progression protections, and safe multimodal planning; and Milestone 6 verifies the bounded vertical-slice crew/enemy/elite/boss content, all three interventions, combo/projectiles, final presentation/audio/tutorials, settings, minimal versioned persistence/unlocks, complete summaries, cadence measurement, complete outcomes, and cross-system cleanup. WP00 defines the approved product contract. WP01 verifies its presentation migration, and WP02 verifies the implemented authoritative three-lap/three-block lifecycle, exact-once lap decisions, all-crew production access, state clarity, and compatibility. WP03–WP07 remain prospective.
 
 ## Error policy
 
@@ -18,7 +18,7 @@ Testing is milestone- and work-package-scoped. Milestone 0 verifies the project 
 - **Pending execution** means implementation and its test case exist, but no final pass result is recorded until that exact matrix is run against the finished working tree.
 - **Owner-recorded** means only the project owner may enter the result.
 
-Milestone 1 through Milestone 5 technical suites are recorded as executed. Milestone 6 passed its 56-test cumulative addition, configured headless `/GameRun` boot, official Pages Web export/deployment, live 1280×720 canvas load, and warning/error-console smoke. Representative manual runs/interactions, broader browser/device coverage, Windows export/runtime, visual evidence, cleanup-diagnostic follow-up, and owner qualitative validation remain **Pending execution** until the checks below complete. The Milestone 1 Human Validation Gate result remains separately labelled as an owner-recorded qualitative decision and is neither repeated nor reopened.
+Milestone 1 through Milestone 5 technical suites are recorded as executed. Milestone 6 passed its 56-test cumulative addition and tentative Pages playtest publication. WP01 and WP02 subsequently passed their recorded technical, configured-runtime, visual, Windows release-export/runtime, and local Web release/browser matrices. WP02's five-person unbriefed comprehension gate remains **Owner-recorded / Pending execution**; no automated or implementation-team result substitutes for it. The Milestone 1 Human Validation Gate result remains separately labelled as an owner-recorded qualitative decision and is neither repeated nor reopened.
 
 ## WP00-approved rebaseline acceptance contract
 
@@ -59,6 +59,29 @@ Status: **Technical/visual gate passed — Godot 4.7, 2026-08-21.** The five-per
 - [x] Visual matrix: eight native 1280×720 representative states, native safe-area combat, 2560×1440 Web integer scale, and configured `/GameRun` patrol capture were visually inspected and corrected.
 
 The cumulative runner still emits the pre-existing M6 shutdown-only 48-ObjectDB/four-resource diagnostic after reporting success. It is not present in the configured production scene log and was not introduced or suppressed by WP01.
+
+## WP02 — Core Run Loop and State Clarity
+
+Status: **Technical/runtime/visual gate passed — Godot 4.7.2, 2026-08-21. Five-person unbriefed comprehension gate pending owner execution.**
+
+- [x] `DistrictLoopDefinition` configures exactly three laps of three meaningful blocks, stable lap/block IDs, lap Pressure multipliers, lap reward tiers, authored modifiers, and the +6 Push Heat consequence.
+- [x] The run-owned `DistrictRunLifecycle` records authoritative phase, lap/block progress, revisions, exact-once decision tokens, accepted decision history, and final-lap boss commitment without deriving lifecycle state from UI or route dots.
+- [x] `RunDirector` remains the sole state, eligible-time, Heat, irreversible Night Pressure, scaling, precedence, outcome, and summary authority; configured district thresholds still latch and scale but cannot bypass the two lap decisions or the block-nine boss boundary.
+- [x] Extract/Push appears after laps one and two only. The first Push begins lap two; the second Push explicitly commits to the final lap and boss; completion of block nine enters the boss path regardless of current Pressure.
+- [x] Stale, replayed, wrong-phase, wrong-lap, and invalid-choice requests reject without Heat, Pressure, phase, route, token-ledger, random-stream, or progression mutation.
+- [x] Fresh production access exposes Jax, Zoey, and Rex while preserving serialized version-1 historical facts. Loading does not invent or rewrite retired Zoey/Rex unlock facts; Hacker Deck and Gang Hideout remain active breadth unlocks.
+- [x] The minimal HUD names the authoritative phase, lap/block progress, next event or arrival countdown, action state, irreversible Night Pressure/scaling, and exact Extract/Push consequence. Shop, reward, extraction, boss, and result layers disclose the next state before confirmation.
+- [x] Existing Milestone 5 card authority, typed drag/click/tap/keyboard paths, seven schema-1 random streams, safe planning pause, same-seed access snapshot, outcome cleanup, same-seed restart, and new-seed restart remain compatible.
+- [x] Focused authority result: **4/4 tests, 173 assertions, zero failures, zero skips**.
+- [x] Affected result: **27/27 tests, 495 assertions, zero failures, zero skips**.
+- [x] Cumulative result: **264/264 tests, 3,646 assertions, zero failures, zero skips** across 25 suites.
+- [x] Configured `/GameRun` smoke covered all three crew, planning/pause, shop, first Push, final-lap commitment, boss/result, extraction, and cleanup; integration coverage locks the preserved `E` shortcut to the exact WP02 decision token.
+- [x] The fixed-seed ordinary composed timing gate (`6062026`, Rex starter, no player interventions) reached lap decisions at 121.267 and 292.683 eligible seconds, The Viper at 584.200 seconds, and a boss result at 599.883 seconds. Its nine complete-block gaps were `50.167, 21.000, 50.100, 86.783, 63.633, 21.000, 75.633, 124.400, 91.483`; five were inside 45–90 and all four outliers remain disclosed rather than averaged away. Broader representative distributions remain WP07/owner evidence.
+- [x] Twelve inspected captures cover plan, fight arrival, reward, shop, both lap-decision states, extraction, boss, result, native safe area, 2560×1440 Web integer scale, and configured `/GameRun` final commitment.
+- [x] Windows and Web **release** exports completed without export warnings/errors; the exported Windows runtime exited cleanly, and local production Web at native and 2560×1440 displayed all crew and entered PLAN through real pointer input with an empty warning/error console.
+- [ ] The owner must run the fixed five-person unbriefed procedure and record the scored observations and decision in `docs/product/WP02_UNBRIEFED_COMPREHENSION_CHECK.md`.
+
+The aggregate cumulative harness still emits the pre-existing M6 shutdown-only 48-ObjectDB/four-resource diagnostic after the successful result. Focused, affected, configured-runtime, release-export, exported-Windows, and browser runs do not reproduce it. Evidence and the exact remaining gate are recorded in `docs/product/WP02_ACCEPTANCE_EVIDENCE.md`.
 
 ## Milestone 0 static checks
 

@@ -54,6 +54,11 @@ func get_next_event_text() -> String:
 	return _next_event.text
 
 
+func get_progress_text() -> String:
+	_ensure_content()
+	return _progress.text
+
+
 func get_status_value() -> String:
 	_ensure_content()
 	return _status.get_value_text()

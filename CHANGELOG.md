@@ -4,6 +4,20 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 
 ## [Unreleased]
 
+### 2026-08-21 — WP02 Core Run Loop and State Clarity
+
+- Added typed `DistrictLoopDefinition` and run-owned `DistrictRunLifecycle` contracts for exactly three laps of three meaningful blocks, stable IDs, revisions, exact-once lap-decision tokens/trail, +6 Push Heat, per-lap Pressure/reward/modifier data, and final-lap boss commitment.
+- Integrated the lifecycle through `RunDirector` and `RunFlowController`: Extract/Push follows blocks three and six, the second Push explicitly commits to lap three/The Viper, block nine begins the boss path, shops complete meaningful blocks on leave, and the fixed stable route/node order retains internal navigation with a 21.0-second represented approach.
+- Preserved irreversible Night Pressure and its scaling/threshold latches while preventing configured thresholds from bypassing district decisions or the block-nine boss boundary. Isolated legacy run definitions retain historical threshold dispatch.
+- Exposed Jax, Zoey, and Rex on fresh production access snapshots without changing save version or inventing/rewriting serialized Zoey/Rex facts. Retired crew rules remain historical definitions; Hacker Deck and Gang Hideout remain active breadth unlocks.
+- Added phase/lap/block/next-event/countdown/action presentation, exact shop/reward and Extract/Push/final-commitment consequences, compact Pressure scaling disclosure, and lifecycle-first result fields/decision history. UI remains snapshot-only and forwards the exact typed decision token.
+- Added `wp02_cadence` for 10–20-second ambient, 45–90-second complete-block, and 120–180-second lap-decision measurement without scheduling gameplay or consuming randomness.
+- Preserved the Milestone 5 hand/five-slot/card-stream compatibility authority, schema-1 seven-stream determinism, card-planning pause, equipment/inventory contracts, same-seed snapshot behavior, and complete cleanup. WP03 was not started.
+- Added two dedicated WP02 suites, focused/affected/cumulative runners, configured lifecycle smoke, a twelve-capture native/safe-area/2560×1440 visual matrix, authority/evidence records, and a fixed blank five-person comprehension-check template.
+- Godot 4.7.2 passed **4/4 focused tests with 173 assertions**, **27/27 affected tests with 495 assertions**, and **264/264 cumulative tests with 3,646 assertions**, all with zero failures or skips. A fixed-seed ordinary composed trace reaches lap decisions at 121.267/292.683 eligible seconds and a boss result at 599.883 seconds; its complete block-gap distribution and outliers are recorded in WP02 evidence. The aggregate runner's pre-existing post-success 48-ObjectDB/four-resource diagnostic remains disclosed; focused, affected, configured, long-form, export/runtime, and browser checks did not reproduce it.
+- Windows and Web release exports completed without export warnings/errors; the exported Windows runtime exited cleanly; local production Web at native and 2560×1440 entered PLAN through real pointer input with an empty warning/error console.
+- The owner-run five-person unbriefed comprehension gate remains pending. The implementation task performed no commit, push, publication, or deployment; on 2026-08-21 the owner separately authorized this technically evidenced WP02 boundary for a `main` and GitHub Pages browser-playtest release. Publication does not close the qualitative gate or authorize WP03.
+
 ### 2026-08-21 — WP01 Interface and Visual Language (presentation only)
 
 - Added one reusable token theme for typography, spacing, surfaces, borders, semantic states, focus/disabled treatment, 48-pixel touch minimums, and bounded animation timing.

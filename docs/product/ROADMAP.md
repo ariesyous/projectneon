@@ -1,6 +1,6 @@
 # Rebaseline Roadmap
 
-Status: owner-approved through WP00; WP01 technically complete on 2026-08-21
+Status: owner-approved through WP00; WP01 and WP02 technically complete on 2026-08-21; qualitative checkpoints remain separate
 Prepared: 2026-08-20
 
 ## Roadmap outcome
@@ -15,7 +15,7 @@ This roadmap is intentionally organized by player outcome rather than subsystem 
 |---|---|---|---|---|
 | 00 | Product rebaseline is approved and made canonical | Owner review | **Complete — 2026-08-20** | Approved decision record, updated specifications, representative wireframes, acceptance evidence |
 | 01 | The interface has a coherent visual language and clear screen hierarchy | WP00 | **Implemented and technically evidenced — 2026-08-21** | Rendered screen set, accessibility/readability review, 254-test cumulative gate, clean `/GameRun` smoke |
-| 02 | The run visibly repeats Plan → Fight → Reward → Push/Extract | WP00; WP01 tokens may proceed in parallel | Planned | Playable loop slice and deterministic lifecycle tests |
+| 02 | The run visibly repeats Plan → Fight → Reward → Push/Extract | WP00; WP01 tokens may proceed in parallel | **Implemented and technically evidenced — 2026-08-21; five-person gate pending** | Playable loop slice, deterministic lifecycle tests, runtime/platform/visual evidence |
 | 03 | District planning is understandable on first use | WP01, WP02 | Planned | First-use interaction recording and card-system tests |
 | 04 | Equipment, rewards, and the shop create obvious build consequences | WP02, WP03 | Planned | Three visibly distinct builds and decision comparison captures |
 | 05 | Encounters remain varied through a small, coherent intervention system | WP02; coordinate with WP04 | Planned | Encounter matrix, combat tests, intervention playtest |
@@ -45,6 +45,8 @@ WP01 technical/visual exit gate: **Passed — 2026-08-21.** See [WP01 acceptance
 Make the proposed loop explicit in runtime state and presentation. All crew are available by default, the shop and waiting states are unmistakable, and the player repeatedly reaches a visible push/extract decision.
 
 Exit gate: an unbriefed player can accurately recount the run sequence and always identify what happens next.
+
+WP02 technical/runtime/visual gate: **Passed — 2026-08-21.** See [WP02 acceptance evidence](WP02_ACCEPTANCE_EVIDENCE.md). The owner-coordinated five-person check remains pending; use [the fixed unbriefed procedure](WP02_UNBRIEFED_COMPREHENSION_CHECK.md) and do not infer a qualitative pass from automation.
 
 ### [WP03 — District Planning and Cards](../work_packages/WP_03_DISTRICT_PLANNING_CARDS.md)
 
@@ -89,7 +91,7 @@ Exit gate: all automated and platform checks pass, the manual matrix is complete
 - Keep debug tooling available in development while removing debug affordances from release presentation.
 - Each package includes automated coverage, fresh Godot/runtime inspection, changed-input exercise, documentation updates, visual evidence when relevant, and proportionate Windows/Web checks.
 - No package may silently expand into procedural maps, direct-control combat, multiplayer, permanent stats, or unrelated platform features.
-- Roadmap approval is not implementation authorization. WP01 began only under its separate explicit task and does not authorize WP02.
+- Roadmap approval is not implementation authorization. WP01 and WP02 began only under their separate explicit tasks; this WP02 result does not authorize WP03.
 
 ## Playtest checkpoints
 

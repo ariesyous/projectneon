@@ -2,23 +2,23 @@
 
 ## Catalog status
 
-This catalog reflects the implemented **Milestones 0–6 plus WP01 presentation migration**. WP01 adds no gameplay/content definition: it contributes a replaceable UI icon family, reusable presentation components, the phase-led HUD/focused shells, and visual evidence fixtures. Milestone 6 remains the gameplay/content authority boundary and its final owner playtest remains separate.
+This catalog reflects the implemented **Milestones 0–6 plus WP01 and WP02**. WP01 contributes the reusable visual language without gameplay authority. WP02 adds the authoritative three-lap/three-block lifecycle, exact-once lap decisions, all-crew production access, cadence bands, state-clarity presentation, and summary fields while preserving the Milestone 5 card compatibility boundary. WP02's technical/runtime/visual gate has passed; its owner-run five-person comprehension gate remains pending.
 
 Milestone 5 was merged through PR #4 and published from `main` commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`; it remains the last fully accepted baseline. Milestone 6 was committed on `codex/milestone-6-vertical-slice` as `9c1cdaa` plus `ca3fe18`, and the owner authorized its tentative [GitHub Pages playtest](https://ariesyous.github.io/projectneon/) publication on 2026-07-22.
 
 The working tree separately carries the owner's tracked 17-file Godot-AI 3.0.5 update and the owner's `project.godot` deletions of `window/stretch/aspect="keep"` and `textures/default_filters/use_nearest_mipmap_filter=false`. Godot-AI remains enabled development tooling, not Neon Loop content or run authority. Milestone 6 adds only the specification-authorized `SaveService` and `AppState` Autoloads; it does not claim the owner-carried changes as milestone content.
 
-## WP00-approved prospective availability and classification
+## WP00-approved availability and classification
 
-WP00 changed documentation only and added no content, profile mutation, save version, gameplay asset, or runtime behavior. The tables below remain the exact implemented Milestone 0–6 catalogue until their owning work packages land.
+WP00 changed documentation only. WP01 migrated presentation and WP02 migrated its owned lifecycle/profile behavior without adding a crew, card, equipment item, enemy, boss, save version, or permanent power system.
 
 | Approved target | Current implementation boundary | Owning package |
 | --- | --- | --- |
-| Jax, Zoey, and Rex available on a fresh production profile | M6 currently defaults to Jax and gates Zoey/Rex | WP02 retires the two crew gates with legacy-profile compatibility |
+| Jax, Zoey, and Rex available on a fresh production profile | Implemented by WP02; all three are selectable before the first gameplay draw | Preserve; historical serialized facts remain loadable |
 | Eight existing equipment entries and Arcade, Convenience Store, and Subway Entrance available by default | Already implemented | Preserve |
 | Hacker Deck and Gang Hideout remain breadth unlocks | Already implemented | Preserve through WP02 |
 | Two-choice, next-block District Plan from a four-card one-copy lap deck | M5/M6 currently use a persistent hand and five future route slots | WP03 migrates presentation and scheduling while preserving stable IDs and typed authority |
-| Combat roles are Environment, Focus, and Backup | M6 currently presents Fire Hydrant, Call Backup, and Subway Reroute | WP02/WP03 reclassify Subway as strategic travel; WP05 prototypes and selects Focus/Environment behavior |
+| Combat roles are Environment, Focus, and Backup | WP02 state clarity keeps Hydrant/Backup and presents Subway as strategic travel; Focus remains visibly unavailable | WP05 prototypes and selects Focus/Environment behavior |
 | Rally | Candidate only, not catalogued as promised content | WP05 owner gate if tested |
 | Scrap | Summary-only; no spend contract or economy | No package may infer a currency sink without separate approval |
 
@@ -71,7 +71,9 @@ The HUD presents the Milestone 1 manual coin streak, Milestone 2 Hydrant/onboard
 
 | Class | Current content |
 | --- | --- |
-| `RunDirector` | State graph, eligible timer, Heat, Night Pressure, thresholds, pause ownership, boss/victory timing, seed, outcomes, and summaries |
+| `DistrictLoopDefinition` | Exact three-lap/three-block structure, stable IDs, Push Heat, per-lap Pressure multipliers, reward tiers, and modifier IDs |
+| `DistrictRunLifecycle` | Run-owned phase/lap/block revision, exact-once decision tokens, decision trail, and boss commitment helper |
+| `RunDirector` | State graph, authoritative district lifecycle composition, eligible timer, Heat, irreversible Night Pressure/scaling/threshold latches, pause ownership, boss/victory timing, seed, outcomes, and summaries |
 | `RunRandomStreams` | Seven isolated, schema-versioned deterministic stream states; run-scoped child of `RunDirector` |
 | `PatrolController` | Authored route progress, safe boundaries, encounter pauses, finite Subway reroute movement, five stable future occurrence slots, route revisions, and exactly-once pending/resolved route modifications |
 | `CombatDirector` | Actor registration, targeting, reservations, hit resolution, projectiles, charge/area/summon dispatch, boss phase events, hit-stop, equipment modifier/effect application, cleanup, safe-space assignment, and environmental-hit authority |
@@ -135,7 +137,7 @@ The existing project icon and Godot MCP addon files are project/development supp
 
 Milestone 0 visual evidence is stored at `res://docs/screenshots/milestone_0_foundation.png`.
 
-The visual-direction reference is stored at `res://docs/reference/neon_loop_gameplay_mockup.png`; it remains inspiration rather than a source of extra scope. Milestone 1 evidence is stored at `res://docs/screenshots/milestone_1_combat_lab.png`. Milestone 2 evidence is stored at `res://docs/screenshots/milestone_2_player_intervention.png`. Milestone 3 evidence is stored at `res://docs/screenshots/milestone_3_complete_run_structure.png`. Milestone 4 evidence is stored at `res://docs/screenshots/milestone_4_equipment_synergies.png`. Milestone 4.1 evidence is stored at `res://docs/screenshots/milestone_4_1_inventory_readability.png`. Milestone 4.2 evidence is stored at `res://docs/screenshots/milestone_4_2_inventory_drag.png`. Milestone 5 evidence is stored at `res://docs/screenshots/milestone_5_district_cards.png`. Fresh Milestone 6 visual evidence has not yet been accepted and is not claimed here.
+The visual-direction reference is stored at `res://docs/reference/neon_loop_gameplay_mockup.png`; it remains inspiration rather than a source of extra scope. Milestone 1 evidence is stored at `res://docs/screenshots/milestone_1_combat_lab.png`. Milestone 2 evidence is stored at `res://docs/screenshots/milestone_2_player_intervention.png`. Milestone 3 evidence is stored at `res://docs/screenshots/milestone_3_complete_run_structure.png`. Milestone 4 evidence is stored at `res://docs/screenshots/milestone_4_equipment_synergies.png`. Milestone 4.1 evidence is stored at `res://docs/screenshots/milestone_4_1_inventory_readability.png`. Milestone 4.2 evidence is stored at `res://docs/screenshots/milestone_4_2_inventory_drag.png`. Milestone 5 evidence is stored at `res://docs/screenshots/milestone_5_district_cards.png`. WP01's inspected matrix is under `res://docs/screenshots/wp01/`; WP02's twelve-state inspected matrix is under `res://docs/screenshots/wp02/`. Fresh Milestone 6 visual evidence has not separately received final owner acceptance.
 
 ## Implemented Combat Lab content
 
@@ -325,12 +327,13 @@ The nine `ActorVisual` variants use state-driven idle bob, walk stride, windup l
 
 Numeric fields sanitize to 0–1; missing/wrong-type optional fields use these defaults. Settings persist through the profile and are available from main menu or pause. The pause menu remains available through `Space`/`Escape` outside unskippable transitions; card-owned pause cannot be released by ordinary pause input.
 
-#### Implemented Milestone 6 profile schema and production access
+#### Implemented profile schema and WP02 production access
 
 | Stable profile fact | Authored value |
 | --- | --- |
 | Path / version | `user://neon_loop_profile_v1.json`; `save_version = 1` |
-| Production default crew | `jax` (current M6 runtime; approved WP02 target is `jax`, `zoey`, and `rex`) |
+| Serialized version-1 default crew fact | `jax` (retained for backward compatibility; loading does not invent facts) |
+| Runtime production crew access | `jax`, `rex`, `zoey` (implemented by WP02; stable sorted snapshot before the first gameplay draw) |
 | Production default equipment | `chain_sneakers`, `magnetic_flail`, `reinforced_jacket`, `serrated_wraps`, `shock_gloves`, `spiked_bat`, `steel_toe_boots`, `voltaic_blade` |
 | Production default cards | `arcade`, `convenience_store`, `subway_entrance` |
 | Development/test access | all `jax`,`rex`,`zoey`; all nine existing equipment IDs; all four existing card IDs |
@@ -338,18 +341,16 @@ Numeric fields sanitize to 0–1; missing/wrong-type optional fields use these d
 
 The save service performs `.tmp`/`.bak` atomic replacement. Missing files load safe defaults; malformed JSON, non-object roots, invalid/missing version, unsupported old versions, and read I/O failure recover to defaults with an explicit status. A version newer than 1 loads a sanitized read-only projection and rejects overwrite. Development reset removes only the configured profile plus its `.tmp`/`.bak` siblings, then writes defaults. Active runs are not saved.
 
-#### Implemented Milestone 6 unlock policy
+#### Implemented unlock policy after WP02
 
-| Stable rule ID | Trigger | Existing content unlocked |
+| Stable rule ID | Trigger | Existing content / current status |
 | --- | --- | --- |
-| `first_completed_run_zoey` | any completed `victory`, `extracted`, or `defeated` run | crew `zoey` |
-| `first_elite_defeat_hacker_deck` | completed run with at least one elite defeated | equipment `hacker_deck` |
-| `first_extraction_gang_hideout` | completed `extracted` run | card `gang_hideout` |
-| `first_victory_rex` | completed `victory` run | crew `rex` |
+| `first_completed_run_zoey` | historical completed-run fact | Retired as an access grant; retained as a loadable version-1 fact |
+| `first_elite_defeat_hacker_deck` | completed run with at least one elite defeated | Active breadth unlock: equipment `hacker_deck` |
+| `first_extraction_gang_hideout` | completed `extracted` run | Active breadth unlock: card `gang_hideout` |
+| `first_victory_rex` | historical victory fact | Retired as an access grant; retained as a loadable version-1 fact |
 
-Rules apply in stable rule-ID order and are idempotent. No rule creates a tenth item, fifth card, permanent statistical bonus, currency grant, or active-run mutation.
-
-WP00 prospectively retires `first_completed_run_zoey` and `first_victory_rex` as access gates because all three crew are part of the first-launch premise. This is not yet a save or code change. `first_elite_defeat_hacker_deck` and `first_extraction_gang_hideout` remain approved breadth rules. Legacy facts must remain safely loadable when WP02 performs the migration.
+Active rules apply in stable rule-ID order and are idempotent. WP02 excludes the two retired crew rules from new grants without deleting or rewriting historical facts. No rule creates a tenth item, fifth card, permanent statistical bonus, currency grant, or active-run mutation.
 
 ### Contextual tutorial catalogue
 
@@ -522,7 +523,7 @@ Coin clusters are the implemented vertical-slice ambient interaction under `Loot
 | Heat | `RunDirector` | Tactical district alert clamped to 0–100; exact tiers change immediate danger/reward conditions and receive finite cooling |
 | Night Pressure | `RunDirector` | Non-negative and irreversible during a run; eligible time and exactly-once completions advance scaling, extraction latches, and unavoidable boss queueing |
 
-Night Pressure thresholds latch when crossed. A boss reached at an unsafe transition is queued until the next valid boundary, and the boss takes precedence when it and an extraction threshold are reached by the same authoritative update unless extraction was already confirmed. Cooling cannot reduce Night Pressure, reopen a spent extraction threshold, or clear a queued boss.
+Night Pressure thresholds still latch when crossed and remain available to scaling/debug authority. In the configured WP02 district lifecycle they cannot dispatch an early extraction or boss and therefore cannot bypass the authoritative lap-one/lap-two decisions or block-nine boss boundary. Cooling cannot reduce Night Pressure, alter the district decision ledger, or clear final-lap boss commitment. Isolated legacy definitions that do not configure `DistrictLoopDefinition` preserve the historical threshold-dispatch contract for compatibility tests.
 
 Configured Milestone 6 pressure gain is 0.07 per eligible active second, +1.5 for each exactly-once standard completion, and +3.0 for each exactly-once elite-flagged completion. Pauses, reward/card/shop modals, introductions, extraction/victory presentation, and summaries are ineligible. Scaling and threshold values remain the typed values listed in the run-definition table.
 
@@ -536,14 +537,14 @@ Milestone 6 preserves stream ownership: encounter definition selection uses `enc
 
 Before the first draw, `RunContentAccessSnapshot` captures selected crew, sorted allowed equipment/card IDs, save version, and development-access flag. Same-seed restart reuses it. Reproduction is limited to the same supported build/content revision, schema 1, access snapshot, seed, gameplay decisions/effect resolutions, and authoritative timing; cross-version or bitwise physics replay is not promised.
 
-## Milestone 6 cadence, summary, and scope record
+## Cadence, summary, and scope record after WP02
 
-The measurement-only `milestone_6_cadence` bands are ambient 10–20, strategic 30–60, and major 120–180 eligible active seconds. Composed instrumentation records coin-cluster presentation as ambient; ordinary encounter rewards and accepted shop visits as strategic; extraction windows and boss commitment as major. The non-boss 3.0-second entry beat and 12.0-second staged-actor interval are the authored pacing source intended to space potential coin-cluster opportunities; observed gaps still depend on roster choices and combat duration. The tracker explicitly rejects coin-labelled strategic events and never manufactures opportunities. A fixed-seed Rex/starter-only technical probe reached Defeated naturally at 589.517 eligible seconds and recorded ambient 47 events/12.446-second average/9 violations, strategic 13/44.999/8, and major 3/194.994/3. Per-gap cadence conformance, representative Victory/Extraction, and owner-facing qualitative validation remain next-session TODOs.
+The measurement-only `wp02_cadence` bands are ambient 10–20, strategic complete-block 45–90, and major lap-decision 120–180 eligible active seconds. Composed instrumentation records coin-cluster presentation as ambient, each meaningful block completion as strategic, and each lap decision/boss commitment as major. The tracker rejects coin-labelled strategic events and never schedules or manufactures opportunities. The non-boss 3.0-second arrival beat and 12.0-second staged-actor interval remain authored pacing inputs; observed fight/block/lap distributions and the 8–12-minute boss-run target still require representative human sessions rather than an automated claim. The historical `milestone_6_cadence` resource and its 30–60 strategic record remain M6 evidence only.
 
-Recorded event IDs are `coin_cluster_presented:<cluster-id>`, `encounter_reward:<encounter-id>`, `shop:<source-id>:<monotonic-id>`, `extraction:<threshold-index>`, and `boss_commitment`. Each category retains at most 128 records and classifies each gap as `too_soon`, `within_target`, or `too_late`; this diagnostic classification never changes gameplay.
+WP02 strategic event IDs are keyed to accepted district block completion and major events to accepted lap decisions/boss commitment. Historical M6 event IDs remain load-free diagnostic history. Each category retains at most 128 records and classifies each gap as `too_soon`, `within_target`, or `too_late`; this diagnostic classification never changes gameplay.
 
-The complete `RunSummaryRecord` includes result (`VICTORY`, `EXTRACTED`, or `DEFEATED`), duration, seed, schema, maximum Heat, final Night Pressure, encounters, enemies/elites defeated, boss result (`DEFEATED`, `CREW DEFEATED`, or `NOT REACHED`), coins, manual clusters, maximum streak, scrap, highest combo, equipment build, active synergies, Restart Run, and Return to Main Menu. Unresolved clusters settle at base value before publication. Completed-run persistence happens only after this snapshot and cannot change it.
+The complete `RunSummaryRecord` includes result (`VICTORY`, `EXTRACTED`, or `DEFEATED`), duration, seed, schema, maximum Heat, final Night Pressure, completed laps/blocks, boss commitment, final stable lap/block IDs, accepted decision trail, encounters, enemies/elites defeated, boss result (`DEFEATED`, `CREW DEFEATED`, or `NOT REACHED`), coins, manual clusters, maximum streak, scrap, highest combo, equipment build, active synergies, Restart Run, and Return to Main Menu. Unresolved clusters settle at base value before publication. Completed-run persistence happens only after this snapshot and cannot change it.
 
-No new content is catalogued or authorized by WP00. The approved WP01–WP07 roadmap may restructure the existing experience within its recorded outcomes, but it does not pre-authorize procedural route generation, additional district/card/crew/enemy/boss/equipment content, multiplayer, controller support, localization, achievements, daily systems/leaderboards, advanced meta-progression/permanent stat trees, mid-run saving/replay, a card economy, or equipment selling/salvage/rarity/uniques/affixes/sets.
+WP02 adds lifecycle definitions, not breadth content. WP03–WP07 may restructure the existing experience only after separate authorization; the roadmap does not pre-authorize procedural route generation, additional district/card/crew/enemy/boss/equipment content, multiplayer, controller support, localization, achievements, daily systems/leaderboards, advanced meta-progression/permanent stat trees, mid-run saving/replay, a card economy, or equipment selling/salvage/rarity/uniques/affixes/sets.
 
-Godot 4.7 passed **244/244 cumulative tests and 3,234 assertions with no failures or skips across 22 suites**, and the configured headless `/GameRun` boot was clean. Pages run 29960250903 successfully exported/deployed the Web build; the live page loaded a visible 1280×720 canvas with no warning/error console entry. The cumulative harness's 48 ObjectDB and four resource-in-use shutdown diagnostics remain a harness-cleanup audit. This content record does not claim accepted 1080p/1440p/touch layout, real-input Web flows, Windows export/runtime, visual evidence, representative outcome duration, cadence conformance, boss readability/defeatability, three-build viability, distinct crew feel, tutorial comprehension, or final owner acceptance.
+Godot 4.7.2 passed **264/264 cumulative tests and 3,646 assertions with no failures or skips across 25 suites**. The authored fixed route now uses a 21.0-second represented approach while preserving its stable ID and five nodes; fixed seed `6062026` reaches lap decisions at 121.267/292.683 eligible seconds and a boss result at 599.883 seconds. The configured `/GameRun` smoke covered the complete WP02 lifecycle; twelve native/safe-area/Web-scale captures were inspected; Windows and Web release exports completed; the exported Windows runtime exited cleanly; and local production Web at native and 2560×1440 entered PLAN through real pointer input with no warning/error console entry. The preserved `E` extraction shortcut is covered with its exact decision token. The cumulative harness's pre-existing 48 ObjectDB/four-resource shutdown diagnostic remains recorded and was not suppressed. Representative five-person comprehension, broader timing distributions, consequence/variety/replay results, and final owner acceptance remain pending.

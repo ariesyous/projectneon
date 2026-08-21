@@ -10,7 +10,7 @@ const GAME_SCENE: PackedScene = preload("res://scenes/game/game_run.tscn")
 const FIXED_DELTA_SECONDS: float = 1.0 / 60.0
 const MAX_ELIGIBLE_SECONDS: float = 720.0
 const FIXED_SEED: int = 6062026
-const PROFILE_PATH: String = "user://m6_long_form_probe_profile.json"
+const PROFILE_PATH: String = "user://wp02_long_form_probe_profile.json"
 
 
 func _init() -> void:
@@ -24,7 +24,7 @@ func _run_probe() -> void:
 	var app: NeonAppState = NeonAppState.new()
 	app.initialize(service, true)
 	var viewport: SubViewport = SubViewport.new()
-	viewport.name = "Milestone6LongFormProbe"
+	viewport.name = "WP02LongFormProbe"
 	viewport.size = Vector2i(1280, 720)
 	viewport.disable_3d = true
 	viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
@@ -50,7 +50,7 @@ func _run_probe() -> void:
 		var current_state: int = game.run_director.current_state
 		if current_state != last_state:
 			print(
-				"M6_LONG_FORM_STATE=%s@%.3f"
+				"WP02_LONG_FORM_STATE=%s@%.3f"
 				% [RunDirector.state_name(current_state), game.run_director.run_elapsed_seconds]
 			)
 			last_state = current_state
@@ -68,7 +68,7 @@ func _run_probe() -> void:
 	var cadence: Dictionary = game.cadence_tracker.get_snapshot()
 	var result_snapshot: Dictionary = game.run_director.get_snapshot()
 	print(
-		"M6_LONG_FORM_RESULT=%s elapsed=%.3f seed=%d steps=%d state=%s"
+		"WP02_LONG_FORM_RESULT=%s elapsed=%.3f seed=%d steps=%d state=%s"
 		% [
 			RunDirector.result_name(game.run_director.get_result()),
 			game.run_director.run_elapsed_seconds,
@@ -85,7 +85,7 @@ func _run_probe() -> void:
 	]:
 		var category_snapshot: Dictionary = category_snapshots.get(category, {})
 		print(
-			"M6_LONG_FORM_CADENCE_%s=count:%d average:%.3f violations:%d last_gap:%.3f"
+			"WP02_LONG_FORM_CADENCE_%s=count:%d average:%.3f violations:%d last_gap:%.3f"
 			% [
 				String(category).to_upper(),
 				int(category_snapshot.get("count", 0)),
@@ -95,10 +95,61 @@ func _run_probe() -> void:
 			]
 		)
 	print(
-		"M6_LONG_FORM_COIN_PRESENTATIONS=%d"
+		"WP02_LONG_FORM_COIN_PRESENTATIONS=%d"
 		% int(cadence.get("coin_cluster_presentations", 0))
 	)
-	print("M6_LONG_FORM_RUN=" + JSON.stringify(result_snapshot))
+	print("WP02_LONG_FORM_CADENCE=" + JSON.stringify(cadence))
+	print("WP02_LONG_FORM_RUN=" + JSON.stringify(result_snapshot))
+	var major_snapshot: Dictionary = category_snapshots.get(
+		RunCadenceTracker.CATEGORY_MAJOR,
+		{}
+	)
+	var major_events: Array = major_snapshot.get("events", []) as Array
+	var district_snapshot: Dictionary = result_snapshot.get("district_loop", {})
+	var boss_run_within_target: bool = (
+		game.run_director.run_elapsed_seconds >= 8.0 * 60.0
+		and game.run_director.run_elapsed_seconds <= 12.0 * 60.0
+	)
+	var lap_decisions_within_target: bool = (
+		major_events.size() >= 2
+		and StringName((major_events[0] as Dictionary).get("validation", &""))
+			== RunCadenceTracker.VALIDATION_WITHIN_TARGET
+		and StringName((major_events[1] as Dictionary).get("validation", &""))
+			== RunCadenceTracker.VALIDATION_WITHIN_TARGET
+	)
+	var lifecycle_complete: bool = (
+		int(district_snapshot.get("completed_laps", 0)) == 3
+		and int(district_snapshot.get("completed_blocks", 0)) == 9
+		and bool(district_snapshot.get("boss_committed", false))
+		and (district_snapshot.get("accepted_decisions", []) as Array).size() == 2
+		and game.run_director.was_boss_started()
+		and game.run_director.current_state == RunDirector.RunState.RUN_SUMMARY
+	)
+	var gate_passed: bool = (
+		modal_resolution_failures == 0
+		and boss_run_within_target
+		and lap_decisions_within_target
+		and lifecycle_complete
+	)
+	print(
+		"WP02_LONG_FORM_GATE=%s boss_result=%.3f lap_one=%.3f lap_two_gap=%.3f"
+		% [
+			"PASS" if gate_passed else "FAIL",
+			game.run_director.run_elapsed_seconds,
+			float((major_events[0] as Dictionary).get("gap_seconds", 0.0)) if major_events.size() >= 1 else -1.0,
+			float((major_events[1] as Dictionary).get("gap_seconds", 0.0)) if major_events.size() >= 2 else -1.0,
+		]
+	)
+	if not gate_passed:
+		push_error(
+			"WP02 long-form target failed: boss=%s laps=%s lifecycle=%s modal_failures=%d"
+			% [
+				boss_run_within_target,
+				lap_decisions_within_target,
+				lifecycle_complete,
+				modal_resolution_failures,
+			]
+		)
 
 	viewport.free()
 	app.free()
@@ -106,7 +157,7 @@ func _run_probe() -> void:
 	_remove_probe_profile()
 	for _frame: int in range(10):
 		await process_frame
-	quit(0 if modal_resolution_failures == 0 else 1)
+	quit(0 if gate_passed else 1)
 
 
 func _resolve_non_active_state(game: GameRun) -> bool:
@@ -116,7 +167,9 @@ func _resolve_non_active_state(game: GameRun) -> bool:
 		RunDirector.RunState.SHOP:
 			return game.run_flow_controller.leave_shop()
 		RunDirector.RunState.EXTRACTION_AVAILABLE:
-			return game.run_flow_controller.decline_extraction()
+			return game.run_flow_controller.decline_extraction(
+				game.run_director.get_district_decision_token()
+			)
 	return true
 
 

@@ -1,13 +1,13 @@
 # Neon Loop — Game Specifications
 
-**Document status:** WP00-approved product rebaseline; Milestones 0–6 retained as implemented history
+**Document status:** WP00-approved product rebaseline; WP01 and WP02 implementation status recorded; Milestones 0–6 retained as implemented history
 **Working title:** Neon Loop
 **Engine:** Godot 4.x
 **Primary language:** Typed GDScript
 **Target platform:** Windows PC
 **Target display:** 16:9 desktop display
 **Internal design resolution:** 640 × 360
-**Current production goal:** Rework the implemented vertical slice into the approved, readable district-lap roguelite through WP01–WP07
+**Current production boundary:** WP02 technical/runtime/visual implementation complete; owner five-person comprehension gate pending; WP03–WP07 unstarted
 
 ---
 
@@ -41,7 +41,7 @@ SELECT CREW
 - Ordinary fights target 20–45 eligible seconds, complete blocks 45–90, and lap decisions 120–180.
 - Optional coin opportunities retain the 10–20 eligible-second ambient target and full passive base reward.
 - The former generic 30–60-second strategic-decision target is superseded by the 45–90-second complete-block target. Coin clicks must never be relabelled as strategic decisions.
-- Heat remains tactical and partially coolable. Night Pressure remains irreversible. WP02 must map them onto the approved lap structure without weakening safe-boundary precedence or inventing a decrease in Night Pressure.
+- Heat remains tactical and partially coolable. Night Pressure remains irreversible. WP02 maps both onto the approved lap structure: configured Pressure thresholds still latch and scale but cannot bypass the two lap decisions or block-nine boss boundary.
 
 ### 0.3 Approved District Plan
 
@@ -59,8 +59,8 @@ Player-facing copy calls the interaction **District Plan**.
 ### 0.4 Fresh-profile content and progression boundary
 
 - Jax, Zoey, and Rex are all selectable on a fresh production profile before the first gameplay draw.
-- Jax is not an availability gate. WP01/WP02 may present concise role/complexity guidance, but no crew member is withheld.
-- The historical `first_completed_run_zoey` and `first_victory_rex` rules remain part of the Milestone 6 record but are retired prospectively. WP02 owns backward-safe application/profile migration and must not overwrite a save merely because it was loaded.
+- Jax is not an availability gate. WP02 presents concise role guidance and withholds no crew member.
+- The historical `first_completed_run_zoey` and `first_victory_rex` rules remain part of the Milestone 6 record but are retired as access grants. WP02 implements backward-safe application/profile migration and does not overwrite or invent a save fact merely because it was loaded.
 - Fresh production access otherwise retains eight existing equipment entries and three existing cards. `first_elite_defeat_hacker_deck` and `first_extraction_gang_hideout` remain valid breadth unlocks.
 - Allowed future progression is breadth, cosmetics, compendium knowledge, optional goals, and challenge contracts only after separate scope approval.
 - Permanent health, damage, cooldown, economy, drop-rate, or other statistical power; a permanent stat tree; and grind required for early-run viability are prohibited.
@@ -103,6 +103,14 @@ Qualitative checkpoints use five unbriefed participants and record failures with
 | The remaining M6 playtest TODO list can establish final product acceptance. | Retained as historical tentative-release evidence only. Final rebaseline acceptance uses the approved WP00 metrics after WP01–WP07. |
 
 WP00 itself changes documentation and wireframes only. It changes no gameplay code, scene, Resource, test implementation, project setting, save/profile file, random schema, Git history, build, publication, deployment, or external state.
+
+### 0.8 Implementation status after WP02 — 2026-08-21
+
+WP01 implements the approved visual language and focused state hierarchy. WP02 implements the authoritative three-lap/three-block lifecycle, stable lap/block IDs, exact-once revisioned Extract/Push decisions, explicit second-Push final-lap/boss commitment, block-nine boss boundary, all-crew production access, backward-safe retired crew facts, 10–20/45–90/120–180 cadence bands, and lifecycle result fields. The existing Milestone 5 hand/five-slot planner remains the runtime compatibility surface until WP03; no WP03 scheduling or release-facing District Plan migration has begun.
+
+The fixed authored route retains its stable ID and five nodes while using a 21.0-second represented approach for WP02 pacing. Fixed seed `6062026` reaches the first/second lap decisions at 121.267/292.683 eligible seconds, The Viper boundary at 584.200 seconds, and a boss-result summary at 599.883 seconds. Its full block, major, and ambient gap distributions—including every outlier—are recorded in `docs/product/WP02_ACCEPTANCE_EVIDENCE.md`; this one deterministic technical trace is not a substitute for WP07 representative distributions.
+
+WP02 has passed its focused, affected, cumulative, fixed-seed timing, configured-runtime, visual, Windows release-export/runtime, and local Web release/browser checks. The owner-run five-person unbriefed comprehension check remains pending and is not satisfied by automated evidence. The implementation task itself made no commit, push, publication, or deployment claim; on 2026-08-21 the owner separately authorized a `main` and GitHub Pages browser-playtest release. That publication does not satisfy the qualitative gate or authorize WP03.
 
 ---
 
@@ -457,7 +465,7 @@ The run summary first names outcome, build identity, and decisive choices/effect
 
 The vertical slice uses one fixed district stage called **Downtown Loop**.
 
-WP00 retains the fixed stage and logical combat lanes but supersedes the release-facing five-node patrol as the complete player mental model. The approved presentation is three laps of three selected blocks with a resolved history trail. WP02/WP03 may reuse the authored route and occurrence machinery internally only where it remains compatible with explicit block/lap authority and no release-visible route-slot/debug clutter.
+WP00 retains the fixed stage and logical combat lanes but supersedes the release-facing five-node patrol as the complete player mental model. The approved presentation is three laps of three selected blocks with a resolved history trail. WP02 reuses the authored route and occurrence machinery internally beneath explicit block/lap authority. WP03 still owns removal or development-gating of release-visible route-slot/debug clutter.
 
 ### Stage Visual Elements
 
@@ -1315,9 +1323,11 @@ Extraction is the central risk-versus-reward decision.
 
 Extraction becomes available:
 
-- At a designated route node
-- At configured Night Pressure progression thresholds
-- After selected milestone encounters when the next pressure threshold permits it
+- After authoritative completion of lap one
+- After authoritative completion of lap two
+- Never as routine extraction after the player commits to lap three and the boss
+
+Configured Night Pressure thresholds remain irreversible scaling/latch facts, but in district mode they cannot dispatch extraction before an authoritative lap boundary.
 
 ### Extraction Behaviour
 
@@ -1335,21 +1345,37 @@ When extraction is available:
 
 If the player declines extraction:
 
-- Heat may increase
+- The accepted Push applies the authored +6 Heat exactly once
 - Night Pressure remains irreversible and continues to rise
-- Reward multiplier increases
-- Future encounters become harder
-- The next extraction opportunity occurs at a later Night Pressure threshold
+- The next lap's authored reward tier, Pressure multiplier, and modifier become active
+- Declining after lap two explicitly commits to lap three and The Viper
+- The next extraction opportunity is after lap two only; it never reopens after final-lap commitment
 
 ### Boss Restriction
 
-When Night Pressure reaches the configured boss threshold, the boss encounter becomes unavoidable and extraction closes until the boss encounter resolves. Heat 100 alone does not start the boss or permanently close extraction.
+The boss encounter becomes unavoidable after block nine in the committed final lap. A configured Night Pressure boss threshold cannot begin it early or bypass a lap decision. Heat 100 alone does not start the boss or permanently close extraction.
 
 ---
 
 ## 27. Run States
 
 The run uses explicit states:
+
+Player-facing district phases are:
+
+- `SELECT_CREW`
+- `INTRO`
+- `PLAN`
+- `BLOCK`
+- `FIGHT`
+- `REWARD`
+- `SHOP`
+- `LAP_DECISION`
+- `EXTRACTION`
+- `BOSS`
+- `RESULT`
+
+The preserved lower-level `RunState` graph is:
 
 - `INITIALIZING`
 - `INTRO`
@@ -1366,7 +1392,7 @@ The run uses explicit states:
 - `RUN_SUMMARY`
 - `PAUSED`
 
-Only the `RunDirector` may authoritatively change the run state.
+Only the `RunDirector` may authoritatively change the run state or composed district lifecycle. Its run-owned `DistrictRunLifecycle` helper records phase/lap/block revisions and exact-once decision tokens; it is not a second authority.
 
 Other systems may request transitions through defined methods or signals.
 
@@ -1377,6 +1403,9 @@ Other systems may request transitions through defined methods or signals.
 The run summary must display:
 
 - Result: Victory, Extracted, or Defeated
+- Completed laps and blocks
+- Whether final-lap boss commitment was accepted
+- Final stable lap/block IDs and accepted Extract/Push decision trail
 - Run duration
 - Run seed
 - Maximum Heat reached
@@ -1408,7 +1437,7 @@ Fresh production access includes:
 - Arcade, Convenience Store, and Subway Entrance, with Gang Hideout retained as the existing extraction breadth unlock;
 - the complete extraction and boss paths.
 
-The historical Zoey/Rex unlock facts remain loadable but no longer gate fresh-profile crew selection after WP02 migration. Development and tests retain all three crew, all nine equipment entries, and all four cards.
+The historical Zoey/Rex unlock facts remain loadable but no longer gate fresh-profile crew selection after the implemented WP02 migration. Loading does not invent, delete, or rewrite those facts. Development and tests retain all three crew, all nine equipment entries, and all four cards.
 
 Permanent statistical bonuses, a stat tree, required power grind, active-run saving, and a broad meta economy are prohibited. Scrap is summary-only until a separately approved breadth/cosmetic economy exists.
 
@@ -1646,10 +1675,11 @@ Within the same supported build, content revision, and random-schema version, st
 Owns:
 
 - Run state
+- Composed district phase, stable lap/block identity, revisions, exact-once decision ledger, and final-lap commitment
 - Run timer
 - Heat
 - Night Pressure
-- Route progression
+- Night Pressure scaling and threshold latches; configured district thresholds cannot dispatch progression before lap/block authority
 - Encounter scheduling
 - Extraction
 - Boss trigger
@@ -1657,6 +1687,10 @@ Owns:
 - Reward multiplier
 - Authoritative run seed
 - Run-scoped deterministic named random streams
+
+### DistrictLoopDefinition and DistrictRunLifecycle
+
+`DistrictLoopDefinition` is the data-only exact 3×3 loop contract: stable lap/block IDs, +6 Push Heat, per-lap Pressure multipliers, reward tiers, and modifier IDs. `DistrictRunLifecycle` is a run-owned helper composed by `RunDirector`; it records the player-facing phase, current lap/block, completed counts, revision, accepted decision tokens/trail, and boss commitment. It accepts no UI-owned calculation and consumes no random stream.
 
 ### RunRandomStreams
 
@@ -1679,6 +1713,7 @@ Owns:
 - Route modification
 - Pausing patrol during encounters
 - Subway reroute behaviour
+- Internal authored occurrence progress used beneath the district block authority; it does not define the player-facing lap/block count
 
 ### CombatDirector
 
@@ -2146,6 +2181,11 @@ Debug features must be disabled or hidden in release builds.
 
 Required deterministic test coverage:
 
+- Exact three-lap/three-block identity and progression
+- Lap decisions appear only after blocks three and six; block nine begins the boss path
+- Stale, replayed, wrong-phase, and wrong-lap decision tokens reject without mutation
+- First Push enters lap two; second Push records final-lap/boss commitment and applies its Heat consequence once
+- Configured Pressure thresholds cannot bypass district lap decisions or block-nine boss progression
 - Heat tier calculation
 - Night Pressure never decreases and advances only through eligible active time and exactly-once encounter completion
 - Night Pressure scaling, deterministic spawn-budget rounding, concurrency caps, and latched extraction and boss thresholds
@@ -2172,6 +2212,9 @@ Required deterministic test coverage:
 
 Required integration scenarios:
 
+- All three crew are selectable on a fresh production access snapshot before the first draw
+- A complete configured path can Extract after lap one or two, or Push twice and reach the boss after block nine
+- Same-seed restart reuses the exact access snapshot/crew and clears district revisions/tokens/summary state
 - Crew acquires and defeats an enemy
 - Encounter completes after all enemies are defeated
 - Heat reaches a new tier
@@ -2193,9 +2236,11 @@ Every milestone must include a short manual verification checklist.
 
 Visual features require screenshots or recorded evidence during development.
 
-Manual cadence checks must distinguish eligible active play from pauses, modal choices, and introductions. They should verify that ambient opportunities occur approximately every 10–20 active seconds without manufacturing extra strategic prompts, that strategic decisions remain approximately 30–60 active seconds apart, and that major risk decisions remain approximately 2–3 active minutes apart.
+Manual cadence checks must distinguish eligible active play from pauses, modal choices, and introductions. They should verify that ambient opportunities occur approximately every 10–20 active seconds without manufacturing extra strategic prompts, that complete blocks resolve approximately 45–90 active seconds apart, that lap decisions occur approximately every 120–180 active seconds, and that representative fights and boss runs meet their separately recorded 20–45-second and 8–12-minute distributions. Averages alone do not pass.
 
 The Milestone 1 Human Validation Gate in section 44 is a separate owner-recorded qualitative gate. Automated tests, coding agents, and implementation-team observations cannot satisfy it.
+
+WP02 likewise requires the fixed five-person unbriefed comprehension check recorded in `docs/product/WP02_UNBRIEFED_COMPREHENSION_CHECK.md`. Its technical/runtime/visual evidence cannot manufacture that qualitative result.
 
 ---
 
@@ -2689,7 +2734,7 @@ The project succeeds when a player can watch the crew fight, make a small number
 
 ## 51. WP00-Approved Work-Package Roadmap
 
-WP00 is the documentation/decision gate and changes no runtime. Subsequent work proceeds only in this order and only after the prior gates named in `docs/product/ROADMAP.md`:
+WP00 is the documentation/decision gate and changes no runtime. WP01 and the WP02 technical/runtime/visual implementation have landed. The WP02 owner-run comprehension gate remains pending, and later work proceeds only after the explicit authorization and gates named in `docs/product/ROADMAP.md`:
 
 1. **WP01 — Interface and Visual Language:** minimal combat HUD, focused decision shells, icon-plus-label language, accessibility and containment.
 2. **WP02 — Core Run Loop and State Clarity:** authoritative three-lap lifecycle, phase/next-event presentation, all-crew defaults, explicit Extract/Push and boss commitment.
@@ -2699,4 +2744,4 @@ WP00 is the documentation/decision gate and changes no runtime. Subsequent work 
 6. **WP06 — World, Combat, and Presentation Polish:** replace release-visible debug communication with authored city-block depth and accessible feedback without changing authority for convenience.
 7. **WP07 — Integration, Balance, and Release:** validate the approved cadence, clarity, consequence, variety, replay desire, compatibility, platforms, and owner-led final acceptance.
 
-There is no Milestone 7. WP01 is the next eligible package after WP00, but WP00 does not begin it. Procedural cities, direct character control, multiplayer, permanent statistical progression, large content expansion, controller support, localization, achievements, live-service systems, and other unapproved scope remain excluded.
+There is no Milestone 7. WP03 is the next package in sequence but is not started or implicitly authorized by WP02. Procedural cities, direct character control, multiplayer, permanent statistical progression, large content expansion, controller support, localization, achievements, live-service systems, and other unapproved scope remain excluded.

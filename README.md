@@ -4,7 +4,7 @@ Neon Loop is a Godot 4.x pixel-art auto-brawler about shaping an automatic stree
 
 ## Play online
 
-Play the tentative Milestone 6 playtest build at **[ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/)**. Playtesters and feedback curators should use the [Milestone 6 Playtest Guide](MILESTONE_6_PLAYTEST.md).
+Play the current WP02 browser-playtest build at **[ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/)**. The owner authorized the technically evidenced WP02 boundary for `main` and GitHub Pages publication on 2026-08-21; the separate five-person comprehension gate remains pending.
 
 Milestone 5 was implemented in feature commit `7ac7fa0794e79cfc60781b84ce7181f61e16bf7f`, merged through [PR #4](https://github.com/ariesyous/projectneon/pull/4), and published from `main` at merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`. [GitHub Pages run 29713282074](https://github.com/ariesyous/projectneon/actions/runs/29713282074) completed successfully. This records the actual release state without assigning a semantic version.
 
@@ -14,9 +14,17 @@ Repository: [github.com/ariesyous/projectneon](https://github.com/ariesyous/proj
 
 ## Project status
 
-**Milestone 6 — Vertical-Slice Content and Presentation: tentatively complete; external playtesting and final owner acceptance remain**
+**WP02 — Core Run Loop and State Clarity: technical/runtime/visual gate passed; owner five-person comprehension gate pending**
 
-The authorized local Milestone 6 implementation adds:
+The local WP02 working tree adds:
+
+- An authoritative three-lap/three-block lifecycle with stable lap/block IDs, explicit PLAN → BLOCK/FIGHT → REWARD rhythm, Extract/Push after laps one and two, and an unmistakable second-Push commitment to lap three and The Viper
+- Exact-once lap-decision tokens, +6 Heat per Push, per-lap Pressure/reward/modifier data, stale/replay rejection, lifecycle summaries, and synchronous restart/menu cleanup without UI-owned progression
+- All three crew available on fresh production access snapshots while preserving serialized version-1 Zoey/Rex history; Hacker Deck and Gang Hideout remain breadth unlocks
+- Phase, next-event/countdown, current-action, shop, lap-decision, boss, extraction, and result presentation using the WP01 visual language; the Milestone 5 planner remains functional until WP03
+- Measurement-only 10–20-second ambient, 45–90-second complete-block, and 120–180-second lap-decision bands; schema 1 and all seven deterministic streams remain unchanged
+
+The preserved Milestone 6 content baseline supplies:
 
 - Three selectable, mechanically distinct crew members with authored starters: Jax (`jax`), the high-knockback Brawler with Spiked Bat; Zoey (`zoey`), the fast Tech Fighter with reduced intervention cooldowns and Shock Gloves; and Rex (`rex`), the high-health, control-resistant Bruiser with elite/boss damage and Reinforced Jacket
 - Three distinct basics—Street Punk (`street_punk`), Bat Thug (`bat_thug`), and ranged Bottle Thrower (`bottle_thrower`)—plus the armoured, charge-capable Viper Enforcer (`viper_enforcer`) elite
@@ -25,13 +33,13 @@ The authorized local Milestone 6 implementation adds:
 - A native 1280 x 720 vertical-slice overlay with crew selection, intervention state, boss bar/telegraphs, contextual nonmodal tutorials, combo/high-combo display, pause/settings, complete terminal summaries, and same-seed/new-seed/menu actions
 - Replaceable actor visuals with clearer movement/attack/hit/death animation, deterministic combat effects and screen shake, generated district music plus a boss layer, and authored UI/combat/progression sound categories
 - Version-1 settings and profile persistence at `user://neon_loop_profile_v1.json`, including safe missing/corrupt/future-version handling, atomic replacement, development-only reset, and no mid-run save or permanent statistical bonuses
-- The exact bounded unlock path: any completed run unlocks Zoey; a completed run with an elite defeat unlocks existing Hacker Deck; extraction unlocks existing Gang Hideout; and victory unlocks Rex. Development/test access still exposes all three crew, all nine existing equipment entries, and all four existing cards
-- Presentation-only combo tracking and measurement-only cadence records for 10–20-second ambient, 30–60-second strategic, and 120–180-second major-risk targets; coin clicks remain ambient and ignoring them preserves the full base reward
+- The historical version-1 unlock record: any completed run unlocked Zoey and victory unlocked Rex in M6; WP02 retires those access grants while preserving their facts. Elite defeat → Hacker Deck and extraction → Gang Hideout remain active breadth rules
+- Presentation-only combo tracking and the historical M6 cadence record; WP02 supersedes only the active complete-block band as described above. Coin clicks remain ambient and ignoring them preserves the full base reward
 - The unchanged deterministic schema version 1 and the same seven named streams; Milestone 6 boss actions, summons, projectiles, interventions, tutorials, combo/cadence, audio synthesis, and screen shake add no unseeded gameplay randomness
 
-Godot 4.7 passed the cumulative automated gate at **244/244 tests and 3,234 assertions with no failures or skips across 22 suites**. A configured headless boot opened `/GameRun` cleanly, and the Pages workflow successfully exported/deployed the Web build. A live smoke loaded the `Neon Loop` page with a visible 1280×720 canvas and an empty warning/error console. Representative Victory/Extraction and owner-facing manual validation, exact cadence conformance, real-input interactions, settings/save/restart checks, broader resolutions/devices, a fresh Windows export/runtime, and new visual evidence remain organized in the playtest guide. The cumulative harness's 48 ObjectDB and four resource-in-use shutdown diagnostics remain a cleanup-audit TODO; the configured boot did not reproduce them.
+Godot 4.7.2 passed the current cumulative gate at **264/264 tests and 3,646 assertions with no failures or skips across 25 suites**. A fixed-seed ordinary composed trace reaches both lap decisions inside the 120–180-second band and a boss result at 599.883 eligible seconds. Configured `/GameRun`, twelve inspected native/safe-area/Web-scale captures, Windows/Web release exports, the exported Windows runtime, and native/2560×1440 local production-Web pointer/console checks passed. The cumulative harness still emits the pre-existing post-success 48 ObjectDB/four-resource shutdown diagnostic; focused, affected, configured, long-form, export/runtime, and browser runs do not reproduce it. The owner five-person WP02 comprehension check remains pending.
 
-**Milestone 5 — District Cards remains the last fully accepted baseline; Milestone 6 is the tentative final playtest release.**
+**Milestone 5 remains the last fully owner-accepted historical baseline; WP02 is the current browser-playtest candidate, with its owner comprehension gate still pending.**
 
 The accepted Milestone 5 baseline adds:
 
@@ -55,13 +63,15 @@ The published Pages build was smoke-checked at its native 1280 x 720 presentatio
 
 ![Published Milestone 5 District Cards verification](docs/screenshots/milestone_5_district_cards.png)
 
+![WP02 final-lap commitment verification](docs/screenshots/wp02/wp02_game_run_final_commitment_1280x720.png)
+
 ## Running the project
 
 1. Install Godot 4.7 or a compatible Godot 4.x release.
 2. Open `project.godot` in the Godot editor.
 3. Run the project with <kbd>F5</kbd> or the editor's Run Project button.
 
-The configured main scene opens directly into `GameRun`; the Milestone 6 working tree presents its crew-selecting main menu inside that scene before a run begins.
+The configured main scene opens directly into `GameRun`; the current working tree presents all three crew before the first gameplay draw and then enters the WP02 district loop.
 
 ### Player controls
 
@@ -73,7 +83,7 @@ The configured main scene opens directly into `GameRun`; the Milestone 6 working
 - Use **Skip / Keep Hand** to decline a card reward, including when the three-card hand is full
 - Inspect or manage the three generic active equipment slots and one three-slot inactive backpack through the existing drag or click/tap/keyboard flows; destructive discard remains separately named and confirmed
 - Press <kbd>Space</kbd> to pause or resume eligible run time
-- Press <kbd>E</kbd> to confirm extraction while an extraction window is available
+- Press <kbd>E</kbd> to confirm extraction while a lap decision is available; the shortcut forwards the same exact decision token as the visible control
 - Press <kbd>Tab</kbd> to show or hide build details
 - Use the main-menu and pause settings panels for Master/Music/SFX volume, fullscreen/windowed mode, screen-shake intensity, damage numbers, hit-flash reduction, and pause-on-focus-loss
 - At a terminal summary, choose same-seed restart, new-seed restart, or Return to Main Menu
@@ -91,11 +101,11 @@ Reward and run-action buttons respond to one ordinary click or tap.
 
 ## Current scope
 
-Milestone 6 Vertical-Slice Content and Presentation is the tentative final milestone. Its automated gate is green, and the owner has authorized publication of the build for external playtesting. The remaining manual, qualitative, browser/device, cadence, and outcome checks are organized in [MILESTONE_6_PLAYTEST.md](MILESTONE_6_PLAYTEST.md); they remain distinct from final owner acceptance. Milestone 5 District Cards remains the last fully accepted baseline from `main` merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`.
+WP02 Core Run Loop and State Clarity is the current runtime and browser-playtest boundary. Its technical/runtime/visual gate is green, but its owner-run five-person comprehension gate remains pending in [the WP02 evidence template](docs/product/WP02_UNBRIEFED_COMPREHENSION_CHECK.md). The owner separately authorized the WP02 `main`/Pages release on 2026-08-21; publication does not constitute qualitative acceptance or downstream authorization. Milestone 5 District Cards remains the last fully owner-accepted baseline from `main` merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`.
 
-Milestone 6 ends at the three-member crew, three-basic/one-elite/one-boss roster, three interventions, finished prototype presentation/audio/tutorial/settings/profile/summary layers, four bounded unlocks over existing content, fixed authored route, and complete victory/extraction/defeat paths. It adds no route generation, fifth card, tenth required equipment entry, permanent stat bonus, or broad progression tree.
+The preserved content boundary remains the three-member crew, three-basic/one-elite/one-boss roster, existing interventions, prototype presentation/audio/tutorial/settings/profile/summary layers, fixed authored route, and complete victory/extraction/defeat paths. WP02 restructures lifecycle, crew access, and state clarity only; it adds no breadth content, route generation, fifth card, tenth equipment entry, permanent stat bonus, or broad progression tree.
 
-Stop after Milestone 6. There are no planned future milestones. Additional districts/cards/crew/enemies/bosses; procedural routes; multiplayer; controller support; localization; achievements; daily-run systems; leaderboards; advanced meta-progression; permanent stat trees; mid-run saving/replays; equipment selling, salvage, rarity, uniques, affixes, or sets; a card currency/shop/economy; and every other post-vertical-slice system remain out of scope. Publication for Milestone 6 playtesting does not authorize expansion.
+There is no Milestone 7. The owner-approved roadmap uses WP01–WP07; WP01 and WP02 have landed only under separate explicit tasks. WP03 is unstarted and not authorized by this result. Additional districts/cards/crew/enemies/bosses; procedural routes; multiplayer; controller support; localization; achievements; daily-run systems; leaderboards; advanced meta-progression; permanent stat trees; mid-run saving/replays; equipment selling, salvage, rarity, uniques, affixes, or sets; a card currency/shop/economy; and every other undocumented expansion remain out of scope.
 
 ### Working-tree provenance
 
@@ -110,6 +120,8 @@ Stop after Milestone 6. There are no planned future milestones. Additional distr
 - [ARCHITECTURE.md](ARCHITECTURE.md) — scene and system ownership
 - [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) — milestone status and next work
 - [TEST_PLAN.md](TEST_PLAN.md) — verification history and planned coverage
+- [WP02 acceptance evidence](docs/product/WP02_ACCEPTANCE_EVIDENCE.md) — current technical/runtime/visual gate and remaining owner check
+- [WP02 authority map](docs/product/WP02_CURRENT_TO_TARGET_AUTHORITY_MAP.md) — bounded lifecycle/profile migration and preserved contracts
 - [MILESTONE_6_PLAYTEST.md](MILESTONE_6_PLAYTEST.md) — non-leading tester prompt, curator matrix, and feedback template
 - [CONTENT_CATALOG.md](CONTENT_CATALOG.md) — implemented and specified content
 - [CHANGELOG.md](CHANGELOG.md) — project history

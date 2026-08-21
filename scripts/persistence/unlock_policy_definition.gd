@@ -2,11 +2,12 @@
 class_name UnlockPolicyDefinition
 extends Resource
 
-## Authored minimal unlock policy:
-## - first completed run -> Zoey
+## Version-one unlock-policy record. WP02 retires the two crew rules as access
+## gates while retaining their stable IDs for historical profile compatibility:
+## - first completed run -> Zoey (retired; historical only)
 ## - first run with an elite defeat -> Hacker Deck
 ## - first extraction -> Gang Hideout
-## - first victory -> Rex
+## - first victory -> Rex (retired; historical only)
 ## Existing unlock arrays make every grant idempotent; no rule grants stats.
 
 const OUTCOME_VICTORY: StringName = &"victory"
@@ -16,6 +17,10 @@ const REQUIRED_RULE_IDS: Array[StringName] = [
 	&"first_completed_run_zoey",
 	&"first_elite_defeat_hacker_deck",
 	&"first_extraction_gang_hideout",
+	&"first_victory_rex",
+]
+const RETIRED_CREW_RULE_IDS: Array[StringName] = [
+	&"first_completed_run_zoey",
 	&"first_victory_rex",
 ]
 
@@ -31,6 +36,8 @@ func apply_completed_run(
 	if profile == null or not is_valid_outcome(outcome_id):
 		return granted_ids
 	for rule: UnlockRuleDefinition in get_sorted_rules():
+		if rule.id in RETIRED_CREW_RULE_IDS:
+			continue
 		if not _trigger_matches(rule.trigger, outcome_id, elites_defeated):
 			continue
 		if profile.unlock_content(rule.content_kind_id(), rule.content_id):

@@ -369,8 +369,8 @@ func leave_shop() -> bool:
 	return true
 
 
-func decline_extraction() -> bool:
-	if not _run_director.decline_extraction():
+func decline_extraction(decision_token: int = -1) -> bool:
+	if not _run_director.decline_extraction(decision_token):
 		return false
 	if _deferred_route_entry != null:
 		var entry: RouteEntryContext = _deferred_route_entry
@@ -381,8 +381,8 @@ func decline_extraction() -> bool:
 	return true
 
 
-func confirm_extraction() -> bool:
-	return _run_director.confirm_extraction()
+func confirm_extraction(decision_token: int = -1) -> bool:
+	return _run_director.confirm_extraction(decision_token)
 
 
 func enter_boss_trigger() -> bool:
@@ -587,6 +587,20 @@ func _on_route_node_entered(
 func _dispatch_route_entry(entry: RouteEntryContext) -> void:
 	if entry == null or _run_director.current_state != RunDirector.RunState.PATROLLING:
 		return
+	var current_modification: RouteModificationRecord = null
+	if _card_system != null:
+		current_modification = _patrol_controller.get_current_route_modification()
+	var resolves_district_block: bool = (
+		entry.node_type in [&"encounter", &"shop"]
+		or current_modification != null
+	)
+	if (
+		_run_director.is_district_loop_enabled()
+		and resolves_district_block
+		and not _run_director.begin_district_block(entry.occurrence_id, entry.node_type)
+	):
+		action_feedback.emit("BLOCK START REJECTED - ROUTE HELD")
+		return
 	var resolved: CardResolutionRecord
 	if _card_system != null:
 		resolved = _card_system.resolve_current_route_effect()
@@ -628,12 +642,12 @@ func _resolve_card_route_effect(resolved: CardResolutionRecord) -> void:
 				0
 			):
 				action_feedback.emit("ELITE PLACEHOLDER UNAVAILABLE")
-				_patrol_controller.continue_from_current_node()
+				_complete_failed_or_utility_block()
 		CardEffectDefinition.EffectKind.REROUTE_SKIP_STANDARD:
 			# This resolves the authored future-node reroute directly. It never
 			# calls the finite Subway intervention and therefore changes no charge.
 			action_feedback.emit("SUBWAY ROUTE SKIPPED ONE STANDARD ENCOUNTER")
-			_patrol_controller.continue_from_current_node()
+			_complete_failed_or_utility_block()
 
 
 func _start_selected_encounter(
@@ -650,8 +664,8 @@ func _start_selected_encounter(
 				candidates.append(candidate)
 	var definition: EncounterDefinition = _run_director.select_encounter(candidates)
 	if definition == null:
-		_patrol_controller.continue_from_current_node()
 		action_feedback.emit("NO ELIGIBLE ENCOUNTER")
+		_complete_failed_or_utility_block()
 		return false
 	return _start_encounter(
 		definition,
@@ -689,12 +703,12 @@ func _start_encounter(
 func _open_shop_visit(source_id: StringName, maximum_purchases: int) -> bool:
 	if not _cooling_controller.begin_shop_visit(source_id, maximum_purchases):
 		action_feedback.emit("SHOP VISIT UNAVAILABLE")
-		_patrol_controller.continue_from_current_node()
+		_complete_failed_or_utility_block()
 		return false
 	if not _run_director.open_shop():
 		_cooling_controller.end_shop_visit()
 		return false
-	if _cadence_tracker != null:
+	if _cadence_tracker != null and not _run_director.is_district_loop_enabled():
 		_cadence_tracker.record_strategic_opportunity(
 			StringName("shop:%s:%d" % [source_id, _next_shop_opportunity_id]),
 			_run_director.run_elapsed_seconds
@@ -811,6 +825,14 @@ func _on_run_completed(_result: int) -> void:
 func _continue_patrol_if_active() -> void:
 	if _run_director.current_state == RunDirector.RunState.PATROLLING:
 		_patrol_controller.continue_from_current_node()
+
+
+func _complete_failed_or_utility_block() -> void:
+	if _run_director.is_district_loop_enabled():
+		if not _run_director.complete_district_utility_block():
+			action_feedback.emit("BLOCK COMPLETION REJECTED - ROUTE HELD")
+			return
+	_continue_patrol_if_active()
 
 
 func _finish_reward_selection() -> bool:

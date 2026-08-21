@@ -2,8 +2,8 @@
 class_name PersistentProfileData
 extends Resource
 
-## Minimal Milestone-6 profile. The full content constants are access policy,
-## not extra unlocks; production defaults gate only the four specified entries.
+## Version-one profile facts remain byte-compatible with Milestone 6. WP02
+## changes crew access policy without rewriting historical Zoey/Rex facts.
 
 const SAVE_VERSION: int = 1
 
@@ -32,6 +32,7 @@ const ALL_CARD_IDS: Array[StringName] = [
 	&"subway_entrance",
 ]
 const PRODUCTION_DEFAULT_CREW_IDS: Array[StringName] = [&"jax"]
+const PRODUCTION_ACCESS_CREW_IDS: Array[StringName] = ALL_CREW_IDS
 const PRODUCTION_DEFAULT_EQUIPMENT_IDS: Array[StringName] = [
 	&"chain_sneakers",
 	&"magnetic_flail",
@@ -136,7 +137,10 @@ func unlock_content(content_kind: StringName, content_id: StringName) -> bool:
 
 
 func get_accessible_crew_ids(development_full_access: bool) -> Array[StringName]:
-	return _copy_ids(ALL_CREW_IDS if development_full_access else unlocked_crew_ids)
+	# All three core play styles are available on first launch. Keep the stored
+	# unlock array as a historical v1 ledger so merely loading an old profile
+	# never invents or rewrites Zoey/Rex facts.
+	return _copy_ids(ALL_CREW_IDS if development_full_access else PRODUCTION_ACCESS_CREW_IDS)
 
 
 func get_accessible_equipment_ids(development_full_access: bool) -> Array[StringName]:
