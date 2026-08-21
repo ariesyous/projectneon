@@ -1,6 +1,6 @@
 @tool
 class_name EquipmentDragSlot
-extends Button
+extends NeonChoiceCard
 
 ## Reusable equipment drag source/drop target. It owns only pointer
 ## presentation; GameHUD stages the resulting intent and gameplay authority

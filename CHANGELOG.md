@@ -4,6 +4,25 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 
 ## [Unreleased]
 
+### 2026-08-21 — WP01 Interface and Visual Language (presentation only)
+
+- Added one reusable token theme for typography, spacing, surfaces, borders, semantic states, focus/disabled treatment, 48-pixel touch minimums, and bounded animation timing.
+- Added a replaceable WP01 SVG icon family plus reusable choice-card, stat-comparison, countdown/status, intervention-button, toast, tooltip, and phase-banner components.
+- Converted `GameHUD` to a phase/next-event-led minimal combat hierarchy with compact Heat/Night Pressure, crew/build inspection, Environment/Backup action presentation, a disabled no-authority Focus shell, and strategic Subway disclosure outside combat.
+- Added focused current-authority shells for the M5 planner compatibility path, equipment reward, finite shop, current Extract/Push, pause/settings, and summary without implementing WP02 lifecycle or WP03 card authority.
+- Preserved every gameplay calculation, typed intent, deterministic stream/order, card/equipment revision/token path, current content definition, mouse/keyboard/touch fallback, owner-carried Godot-AI change, and owner-carried `project.godot` change.
+- Added the deterministic WP01 state gallery, 11 native/safe-area/Web/runtime evidence captures, 10 dedicated WP01 tests, and a cumulative runner. Godot 4.7 passed **254/254 tests and 3,376 assertions** with no failures or skips.
+- Exercised the configured `/GameRun` start/patrol/build/plan/intervention-rejection/pause/settings/resume/safe-area paths. The fresh runtime log contains no warning/error/debugger entry; the already documented cumulative-runner-only shutdown diagnostic remains unchanged.
+- No commit, push, publication, deployment, profile mutation, external-state change, or WP02 work was performed.
+
+### 2026-08-20 — WP00 Product Rebaseline (documentation only)
+
+- Recorded the owner's explicit approval of the complete recommended D1–D7 package: the plan/watch/intervene/push north star; three laps of three blocks with Extract/Push after laps one and two and final-lap boss commitment; focused two-choice District Plan; all three crew available on fresh profiles; breadth/cosmetic/challenge progression only; Environment/Focus/Backup; and measurable clarity, consequence, variety, replay, and cadence gates.
+- Added the accepted architecture decision, owner decision packet, representative six-screen SVG/PNG wireframes, and complete WP00 acceptance-evidence record.
+- Reconciled `GameSpecifications.md`, `AGENTS.md`, `ARCHITECTURE.md`, `IMPLEMENTATION_PLAN.md`, `TEST_PLAN.md`, and `CONTENT_CATALOG.md` while retaining exact Milestone 0–6 implementation and verification history. Milestone 6 remains the current runtime; only its former prospective final-boundary rules are superseded.
+- Approved WP01–WP07 as a bounded prospective roadmap. WP01 was not started and roadmap approval does not authorize implementation, commits, pushes, publication, deployment, or content expansion.
+- Changed no gameplay script, scene, Resource, test implementation, project setting, profile/save, Git history, or external state. The owner's unrelated Godot-AI 3.0.5 and `project.godot` working-tree changes remain preserved and excluded from WP00.
+
 ### 2026-07-22 — Milestone 6 tentative playtest release
 
 - The owner marked Milestone 6 tentatively complete and authorized merging it to `main` for GitHub Pages playtesting. This is a release/playtest decision, not a fabricated result for the remaining qualitative checks.
@@ -11,7 +30,7 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 - External feedback targets ordinary Victory/Extraction/Defeat paths, crew/enemy/boss readability and feel, interventions, builds/cards, tutorials, settings/accessibility, persistence/unlocks, summaries/restarts, cadence, resolutions, browser compatibility, and touch input.
 - The pre-publication Godot 4.7 cumulative rerun passed **244/244 tests and 3,234 assertions with no failures or skips**. It reproduced the already documented runner-only shutdown report of 48 ObjectDB instances and four resources in use; the configured production boot remains clean.
 - `main` was fast-forwarded through `a147f93`. [Pages run 29960250903](https://github.com/ariesyous/projectneon/actions/runs/29960250903) successfully completed the official Godot 4.7 Web export and deployment. The live page loaded title `Neon Loop`, a visible 1280×720 canvas, and an empty warning/error console; automated screenshot capture timed out on the continuously rendered WebGL canvas, so no fresh visual-evidence pass is claimed.
-- Milestone 6 remains the stopping boundary and tentative final milestone. There are no planned later milestones; publication does not authorize roster, route, progression, economy, or other post-M6 expansion.
+- At the time of this release record, Milestone 6 remained the stopping boundary and tentative final milestone. WP00 later superseded only that prospective boundary with the bounded owner-approved work-package roadmap; the release facts above remain unchanged.
 
 ### 2026-07-22 — Milestone 6: Vertical-Slice Content and Presentation (Implementation)
 
@@ -73,7 +92,7 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 - The tracked, enabled Godot-AI 3.0.5 update across 17 addon files predates Milestone 6 and remains an owner-carried development-tooling change. It is not removed, untracked, ignored, replaced, or attributed to Milestone 6 gameplay work.
 - The owner-carried `project.godot` deletions of `window/stretch/aspect="keep"` and `textures/default_filters/use_nearest_mipmap_filter=false` remain preserved and separate from the Milestone 6 `SaveService`/`AppState` additions.
 - Milestone 5 remains the last fully accepted live baseline from `main` merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`. Milestone 6 was subsequently committed as `9c1cdaa` plus `ca3fe18` and authorized for the tentative Pages playtest release recorded above.
-- Stop after Milestone 6. Procedural routes; additional districts/cards/crew/enemies/bosses; multiplayer; controller support; localization; achievements; daily-run systems; leaderboards; advanced meta-progression; permanent stat trees; mid-run saves/replays; equipment selling/salvage/rarity/uniques/affixes/sets; a card currency/shop/economy; and every other post-vertical-slice system remain unauthorized.
+- At this historical Milestone 6 implementation record, work stopped after Milestone 6. Procedural routes; additional districts/cards/crew/enemies/bosses; multiplayer; controller support; localization; achievements; daily-run systems; leaderboards; advanced meta-progression; permanent stat trees; mid-run saves/replays; equipment selling/salvage/rarity/uniques/affixes/sets; a card currency/shop/economy; and every other post-vertical-slice system remained unauthorized. WP00 later superseded only the prospective boundary with its bounded roadmap.
 
 ### 2026-07-19 — Milestone 5: District Cards (Technical)
 

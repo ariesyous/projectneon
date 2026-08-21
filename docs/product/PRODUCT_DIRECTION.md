@@ -1,7 +1,8 @@
-# Proposed Product Direction
+# Approved Product Direction
 
-Status: owner approval required
+Status: owner-approved through WP00
 Prepared: 2026-08-20
+Approved: 2026-08-20
 
 ## North star
 
@@ -28,9 +29,9 @@ If the player is waiting, the game must turn that time into anticipation with a 
 4. **Intervene** — use a small number of decisive tactical actions.
 5. **Push or extract** — accept escalating risk or bank the run result.
 
-## Proposed nested loop
+## Approved nested loop
 
-Target timings are hypotheses to validate in WP00/WP02, not final balance values.
+Target timings are acceptance hypotheses to validate during WP02–WP07, not implemented WP00 balance values.
 
 ### Encounter loop: roughly 20–45 seconds
 
@@ -51,10 +52,11 @@ Target timings are hypotheses to validate in WP00/WP02, not final balance values
 
 ### District-lap loop: roughly 2–3 minutes
 
-1. Complete three or four blocks.
+1. Complete exactly three blocks.
 2. Face an elite, hazard, or lap modifier.
-3. Reach a clear **Extract** or **Push Deeper** decision.
-4. Pushing changes the district's look, enemy behavior, reward quality, and pressure.
+3. After laps one and two, reach a clear **Extract** or **Push Deeper** decision.
+4. Pushing after lap one previews and enters lap two; pushing after lap two commits to lap three and its boss, with no routine final-lap extraction.
+5. Pushing changes the district's look, enemy behavior, reward quality, and pressure.
 
 ### Run loop: initial target of 8–12 minutes
 
@@ -94,19 +96,19 @@ Planning, reward, equipment, and shop decisions should temporarily own attention
 
 The first view communicates category and consequence. Hover, focus, long-press, or an inspect action reveals exact rules. The game should not rely on paragraphs to explain what an icon, state label, spatial grouping, and preview can communicate together.
 
-## District Cards: proposed redesign
+## District Cards: approved redesign
 
 Rename the interaction layer in player-facing copy to **District Plan** while retaining stable internal IDs where safe.
 
-### Recommended model
+### Approved model
 
-- At the end of a block, offer two or three large District Cards.
+- At the end of a block, offer two large District Cards from a finite four-card, one-copy lap deck that is rebuilt at each lap boundary.
 - Each card represents the next block, not an abstract future slot.
 - The face shows illustration/icon, location name, encounter/event type, reward, Heat change, and one short special rule.
 - Selecting a card updates a small “Next Block” preview; confirming begins it.
 - Click/tap/keyboard selection is primary. Drag can be retained as an optional equivalent, not the tutorial's foundation.
 - Resolved blocks become a simple visual trail around the district lap; they are history, not editable slots.
-- Advanced future planning can return later only if playtests show that players understand the base loop and want more lookahead.
+- The release-facing persistent hand and five editable future slots are deprecated after WP03 proves the migration. Advanced lookahead can return only through a later owner decision.
 
 ### Why this direction
 
@@ -130,14 +132,13 @@ Examples:
 
 ## Intervention vocabulary
 
-Keep the permanent combat bar small. A proposed initial vocabulary is:
+Keep the permanent combat bar small. The approved permanent vocabulary is:
 
 - **Environment:** context-sensitive street object such as Hydrant, power box, barrier/dumpster, or hanging sign. Only valid objects appear; the button adopts that object's icon and verb.
 - **Focus:** briefly prioritize a telegraphed enemy or interruptible threat.
-- **Rally:** a defensive or repositioning response with a clear cooldown.
 - **Backup:** finite run resource for a larger tempo swing.
 
-Not all four need to ship in the first prototype. WP05 should test the smallest combination that produces varied decisions without turning the game into an action game.
+Fire Hydrant is one Environment action. Call Backup maps to Backup. Subway Reroute is a strategic District Plan/travel action, not a permanent combat-bar role. **Rally** remains a bounded WP05 prototype candidate only; it is not a promised fourth slot. WP05 must owner-select concrete Environment and Focus mechanics after testing without turning the game into an action game.
 
 ## Encounter variety model
 
@@ -224,15 +225,6 @@ Icons are never the sole carrier of unfamiliar meaning. New icons ship with labe
 - replacing deterministic gameplay with unseeded variation;
 - controller support, localization, achievements, or live-service systems in the rebaseline itself.
 
-## Approval criteria
+## Approval record
 
-The owner can approve this direction when the following statements feel true:
-
-- The north star describes the game they want to make.
-- The district-lap structure provides the missing “loop.”
-- The focused District Plan is preferable to the current persistent hand/future-slot planner.
-- All crew should be immediately selectable.
-- Breadth/cosmetic/challenge unlocks are preferable to permanent stats.
-- The proposed intervention vocabulary preserves the desired amount of indirect control.
-
-Approval should be recorded in WP00 before implementation begins.
+On 2026-08-20 the owner explicitly approved the complete recommended D1–D7 package: this north star; the exact three-by-three lap loop and commitment; the focused District Plan; all-crew default availability; breadth/cosmetic/challenge-only progression; Environment/Focus/Backup; and the acceptance metrics recorded in `TEST_PLAN.md`. See [WP00 acceptance evidence](WP00_ACCEPTANCE_EVIDENCE.md). This approval makes the direction canonical but does not claim that WP01–WP07 are implemented.

@@ -2,7 +2,9 @@
 
 ## Purpose and status
 
-Milestone 6 is the tentative final Neon Loop milestone. The build has passed its cumulative automated gate: **244/244 tests and 3,234 assertions with no failures or skips across 22 suites**. This playtest is for the things automation cannot decide well: clarity, pacing, feel, usability, presentation, and whether an ordinary player can understand and complete the vertical slice.
+This is the historical acceptance guide for the published Milestone 6 build. The build passed its cumulative automated gate: **244/244 tests and 3,234 assertions with no failures or skips across 22 suites**. Its remaining manual evidence stays pending and must not be invented.
+
+On 2026-08-20, the owner approved the WP00 product rebaseline. That decision did not invalidate M6 technical evidence, change the deployed build, or retroactively complete this guide. It superseded M6's former status as the final prospective product boundary. Future WP01–WP07 acceptance uses the rebaseline contract in `TEST_PLAN.md`; this guide remains evidence about the unchanged M6 runtime only.
 
 Play the current build at [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/).
 

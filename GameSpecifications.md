@@ -1,19 +1,114 @@
 # Neon Loop — Game Specifications
 
-**Document status:** Initial vertical-slice specification  
-**Working title:** Neon Loop  
-**Engine:** Godot 4.x  
-**Primary language:** Typed GDScript  
-**Target platform:** Windows PC  
-**Target display:** 16:9 desktop display  
-**Internal design resolution:** 640 × 360  
-**Current production goal:** A complete, replayable vertical slice proving the core game loop
+**Document status:** WP00-approved product rebaseline; Milestones 0–6 retained as implemented history
+**Working title:** Neon Loop
+**Engine:** Godot 4.x
+**Primary language:** Typed GDScript
+**Target platform:** Windows PC
+**Target display:** 16:9 desktop display
+**Internal design resolution:** 640 × 360
+**Current production goal:** Rework the implemented vertical slice into the approved, readable district-lap roguelite through WP01–WP07
+
+---
+
+## 0. WP00-Approved Product Rebaseline — 2026-08-20
+
+The project owner explicitly approved the complete WP00 recommended package D1–D7 on 2026-08-20. This section is the prospective product authority for WP01–WP07. The Milestone 0–6 sections and their verification records remain truthful implementation history; where an older prospective rule conflicts with this section, the older rule is **superseded for future work**, not retroactively declared defective or unimplemented.
+
+### 0.1 North star
+
+> **Neon Loop is a run-based neon-street auto-brawler where the player plans the next block, watches the crew execute the build, intervenes at decisive moments, and chooses whether to bank gains or push through another increasingly dangerous district lap.**
+
+The game must feel strategic before combat, readable during combat, and satisfying immediately after combat. Within each lap, the player should be able to explain what they chose, how that choice changed the fight, what threat comes next, and why they are extracting or pushing.
+
+### 0.2 Approved nested loop
+
+```text
+SELECT CREW
+  -> LAP 1: [PLAN -> BLOCK -> REWARD] x3
+  -> EXTRACT or PUSH
+  -> LAP 2: [PLAN -> BLOCK -> REWARD] x3
+  -> EXTRACT or COMMIT TO FINAL LAP
+  -> LAP 3: [PLAN -> BLOCK -> REWARD] x3
+  -> BOSS
+  -> RESULT
+```
+
+- A block is one focused fight, shop, or authored utility/event outcome.
+- The third block may carry the lap's elite, hazard, or modifier; it does not silently add a fourth block.
+- Lap-one extraction targets roughly 2–4 eligible minutes; lap-two extraction targets roughly 5–8; a boss run targets 8–12.
+- Extract/Push appears after laps one and two. Pushing after lap two is the explicit final-lap/boss commitment; routine extraction does not reopen after lap three begins.
+- Ordinary fights target 20–45 eligible seconds, complete blocks 45–90, and lap decisions 120–180.
+- Optional coin opportunities retain the 10–20 eligible-second ambient target and full passive base reward.
+- The former generic 30–60-second strategic-decision target is superseded by the 45–90-second complete-block target. Coin clicks must never be relabelled as strategic decisions.
+- Heat remains tactical and partially coolable. Night Pressure remains irreversible. WP02 must map them onto the approved lap structure without weakening safe-boundary precedence or inventing a decrease in Night Pressure.
+
+### 0.3 Approved District Plan
+
+Player-facing copy calls the interaction **District Plan**.
+
+- Every `PLAN` phase offers two large next-block District Cards. A third appears only when an explicit run effect grants it.
+- Each card shows icon/illustration plus label, location, block type, exact Heat change, reward/risk, and one short special rule.
+- Click, tap, and keyboard selection are primary. Drag may be an equivalent flourish, never a second rules model.
+- Each lap begins with one copy of every currently available stable card ID. The offer draws without replacement from that lap deck; unselected choices remain available and the offer refills to two while cards remain. Three block choices consume at most three cards. The next lap archives the resolved trail and rebuilds the available one-copy deck.
+- Resolved blocks form a simple history trail. Release presentation has no persistent combat hand, editable five-future-slot planner, route-legality words, or route-history dots.
+- The four existing identities remain `arcade`, `convenience_store`, `gang_hideout`, and `subway_entrance`. Arcade is a fight/reward block; Convenience Store is a finite-stock shop/recovery block; Gang Hideout is an elite/equipment block; Subway Entrance is a no-combat cooling/transit block that replaces one fight without changing Night Pressure or finite Subway-intervention stock.
+- `CardSystem` remains card-offer, deterministic `cards`-stream, revision/token, and exact-once authority. `PatrolController` remains current block/lap progress and safe-boundary authority. The current five-slot modification interface is an implemented Milestone 5–6 compatibility surface to be migrated or development-gated by WP03, not the approved release interaction.
+- Random schema version remains 1 in WP00. WP03 must lock deterministic vectors before migration and stop for a separately documented compatibility decision if the new scheduling changes the versioned derivation or draw primitive incompatibly.
+
+### 0.4 Fresh-profile content and progression boundary
+
+- Jax, Zoey, and Rex are all selectable on a fresh production profile before the first gameplay draw.
+- Jax is not an availability gate. WP01/WP02 may present concise role/complexity guidance, but no crew member is withheld.
+- The historical `first_completed_run_zoey` and `first_victory_rex` rules remain part of the Milestone 6 record but are retired prospectively. WP02 owns backward-safe application/profile migration and must not overwrite a save merely because it was loaded.
+- Fresh production access otherwise retains eight existing equipment entries and three existing cards. `first_elite_defeat_hacker_deck` and `first_extraction_gang_hideout` remain valid breadth unlocks.
+- Allowed future progression is breadth, cosmetics, compendium knowledge, optional goals, and challenge contracts only after separate scope approval.
+- Permanent health, damage, cooldown, economy, drop-rate, or other statistical power; a permanent stat tree; and grind required for early-run viability are prohibited.
+- Scrap remains an informational run-summary/result measure until a separately approved breadth/cosmetic economy defines a use. WP00 authorizes no economy or save-format change.
+- Active runs remain nonsavable.
+
+### 0.5 Permanent combat intervention vocabulary
+
+The permanent combat bar has at most three labelled roles:
+
+1. **Environment** — one context-sensitive valid street object. Fire Hydrant is the first implementation; later approved objects replace this slot's icon and verb rather than adding permanent buttons.
+2. **Focus** — temporarily prioritize a telegraphed enemy or interruptible threat without direct movement or attack control.
+3. **Backup** — the existing finite Call Backup tempo swing.
+
+Subway Reroute is strategic District Plan/travel vocabulary, not a permanent combat-bar role. Rally/reposition remains a WP05 prototype candidate and is not promised as a permanent slot. WP05 must establish strong, weak, invalid, hold, and counter/tradeoff cases before any new mechanic is productionized.
+
+### 0.6 Approved acceptance metrics
+
+Qualitative checkpoints use five unbriefed participants and record failures without coaching. Automated evidence cannot satisfy these judgments.
+
+- **Clarity:** at least 4/5 independently identify current phase, next event, immediate action, a selected District Card's primary consequence, and Extract-versus-Push risk; at least 4/5 recount `PLAN -> BLOCK/FIGHT -> REWARD -> LAP DECISION` and predict the state after confirmation.
+- **No dead-looking wait:** every noninteractive delay longer than one second presents a named next event plus countdown, visible approach, or authored transition; participants do not broadly describe a state as stalled or broken.
+- **Consequence:** for one District Plan choice, one equipment/shop choice, and one Push decision per observed session, at least 4/5 predict the primary change before confirmation and identify its next applicable expression. Every shipped major choice must pass Preview, Magnitude, Expression, and Recall.
+- **Variety:** across at least five representative sessions spanning all three crew and fixed seeds, at least 4/5 name three distinct meaningful decisions and explain one strong intervention use plus one reason to hold or choose another action. Every permanent intervention has documented strong, weak, invalid, and counter/tradeoff cases. At least three viable builds differ in behavior and presentation, with no universal starter/build in the approved matrix.
+- **Replay desire:** before prompting, at least 4/5 start another run or explicitly want one; at least 3/5 name a concrete different next-run crew, build, plan, intervention, or Push/Extract intention.
+- **Timing:** representative evidence reports full distributions and outliers against the 20–45-second fight, 45–90-second block, 120–180-second lap, 2–4/5–8-minute extraction, 8–12-minute boss-run, and 10–20-second ambient targets. Averages alone do not pass.
+- **Technical:** UI remains non-authoritative; icon plus label/shape reinforces important state; Heat/Night Pressure separation, safe-boundary precedence, exact-once tokens, deterministic stable ordering, named-stream isolation, restart/cleanup, and approved input parity remain verified.
+
+### 0.7 Superseded Milestone 6 prospective rules
+
+| Milestone 6 rule | WP00 treatment |
+| --- | --- |
+| Milestone 6 is the final stopping boundary and no later work is planned. | Superseded prospectively by approved WP01–WP07. There is still no Milestone 7; work proceeds only by the approved work packages and their gates. |
+| Pressure-threshold patrol is the complete player-facing loop. | Superseded prospectively by the three-lap/three-block structure; Heat, Night Pressure, and safe-boundary authorities remain. |
+| District Cards use a persistent hand and five future route slots in release. | Superseded prospectively by the focused next-block District Plan and lap-scoped finite deck. Historical M5/M6 behavior and tests remain accurate. |
+| Production starts with Jax and gates Zoey/Rex. | Superseded prospectively; all three crew are fresh-profile defaults. Historical unlock behavior remains accurately recorded. |
+| Fire Hydrant, Call Backup, and Subway Reroute are the exact permanent combat-bar vocabulary. | Superseded prospectively by Environment, Focus, and Backup; Subway becomes strategic travel vocabulary. Existing mechanics remain implemented until their owning packages migrate them. |
+| Generic strategic cadence is 30–60 eligible seconds. | Superseded prospectively by the 45–90-second complete-block target. Ambient 10–20 and major 120–180 remain. |
+| The existing broad HUD/card/route presentation is the final release information hierarchy. | Superseded prospectively by the minimal actionable combat HUD and focused decision layers. |
+| The remaining M6 playtest TODO list can establish final product acceptance. | Retained as historical tentative-release evidence only. Final rebaseline acceptance uses the approved WP00 metrics after WP01–WP07. |
+
+WP00 itself changes documentation and wireframes only. It changes no gameplay code, scene, Resource, test implementation, project setting, save/profile file, random schema, Git history, build, publication, deployment, or external state.
 
 ---
 
 ## 1. Document Purpose
 
-This document is the source of truth for the initial implementation of **Neon Loop**.
+This document is the product source of truth for **Neon Loop**. Section 0 defines the approved prospective rebaseline; later milestone sections preserve the implementation and verification history that the future work must migrate safely.
 
 It is written for both human developers and coding agents. It defines:
 
@@ -25,7 +120,7 @@ It is written for both human developers and coding agents. It defines:
 - How the Godot project should be structured
 - How each milestone is verified
 
-The first implementation must prioritize a small, polished, playable vertical slice. It must not attempt to build the full imagined game immediately.
+Future work must prioritize the bounded, playable outcomes in the approved work-package roadmap. It must not treat that roadmap as permission to build the full imagined game.
 
 When a requirement is ambiguous, prefer the interpretation that:
 
@@ -45,10 +140,10 @@ The player assembles and improves a small crew that patrols a dangerous city dis
 
 Instead, the player:
 
-- Shapes the route
+- Plans the next district block
 - Selects upgrades
 - Equips synergistic items
-- Places district cards
+- Chooses focused District Plan cards
 - Triggers limited interventions
 - Manually collects optional coin clusters for a small streak bonus
 - Decides whether to continue or extract
@@ -100,11 +195,12 @@ Equipment, synergies, route cards, and interventions must produce observable cha
 
 The game may contain automatic action, but the player should not feel passive.
 
-During an active run, interaction should occur at three distinct cadences:
+During an active run, interaction should occur at the approved nested cadences:
 
 - **Ambient optional interactions:** approximately every 10–20 seconds
-- **Meaningful strategic decisions:** approximately every 30–60 seconds
-- **Major risk decisions:** approximately every 2–3 minutes
+- **Ordinary fights:** approximately 20–45 seconds
+- **Complete plan/block/reward cycles:** approximately 45–90 seconds
+- **Lap-level risk decisions:** approximately every 2–3 minutes
 
 Ambient interactions must be quick, optional, and safe to ignore. Coin clusters are the initial example. Strategic and risk decisions may pause or redirect the run and must not be diluted into constant clicking.
 
@@ -241,7 +337,8 @@ The vertical slice must contain:
 ### 7.1 Session Length
 
 - Typical run: 8–12 minutes
-- Short extraction: 3–6 minutes
+- Lap-one extraction: approximately 2–4 minutes
+- Lap-two extraction: approximately 5–8 minutes
 - Boss victory: approximately 10 minutes
 - Restart time after defeat: less than 10 seconds
 
@@ -251,10 +348,10 @@ The player should have:
 
 - Continuous visual action
 - One ambient optional interaction approximately every 10–20 seconds
-- One meaningful strategic decision approximately every 30–60 seconds
-- One major risk decision approximately every 2–3 minutes
+- One complete focused block decision/payoff approximately every 45–90 seconds
+- One lap-level risk decision approximately every 2–3 minutes
 
-These categories are not interchangeable. Ambient interactions support engagement without carrying the consequence or interruption of a strategic choice.
+These categories are not interchangeable. Ambient interactions support engagement without carrying the consequence or interruption of a block or lap decision.
 
 Cadence is measured during eligible active play. Time spent paused, in modal reward or shop choices, or in non-interactive introductions does not count toward the 10–20 second ambient target.
 
@@ -289,22 +386,19 @@ Future ambient interactions may include breakable containers, civilian events, t
 ## 8. Core Gameplay Loop
 
 1. Start a run at the crew hideout with an authoritative integer seed, optionally supplied by the player or development tools.
-2. Select one starting crew member.
-3. Enter the district with one basic equipment item.
-4. Crew automatically follows the patrol route.
-5. Enemies spawn as scheduled encounters.
-6. Crew automatically targets and fights enemies.
-7. Defeated enemies drop coin clusters that may be clicked immediately or auto-collected for their full base value.
-8. Heat changes with tactical actions while Night Pressure irreversibly rises through elapsed time and completed encounters.
-9. At reward moments, the player chooses upgrades or cards.
-10. The player may activate interventions during combat.
-11. The player may add crew members and equipment during the run.
-12. At extraction windows, the player may leave with secured rewards.
-13. If the player continues, Night Pressure, enemy strength, and rewards increase regardless of later Heat reduction.
-14. At the configured Night Pressure progression threshold, the boss encounter becomes unavoidable.
-15. The run ends in victory, extraction, or defeat.
-16. A run summary displays the result, run seed, escalation reached, and earned unlock currency.
-17. The player may immediately begin another run.
+2. Select Jax, Zoey, or Rex; all three are available on a fresh production profile.
+3. Enter the district with that crew member's authored starter item.
+4. Enter `PLAN` and choose one of two focused next-block District Cards, with exact risk/reward and Heat consequence visible before confirmation.
+5. Resolve the selected fight, shop, or utility block. During combat the crew targets and fights automatically while the player may use Environment, Focus, and Backup interventions when valid.
+6. Defeated enemies drop coin clusters that may be clicked immediately or auto-collected for their full base value.
+7. Resolve one understandable reward or resource outcome and show how it changes the next applicable fight.
+8. Repeat the plan/block/reward sequence for three blocks in the lap. Heat changes tactically while Night Pressure rises irreversibly.
+9. After lap one, choose Extract or Push Deeper with the next modifier, reward tier, and threat visible.
+10. After lap two, choose Extract or commit to the final lap and boss.
+11. Complete three final-lap blocks, then face the unavoidable boss. Routine extraction does not reopen after final-lap commitment.
+12. End in victory, extraction, or defeat.
+13. Present a concise result that recalls decisive choices/build expression before progressively disclosed statistics.
+14. Reset run power and allow an immediate new run; persist only approved breadth/cosmetic/challenge facts.
 
 ---
 
@@ -323,7 +417,7 @@ The vertical slice is designed primarily for mouse and keyboard.
 ### Keyboard
 
 - `Space`: pause or resume the run
-- `1`, `2`, `3`: activate equipped interventions
+- `1`, `2`, `3`: activate the currently valid Environment, Focus, and Backup roles respectively after their owning packages implement the approved vocabulary; the Milestone 6 build retains its historical Hydrant/Backup/Subway mapping until migration
 - `E`: open or confirm extraction prompt when available
 - `Tab`: toggle expanded run details
 - `Escape`: pause menu
@@ -335,83 +429,35 @@ Direct fighter movement and direct attack controls are intentionally excluded.
 
 ## 10. Main Game Screen
 
-The primary screen must use a single large side-view street canvas framed by compact UI panels.
+The primary screen uses one large side-view street canvas and shows only actionable combat information by default.
 
-### Required Layout
+### 10.1 Minimal combat HUD
 
-**Top-left**
+The default combat layer must answer without opening a panel:
 
-- District minimap
-- Patrol route
-- Current crew location
-- Encounter icons
-- Extraction point
+- What phase am I in?
+- What happens next, and when?
+- What can I do right now?
 
-**Top-centre**
+It shows crew identity/health, distinct labelled Heat and Night Pressure, current phase, block/lap progress, next event/countdown or visible approach, coins or the one immediately spendable resource, three labelled intervention roles with input/validity/charge/cooldown, and a compact inspectable build/synergy summary. The street remains the visual focus.
 
-- Heat meter
-- Current Heat percentage
-- Current Heat tier
-- Current Night Pressure
-- Progress toward the next extraction or boss threshold
-- Run timer
-- Current night label
+Persistent card hands, future-slot legality, route-history dots, backpack management, detailed effect prose, and full shop stock must not compete with combat when they are not actionable.
 
-**Top-right**
+### 10.2 Focused decision layers
 
-- Coins
-- Current coin collection streak when active
-- Scrap
-- Intervention charges
-- Compact crew status portraits
+`PLAN`, reward/equipment, shop, and Extract/Push decisions temporarily own attention. Each provides one clear heading, one-sentence instruction, a small number of large icon-plus-label choices, exact consequence or before/after comparison, one dominant confirm action, and one safe decline/back action where permitted. Exact rules use progressive disclosure through focus, hover, long-press, or inspect.
 
-**Left side**
+### 10.3 Result layer
 
-- Expanded crew panel
-- Portraits
-- Health
-- Equipment slots
-- Current statuses
-- Auto-battle indicator
-
-**Centre**
-
-- Main street
-- Crew
-- Enemies
-- Environmental objects
-- Combat effects
-- Loot
-- Clickable coin clusters
-- Damage numbers
-
-**Right side**
-
-- Equipment and synergy summary
-- Active synergy thresholds
-- Progress toward alternative synergy paths
-- Short effect descriptions
-
-**Bottom-centre**
-
-- District card hand
-- Card costs
-- Valid placement slots
-- Route progression indicator
-
-**Bottom-right**
-
-- Intervention buttons
-- Extraction button
-- Extraction reward multiplier
-
-The street canvas must remain the visual focus. UI panels should not cover critical combat space.
+The run summary first names outcome, build identity, and decisive choices/effects, then exposes the complete authoritative Milestone 6 statistics. It includes a clear Play Again action and a secondary Return to Main Menu action.
 
 ---
 
 ## 11. World and Stage Structure
 
 The vertical slice uses one fixed district stage called **Downtown Loop**.
+
+WP00 retains the fixed stage and logical combat lanes but supersedes the release-facing five-node patrol as the complete player mental model. The approved presentation is three laps of three selected blocks with a resolved history trail. WP02/WP03 may reuse the authored route and occurrence machinery internally only where it remains compatible with explicit block/lap authority and no release-visible route-slot/debug clutter.
 
 ### Stage Visual Elements
 
@@ -940,9 +986,11 @@ Lowering Heat must create temporary tactical relief without enabling an endless 
 
 ## 20. Interventions
 
-Interventions are limited player-triggered abilities that affect active combat.
+Interventions are limited player-triggered actions around automatic combat. The approved permanent combat vocabulary is Environment, Focus, and Backup. It must remain small, indirect, clearly valid/invalid, and supported by distinct icon-plus-label, telegraph, sound, and feedback. Zero to two meaningful uses in an ordinary fight is a tuning target, not a requirement to click.
 
 ### 20.1 Fire Hydrant
+
+Fire Hydrant is the first **Environment** action. Additional approved street objects replace the Environment slot's icon and verb when contextually valid rather than adding permanent bar buttons.
 
 **Type:** Environmental  
 **Trigger:** Click the highlighted hydrant  
@@ -962,7 +1010,7 @@ Interventions are limited player-triggered abilities that affect active combat.
 
 ### 20.2 Call Backup
 
-**Type:** Active ability  
+**Type:** Backup role
 **Effect:**
 
 - Spawn two temporary allied NPCs
@@ -971,7 +1019,7 @@ Interventions are limited player-triggered abilities that affect active combat.
 
 ### 20.3 Subway Reroute
 
-**Type:** Strategic intervention  
+**Type:** Strategic District Plan/travel action; not a permanent combat-bar role
 **Effect:**
 
 - Immediately end the current non-boss travel segment
@@ -983,7 +1031,18 @@ Interventions are limited player-triggered abilities that affect active combat.
 
 Subway Reroute must not be an infinitely repeatable cooling ability. Charge count, acquisition, per-run acquisition cap, and Heat reduction are data-driven. Charges do not regenerate merely through elapsed time, and an activation request at zero charges is rejected without changing Heat, route state, or Night Pressure.
 
-### 20.4 Intervention Requirements
+### 20.4 Focus
+
+**Type:** Combat priority role
+**Approved intent:** Temporarily prioritize a telegraphed enemy or interruptible threat without adding direct movement or attack controls.
+
+WP05 owns prototyping, exact tuning, authority, counterplay, and owner selection before production implementation. Focus must have a strong case, weak/invalid case, reason to hold it, and readable counter/tradeoff.
+
+### 20.5 Rally candidate
+
+Defensive rally/reposition is a WP05 prototype candidate, not an approved permanent slot. It may be productionized only after comparative evidence and a separate owner mechanic selection.
+
+### 20.6 Intervention Requirements
 
 Every intervention must show:
 
@@ -1118,9 +1177,9 @@ With the initial nine-item catalogue, Knockback, Bleed, and Tech each satisfy th
 
 ---
 
-## 23. District Card System
+## 23. District Plan and Card System
 
-District cards modify future route nodes or run rules.
+District Cards define the next block through a focused District Plan. The Milestone 5–6 future-route placement model remains historical/current implementation until WP03 migrates it, but it is no longer the approved release interaction.
 
 ### Initial Cards
 
@@ -1144,24 +1203,26 @@ District cards modify future route nodes or run rules.
 
 #### Subway Entrance
 
-- Reroutes the next route segment
+- Selects a no-combat cooling/transit block that replaces one fight
 - Heat change: -15
-- Skips one standard encounter
+- Uses no finite Subway-intervention charge and replenishes none
 - Cannot reduce Night Pressure or skip its extraction and boss progression requirements
 
-### Card Flow
+### Approved Card Flow
 
-- Player begins with a small hand.
-- Cards may be awarded after encounters.
-- Cards are dragged onto valid route slots.
-- Valid slots highlight during drag.
-- Invalid placement provides immediate feedback.
-- Played cards move to the discard pile.
-- Route changes appear on the minimap.
+- Each lap begins with one copy of every currently available card.
+- `PLAN` offers two large next-block choices; an explicit effect may grant a third.
+- Selecting and confirming one choice creates the next block exactly once.
+- The unselected choice remains available and the offer refills from the lap deck while cards remain.
+- Selected cards move to the lap discard/resolved trail; no card repeats within a lap.
+- The next lap archives the trail and rebuilds the available one-copy deck.
+- Click/tap/keyboard is primary; optional drag forwards the identical selection/confirmation intent.
+- Invalid, stale, repeated, declined, and transition-race intents mutate nothing.
+- The preview/history shows selected and resolved blocks, not editable future slots.
 
-### Vertical-Slice Simplification
+### Compatibility Boundary
 
-The route may contain a fixed number of empty modification slots rather than fully procedural route construction.
+Stable IDs, typed effects, deterministic `cards`-stream selection, exact-once resolution, safe-boundary precedence, and revision/token rejection remain required. WP03 removes or development-gates the current hand/five-slot release UI only after authority migration and deterministic vectors pass. No procedural route, card currency, card shop, or deckbuilder meta is authorized.
 
 ---
 
@@ -1338,20 +1399,18 @@ Restarting should return to active play quickly.
 
 ## 29. Meta-Progression
 
-The vertical slice includes only a minimal unlock structure.
+The rebaseline includes only breadth, cosmetic, compendium, optional-goal, and challenge progression.
 
-Allowed persistent unlocks:
+Fresh production access includes:
 
-- Unlock Zoey
-- Unlock Rex
-- Unlock one additional equipment item
-- Unlock one additional district card
+- Jax, Zoey, and Rex;
+- eight existing equipment entries, with Hacker Deck retained as the existing elite-defeat breadth unlock;
+- Arcade, Convenience Store, and Subway Entrance, with Gang Hideout retained as the existing extraction breadth unlock;
+- the complete extraction and boss paths.
 
-The equipment unlock may gate one entry from the required at-least-nine-item catalogue; it does not imply an undocumented tenth required item. Development and test profiles must be able to access all nine catalogue entries for build-combination validation.
+The historical Zoey/Rex unlock facts remain loadable but no longer gate fresh-profile crew selection after WP02 migration. Development and tests retain all three crew, all nine equipment entries, and all four cards.
 
-The game must remain completable without permanent statistical bonuses.
-
-Large permanent stat trees are deferred.
+Permanent statistical bonuses, a stat tree, required power grind, active-run saving, and a broad meta economy are prohibited. Scrap is summary-only until a separately approved breadth/cosmetic economy exists.
 
 ---
 
@@ -2177,6 +2236,8 @@ Important information must not rely on colour alone.
 
 ## 44. Milestone Plan
 
+Sections Milestone 0 through Milestone 6 below are the preserved historical implementation plan and acceptance records. WP00 does not rename, reopen, or invalidate them. Their former implication that Milestone 6 was the final prospective boundary is superseded by section 0 and the approved WP01–WP07 roadmap in section 51.
+
 ## Milestone 0 — Project Foundation
 
 ### Deliverables
@@ -2419,7 +2480,7 @@ Only the project owner may record this gate as passed. Codex, another coding age
 - The game supports a complete 8–12 minute run.
 - Each crew member feels distinct.
 - At least three build strategies are viable.
-- Ambient optional interactions occur approximately every 10–20 eligible active seconds, meaningful strategic decisions every 30–60 seconds, and major risk decisions every 2–3 minutes.
+- Historical M6 cadence instrumentation targets ambient 10–20, strategic 30–60, and major risk 2–3 minutes; WP00 prospectively supersedes the strategic band with the 45–90-second complete-block target while retaining the ambient and major bands.
 - The boss is readable and defeatable.
 - Extraction is strategically meaningful.
 - The game can be restarted repeatedly without state leakage.
@@ -2428,6 +2489,8 @@ Only the project owner may record this gate as passed. Codex, another coding age
 ---
 
 ## 45. Vertical-Slice Completion Criteria
+
+This is the preserved initial vertical-slice completion contract. It remains evidence for Milestones 0–6 and is not the final acceptance gate for the WP00 rebaseline; section 0.6 and WP07 govern the future release candidate.
 
 The vertical slice is complete only when all of the following are true:
 
@@ -2455,7 +2518,7 @@ The vertical slice is complete only when all of the following are true:
 
 ## 46. Deferred Features
 
-Do not implement these until the vertical slice is complete:
+The initial vertical slice deferred the following features. WP00 authorizes only WP01–WP07 work required for the approved experience spine. Any breadth content listed as allowed progression still requires separate content approval; the items below are not silently authorized by the rebaseline:
 
 - Additional districts
 - Procedural route generation
@@ -2621,3 +2684,19 @@ Build in this order:
 Do not build a large content library around an unproven combat loop.
 
 The project succeeds when a player can watch the crew fight, make a small number of high-impact decisions, and feel responsible for the increasingly chaotic machine operating on the screen.
+
+---
+
+## 51. WP00-Approved Work-Package Roadmap
+
+WP00 is the documentation/decision gate and changes no runtime. Subsequent work proceeds only in this order and only after the prior gates named in `docs/product/ROADMAP.md`:
+
+1. **WP01 — Interface and Visual Language:** minimal combat HUD, focused decision shells, icon-plus-label language, accessibility and containment.
+2. **WP02 — Core Run Loop and State Clarity:** authoritative three-lap lifecycle, phase/next-event presentation, all-crew defaults, explicit Extract/Push and boss commitment.
+3. **WP03 — District Planning and Cards:** migrate the release interaction to the focused next-block District Plan while preserving deterministic/token authority.
+4. **WP04 — Builds, Rewards, and Shop:** make existing choices materially and visibly change the next fight; preserve lossless inventory and bounded economy scope.
+5. **WP05 — Interventions and Encounter Variety:** prototype and owner-select the smallest production mechanics within Environment/Focus/Backup vocabulary and a bounded encounter matrix.
+6. **WP06 — World, Combat, and Presentation Polish:** replace release-visible debug communication with authored city-block depth and accessible feedback without changing authority for convenience.
+7. **WP07 — Integration, Balance, and Release:** validate the approved cadence, clarity, consequence, variety, replay desire, compatibility, platforms, and owner-led final acceptance.
+
+There is no Milestone 7. WP01 is the next eligible package after WP00, but WP00 does not begin it. Procedural cities, direct character control, multiplayer, permanent statistical progression, large content expansion, controller support, localization, achievements, live-service systems, and other unapproved scope remain excluded.

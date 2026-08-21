@@ -1,6 +1,6 @@
 # Codex Execution Guide for the Rebaseline
 
-Status: proposed operating guide
+Status: approved operating guide; WP00 complete
 Prepared: 2026-08-20
 
 ## Model and reasoning recommendation
@@ -38,7 +38,7 @@ Before any package work:
 1. Work from `C:\Users\sith\Documents\Code\projectneon`.
 2. Read, in order, the complete `GameSpecifications.md`, `AGENTS.md`, `ARCHITECTURE.md`, `IMPLEMENTATION_PLAN.md`, then the selected work-package file and its owned source files.
 3. Inspect `git status` and preserve unrelated or owner-carried changes. In particular, do not attribute or rewrite the Godot-AI addon upgrade.
-4. Confirm that WP00 is owner-approved and complete before implementing WP01–WP07.
+4. Confirm the WP00 decision and evidence records remain owner-approved and complete before implementing WP01–WP07. As of 2026-08-20 they are complete; this does not itself authorize a later package.
 5. Create or use the package's `codex/wp-XX-*` branch only when the owner has requested branch creation.
 
 ## Standard execution contract

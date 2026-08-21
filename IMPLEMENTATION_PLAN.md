@@ -20,9 +20,46 @@
 
 **Milestone 6 — Vertical-Slice Content and Presentation: tentatively complete; external playtest and final owner acceptance remain**
 
+**WP00 — Product Rebaseline: owner-approved and documentation-complete on 2026-08-20**
+
+**WP01 — Interface and Visual Language: implemented and technically evidenced on 2026-08-21; owner qualitative checkpoint remains separate; WP02 not started**
+
 The Combat Lab foundation and Fire Hydrant intervention are preserved inside a complete run lifecycle with the verified Milestone 4 equipment/synergy layer, Milestone 4.1 usability/readability correction, bounded Milestone 4.2 drag/backpack-clarity implementation, and the separately verified Milestone 5 District Cards implementation. Technical Milestone 1 acceptance remains the unchanged owner record. Milestone 6 passed its cumulative automated gate, configured headless `/GameRun` boot, and GitHub Pages Web export/deployment. Representative manual paths, real-input browser/device checks, Windows export/runtime, visual evidence, cadence acceptance, and final owner qualitative validation remain under the playtest guide.
 
 **Accepted baseline and playtest publication:** Milestone 5 was merged through PR #4 at `main` commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`; its documentation baseline is `3ce274518c5ccf79e53ecd12764b5ae4cd822ebd`. Milestone 6 was committed on `codex/milestone-6-vertical-slice` as `9c1cdaa` plus `ca3fe18`, and the owner authorized its `main`/Pages playtest publication on 2026-07-22. Milestone 5 remains the last fully accepted result until the owner closes the M6 playtest record.
+
+## WP00-approved prospective roadmap
+
+WP00 preserves all Milestone 0–6 implementation and verification records while superseding Milestone 6's former status as the final prospective boundary. The owner approved the complete D1–D7 package on 2026-08-20: the plan/watch/intervene/push north star; three laps of three blocks; Extract/Push after laps one and two with the second push committing to the boss lap; a two-choice, next-block District Plan backed by a four-card one-copy lap deck; all three crew available on fresh production profiles; breadth/cosmetic/challenge progression only; Environment/Focus/Backup as the permanent combat vocabulary; and the acceptance contract in `TEST_PLAN.md`.
+
+| WP | Prospective outcome | Status after WP00 |
+| --- | --- | --- |
+| WP00 | Product, architecture, wireframe, and acceptance rebaseline | **Complete; owner approved** |
+| WP01 | Interface and visual language | **Implemented and technically evidenced; no gameplay authority change** |
+| WP02 | Core three-lap run loop and state clarity | Planned; not started |
+| WP03 | Focused District Plan | Planned; not started |
+| WP04 | Builds, rewards, and shop consequence | Planned; not started |
+| WP05 | Intervention and encounter-variety prototypes | Planned; not started |
+| WP06 | World, combat, and presentation polish | Planned; not started |
+| WP07 | Integration, balance, and release acceptance | Planned; not started |
+
+The current gameplay/content authority remains Milestone 6 with the WP01 presentation migration integrated. A target statement is not evidence that its owning later work package exists. Each later package requires its own explicit task, branch discipline, tests, runtime verification, documentation, and owner gate where specified.
+
+## WP01 implementation — Interface and Visual Language
+
+**Status: Technical/visual acceptance gate passed on 2026-08-21.** The separate five-person unbriefed roadmap checkpoint remains owner-coordinated qualitative evidence and is not fabricated here. Evidence: `docs/product/WP01_ACCEPTANCE_EVIDENCE.md`.
+
+- [x] Added reusable typography, spacing, surface, border, semantic-state, focus, disabled, touch-target, and animation tokens through `NeonUiTokens`.
+- [x] Added one replaceable SVG icon family for resources, phases, common actions/interventions, and equipment/synergy tags.
+- [x] Added reusable choice-card, stat-comparison, countdown/status, intervention-button, toast, custom-tooltip, and phase-banner components.
+- [x] Converted the live HUD to phase/next-event/countdown first, compact Heat/Night Pressure, compact crew/build inspection, a clear central combat field, and context-sensitive action presentation.
+- [x] Added focused current-authority shells for District Plan compatibility, equipment reward, finite shop, current Extract/Push, pause/settings, and summary. Later-package target behavior exists only in the evidence gallery and does not mutate runtime authority.
+- [x] Preserved current card/equipment drag, click/tap/keyboard alternatives, first-pointer ownership, right-click cancel, typed signals, revision/token validation, stable ordering, deterministic streams, and current content.
+- [x] Added safe-area placement for top/edge/action surfaces, 48-pixel input targets, visible keyboard focus, semantic text/shape cues, long-name ellipsis/tooltips, and progressive disclosure.
+- [x] Rendered/inspected eight native states, native safe-area combat, 2560×1440 Web integer scaling, and configured `/GameRun` evidence.
+- [x] Passed **254/254 tests and 3,376 assertions** with no failures/skips. The fresh configured `/GameRun` interaction log contains no warning/error/debugger entry.
+
+WP01 intentionally implements no lap/block authority, fresh-profile crew migration, District Plan scheduling/legality migration, Focus mechanic, gameplay content, final WP06 stage art, project-setting change, profile mutation, publication, or deployment. WP02 remains unstarted.
 
 ## Milestone 0 implementation
 
@@ -384,6 +421,6 @@ Working-tree provenance remains separate from Milestone 6: the owner's pre-exist
 
 ## Scope gate
 
-Milestone 6 is the stopping boundary. Procedural generation, additional districts/cards, larger crew or enemy rosters, multiplayer, controller support, localization, achievements, daily scheduling/leaderboards/rewards, advanced meta-progression, permanent stat trees, mid-run saving/replay, broader equipment/card economies, and every undocumented post-vertical-slice system remain out of scope. Run-seed and named-stream infrastructure remains schema version 1 from Milestone 3; no post-M6 implementation, commit, push, merge, publication, or deployment is authorized by this plan.
+Milestone 6 remains the implemented runtime boundary. WP00 supersedes only its former **prospective** stopping-boundary language with the approved WP01–WP07 roadmap; it does not start or implement any package. Procedural generation, additional districts/cards/crew/enemies/bosses, multiplayer, controller support, localization, achievements, daily scheduling/leaderboards/rewards, advanced meta-progression, permanent stat trees, mid-run saving/replay, broader equipment/card economies, and every undocumented system remain out of scope. Run-seed and named-stream infrastructure remains schema version 1 unless a later owning package proves and records an incompatible semantics change.
 
-The owner authorized merging and publishing the tentative Milestone 6 playtest build on 2026-07-22. There are no planned future milestones. Publication permits only Milestone 6 verification and bounded correctness, clarity, balance, presentation, and compatibility fixes informed by the playtest; it does not authorize post-M6 content or systems.
+The owner-authorized 2026-07-22 Milestone 6 Pages publication remains a historical tentative-playtest record. The 2026-08-20 WP00 approval authorizes the bounded roadmap as planning, not implementation, commits, pushes, publication, deployment, or unreviewed content expansion. WP01 may begin only under a separate explicit request.

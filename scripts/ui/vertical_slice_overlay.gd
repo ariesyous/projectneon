@@ -64,6 +64,7 @@ const SETTINGS_CONTEXT_PAUSE: StringName = &"pause"
 @onready var combo_panel: Panel = $Root/ComboPanel
 @onready var combo_label: Label = $Root/ComboPanel/Text
 
+var summary_highlight: Label = null
 var _selected_crew_id: StringName = &""
 var _crew_entries: Dictionary[StringName, Dictionary] = {}
 var _settings_context: StringName = SETTINGS_CONTEXT_MAIN
@@ -72,6 +73,8 @@ var _reset_confirmation_armed: bool = false
 
 
 func _ready() -> void:
+	($Root as Control).theme = NeonUiTokens.create_theme()
+	_install_wp01_summary_highlight()
 	display_mode.clear()
 	display_mode.add_item("WINDOWED", 0)
 	display_mode.add_item("FULLSCREEN", 1)
@@ -98,6 +101,91 @@ func _ready() -> void:
 	combo_panel.visible = false
 	_reset_confirmation_armed = false
 	reset_save_button.text = "RESET DEVELOPMENT SAVE"
+	_apply_wp01_visual_language()
+	NeonUiTokens.apply_accessibility_defaults($Root as Control)
+
+
+func _install_wp01_summary_highlight() -> void:
+	summary_highlight = Label.new()
+	summary_highlight.name = "Highlight"
+	summary_highlight.theme_type_variation = &"HeadingLabel"
+	summary_highlight.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	summary_highlight.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	summary_highlight.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	$Root/SummaryPanel/Panel.add_child(summary_highlight)
+
+
+func _apply_wp01_visual_language() -> void:
+	_clear_legacy_theme_overrides($Root)
+	($Root/MainMenu/MenuPanel as Panel).theme_type_variation = &"DecisionPanel"
+	($Root/PauseMenu/PausePanel as Panel).theme_type_variation = &"DecisionPanel"
+	($Root/SettingsPanel/Panel as Panel).theme_type_variation = &"DecisionPanel"
+	($Root/SummaryPanel/Panel as Panel).theme_type_variation = &"DecisionPanel"
+	boss_panel.theme_type_variation = &"DangerPanel"
+	tutorial_panel.theme_type_variation = &"RaisedPanel"
+	combo_panel.theme_type_variation = &"SafePanel"
+
+	($Root/MainMenu/MenuPanel/Title as Label).theme_type_variation = &"DisplayLabel"
+	($Root/MainMenu/MenuPanel/Subtitle as Label).theme_type_variation = &"EyebrowLabel"
+	profile_status.theme_type_variation = &"WarningLabel"
+	crew_details.theme_type_variation = &"BodyLabel"
+	($Root/PauseMenu/PausePanel/Title as Label).theme_type_variation = &"DisplayLabel"
+	($Root/PauseMenu/PausePanel/Status as Label).theme_type_variation = &"MutedLabel"
+	($Root/SettingsPanel/Panel/Title as Label).theme_type_variation = &"HeadingLabel"
+	($Root/SettingsPanel/Panel/ColourNote as Label).theme_type_variation = &"WarningLabel"
+	settings_status.theme_type_variation = &"SafeLabel"
+	summary_title.theme_type_variation = &"DisplayLabel"
+	summary_left.theme_type_variation = &"BodyLabel"
+	summary_right.theme_type_variation = &"BodyLabel"
+	boss_title.theme_type_variation = &"HeadingLabel"
+	boss_status.theme_type_variation = &"WarningLabel"
+	tutorial_label.theme_type_variation = &"CaptionLabel"
+	combo_label.theme_type_variation = &"SafeLabel"
+	_set_rect(tutorial_panel, Rect2(330.0, 472.0, 620.0, 104.0))
+	_set_rect(tutorial_label, Rect2(12.0, 8.0, 596.0, 88.0))
+
+	for choice_button: Button in [jax_button, zoey_button, rex_button]:
+		choice_button.theme_type_variation = &"ChoiceCard"
+	start_button.theme_type_variation = &"PrimaryButton"
+	settings_button.theme_type_variation = &"SecondaryButton"
+	reset_save_button.theme_type_variation = &"DangerButton"
+	resume_button.theme_type_variation = &"PrimaryButton"
+	pause_settings_button.theme_type_variation = &"SecondaryButton"
+	pause_restart_button.theme_type_variation = &"DangerButton"
+	pause_main_menu_button.theme_type_variation = &"SecondaryButton"
+	settings_apply_button.theme_type_variation = &"PrimaryButton"
+	settings_back_button.theme_type_variation = &"SecondaryButton"
+	replay_button.theme_type_variation = &"PrimaryButton"
+	restart_button.theme_type_variation = &"SecondaryButton"
+	summary_main_menu_button.theme_type_variation = &"SecondaryButton"
+
+	_set_rect(summary_title, Rect2(30.0, 18.0, 960.0, 48.0))
+	_set_rect(summary_highlight, Rect2(45.0, 72.0, 930.0, 66.0))
+	_set_rect(summary_left, Rect2(45.0, 154.0, 447.0, 352.0))
+	_set_rect(summary_right, Rect2(528.0, 154.0, 447.0, 352.0))
+	_set_rect(replay_button, Rect2(45.0, 520.0, 300.0, 84.0))
+	_set_rect(restart_button, Rect2(360.0, 520.0, 300.0, 84.0))
+	_set_rect(summary_main_menu_button, Rect2(675.0, 520.0, 300.0, 84.0))
+
+
+func _clear_legacy_theme_overrides(node: Node) -> void:
+	if node is Control:
+		var control: Control = node as Control
+		control.remove_theme_font_size_override(&"font_size")
+		for color_name: StringName in [
+			&"font_color", &"font_hover_color", &"font_pressed_color",
+			&"font_focus_color", &"font_disabled_color", &"font_outline_color",
+		]:
+			control.remove_theme_color_override(color_name)
+	if node is Panel:
+		(node as Panel).remove_theme_stylebox_override(&"panel")
+	for child: Node in node.get_children():
+		_clear_legacy_theme_overrides(child)
+
+
+func _set_rect(control: Control, rect: Rect2) -> void:
+	control.position = rect.position
+	control.size = rect.size
 
 
 func show_main_menu(crew_entries: Array[Dictionary], status_text: String = "") -> void:
@@ -126,6 +214,8 @@ func show_main_menu(crew_entries: Array[Dictionary], status_text: String = "") -
 		if bool(_crew_entries.get(preferred_id, {}).get("unlocked", false)):
 			_select_crew(preferred_id, false)
 			break
+	if not start_button.disabled:
+		start_button.grab_focus()
 
 
 func hide_main_menu() -> void:
@@ -146,6 +236,7 @@ func show_pause(settings: Dictionary) -> void:
 	present_settings(settings)
 	pause_menu.visible = true
 	settings_panel.visible = false
+	resume_button.grab_focus()
 
 
 func hide_pause() -> void:
@@ -246,6 +337,12 @@ func present_run_summary(summary: RunSummaryRecord) -> void:
 	tutorial_panel.visible = false
 	combo_panel.visible = false
 	summary_title.text = "%s - RUN COMPLETE" % summary.result_label.to_upper()
+	summary_highlight.text = "BUILD EXPRESSION  /  %s\nHIGHLIGHT  /  %d COMBO  /  %d ELITES  /  %d COINS" % [
+		summary.active_synergies if not summary.active_synergies.is_empty() else summary.equipment_build,
+		summary.highest_combo,
+		summary.elites_defeated,
+		summary.coins_collected,
+	]
 	summary_left.text = "\n".join([
 		"RESULT  %s" % summary.result_label.to_upper(),
 		"DURATION  %s" % _format_time(summary.duration_seconds),
@@ -268,6 +365,7 @@ func present_run_summary(summary: RunSummaryRecord) -> void:
 		"ACTIVE SYNERGIES",
 		summary.active_synergies,
 	])
+	replay_button.grab_focus()
 
 
 func is_main_menu_visible() -> bool:
@@ -319,6 +417,7 @@ func _present_crew_button(button: Button, crew_id: StringName) -> void:
 		if unlocked
 		else str(entry.get("unlock_hint", "LOCKED IN THIS PROFILE"))
 	)
+	button.theme_type_variation = &"ChoiceCard"
 
 
 func _select_crew(crew_id: StringName, emit_ui_feedback: bool = true) -> void:
@@ -336,6 +435,10 @@ func _select_crew(crew_id: StringName, emit_ui_feedback: bool = true) -> void:
 	jax_button.button_pressed = crew_id == &"jax"
 	zoey_button.button_pressed = crew_id == &"zoey"
 	rex_button.button_pressed = crew_id == &"rex"
+	for crew_button: Button in [jax_button, zoey_button, rex_button]:
+		crew_button.theme_type_variation = (
+			&"ChoiceCardSelected" if crew_button.button_pressed else &"ChoiceCard"
+		)
 	if emit_ui_feedback:
 		ui_confirmed.emit()
 
@@ -351,6 +454,7 @@ func _open_settings_from_main() -> void:
 	_settings_context = SETTINGS_CONTEXT_MAIN
 	settings_panel.visible = true
 	pause_menu.visible = false
+	master_slider.grab_focus()
 	ui_confirmed.emit()
 
 
@@ -358,6 +462,7 @@ func _open_settings_from_pause() -> void:
 	_settings_context = SETTINGS_CONTEXT_PAUSE
 	settings_panel.visible = true
 	pause_menu.visible = false
+	master_slider.grab_focus()
 	ui_confirmed.emit()
 
 

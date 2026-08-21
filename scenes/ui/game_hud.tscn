@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/game_hud.gd" id="1_hud"]
 [ext_resource type="Script" path="res://scripts/ui/equipment_drag_slot.gd" id="2_drag_slot"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" path="res://assets/icons/interventions/fire_hydrant.svg" id="4_hydrant_icon"]
 [ext_resource type="Texture2D" path="res://assets/icons/interventions/call_backup.svg" id="5_backup_icon"]
 [ext_resource type="Texture2D" path="res://assets/icons/interventions/subway_reroute.svg" id="6_subway_icon"]
+[ext_resource type="Script" path="res://scripts/ui/components/neon_intervention_button.gd" id="7_intervention"]
 
 [sub_resource type="StyleBoxFlat" id="PanelCyan"]
 bg_color = Color(0.018, 0.033, 0.09, 0.94)
@@ -986,6 +987,7 @@ expand_icon = true
 icon_max_width = 32
 text = "2 - BACKUP\nREADY - 2 LEFT"
 tooltip_text = "Call Backup: spawn two temporary allied NPCs for 12 eligible combat seconds. Requires an active enemy encounter."
+script = ExtResource("7_intervention")
 
 [node name="Card02" type="Button" parent="Root/CardsPanel"]
 layout_mode = 0
@@ -998,7 +1000,7 @@ icon = ExtResource("6_subway_icon")
 expand_icon = true
 icon_max_width = 32
 disabled = true
-text = "3 - SUBWAY\n2 CHG / -15H"
+text = "SUBWAY\n2X / -15H"
 tooltip_text = "Subway Reroute: spend one finite charge during non-boss travel, reduce Heat by 15, and advance to the next authored route node. Night Pressure and progression latches never decrease."
 
 [node name="Card03" type="Button" parent="Root/CardsPanel"]
@@ -1335,6 +1337,7 @@ expand_icon = true
 icon_max_width = 36
 text = "TRY HYDRANT"
 tooltip_text = "Fire Hydrant: light area damage and strong knockback. Requires readiness and an enemy in range."
+script = ExtResource("7_intervention")
 
 [node name="CooldownMeter" type="ProgressBar" parent="Root/InterventionsPanel"]
 layout_mode = 0

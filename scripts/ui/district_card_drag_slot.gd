@@ -1,6 +1,6 @@
 @tool
 class_name DistrictCardDragSlot
-extends Button
+extends NeonChoiceCard
 
 ## Card-specific native drag source and route-slot target. It mirrors the
 ## verified equipment pointer/touch fallback while keeping all mutation out of

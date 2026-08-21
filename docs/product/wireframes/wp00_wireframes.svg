@@ -1,0 +1,284 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1580" height="1400" viewBox="0 0 1580 1400" role="img" aria-labelledby="title desc">
+  <title id="title">Neon Loop WP00 representative wireframes</title>
+  <desc id="desc">Six grayscale and neon-accent wireframes showing a minimal combat HUD, focused District Plan, equipment reward, shop, lap-end push or extract decision, and run summary.</desc>
+  <defs>
+    <style>
+      .page { fill: #080b12; }
+      .frame { fill: #101521; stroke: #576276; stroke-width: 2; }
+      .surface { fill: #171f2d; stroke: #627085; stroke-width: 1.5; }
+      .surface-soft { fill: #121925; stroke: #39465a; stroke-width: 1.2; }
+      .accent { fill: #9dfcff; stroke: #9dfcff; }
+      .accent-soft { fill: #183941; stroke: #61dbe2; stroke-width: 1.5; }
+      .warning-soft { fill: #3b2d1a; stroke: #efbd65; stroke-width: 1.5; }
+      .danger-soft { fill: #3a2028; stroke: #ff8298; stroke-width: 1.5; }
+      .success-soft { fill: #18352d; stroke: #69d8ae; stroke-width: 1.5; }
+      .primary { fill: #9dfcff; }
+      .primary-button { fill: #9dfcff; stroke: #9dfcff; stroke-width: 1.5; }
+      .primary-text { fill: #071017; font: 700 15px 'Segoe UI', sans-serif; }
+      .text { fill: #f4f7fb; font: 14px 'Segoe UI', sans-serif; }
+      .small { fill: #bdc7d6; font: 12px 'Segoe UI', sans-serif; }
+      .tiny { fill: #93a0b3; font: 10px 'Segoe UI', sans-serif; }
+      .label { fill: #9dfcff; font: 700 12px 'Segoe UI', sans-serif; letter-spacing: 1.3px; }
+      .heading { fill: #f4f7fb; font: 700 20px 'Segoe UI', sans-serif; }
+      .panel-title { fill: #f4f7fb; font: 700 18px 'Segoe UI', sans-serif; }
+      .page-title { fill: #f4f7fb; font: 700 28px 'Segoe UI', sans-serif; }
+      .page-subtitle { fill: #aeb9ca; font: 14px 'Segoe UI', sans-serif; }
+      .world { fill: #0d1320; stroke: #2c394d; stroke-width: 1; }
+      .line { stroke: #6e7b90; stroke-width: 1.5; fill: none; }
+      .line-accent { stroke: #9dfcff; stroke-width: 2; fill: none; }
+      .muted-fill { fill: #253044; }
+      .actor { fill: #d5deea; }
+      .enemy { fill: #ff8298; }
+      .button { fill: #222c3d; stroke: #7a889d; stroke-width: 1.3; }
+      .button-text { fill: #f4f7fb; font: 700 13px 'Segoe UI', sans-serif; }
+      .meter { fill: #273247; }
+      .meter-health { fill: #69d8ae; }
+      .meter-heat { fill: #efbd65; }
+      .meter-pressure { fill: #b298ff; }
+      .divider { stroke: #39465a; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <rect class="page" x="0" y="0" width="1580" height="1400"/>
+  <text class="page-title" x="55" y="44">NEON LOOP — WP00 STRUCTURAL WIREFRAMES</text>
+  <text class="page-subtitle" x="55" y="70">Decision-support only · 16:9 screen studies · icon + label · one decision owns attention</text>
+
+  <!-- 1. Combat HUD -->
+  <g transform="translate(50 100)">
+    <text class="panel-title" x="0" y="-14">1 · MINIMAL COMBAT HUD</text>
+    <rect class="frame" x="0" y="0" width="700" height="394" rx="8"/>
+    <rect class="surface-soft" x="18" y="16" width="664" height="42" rx="5"/>
+    <text class="label" x="34" y="34">FIGHT · LAP 1 · BLOCK 2/3</text>
+    <text class="text" x="34" y="50">NEXT: Heavy enforcer arrives in 08s</text>
+    <rect class="meter" x="430" y="25" width="70" height="8" rx="4"/><rect class="meter-health" x="430" y="25" width="56" height="8" rx="4"/>
+    <text class="tiny" x="430" y="48">+ HEALTH 420/520</text>
+    <rect class="meter" x="530" y="25" width="58" height="8" rx="4"/><rect class="meter-heat" x="530" y="25" width="30" height="8" rx="4"/>
+    <text class="tiny" x="530" y="48">! HEAT 42</text>
+    <rect class="meter" x="608" y="25" width="58" height="8" rx="4"/><rect class="meter-pressure" x="608" y="25" width="37" height="8" rx="4"/>
+    <text class="tiny" x="608" y="48">^ PRESSURE 27</text>
+
+    <rect class="world" x="18" y="70" width="664" height="232" rx="4"/>
+    <path class="line" d="M18 242 H682 M18 274 H682"/>
+    <rect class="muted-fill" x="18" y="70" width="664" height="70" opacity="0.35"/>
+    <text class="tiny" x="30" y="91">CITY BLOCK · authored street depth, no release lane dots</text>
+    <circle class="actor" cx="270" cy="247" r="15"/><rect class="actor" x="261" y="260" width="18" height="30" rx="5"/>
+    <text class="small" x="246" y="224">JAX</text>
+    <circle class="enemy" cx="430" cy="239" r="13"/><rect class="enemy" x="423" y="251" width="14" height="27" rx="4"/>
+    <text class="small" x="395" y="215">BAT THUG</text>
+    <path class="line-accent" d="M455 232 L525 202"/>
+    <circle class="accent-soft" cx="540" cy="194" r="24"/>
+    <text class="label" x="520" y="198">08s</text>
+    <text class="tiny" x="508" y="225">ARRIVAL</text>
+
+    <rect class="surface" x="18" y="314" width="205" height="62" rx="5"/>
+    <text class="label" x="30" y="332">BUILD</text>
+    <text class="text" x="30" y="350"># Knockback 2 · ACTIVE</text>
+    <text class="small" x="30" y="368">Inspect for exact gear and effects</text>
+
+    <rect class="accent-soft" x="239" y="314" width="137" height="62" rx="5"/>
+    <circle class="accent" cx="261" cy="337" r="10"/>
+    <text class="button-text" x="278" y="340">HYDRANT</text>
+    <text class="small" x="252" y="362">E · 3 targets</text>
+    <rect class="surface" x="386" y="314" width="137" height="62" rx="5"/>
+    <path class="line-accent" d="M405 337 h20 M415 327 v20"/>
+    <text class="button-text" x="431" y="340">FOCUS</text>
+    <text class="small" x="399" y="362">Q · Ready</text>
+    <rect class="surface" x="533" y="314" width="149" height="62" rx="5"/>
+    <path class="line-accent" d="M550 344 l10 -14 10 14 z"/>
+    <text class="button-text" x="575" y="340">BACKUP</text>
+    <text class="small" x="546" y="362">R · 1 charge</text>
+  </g>
+
+  <!-- 2. District Plan -->
+  <g transform="translate(830 100)">
+    <text class="panel-title" x="0" y="-14">2 · DISTRICT PLAN</text>
+    <rect class="frame" x="0" y="0" width="700" height="394" rx="8"/>
+    <text class="label" x="28" y="30">PLAN · LAP 1 · CHOOSE BLOCK 3/3</text>
+    <text class="heading" x="28" y="57">What should the crew face next?</text>
+    <text class="small" x="28" y="78">Two choices. Exact consequence before confirmation.</text>
+
+    <rect class="accent-soft" x="28" y="96" width="300" height="210" rx="7"/>
+    <circle class="accent" cx="72" cy="136" r="23"/>
+    <path d="M59 138 h26 M64 131 h16 M68 124 h8" stroke="#071017" stroke-width="3" fill="none"/>
+    <text class="label" x="108" y="123">FIGHT · REWARD</text>
+    <text class="heading" x="108" y="148">ARCADE</text>
+    <text class="text" x="48" y="184">+10 HEAT · Standard fight</text>
+    <text class="text" x="48" y="209">Reward improves one tier</text>
+    <text class="small" x="48" y="239">NEXT BLOCK: 3 mixed enemies</text>
+    <text class="small" x="48" y="260">PRIMARY CHANGE: stronger reward</text>
+    <rect class="primary-button" x="48" y="274" width="260" height="22" rx="4"/>
+    <text class="primary-text" x="139" y="290">SELECTED</text>
+
+    <rect class="surface" x="344" y="96" width="300" height="210" rx="7"/>
+    <rect class="accent" x="364" y="114" width="46" height="46" rx="7"/>
+    <path d="M375 128 h24 M375 138 h24 M375 148 h17" stroke="#071017" stroke-width="3"/>
+    <text class="label" x="426" y="123">SHOP · RECOVERY</text>
+    <text class="heading" x="426" y="148">CONVENIENCE STORE</text>
+    <text class="text" x="364" y="184">-10 HEAT · No combat</text>
+    <text class="text" x="364" y="209">One finite-stock purchase</text>
+    <text class="small" x="364" y="239">NEXT BLOCK: shop decision</text>
+    <text class="small" x="364" y="260">PRIMARY CHANGE: safer next fight</text>
+
+    <rect class="surface-soft" x="28" y="322" width="410" height="52" rx="5"/>
+    <text class="label" x="42" y="341">NEXT BLOCK PREVIEW</text>
+    <text class="text" x="42" y="362">ARCADE · +10 Heat · Reward tier +1</text>
+    <rect class="primary-button" x="454" y="322" width="190" height="52" rx="5"/>
+    <text class="primary-text" x="500" y="353">CONFIRM BLOCK</text>
+  </g>
+
+  <!-- 3. Reward -->
+  <g transform="translate(50 540)">
+    <text class="panel-title" x="0" y="-14">3 · REWARD / EQUIPMENT</text>
+    <rect class="frame" x="0" y="0" width="700" height="394" rx="8"/>
+    <text class="label" x="28" y="30">REWARD · CHOOSE ONE</text>
+    <text class="heading" x="28" y="57">Change the next fight</text>
+
+    <rect class="accent-soft" x="28" y="78" width="258" height="220" rx="7"/>
+    <circle class="accent" cx="64" cy="115" r="20"/>
+    <path d="M54 115 h20 M64 105 v20" stroke="#071017" stroke-width="3"/>
+    <text class="heading" x="98" y="120">HACKER DECK</text>
+    <text class="label" x="48" y="151">TECH · INTERVENTION</text>
+    <text class="text" x="48" y="179">Focus cooldown recovers faster</text>
+    <text class="text" x="48" y="202">Shock lasts longer</text>
+    <text class="small" x="48" y="232">Destination: ACTIVE 3</text>
+    <text class="small" x="48" y="253">Outgoing: Reinforced Jacket</text>
+    <rect class="primary-button" x="48" y="266" width="218" height="22" rx="4"/>
+    <text class="primary-text" x="128" y="282">SELECTED</text>
+
+    <rect class="surface" x="302" y="78" width="160" height="220" rx="7"/>
+    <text class="heading" x="320" y="115">VOLTAIC</text>
+    <text class="heading" x="320" y="139">BLADE</text>
+    <text class="label" x="320" y="164">TECH · BLEED</text>
+    <text class="small" x="320" y="194">Opens two build paths</text>
+    <text class="small" x="320" y="219">No synergy immediately</text>
+
+    <rect class="surface" x="478" y="78" width="194" height="220" rx="7"/>
+    <text class="heading" x="496" y="115">KEEP BUILD</text>
+    <text class="label" x="496" y="144">SAFE DECLINE</text>
+    <text class="small" x="496" y="177">Keep all active gear</text>
+    <text class="small" x="496" y="200">Paired reward still resolves</text>
+
+    <rect class="surface-soft" x="28" y="314" width="430" height="60" rx="5"/>
+    <text class="label" x="42" y="333">BEFORE -> AFTER</text>
+    <text class="text" x="42" y="353">Defence 1 -> Tech 2 ACTIVE</text>
+    <text class="small" x="42" y="369">Next fight: faster Focus + longer Shock</text>
+    <rect class="primary-button" x="478" y="314" width="194" height="60" rx="5"/>
+    <text class="primary-text" x="526" y="349">CONFIRM EQUIP</text>
+  </g>
+
+  <!-- 4. Shop -->
+  <g transform="translate(830 540)">
+    <text class="panel-title" x="0" y="-14">4 · SHOP</text>
+    <rect class="frame" x="0" y="0" width="700" height="394" rx="8"/>
+    <text class="label" x="28" y="30">SHOP · CONVENIENCE STORE</text>
+    <text class="heading" x="28" y="57">One purchase before the next block</text>
+    <rect class="surface-soft" x="500" y="18" width="172" height="43" rx="5"/>
+    <text class="label" x="518" y="36">$ COINS</text>
+    <text class="text" x="599" y="37">95</text>
+    <text class="tiny" x="518" y="53">STOCK: 1 purchase</text>
+
+    <rect class="accent-soft" x="28" y="84" width="420" height="90" rx="6"/>
+    <circle class="accent" cx="66" cy="119" r="20"/>
+    <text class="primary-text" x="59" y="124">-H</text>
+    <text class="heading" x="102" y="114">COOL THE DISTRICT</text>
+    <text class="text" x="102" y="138">60 coins · Heat 42 -> 24</text>
+    <text class="small" x="102" y="158">Next fight: lower immediate danger</text>
+    <rect class="primary-button" x="340" y="107" width="88" height="40" rx="5"/>
+    <text class="primary-text" x="365" y="132">BUY</text>
+
+    <rect class="surface" x="28" y="188" width="420" height="90" rx="6"/>
+    <circle class="accent-soft" cx="66" cy="223" r="20"/>
+    <text class="button-text" x="59" y="228">+</text>
+    <text class="heading" x="102" y="218">PATCH UP</text>
+    <text class="text" x="102" y="242">45 coins · Health 420 -> 500</text>
+    <text class="small" x="102" y="262">Survive the lap threat</text>
+    <rect class="button" x="340" y="211" width="88" height="40" rx="5"/>
+    <text class="button-text" x="365" y="236">BUY</text>
+
+    <rect class="surface-soft" x="470" y="84" width="202" height="194" rx="6"/>
+    <text class="label" x="488" y="106">SELECTED RESULT</text>
+    <text class="heading" x="488" y="137">HEAT -18</text>
+    <text class="text" x="488" y="167">Coins 95 -> 35</text>
+    <text class="text" x="488" y="192">Stock 1 -> 0</text>
+    <text class="small" x="488" y="225">Night Pressure: unchanged</text>
+    <text class="small" x="488" y="248">No hidden purchase or wait</text>
+
+    <rect class="surface-soft" x="28" y="308" width="420" height="66" rx="5"/>
+    <text class="label" x="42" y="328">NEXT</text>
+    <text class="text" x="42" y="349">PLAN BLOCK 1/3 · LAP 2</text>
+    <text class="small" x="42" y="367">Shop closes after Buy or Leave</text>
+    <rect class="button" x="470" y="308" width="202" height="66" rx="5"/>
+    <text class="button-text" x="536" y="347">LEAVE SHOP</text>
+  </g>
+
+  <!-- 5. Push / Extract -->
+  <g transform="translate(50 980)">
+    <text class="panel-title" x="0" y="-14">5 · LAP-END PUSH / EXTRACT</text>
+    <rect class="frame" x="0" y="0" width="700" height="394" rx="8"/>
+    <text class="label" x="28" y="30">LAP 1 COMPLETE</text>
+    <text class="heading" x="28" y="57">Bank the run or enter a harder district lap?</text>
+    <text class="small" x="28" y="78">The choice is final after confirmation.</text>
+
+    <rect class="success-soft" x="28" y="98" width="300" height="222" rx="7"/>
+    <circle class="accent" cx="70" cy="136" r="23"/>
+    <path d="M58 136 l8 8 17 -20" stroke="#071017" stroke-width="4" fill="none"/>
+    <text class="heading" x="108" y="141">EXTRACT</text>
+    <text class="label" x="48" y="176">SECURE CURRENT RESULT</text>
+    <text class="text" x="48" y="204">Scrap: 18 secured</text>
+    <text class="text" x="48" y="228">Build recorded in summary</text>
+    <text class="small" x="48" y="257">No Lap 2 reward tier</text>
+    <text class="small" x="48" y="278">Outcome: EXTRACTED</text>
+    <rect class="button" x="48" y="288" width="260" height="22" rx="4"/>
+    <text class="button-text" x="144" y="304">SELECT</text>
+
+    <rect class="danger-soft" x="344" y="98" width="328" height="222" rx="7"/>
+    <path class="line-accent" d="M370 151 l22 -38 22 38 z"/>
+    <text class="heading" x="430" y="141">PUSH DEEPER</text>
+    <text class="label" x="364" y="176">LAP 2 · HIGHER RISK / REWARD</text>
+    <text class="text" x="364" y="204">Modifier: RANGED PRESSURE</text>
+    <text class="text" x="364" y="228">Reward tier: +1</text>
+    <text class="small" x="364" y="257">Next threat: Viper Enforcer</text>
+    <text class="small" x="364" y="278">Next decision after 3 blocks</text>
+    <rect class="primary-button" x="364" y="288" width="288" height="22" rx="4"/>
+    <text class="primary-text" x="458" y="304">SELECTED</text>
+
+    <rect class="surface-soft" x="28" y="336" width="430" height="40" rx="5"/>
+    <text class="text" x="42" y="361">PUSH: Lap 2 · Ranged Pressure · Rewards +1</text>
+    <rect class="primary-button" x="474" y="336" width="198" height="40" rx="5"/>
+    <text class="primary-text" x="518" y="361">CONFIRM PUSH</text>
+  </g>
+
+  <!-- 6. Summary -->
+  <g transform="translate(830 980)">
+    <text class="panel-title" x="0" y="-14">6 · RUN SUMMARY</text>
+    <rect class="frame" x="0" y="0" width="700" height="394" rx="8"/>
+    <text class="label" x="28" y="30">RESULT · EXTRACTED</text>
+    <text class="heading" x="28" y="58">Your Tech build controlled ranged threats.</text>
+    <text class="small" x="28" y="78">Decisive choices are recalled before detailed statistics.</text>
+
+    <rect class="accent-soft" x="28" y="98" width="420" height="112" rx="7"/>
+    <text class="label" x="46" y="120">RUN HIGHLIGHTS</text>
+    <text class="text" x="46" y="145"># Tech 2 activated after Hacker Deck</text>
+    <text class="text" x="46" y="169">! Pushed into Ranged Pressure</text>
+    <text class="text" x="46" y="193">+ Focus interrupted 3 bottle throws</text>
+
+    <rect class="surface" x="466" y="98" width="206" height="112" rx="7"/>
+    <text class="label" x="484" y="120">OUTCOME</text>
+    <text class="heading" x="484" y="150">06:42</text>
+    <text class="text" x="484" y="174">2 laps · 6 blocks</text>
+    <text class="small" x="484" y="195">Seed 6062026 · v1</text>
+
+    <rect class="surface-soft" x="28" y="228" width="644" height="74" rx="6"/>
+    <text class="label" x="46" y="249">BUILD &amp; RESULT</text>
+    <text class="text" x="46" y="274">Zoey · Shock Gloves · Hacker Deck · Voltaic Blade</text>
+    <text class="small" x="46" y="292">Heat max 64 · Pressure 36 · 940 coins · 18 Scrap · Combo 27</text>
+
+    <rect class="surface-soft" x="28" y="318" width="330" height="58" rx="5"/>
+    <text class="label" x="44" y="338">TRY NEXT</text>
+    <text class="text" x="44" y="359">Rex · Knockback · Commit to boss</text>
+    <rect class="primary-button" x="374" y="318" width="188" height="58" rx="5"/>
+    <text class="primary-text" x="425" y="352">PLAY AGAIN</text>
+    <rect class="button" x="576" y="318" width="96" height="58" rx="5"/>
+    <text class="button-text" x="595" y="352">MENU</text>
+  </g>
+</svg>

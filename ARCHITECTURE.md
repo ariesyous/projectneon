@@ -2,13 +2,65 @@
 
 ## Status
 
-This document describes the implemented **Milestones 0–6**. Milestone 6 adds only the specification's three crew members, three basic enemies, one elite, one boss, three interventions, prototype presentation/audio/tutorial/settings, minimal versioned persistence/unlocks, cadence measurement, and final summary. Its automated gate is complete, and the owner marked it tentatively complete for Pages playtesting; manual, browser/device, cadence-acceptance, and final owner-qualitative results remain explicitly pending under `MILESTONE_6_PLAYTEST.md`.
+This document describes the implemented **Milestones 0–6 plus the WP01 presentation migration**. Milestone 6 remains the gameplay/content authority boundary. WP01 adds only reusable visual tokens/components, icon-plus-label presentation, a phase-led minimal HUD, focused decision shells, accessibility/safe-area treatment, and evidence fixtures; it changes no run/combat/card/equipment authority, deterministic stream, content definition, profile, or project setting. The separate Milestone 6 external playtest and final owner-qualitative results remain pending under `MILESTONE_6_PLAYTEST.md`.
 
 Milestone 5 was merged through PR #4 and remains the last fully accepted baseline at `da934897cbdee44cb4d1a44b25e91b458558bfbc`. Milestone 6 was fast-forwarded to `main` through `a147f93`; Pages run 29960250903 successfully exported and deployed the tentative playtest build at [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/).
 
 The working tree also carries owner changes that are not Milestone 6 authorship: the tracked 17-file Godot-AI 3.0.5 update remains enabled, and `project.godot` retains the owner's deletions of `window/stretch/aspect="keep"` and `textures/default_filters/use_nearest_mipmap_filter=false`. Milestone 6 adds only the specification-authorized `SaveService` and `AppState` Autoload entries to that file. The deleted display keys are not silently restored: the project still explicitly configures a 1280 × 720 viewport/window override, viewport stretch mode, integer scale mode, nearest canvas texture filtering, and pixel snapping, while the two omitted keys use Godot's defaults.
 
-The rationale for the revised downstream boundaries is recorded in `docs/decisions/0001-run-engagement-escalation-and-randomness.md`.
+The rationale for the revised downstream boundaries is recorded in `docs/decisions/0001-run-engagement-escalation-and-randomness.md`. The owner-approved WP00 product/architecture rebaseline is recorded in `docs/decisions/0002-wp00-product-rebaseline.md` and `GameSpecifications.md` section 0.
+
+## WP00-approved target and migration architecture
+
+WP00 is documentation-only. WP01 has now landed the presentation-only portion of the migration map; the runtime composition and gameplay authority described below remain Milestone 6 until their owning packages change them. This section distinguishes implemented WP01 presentation from still-prospective WP02–WP07 authority/content work.
+
+### Target lifecycle
+
+```text
+SELECT CREW
+  -> LAP 1: [PLAN -> BLOCK -> REWARD] x3 -> EXTRACT / PUSH
+  -> LAP 2: [PLAN -> BLOCK -> REWARD] x3 -> EXTRACT / FINAL-LAP COMMIT
+  -> LAP 3: [PLAN -> BLOCK -> REWARD] x3 -> BOSS
+  -> RESULT
+```
+
+`RunDirector` remains sole run-state, eligible-time, Heat, irreversible Night Pressure, precedence, outcome, and summary authority. WP02 may add explicit block/lap state and tokens to that authority or a narrowly composed run-owned helper; UI labels are never lifecycle authority. Safe-boundary boss/extraction precedence remains required while pressure thresholds are mapped behind the approved lap decisions.
+
+### Authority and migration map
+
+| Approved product change | Current owner/contract | Target owner and migration boundary | Compatibility/deprecation risk |
+| --- | --- | --- | --- |
+| Three laps × three blocks; Extract/Push after laps 1–2; final-lap boss commitment | `RunDirector` pressure thresholds, `RunFlowController`, fixed-route `PatrolController` | WP02 adds authoritative lap/block identities, at-most-once decisions, modifiers, summaries, and cleanup while retaining Heat/Night Pressure and safe-boundary precedence | Do not infer lap progress from UI or route dots; same-update boss/extraction ordering must not regress |
+| All three crew on fresh production profiles | `AppState`, `ProfileSaveService`, `RunContentAccessSnapshot`; M6 gates Zoey/Rex | WP02 changes defaults/access policy and safely retires crew gates; legacy facts stay loadable and are not overwritten on read | Same-seed reproduction includes the access snapshot; migration must distinguish fresh defaults from existing profile facts |
+| Focused next-block District Plan | `CardSystem` run deck/hand/rewards/placement; `PatrolController` five future slots; `GameHUD` drag/legality UI | WP03 keeps stable IDs, `cards` stream, revision/token/exact-once authority; introduces lap-scoped offers and resolved trail; removes/development-gates release hand/slot UI after migration | Offer/refill scheduling may change draw timing; lock vectors and stop if schema-1 derivation/draw primitives become incompatible |
+| Minimal combat HUD and focused decisions | `GameHUD` plus `VerticalSliceOverlay` broad simultaneous presentation | WP01 owns reusable icon-plus-label components, minimal HUD, and focused shells; gameplay owners continue to publish snapshots and receive typed intent | Do not hide required state without an inspect path; do not move calculations or validation into UI |
+| Environment/Focus/Backup combat vocabulary | `FireHydrantController`, `CallBackupController`, `RunCoolingController`; M6 bar uses Hydrant/Backup/Subway | WP05 prototypes/owner-selects bounded mechanics; Environment dispatches a context-valid object, Focus gets a typed combat authority, Backup reuses finite authority; Subway is presented through WP02/WP03 strategic travel | Rally is not promised; avoid a global event bus, direct-control creep, or multiple environment buttons |
+| Breadth/cosmetic/challenge progression only | `SaveService`/`AppState` version-1 settings/unlocks; Scrap summary field | App services remain application-only. WP02 retires crew gates; later approved content may extend breadth without active-run authority or stats | WP00 changes no save version or file. Scrap remains summary-only; no hidden permanent power |
+| New acceptance/cadence targets | `RunCadenceTracker` records M6 10–20/30–60/120–180 bands | WP02/WP07 measure fight 20–45, block 45–90, lap 120–180, run 8–12; coin ambient remains 10–20 | Averages alone do not pass; historical M6 tracker/tests remain evidence until deliberately migrated |
+
+### Target presentation boundaries
+
+- Combat shows crew/health, labelled Heat and Night Pressure, phase/block/lap, next event/countdown or visible approach, immediately spendable resource, Environment/Focus/Backup state, and a compact inspectable build summary.
+- PLAN, reward/equipment, shop, and Extract/Push temporarily own attention and present exact consequences before one dominant confirmation.
+- Persistent hand, future-slot legality, route-history dots, backpack management, full rules prose, and shop stock do not remain on the combat layer when non-actionable.
+- Resolved District Plan blocks are simple history, not editable targets.
+- Result presentation recalls decisive choices/build expression before progressively disclosed complete statistics.
+
+### Implemented WP01 presentation boundary
+
+`NeonUiTokens` creates the shared `Theme` contract for typography (16/18/20/26/34), 4–32-pixel spacing, surfaces/borders, semantic state colors, visible focus, disabled controls, 48-pixel touch minimums, and bounded motion. `NeonChoiceCard`, `NeonStatComparison`, `NeonCountdownStatus`, `NeonInterventionButton`, `NeonToast`, `NeonTooltip`, and `NeonPhaseBanner` are presentation-only composed controls.
+
+`GameHUD` continues to subscribe to authoritative snapshots and emit the same typed intents. It now presents phase/next-event/countdown first, keeps the combat center clear, exposes compact inspectable crew/build state, and opens focused current-authority shells for cards, equipment, shop, and Extract/Push. `VerticalSliceOverlay` applies the same hierarchy to crew selection, pause/settings, tutorials, and summary. The Focus control is visibly disabled because no WP05 Focus authority exists; Subway remains the current M6 strategic travel action; the M5 hand/five-slot model remains authoritative until WP03. The visual gallery is an evidence fixture, never part of `/GameRun`.
+
+No WP01 control calculates Heat, Night Pressure, health, reward results, cooldowns, routes, legality, or summary values. Safe-area adjustments remain presentation geometry only. Random schema version 1 and all seven stream states are untouched.
+
+### Target progression and content access
+
+Fresh production access is all three crew, eight existing equipment entries, and the three existing cards other than Gang Hideout. Hacker Deck and Gang Hideout remain breadth unlocks; the Zoey/Rex rules are historical M6 facts retired prospectively. Development/test access remains 3/9/4. No target change adds a content entry, permanent stat, save version, active-run save, or meta economy.
+
+### Implementation sequencing
+
+WP01 may change presentation only. WP02 owns lifecycle/crew-profile migration. WP03 owns card/route interaction migration. WP04 owns consequence/balance changes only after its separate owner gate. WP05 owns intervention prototypes and mechanic selection. WP06 owns art/presentation polish without authority changes for convenience. WP07 owns integration and final owner acceptance. WP00 begins none of them.
 
 ## Architectural principles
 
@@ -416,7 +468,7 @@ The existing `_mcp_game_helper` entry and the tracked 17-file Godot-AI 3.0.5 wor
 
 ## Deferred architecture
 
-The vertical slice stops at Milestone 6. The following remain intentionally absent:
+Milestone 6 remains the implemented runtime boundary. WP00 supersedes its former status as the final prospective boundary only for the approved WP01–WP07 migrations above. The following remain intentionally absent and unauthorized unless a later explicit owner decision changes the specification:
 
 - Procedural route generation, additional districts/cards, a card currency/shop/economy, or broader production shop content
 - Additional crew, enemy, elite, boss, intervention, equipment, synergy, or status content beyond the specified vertical-slice catalogues
@@ -424,7 +476,7 @@ The vertical slice stops at Milestone 6. The following remain intentionally abse
 - Advanced meta-progression, permanent statistical bonuses/trees, or a larger unlock graph
 - Equipment selling, salvage, buyback, auto-sell/auto-salvage, rarity, uniques, affixes, sets, category-locked slots, or a broader equipment economy
 
-No post-Milestone-6 expansion is authorized. These boundaries may be changed only by a later explicit owner request and specification/architecture update.
+No unbounded post-Milestone-6 expansion is authorized. The approved rebaseline is an experience restructuring using the bounded work-package roadmap; permitted future breadth categories are not pre-authorized content. These boundaries may be changed only by a later explicit owner request and specification/architecture update.
 
 ## Foundation verification
 

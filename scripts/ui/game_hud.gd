@@ -75,18 +75,40 @@ const RESPONSIBILITY: String = "Run presentation and player input forwarding"
 const ONBOARDING_EXPANDED_SECONDS: float = 12.0
 const DESIGN_SIZE: Vector2 = Vector2(1280.0, 720.0)
 const MAX_SAFE_INSET: Vector2 = Vector2(32.0, 24.0)
-const HYDRANT_PANEL_BASE_POSITION: Vector2 = Vector2(1020.0, 310.0)
-const HELP_PANEL_BASE_POSITION: Vector2 = Vector2(260.0, 580.0)
-const HELP_BUTTON_BASE_POSITION: Vector2 = Vector2(12.0, 580.0)
-const FULLSCREEN_BUTTON_BASE_POSITION: Vector2 = Vector2(128.0, 580.0)
-const LAB_PURPOSE_BASE_POSITION: Vector2 = Vector2(12.0, 652.0)
+const HYDRANT_PANEL_BASE_POSITION: Vector2 = Vector2(990.0, 270.0)
+const HELP_PANEL_BASE_POSITION: Vector2 = Vector2(280.0, 500.0)
+const HELP_BUTTON_BASE_POSITION: Vector2 = Vector2(20.0, 652.0)
+const FULLSCREEN_BUTTON_BASE_POSITION: Vector2 = Vector2(140.0, 652.0)
+const LAB_PURPOSE_BASE_POSITION: Vector2 = Vector2(20.0, 620.0)
 const HYDRANT_READY_COLOR: Color = Color("72f0d0")
 const HYDRANT_UNAVAILABLE_COLOR: Color = Color("ffbf69")
 const HYDRANT_COOLDOWN_COLOR: Color = Color("a987ff")
 const DISTRICT_CARD_HAND_CAPACITY: int = 3
 const DISTRICT_ROUTE_SLOT_COUNT: int = 5
 
+const ICON_HEALTH: Texture2D = preload("res://assets/ui/icons/wp01/health.svg")
+const ICON_HEAT: Texture2D = preload("res://assets/ui/icons/wp01/heat.svg")
+const ICON_PRESSURE: Texture2D = preload("res://assets/ui/icons/wp01/pressure.svg")
+const ICON_COINS: Texture2D = preload("res://assets/ui/icons/wp01/coins.svg")
+const ICON_PHASE_PLAN: Texture2D = preload("res://assets/ui/icons/wp01/phase_plan.svg")
+const ICON_PHASE_FIGHT: Texture2D = preload("res://assets/ui/icons/wp01/phase_fight.svg")
+const ICON_PHASE_REWARD: Texture2D = preload("res://assets/ui/icons/wp01/phase_reward.svg")
+const ICON_PHASE_SHOP: Texture2D = preload("res://assets/ui/icons/wp01/phase_shop.svg")
+const ICON_PHASE_EXTRACT: Texture2D = preload("res://assets/ui/icons/wp01/phase_extract.svg")
+const ICON_PHASE_RESULT: Texture2D = preload("res://assets/ui/icons/wp01/phase_result.svg")
+const ICON_ENVIRONMENT: Texture2D = preload("res://assets/ui/icons/wp01/environment.svg")
+const ICON_FOCUS: Texture2D = preload("res://assets/ui/icons/wp01/focus.svg")
+const ICON_BACKUP: Texture2D = preload("res://assets/ui/icons/wp01/backup.svg")
+const ICON_CONFIRM: Texture2D = preload("res://assets/ui/icons/wp01/confirm.svg")
+
 @onready var timer_label: Label = $Root/RunStatusPanel/TimerLabel
+@onready var root_control: Control = $Root
+@onready var minimap_panel: Panel = $Root/MinimapPanel
+@onready var run_status_panel: Panel = $Root/RunStatusPanel
+@onready var resources_panel: Panel = $Root/ResourcesPanel
+@onready var crew_panel: Panel = $Root/CrewPanel
+@onready var build_panel: Panel = $Root/BuildPanel
+@onready var cards_panel: Panel = $Root/CardsPanel
 @onready var heat_label: Label = $Root/RunStatusPanel/HeatLabel
 @onready var heat_meter: ProgressBar = $Root/RunStatusPanel/HeatMeter
 @onready var night_pressure_label: Label = $Root/RunStatusPanel/NightPressureLabel
@@ -152,6 +174,7 @@ const DISTRICT_ROUTE_SLOT_COUNT: int = 5
 @onready var district_card_skip_button: Button = $Root/DistrictCardPanel/SkipKeepHand
 @onready var district_card_confirm_button: Button = $Root/DistrictCardPanel/Confirm
 @onready var district_card_cancel_button: Button = $Root/DistrictCardPanel/Cancel
+@onready var extraction_panel: Panel = $Root/ExtractionPanel
 @onready var extraction_button: Button = $Root/ExtractionPanel/ExtractionButton
 @onready var summary_panel: Panel = $Root/RunSummaryPanel
 @onready var summary_title: Label = $Root/RunSummaryPanel/Title
@@ -212,6 +235,25 @@ const DISTRICT_ROUTE_SLOT_COUNT: int = 5
 @onready var reward_confirm_button: Button = $Root/EquipmentRewardPanel/Confirm
 @onready var reward_cancel_button: Button = $Root/EquipmentRewardPanel/Cancel
 @onready var reward_keep_current_button: Button = $Root/EquipmentRewardPanel/KeepCurrent
+
+var phase_banner: NeonPhaseBanner = null
+var action_toast: NeonToast = null
+var reward_comparison: NeonStatComparison = null
+var shop_decision_panel: Panel = null
+var shop_cooling_choice: NeonChoiceCard = null
+var shop_leave_choice: NeonChoiceCard = null
+var shop_comparison: NeonStatComparison = null
+var shop_plan_button: Button = null
+var focus_placeholder_button: NeonInterventionButton = null
+var extraction_continue_button: NeonChoiceCard = null
+var extraction_plan_button: Button = null
+var extraction_title: Label = null
+var extraction_instruction: Label = null
+var extraction_preview: NeonStatComparison = null
+var _health_icon: TextureRect = null
+var _heat_icon: TextureRect = null
+var _pressure_icon: TextureRect = null
+var _coins_icon: TextureRect = null
 
 var _onboarding_remaining: float = ONBOARDING_EXPANDED_SECONDS
 var _hydrant_state: int = HydrantPresentationState.UNAVAILABLE
@@ -285,6 +327,8 @@ var _route_journey_text: String = (
 
 
 func _ready() -> void:
+	root_control.theme = NeonUiTokens.create_theme()
+	_install_wp01_components()
 	hydrant_button.pressed.connect(_on_hydrant_button_pressed)
 	hydrant_button.mouse_entered.connect(_on_hydrant_preview_entered)
 	hydrant_button.mouse_exited.connect(_on_hydrant_preview_exited)
@@ -297,6 +341,11 @@ func _ready() -> void:
 	subway_reroute_button.pressed.connect(_on_subway_reroute_pressed)
 	shop_cooling_button.pressed.connect(_on_shop_cooling_pressed)
 	extraction_button.pressed.connect(_on_extraction_pressed)
+	shop_cooling_choice.pressed.connect(_on_shop_cooling_pressed)
+	shop_leave_choice.pressed.connect(_on_primary_action_pressed)
+	extraction_continue_button.pressed.connect(_on_primary_action_pressed)
+	shop_plan_button.pressed.connect(_on_district_card_open_pressed)
+	extraction_plan_button.pressed.connect(_on_district_card_open_pressed)
 	summary_same_seed_button.pressed.connect(_on_restart_same_seed_pressed)
 	summary_new_seed_button.pressed.connect(_on_restart_new_seed_pressed)
 	boss_same_seed_button.pressed.connect(_on_restart_same_seed_pressed)
@@ -434,6 +483,8 @@ func _ready() -> void:
 	district_card_confirm_button.pressed.connect(_on_district_card_confirm_pressed)
 	district_card_cancel_button.pressed.connect(_on_district_card_cancel_pressed)
 	district_card_skip_button.pressed.connect(_on_district_card_skip_pressed)
+	_apply_wp01_visual_language()
+	NeonUiTokens.apply_accessibility_defaults(root_control)
 	help_panel.visible = true
 	summary_panel.visible = false
 	boss_trigger_panel.visible = false
@@ -442,10 +493,374 @@ func _ready() -> void:
 	build_details_panel.visible = false
 	equipment_reward_panel.visible = false
 	district_card_panel.visible = false
+	shop_decision_panel.visible = false
+	$Root/ExtractionPanel.visible = false
 	_refresh_hydrant_presentation()
 	_refresh_fullscreen_presentation()
 	_refresh_district_card_compact_presentation()
 	_refresh_safe_area_layout()
+
+
+func _install_wp01_components() -> void:
+	phase_banner = NeonPhaseBanner.new()
+	phase_banner.name = "PhaseBanner"
+	phase_banner.z_index = 8
+	root_control.add_child(phase_banner)
+
+	action_toast = NeonToast.new()
+	action_toast.name = "ActionToast"
+	action_toast.z_index = 70
+	root_control.add_child(action_toast)
+
+	_health_icon = _new_icon("HealthIcon", ICON_HEALTH)
+	crew_panel.add_child(_health_icon)
+	_heat_icon = _new_icon("HeatIcon", ICON_HEAT)
+	run_status_panel.add_child(_heat_icon)
+	_pressure_icon = _new_icon("PressureIcon", ICON_PRESSURE)
+	run_status_panel.add_child(_pressure_icon)
+	_coins_icon = _new_icon("CoinsIcon", ICON_COINS)
+	resources_panel.add_child(_coins_icon)
+
+	reward_comparison = NeonStatComparison.new()
+	reward_comparison.name = "StatComparison"
+	equipment_reward_panel.add_child(reward_comparison)
+
+	focus_placeholder_button = NeonInterventionButton.new()
+	focus_placeholder_button.name = "FocusAction"
+	focus_placeholder_button.icon = ICON_FOCUS
+	focus_placeholder_button.expand_icon = true
+	focus_placeholder_button.add_theme_constant_override(&"icon_max_width", 32)
+	focus_placeholder_button.tooltip_text = (
+		"Focus is the precision-action slot. No Focus action is equipped in this build, "
+		+ "so the slot is visibly disabled and cannot change the run."
+	)
+	focus_placeholder_button.present(
+		"FOCUS",
+		"PRECISION",
+		"NO ACTION EQUIPPED",
+		NeonInterventionButton.VisualState.UNAVAILABLE,
+		true
+	)
+	cards_panel.add_child(focus_placeholder_button)
+
+	shop_decision_panel = Panel.new()
+	shop_decision_panel.name = "ShopDecisionPanel"
+	shop_decision_panel.z_index = 34
+	shop_decision_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	shop_decision_panel.theme_type_variation = &"DecisionPanel"
+	root_control.add_child(shop_decision_panel)
+	shop_decision_panel.add_child(_new_label(
+		"Title",
+		"SHOP  /  CONVENIENCE STORE",
+		&"EyebrowLabel",
+		Rect2(32.0, 24.0, 680.0, 28.0)
+	))
+	shop_decision_panel.add_child(_new_label(
+		"Instruction",
+		"One purchase from existing finite stock, or leave for the next route block.",
+		&"HeadingLabel",
+		Rect2(32.0, 58.0, 968.0, 68.0),
+		true
+	))
+	shop_plan_button = Button.new()
+	shop_plan_button.name = "OpenDistrictPlan"
+	shop_plan_button.text = "DISTRICT PLAN"
+	shop_plan_button.theme_type_variation = &"SecondaryButton"
+	shop_decision_panel.add_child(shop_plan_button)
+	shop_cooling_choice = NeonChoiceCard.new()
+	shop_cooling_choice.name = "CoolDistrict"
+	shop_cooling_choice.text = "COOL THE DISTRICT\nFINITE STOCK  /  EXACT COST"
+	shop_cooling_choice.icon = ICON_HEAT
+	shop_cooling_choice.expand_icon = true
+	shop_cooling_choice.add_theme_constant_override(&"icon_max_width", 42)
+	shop_decision_panel.add_child(shop_cooling_choice)
+	shop_leave_choice = NeonChoiceCard.new()
+	shop_leave_choice.name = "LeaveShop"
+	shop_leave_choice.text = "LEAVE SHOP\nKEEP COINS  /  CONTINUE ROUTE"
+	shop_leave_choice.icon = ICON_PHASE_SHOP
+	shop_leave_choice.expand_icon = true
+	shop_leave_choice.add_theme_constant_override(&"icon_max_width", 42)
+	shop_decision_panel.add_child(shop_leave_choice)
+	shop_comparison = NeonStatComparison.new()
+	shop_comparison.name = "StatComparison"
+	shop_decision_panel.add_child(shop_comparison)
+	shop_decision_panel.add_child(_new_label(
+		"AuthorityNote",
+		"Night Pressure is irreversible. Buying changes Heat only after authority accepts the purchase.",
+		&"MutedLabel",
+		Rect2(32.0, 490.0, 968.0, 44.0),
+		true
+	))
+
+	extraction_title = _new_label(
+		"Title",
+		"EXTRACTION AVAILABLE",
+		&"EyebrowLabel",
+		Rect2(32.0, 24.0, 680.0, 28.0)
+	)
+	extraction_panel.add_child(extraction_title)
+	extraction_instruction = _new_label(
+		"Instruction",
+		"Secure the current result or continue the existing route at greater Heat.",
+		&"HeadingLabel",
+		Rect2(32.0, 58.0, 968.0, 68.0),
+		true
+	)
+	extraction_panel.add_child(extraction_instruction)
+	extraction_plan_button = Button.new()
+	extraction_plan_button.name = "OpenDistrictPlan"
+	extraction_plan_button.text = "DISTRICT PLAN"
+	extraction_plan_button.theme_type_variation = &"SecondaryButton"
+	extraction_panel.add_child(extraction_plan_button)
+	extraction_continue_button = NeonChoiceCard.new()
+	extraction_continue_button.name = "ContinueRun"
+	extraction_continue_button.text = "PUSH ON  /  CONTINUE RUN\n+6 HEAT  /  NIGHT PRESSURE CONTINUES"
+	extraction_continue_button.icon = ICON_PHASE_FIGHT
+	extraction_continue_button.expand_icon = true
+	extraction_continue_button.add_theme_constant_override(&"icon_max_width", 48)
+	extraction_panel.add_child(extraction_continue_button)
+	extraction_preview = NeonStatComparison.new()
+	extraction_preview.name = "ConsequencePreview"
+	extraction_panel.add_child(extraction_preview)
+
+
+func _apply_wp01_visual_language() -> void:
+	_clear_legacy_theme_overrides(root_control)
+	minimap_panel.visible = false
+	_set_rect(phase_banner, Rect2(20.0, 16.0, 744.0, 92.0))
+	_set_rect(run_status_panel, Rect2(776.0, 16.0, 292.0, 92.0))
+	_set_rect(resources_panel, Rect2(1080.0, 16.0, 180.0, 92.0))
+	_set_rect(crew_panel, Rect2(20.0, 122.0, 270.0, 144.0))
+	_set_rect(build_panel, Rect2(990.0, 122.0, 270.0, 144.0))
+	_set_rect(cards_panel, Rect2(280.0, 600.0, 980.0, 104.0))
+	_set_rect(interventions_panel, Rect2(HYDRANT_PANEL_BASE_POSITION, Vector2(270.0, 226.0)))
+	_set_rect(help_panel, Rect2(HELP_PANEL_BASE_POSITION, Vector2(748.0, 188.0)))
+	_set_rect(help_button, Rect2(HELP_BUTTON_BASE_POSITION, Vector2(110.0, 52.0)))
+	_set_rect(fullscreen_button, Rect2(FULLSCREEN_BUTTON_BASE_POSITION, Vector2(130.0, 52.0)))
+	lab_purpose_label.visible = false
+
+	run_status_panel.theme_type_variation = &"SurfacePanel"
+	resources_panel.theme_type_variation = &"SurfacePanel"
+	crew_panel.theme_type_variation = &"RaisedPanel"
+	build_panel.theme_type_variation = &"RaisedPanel"
+	cards_panel.theme_type_variation = &"SurfacePanel"
+	interventions_panel.theme_type_variation = &"RaisedPanel"
+	help_panel.theme_type_variation = &"RaisedPanel"
+	build_details_panel.theme_type_variation = &"DecisionPanel"
+	equipment_reward_panel.theme_type_variation = &"DecisionPanel"
+	district_card_panel.theme_type_variation = &"DecisionPanel"
+	extraction_panel.theme_type_variation = &"DecisionPanel"
+	extraction_panel.z_index = 34
+	extraction_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	summary_panel.theme_type_variation = &"DecisionPanel"
+	boss_trigger_panel.theme_type_variation = &"DangerPanel"
+
+	_layout_compact_run_status()
+	_layout_compact_crew()
+	_layout_compact_build()
+	_layout_action_strip()
+	_layout_environment_action()
+	_layout_focused_modals()
+
+	hydrant_button.icon = ICON_ENVIRONMENT
+	backup_button.icon = ICON_BACKUP
+	extraction_button.icon = ICON_CONFIRM
+	hydrant_button.theme_type_variation = &"InterventionUnavailable"
+	backup_button.theme_type_variation = &"InterventionUnavailable"
+	primary_action_button.theme_type_variation = &"SecondaryButton"
+	subway_reroute_button.theme_type_variation = &"SecondaryButton"
+	shop_cooling_button.theme_type_variation = &"SecondaryButton"
+	district_card_open_button.theme_type_variation = &"SecondaryButton"
+	reward_confirm_button.theme_type_variation = &"PrimaryButton"
+	reward_keep_current_button.theme_type_variation = &"SecondaryButton"
+	district_card_confirm_button.theme_type_variation = &"PrimaryButton"
+	extraction_button.theme_type_variation = &"PrimaryButton"
+	extraction_continue_button.theme_type_variation = &"DangerButton"
+	help_button.theme_type_variation = &"SecondaryButton"
+	fullscreen_button.theme_type_variation = &"SecondaryButton"
+
+	($Root/CrewPanel/Title as Label).theme_type_variation = &"EyebrowLabel"
+	($Root/CrewPanel/CrewName as Label).theme_type_variation = &"HeadingLabel"
+	crew_state_label.theme_type_variation = &"SafeLabel"
+	health_label.theme_type_variation = &"HealthLabel"
+	heat_label.theme_type_variation = &"HeatCaption"
+	night_pressure_label.theme_type_variation = &"PressureCaption"
+	resource_values.theme_type_variation = &"BodyLabel"
+	run_actions_title.theme_type_variation = &"EyebrowLabel"
+	build_title_button.theme_type_variation = &"SecondaryButton"
+	($Root/InterventionsPanel/Title as Label).text = "ENVIRONMENT  /  HYDRANT"
+	($Root/InterventionsPanel/Title as Label).theme_type_variation = &"EyebrowLabel"
+	($Root/EquipmentRewardPanel/Title as Label).theme_type_variation = &"HeadingLabel"
+	reward_instruction_label.theme_type_variation = &"BodyLabel"
+	reward_confirmation_label.theme_type_variation = &"WarningLabel"
+	district_card_title.theme_type_variation = &"HeadingLabel"
+	district_card_counts.theme_type_variation = &"EyebrowLabel"
+	district_card_instruction.theme_type_variation = &"BodyLabel"
+	district_card_route_preview.theme_type_variation = &"MutedLabel"
+	district_card_feedback.theme_type_variation = &"WarningLabel"
+	for details: Label in _district_card_choice_details:
+		details.theme_type_variation = &"CaptionLabel"
+	for details: Label in _reward_choice_details:
+		details.theme_type_variation = &"CaptionLabel"
+	# Re-apply compact bounds after semantic font variations have updated their
+	# minimum sizes; this keeps first-frame editor/test instances contained.
+	_layout_compact_run_status()
+	($Root/HelpPanel/Title as Label).theme_type_variation = &"EyebrowLabel"
+	auto_help_label.theme_type_variation = &"BodyLabel"
+	action_toast.position = Vector2(420.0, 118.0)
+	action_toast.size = Vector2(440.0, 56.0)
+
+
+func _layout_compact_run_status() -> void:
+	var legacy_night_label: Label = $Root/RunStatusPanel/NightLabel as Label
+	legacy_night_label.visible = false
+	legacy_night_label.text = ""
+	legacy_night_label.clip_text = true
+	_set_rect(legacy_night_label, Rect2(0.0, 0.0, 292.0, 92.0))
+	threshold_label.visible = false
+	threshold_label.clip_text = true
+	threshold_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_set_rect(threshold_label, Rect2(0.0, 0.0, 292.0, 92.0))
+	_set_rect(_heat_icon, Rect2(12.0, 8.0, 24.0, 24.0))
+	heat_label.text = "HEAT 000  /  T0"
+	_set_rect(heat_label, Rect2(42.0, 7.0, 160.0, 24.0))
+	_set_rect(timer_label, Rect2(204.0, 7.0, 76.0, 24.0))
+	timer_label.theme_type_variation = &"EyebrowLabel"
+	timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_set_rect(heat_meter, Rect2(42.0, 34.0, 238.0, 10.0))
+	_set_rect(_pressure_icon, Rect2(12.0, 52.0, 24.0, 24.0))
+	night_pressure_label.text = "NIGHT 0.0  /  IRREVERSIBLE"
+	_set_rect(night_pressure_label, Rect2(42.0, 49.0, 238.0, 24.0))
+	_set_rect(night_pressure_meter, Rect2(42.0, 76.0, 238.0, 10.0))
+	var resources_title: Label = $Root/ResourcesPanel/Title as Label
+	resources_title.visible = false
+	resources_title.text = ""
+	resources_title.clip_text = true
+	_set_rect(resources_title, Rect2(0.0, 0.0, 180.0, 92.0))
+	_set_rect(_coins_icon, Rect2(12.0, 12.0, 28.0, 28.0))
+	resource_values.text = "COINS 000\nSCRAP 00\nMAN —"
+	_set_rect(resource_values, Rect2(48.0, 8.0, 120.0, 76.0))
+	resource_values.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+
+
+func _layout_compact_crew() -> void:
+	_set_rect($Root/CrewPanel/Title as Control, Rect2(12.0, 8.0, 246.0, 24.0))
+	_set_rect($Root/CrewPanel/Portrait as Control, Rect2(12.0, 38.0, 52.0, 52.0))
+	_set_rect($Root/CrewPanel/Portrait/PortraitGlyph as Control, Rect2(0.0, 0.0, 52.0, 52.0))
+	var crew_name: Label = $Root/CrewPanel/CrewName as Label
+	crew_name.clip_text = true
+	crew_name.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	_set_rect(crew_name, Rect2(74.0, 35.0, 116.0, 30.0))
+	_set_rect(crew_state_label, Rect2(74.0, 66.0, 180.0, 24.0))
+	_set_rect(_health_icon, Rect2(12.0, 101.0, 22.0, 22.0))
+	_set_rect(health_meter, Rect2(40.0, 100.0, 218.0, 12.0))
+	_set_rect(health_label, Rect2(40.0, 113.0, 218.0, 20.0))
+	crew_status_label.visible = false
+	crew_status_label.clip_text = true
+	_set_rect(crew_status_label, Rect2(0.0, 0.0, 270.0, 136.0))
+	var autonomy_hint: Label = $Root/CrewPanel/AutonomyHint as Label
+	autonomy_hint.visible = false
+	autonomy_hint.clip_text = true
+	_set_rect(autonomy_hint, Rect2(0.0, 0.0, 270.0, 136.0))
+
+
+func _layout_compact_build() -> void:
+	_set_rect(build_title_button, Rect2(10.0, 8.0, 250.0, 38.0))
+	for slot_index: int in range(_build_slot_buttons.size()):
+		_build_slot_buttons[slot_index].text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		_build_slot_buttons[slot_index].text = "%d  —" % (slot_index + 1)
+		_set_rect(_build_slot_buttons[slot_index], Rect2(10.0 + 84.0 * slot_index, 52.0, 78.0, 72.0))
+
+
+func _layout_action_strip() -> void:
+	_set_rect(run_actions_title, Rect2(14.0, 5.0, 300.0, 24.0))
+	_set_rect(primary_action_button, Rect2(14.0, 30.0, 172.0, 68.0))
+	_set_rect(backup_button, Rect2(196.0, 30.0, 220.0, 68.0))
+	_set_rect(subway_reroute_button, Rect2(426.0, 30.0, 172.0, 68.0))
+	_set_rect(shop_cooling_button, Rect2(608.0, 30.0, 124.0, 68.0))
+	_set_rect(focus_placeholder_button, Rect2(426.0, 30.0, 172.0, 68.0))
+	_set_rect(district_card_compact_panel, Rect2(742.0, 5.0, 224.0, 83.0))
+	district_card_compact_panel.theme_type_variation = &"RaisedPanel"
+	_set_rect(district_card_compact_summary, Rect2(8.0, 5.0, 208.0, 24.0))
+	district_card_compact_summary.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_set_rect(district_card_open_button, Rect2(8.0, 31.0, 208.0, 46.0))
+
+
+func _layout_environment_action() -> void:
+	_set_rect($Root/InterventionsPanel/Title as Control, Rect2(12.0, 8.0, 246.0, 24.0))
+	_set_rect(hydrant_state_label, Rect2(12.0, 34.0, 246.0, 24.0))
+	_set_rect(hydrant_button, Rect2(12.0, 62.0, 246.0, 70.0))
+	_set_rect(hydrant_cooldown_meter, Rect2(12.0, 138.0, 246.0, 10.0))
+	_set_rect(hydrant_cooldown_label, Rect2(12.0, 151.0, 246.0, 22.0))
+	_set_rect($Root/InterventionsPanel/EffectLabel as Control, Rect2(12.0, 176.0, 246.0, 42.0))
+	hydrant_feedback_label.visible = false
+	hydrant_feedback_label.clip_text = true
+	hydrant_feedback_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_set_rect(hydrant_feedback_label, Rect2(12.0, 190.0, 246.0, 24.0))
+
+
+func _layout_focused_modals() -> void:
+	_set_rect(equipment_reward_panel, Rect2(60.0, 50.0, 1160.0, 620.0))
+	_set_rect(reward_comparison, Rect2(20.0, 414.0, 710.0, 112.0))
+	_set_rect(district_card_panel, Rect2(60.0, 50.0, 1160.0, 620.0))
+	_set_rect(build_details_panel, Rect2(120.0, 60.0, 1040.0, 620.0))
+	_set_rect(shop_decision_panel, Rect2(120.0, 90.0, 1040.0, 540.0))
+	_set_rect(shop_plan_button, Rect2(816.0, 22.0, 180.0, 52.0))
+	_set_rect(shop_cooling_choice, Rect2(32.0, 140.0, 470.0, 190.0))
+	_set_rect(shop_leave_choice, Rect2(526.0, 140.0, 470.0, 190.0))
+	_set_rect(shop_comparison, Rect2(32.0, 354.0, 964.0, 120.0))
+	_set_rect(extraction_panel, Rect2(120.0, 90.0, 1040.0, 540.0))
+	_set_rect(extraction_plan_button, Rect2(816.0, 22.0, 180.0, 52.0))
+	_set_rect(extraction_button, Rect2(32.0, 140.0, 470.0, 240.0))
+	_set_rect(extraction_continue_button, Rect2(526.0, 140.0, 470.0, 240.0))
+	_set_rect(extraction_preview, Rect2(32.0, 404.0, 964.0, 110.0))
+
+
+func _clear_legacy_theme_overrides(node: Node) -> void:
+	if node is Control:
+		var control: Control = node as Control
+		control.remove_theme_font_size_override(&"font_size")
+		for color_name: StringName in [
+			&"font_color", &"font_hover_color", &"font_pressed_color",
+			&"font_focus_color", &"font_disabled_color", &"font_outline_color",
+		]:
+			control.remove_theme_color_override(color_name)
+	if node is Panel:
+		(node as Panel).remove_theme_stylebox_override(&"panel")
+	for child: Node in node.get_children():
+		_clear_legacy_theme_overrides(child)
+
+
+func _new_label(
+	label_name: String,
+	text_value: String,
+	variation: StringName,
+	rect: Rect2,
+	wrap: bool = false
+) -> Label:
+	var label: Label = Label.new()
+	label.name = label_name
+	label.text = text_value
+	label.theme_type_variation = variation
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART if wrap else TextServer.AUTOWRAP_OFF
+	_set_rect(label, rect)
+	return label
+
+
+func _new_icon(icon_name: String, texture: Texture2D) -> TextureRect:
+	var icon: TextureRect = TextureRect.new()
+	icon.name = icon_name
+	icon.texture = texture
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return icon
+
+
+func _set_rect(control: Control, rect: Rect2) -> void:
+	control.position = rect.position
+	control.size = rect.size
 
 
 func _process(delta: float) -> void:
@@ -542,23 +957,30 @@ func present_backup_state(snapshot: Dictionary) -> void:
 		"spawn failed": "SPAWN FAILED",
 		"registration failed": "REG FAILED",
 	}.get(reason.to_lower(), reason.to_upper())
-	backup_button.disabled = false
+	var visual_state: int = NeonInterventionButton.VisualState.UNAVAILABLE
+	var status_text: String = compact_reason
 	if active_allies > 0:
-		backup_button.text = "2 - BACKUP\n%d ALLIES - %ds" % [
+		visual_state = NeonInterventionButton.VisualState.COOLING
+		status_text = "%d ALLIES  /  %ds" % [
 			active_allies,
 			int(ceil(duration_remaining)),
 		]
 	elif cooldown_remaining > 0.0:
-		backup_button.text = "2 - BACKUP\n%ds - %d LEFT" % [
+		visual_state = NeonInterventionButton.VisualState.COOLING
+		status_text = "%ds  /  %d LEFT" % [
 			int(ceil(cooldown_remaining)),
 			charges,
 		]
 	elif can_activate:
-		backup_button.text = "2 - BACKUP\nREADY - %d" % [
-			charges,
-		]
-	else:
-		backup_button.text = "2 - BACKUP\n%s" % compact_reason
+		visual_state = NeonInterventionButton.VisualState.READY
+		status_text = "READY  /  %d LEFT" % charges
+	(backup_button as NeonInterventionButton).present(
+		"2",
+		"BACKUP",
+		status_text,
+		visual_state,
+		false
+	)
 	backup_button.tooltip_text = (
 		"Call Backup: two temporary allied NPCs fight for 12 eligible combat seconds. "
 		+ "State: %s. Invalid requests do not consume a charge or cooldown." % reason
@@ -566,14 +988,14 @@ func present_backup_state(snapshot: Dictionary) -> void:
 
 
 func present_coin_status(total_coins: int, streak_count: int, status_message: String) -> void:
-	var streak_text: String = "x%d MANUAL" % streak_count if streak_count > 0 else "—"
+	var streak_text: String = "x%d" % streak_count if streak_count > 0 else "—"
 	var message: String = status_message if not status_message.is_empty() else "AUTO • FULL VALUE"
-	resource_values.text = "COINS %03d  SCRAP %02d\nSTREAK %s\n%s" % [
+	resource_values.text = "COINS %03d\nSCRAP %02d\nMAN %s" % [
 		maxi(0, total_coins),
 		maxi(0, _scrap_total),
 		streak_text,
-		message,
 	]
+	resource_values.tooltip_text = "%s. Ignored clusters still grant full base value." % message
 
 
 func present_scrap_total(total_scrap: int) -> void:
@@ -603,17 +1025,17 @@ func present_flow_snapshot(snapshot: Dictionary) -> void:
 
 	var heat_value: int = int(run.get("heat", 0))
 	var heat_tier: int = int(run.get("heat_tier", 0))
-	heat_label.text = "HEAT %03d  •  TIER %d  •  %s" % [
+	heat_label.text = "HEAT %03d  /  T%d" % [
 		heat_value,
 		heat_tier,
-		_heat_implication(heat_tier),
 	]
+	heat_label.tooltip_text = "HEAT TIER %d  /  %s" % [heat_tier, _heat_implication(heat_tier)]
 	heat_meter.value = heat_value
 	var pressure: float = float(run.get("night_pressure", 0.0))
 	var boss_threshold: float = maxf(float(run.get("boss_threshold", 1.0)), 0.001)
 	night_pressure_meter.max_value = boss_threshold
 	night_pressure_meter.value = pressure
-	night_pressure_label.text = "NIGHT PRESSURE %.1f  •  IRREVERSIBLE" % pressure
+	night_pressure_label.text = "NIGHT %.1f  /  IRREVERSIBLE" % pressure
 	threshold_label.text = "NEXT %.1f  •  BOSS %.1f%s" % [
 		float(run.get("next_major_threshold", boss_threshold)),
 		boss_threshold,
@@ -687,20 +1109,203 @@ func present_flow_snapshot(snapshot: Dictionary) -> void:
 		dismiss_equipment_reward()
 	var encounter_name: String = String(encounter.get("active_encounter_name", "Patrolling"))
 	_refresh_run_actions(state, encounter_name, cooling, rewards)
+	_present_wp01_phase_banner(state, run, patrol, encounter)
+	_refresh_wp01_focused_shells(state, run, cooling, rewards)
 	_refresh_district_card_compact_presentation()
 	if district_card_panel.visible:
 		_refresh_district_card_panel_presentation()
-	if state == RunDirector.RunState.EXTRACTION_AVAILABLE:
-		extraction_button.text = "EXTRACT NOW\n%d COINS + %d SCRAP  •  x%.2f" % [
-			int(rewards.get("coin_total", 0)),
-			int(rewards.get("scrap_total", 0)),
-			float(run.get("reward_multiplier", 1.0)),
-		]
 	summary_panel.visible = state == RunDirector.RunState.RUN_SUMMARY
 	# Milestone 6 presents the live Viper through VerticalSliceOverlay's
 	# dedicated health/phase/telegraph strip. The Milestone 3 placeholder modal
 	# must never cover or intercept input from the authored boss encounter.
 	boss_trigger_panel.visible = false
+
+
+func _present_wp01_phase_banner(
+	state: int,
+	run: Dictionary,
+	patrol: Dictionary,
+	encounter: Dictionary
+) -> void:
+	var phase_text: String = _journey_stage_for_state(state)
+	var route_index: int = maxi(int(patrol.get("route_index", -1)) + 1, 0)
+	var route_progress: float = clampf(float(patrol.get("route_progress", 0.0)), 0.0, 1.0)
+	var progress_text: String = "CURRENT ROUTE  /  NODE %d  /  %d%%" % [
+		route_index,
+		int(round(route_progress * 100.0)),
+	]
+	var next_event: String = "PATROL CONTINUES"
+	var status_title: String = "RUN"
+	var status_value: String = _format_time(float(run.get("run_elapsed_seconds", 0.0)))
+	var warning: bool = false
+	var phase_icon: Texture2D = ICON_PHASE_PLAN
+
+	match state:
+		RunDirector.RunState.INITIALIZING, RunDirector.RunState.INTRO:
+			phase_text = "RUN INTRO"
+			next_event = "CREW ENTERS THE DISTRICT"
+			status_title = "NEXT"
+			status_value = "PATROL"
+			phase_icon = ICON_PHASE_PLAN
+		RunDirector.RunState.PATROLLING:
+			phase_text = "PATROL"
+			next_event = "ROUTE BOUNDARY  /  %s" % str(
+				patrol.get("route_node_type", "NEXT BLOCK")
+			).replace("_", " ").to_upper()
+			status_title = "APPROACH"
+			status_value = "%d%%" % int(round(route_progress * 100.0))
+			phase_icon = ICON_PHASE_PLAN
+		RunDirector.RunState.ENCOUNTER_ACTIVE:
+			phase_text = "FIGHT"
+			var encounter_name: String = str(encounter.get("active_encounter_name", "ENCOUNTER"))
+			var remaining: int = maxi(int(encounter.get("remaining_to_spawn", 0)), 0)
+			var arrival: float = maxf(float(encounter.get("spawn_delay_remaining", 0.0)), 0.0)
+			if remaining > 0 and arrival > 0.0:
+				next_event = "%s  /  ENEMY ARRIVAL" % encounter_name.to_upper()
+				status_title = "ARRIVAL"
+				status_value = "%.1fs" % arrival
+			else:
+				next_event = "%s  /  DEFEAT ACTIVE THREATS" % encounter_name.to_upper()
+				status_title = "ACTION"
+				status_value = "INTERVENE"
+			phase_icon = ICON_PHASE_FIGHT
+		RunDirector.RunState.REWARD_SELECTION:
+			phase_text = "REWARD"
+			next_event = "CHOOSE GEAR OR KEEP THE CURRENT BUILD"
+			status_title = "ACTION"
+			status_value = "CHOOSE ONE"
+			phase_icon = ICON_PHASE_REWARD
+		RunDirector.RunState.SHOP:
+			phase_text = "SHOP"
+			next_event = "BUY FROM FINITE STOCK OR LEAVE"
+			status_title = "ACTION"
+			status_value = "ONE PURCHASE"
+			phase_icon = ICON_PHASE_SHOP
+		RunDirector.RunState.EXTRACTION_AVAILABLE:
+			phase_text = "EXTRACT OR PUSH"
+			next_event = "SECURE THE RUN OR CONTINUE AT HIGHER HEAT"
+			status_title = "DECISION"
+			status_value = "FINAL ON CONFIRM"
+			warning = true
+			phase_icon = ICON_PHASE_EXTRACT
+		RunDirector.RunState.EXTRACTING:
+			phase_text = "EXTRACTING"
+			next_event = "RUN SUMMARY"
+			status_title = "TRANSITION"
+			status_value = "IN PROGRESS"
+			phase_icon = ICON_PHASE_EXTRACT
+		RunDirector.RunState.BOSS_INTRO:
+			phase_text = "BOSS INTRO"
+			next_event = "THE VIPER ENTERS"
+			status_title = "ARRIVAL"
+			status_value = "%.1fs" % maxf(float(run.get("boss_intro_remaining", 0.0)), 0.0)
+			warning = true
+			phase_icon = ICON_PHASE_FIGHT
+		RunDirector.RunState.BOSS_ACTIVE:
+			phase_text = "BOSS"
+			next_event = "DEFEAT THE VIPER"
+			status_title = "THREAT"
+			status_value = "BOSS ACTIVE"
+			warning = true
+			phase_icon = ICON_PHASE_FIGHT
+		RunDirector.RunState.PAUSED:
+			phase_text = "DISTRICT PLAN" if bool(run.get("card_planning_pause_active", false)) else "PAUSED"
+			next_event = "CONFIRM A CHOICE OR RESUME"
+			status_title = "ACTION"
+			status_value = "INPUT NEEDED"
+			phase_icon = ICON_PHASE_PLAN
+		RunDirector.RunState.VICTORY, RunDirector.RunState.DEFEAT, RunDirector.RunState.RUN_SUMMARY:
+			phase_text = "RESULT"
+			next_event = "REVIEW THE RUN AND CHOOSE WHAT TO TRY NEXT"
+			status_title = "RUN"
+			status_value = "COMPLETE"
+			phase_icon = ICON_PHASE_RESULT
+
+	phase_banner.present(
+		phase_text,
+		progress_text,
+		next_event,
+		status_title,
+		status_value,
+		warning,
+		phase_icon
+	)
+
+
+func _refresh_wp01_focused_shells(
+	state: int,
+	run: Dictionary,
+	cooling: Dictionary,
+	rewards: Dictionary
+) -> void:
+	var planning_overlay_open: bool = district_card_panel.visible
+	var equipment_overlay_open: bool = equipment_reward_panel.visible
+	shop_decision_panel.visible = (
+		state == RunDirector.RunState.SHOP
+		and not planning_overlay_open
+		and not equipment_overlay_open
+	)
+	extraction_panel.visible = (
+		state == RunDirector.RunState.EXTRACTION_AVAILABLE
+		and not planning_overlay_open
+		and not equipment_overlay_open
+	)
+	var hand_count: int = int(_district_card_snapshot.get("hand_count", _district_card_hand.size()))
+	var plan_available: bool = _district_card_planning_allowed and hand_count > 0
+	shop_plan_button.disabled = not plan_available
+	extraction_plan_button.disabled = not plan_available
+
+	if shop_decision_panel.visible:
+		shop_decision_panel.move_to_front()
+		var current_heat: int = int(run.get("heat", 0))
+		var heat_reduction: int = maxi(int(cooling.get("shop_heat_reduction", 0)), 0)
+		var current_coins: int = maxi(int(rewards.get("coin_total", 0)), 0)
+		var coin_cost: int = maxi(int(cooling.get("shop_coin_cost", 0)), 0)
+		var stock: int = maxi(int(cooling.get("shop_purchases_remaining", 0)), 0)
+		var can_buy: bool = stock > 0 and current_coins >= coin_cost
+		shop_cooling_choice.disabled = not can_buy
+		shop_cooling_choice.text = (
+			"COOL THE DISTRICT\n%d COINS  /  HEAT %d -> %d  /  STOCK %d"
+			% [coin_cost, current_heat, maxi(current_heat - heat_reduction, 0), stock]
+		)
+		shop_cooling_choice.set_visual_state(
+			NeonChoiceCard.VisualState.DEFAULT if can_buy else NeonChoiceCard.VisualState.DISABLED,
+			"AVAILABLE" if can_buy else "UNAVAILABLE  /  NEED COINS OR STOCK"
+		)
+		shop_leave_choice.set_visual_state(NeonChoiceCard.VisualState.DEFAULT, "SAFE DECLINE")
+		shop_comparison.present(
+			"PURCHASE PREVIEW",
+			"HEAT %d" % current_heat,
+			"HEAT %d" % maxi(current_heat - heat_reduction, 0),
+			"COINS %d -> %d  /  NIGHT PRESSURE UNCHANGED" % [
+				current_coins,
+				maxi(current_coins - coin_cost, 0),
+			],
+			true
+		)
+
+	if extraction_panel.visible:
+		extraction_panel.move_to_front()
+		var current_heat: int = int(run.get("heat", 0))
+		var pushed_heat: int = mini(current_heat + 6, 100)
+		var current_coins: int = maxi(int(rewards.get("coin_total", 0)), 0)
+		var current_scrap: int = maxi(int(rewards.get("scrap_total", 0)), 0)
+		var reward_multiplier: float = maxf(float(run.get("reward_multiplier", 1.0)), 0.0)
+		extraction_button.text = (
+			"EXTRACT  /  SECURE CURRENT RESULT\n%d COINS  /  %d SCRAP  /  x%.2f"
+			% [current_coins, current_scrap, reward_multiplier]
+		)
+		extraction_continue_button.text = (
+			"PUSH ON  /  CONTINUE CURRENT ROUTE\nHEAT %d -> %d  /  NIGHT PRESSURE CONTINUES"
+			% [current_heat, pushed_heat]
+		)
+		extraction_preview.present(
+			"DECISION PREVIEW",
+			"CURRENT RESULT",
+			"EXTRACTED OR CONTINUING",
+			"Continue keeps the current route. Night Pressure remains irreversible.",
+			false
+		)
 
 
 func present_build_snapshot(snapshot: Dictionary) -> void:
@@ -845,11 +1450,16 @@ func present_district_card_placement_result(result: Dictionary) -> void:
 		_district_selected_card_id = &""
 		_district_selected_slot_id = &""
 		district_card_feedback.text = "CARD PLAYED ONCE • HEAT AND ROUTE CHANGE ARE AUTHORITATIVE"
+		action_toast.show_message("CARD CONFIRMED  /  ROUTE UPDATED", NeonToast.Tone.SUCCESS)
 	elif not accepted:
 		_district_confirmation_token = -1
 		_district_selected_slot_id = &""
 		district_card_feedback.text = "CARD RETURNED • NOTHING CHANGED • %s" % (
 			_humanize_card_result(reason)
+		)
+		action_toast.show_message(
+			"CARD RETURNED  /  NOTHING CHANGED",
+			NeonToast.Tone.WARNING
 		)
 	_refresh_district_card_panel_presentation()
 	if accepted and not completed and _district_confirmation_token >= 0:
@@ -864,11 +1474,13 @@ func present_district_card_acquisition_result(
 	if not is_node_ready():
 		return
 	if accepted:
+		action_toast.show_message("CARD ADDED TO HAND", NeonToast.Tone.SUCCESS)
 		dismiss_district_card_panel()
 		return
 	district_card_feedback.text = "CARD NOT ADDED • HAND KEPT • %s" % (
 		_humanize_card_result(reason if not reason.is_empty() else "request_rejected")
 	)
+	action_toast.show_message("HAND KEPT  /  CARD NOT ADDED", NeonToast.Tone.WARNING)
 	_refresh_district_card_panel_presentation()
 
 
@@ -949,15 +1561,20 @@ func get_pending_inventory_target() -> int:
 func present_inventory_action_result(succeeded: bool) -> void:
 	_inventory_action_in_flight = false
 	if succeeded:
+		action_toast.show_message("INVENTORY UPDATED", NeonToast.Tone.SUCCESS)
 		_clear_inventory_selection()
 	elif is_node_ready():
 		inventory_action_prompt.text = "INVENTORY CHANGED OR ACTION REJECTED. REVIEW AND TRY AGAIN."
+		action_toast.show_message("INVENTORY NOT CHANGED", NeonToast.Tone.WARNING)
 	_refresh_build_presentation()
 
 
 func present_equipment_action_result(succeeded: bool) -> void:
 	_equipment_choice_in_flight = false
-	if not succeeded:
+	if succeeded:
+		action_toast.show_message("GEAR CHOICE CONFIRMED", NeonToast.Tone.SUCCESS)
+	else:
+		action_toast.show_message("GEAR NOT CHANGED", NeonToast.Tone.WARNING)
 		for button: EquipmentDragSlot in _reward_choice_buttons:
 			button.disabled = false
 		_refresh_equipment_reward_presentation()
@@ -1000,6 +1617,7 @@ func present_action_feedback(message: String) -> void:
 		return
 	_hydrant_feedback = message
 	hydrant_feedback_label.text = message
+	action_toast.show_message(message, NeonToast.Tone.INFO)
 
 
 ## Presents an authoritative Hydrant snapshot. State values use the local
@@ -1077,6 +1695,7 @@ func apply_safe_area(safe_area: Rect2i, window_size: Vector2i) -> void:
 func _refresh_safe_area_layout() -> void:
 	var left_inset: float = 0.0
 	var right_inset: float = 0.0
+	var top_inset: float = 0.0
 	var bottom_inset: float = 0.0
 	if _safe_area_matches_window(_pending_safe_area, _pending_window_size):
 		var safe_end_x: int = _pending_safe_area.position.x + _pending_safe_area.size.x
@@ -1087,6 +1706,11 @@ func _refresh_safe_area_layout() -> void:
 			float(maxi(0, _pending_safe_area.position.x)) * scale_x,
 			0.0,
 			MAX_SAFE_INSET.x
+		)
+		top_inset = clampf(
+			float(maxi(0, _pending_safe_area.position.y)) * scale_y,
+			0.0,
+			MAX_SAFE_INSET.y
 		)
 		right_inset = clampf(
 			float(maxi(0, _pending_window_size.x - safe_end_x)) * scale_x,
@@ -1099,7 +1723,33 @@ func _refresh_safe_area_layout() -> void:
 			MAX_SAFE_INSET.y
 		)
 
-	interventions_panel.position = HYDRANT_PANEL_BASE_POSITION + Vector2(-right_inset, 0.0)
+	var phase_x: float = maxf(20.0, left_inset)
+	phase_banner.position = Vector2(phase_x, 16.0 + top_inset)
+	phase_banner.size = Vector2(744.0 - (phase_x - 20.0), 92.0)
+	run_status_panel.position = Vector2(776.0, 16.0 + top_inset)
+	resources_panel.position = Vector2(
+		maxf(1080.0 - right_inset, 1068.0),
+		16.0 + top_inset
+	)
+	crew_panel.position = Vector2(20.0 + left_inset, 122.0 + top_inset)
+	build_panel.position = Vector2(990.0 - right_inset, 122.0 + top_inset)
+	var combat_hud: bool = _last_flow_state in [
+		RunDirector.RunState.ENCOUNTER_ACTIVE,
+		RunDirector.RunState.BOSS_INTRO,
+		RunDirector.RunState.BOSS_ACTIVE,
+	]
+	if combat_hud:
+		cards_panel.position = Vector2(360.0, 600.0 - bottom_inset)
+		cards_panel.size = Vector2(560.0, 104.0)
+	else:
+		var action_strip_x: float = 280.0 + left_inset
+		var action_strip_right: float = 1260.0 - right_inset
+		cards_panel.position = Vector2(action_strip_x, 600.0 - bottom_inset)
+		cards_panel.size = Vector2(action_strip_right - action_strip_x, 104.0)
+		district_card_compact_panel.position.x = cards_panel.size.x - 238.0
+	interventions_panel.position = (
+		HYDRANT_PANEL_BASE_POSITION + Vector2(-right_inset, top_inset)
+	)
 	help_panel.position = HELP_PANEL_BASE_POSITION + Vector2(0.0, -bottom_inset)
 	help_button.position = HELP_BUTTON_BASE_POSITION + Vector2(left_inset, -bottom_inset)
 	fullscreen_button.position = FULLSCREEN_BUTTON_BASE_POSITION + Vector2(left_inset, -bottom_inset)
@@ -1123,23 +1773,30 @@ func _safe_area_matches_window(safe_area: Rect2i, window_size: Vector2i) -> bool
 
 func _refresh_hydrant_presentation() -> void:
 	hydrant_button.disabled = false
-	var state_color: Color = HYDRANT_UNAVAILABLE_COLOR
+	var visual_state: int = NeonInterventionButton.VisualState.UNAVAILABLE
+	var action_text: String = "HYDRANT"
+	var status_text: String = "NEEDS TARGET"
 	match _hydrant_state:
 		HydrantPresentationState.AVAILABLE:
-			state_color = HYDRANT_READY_COLOR
+			visual_state = NeonInterventionButton.VisualState.READY
 			hydrant_state_label.text = "READY • %d IN RANGE" % _hydrant_valid_enemy_count
-			hydrant_button.text = "BLAST WATER"
+			status_text = "READY  /  RANGE %d" % _hydrant_valid_enemy_count
 			hydrant_cooldown_label.text = "READY NOW"
 		HydrantPresentationState.COOLING_DOWN:
-			state_color = HYDRANT_COOLDOWN_COLOR
+			visual_state = NeonInterventionButton.VisualState.COOLING
 			hydrant_state_label.text = "COOLING DOWN"
-			hydrant_button.text = "COOLDOWN %.1fs" % _hydrant_cooldown_remaining
+			status_text = "COOLDOWN %.1fs" % _hydrant_cooldown_remaining
 			hydrant_cooldown_label.text = "%.1fs REMAINING" % _hydrant_cooldown_remaining
 		_:
-			state_color = HYDRANT_UNAVAILABLE_COLOR
 			hydrant_state_label.text = "NO ENEMY IN RANGE"
-			hydrant_button.text = "TRY HYDRANT"
 			hydrant_cooldown_label.text = "READY • NEEDS TARGET"
+	(hydrant_button as NeonInterventionButton).present(
+		"1  ENV",
+		action_text,
+		status_text,
+		visual_state,
+		false
+	)
 
 	var elapsed_cooldown: float = clampf(
 		_hydrant_cooldown_total - _hydrant_cooldown_remaining,
@@ -1148,8 +1805,6 @@ func _refresh_hydrant_presentation() -> void:
 	)
 	hydrant_cooldown_meter.max_value = _hydrant_cooldown_total
 	hydrant_cooldown_meter.value = elapsed_cooldown
-	hydrant_state_label.add_theme_color_override("font_color", state_color)
-	hydrant_button.add_theme_color_override("font_color", state_color)
 	hydrant_feedback_label.text = (
 		_hydrant_feedback
 		if not _hydrant_feedback.is_empty()
@@ -1910,9 +2565,9 @@ func _refresh_district_card_panel_presentation() -> void:
 	if not is_node_ready() or _district_card_panel_mode == DistrictCardPanelMode.CLOSED:
 		return
 	district_card_title.text = (
-		"DISTRICT CARD REWARD • CHOOSE ONE OR KEEP HAND"
+		"DISTRICT PLAN  /  CARD REWARD  /  CHOOSE ONE OR KEEP HAND"
 		if _district_card_panel_mode == DistrictCardPanelMode.REWARD
-		else "DISTRICT CARDS • PLAN THE FUTURE ROUTE"
+		else "DISTRICT PLAN  /  CURRENT FIXED ROUTE"
 	)
 	district_card_counts.text = _district_card_counts_text()
 	_refresh_district_card_choice_presentation()
@@ -1974,10 +2629,13 @@ func _refresh_district_card_choice_presentation() -> void:
 		icon_rect.texture = card.icon if card != null else null
 		details.text = _district_card_overview(card) if card != null else "EMPTY HAND SLOT"
 		button.tooltip_text = _district_card_tooltip(card) if card != null else "No card in this slot."
-		button.self_modulate = (
-			Color(0.76, 1.0, 0.86, 1.0)
-			if card != null and card.id == _district_selected_card_id
-			else Color.WHITE
+		var selected: bool = card != null and card.id == _district_selected_card_id
+		button.self_modulate = Color.WHITE
+		button.set_visual_state(
+			NeonChoiceCard.VisualState.SELECTED if selected else (
+				NeonChoiceCard.VisualState.DISABLED if not has_card else NeonChoiceCard.VisualState.DEFAULT
+			),
+			"SELECTED" if selected else ""
 		)
 		var origin: DistrictCardDragPayload.Origin = (
 			DistrictCardDragPayload.Origin.REWARD
@@ -2340,7 +2998,17 @@ func _refresh_run_actions(
 	cooling: Dictionary,
 	rewards: Dictionary
 ) -> void:
-	run_actions_title.text = "RUN ACTIONS • %s" % RunDirector.state_name(state).replace("_", " ")
+	var combat_hud: bool = state in [
+		RunDirector.RunState.ENCOUNTER_ACTIVE,
+		RunDirector.RunState.BOSS_INTRO,
+		RunDirector.RunState.BOSS_ACTIVE,
+	]
+	run_actions_title.text = (
+		"INTERVENE  /  COMBAT CONTINUES"
+		if combat_hud
+		else "RUN ACTIONS  /  %s" % RunDirector.state_name(state).replace("_", " ")
+	)
+	cards_panel.size.x = 560.0 if combat_hud else 980.0
 	var primary_disabled: bool = true
 	var primary_text: String = "PATROLLING\nAUTOMATIC"
 	match state:
@@ -2369,16 +3037,25 @@ func _refresh_run_actions(
 		RunDirector.RunState.RUN_SUMMARY:
 			primary_text = "RUN\nCOMPLETE"
 	_present_action_button(primary_action_button, primary_text, primary_disabled)
+	primary_action_button.visible = not combat_hud
+	backup_button.visible = true
+	focus_placeholder_button.visible = combat_hud
+	if combat_hud:
+		_set_rect(backup_button, Rect2(14.0, 30.0, 260.0, 68.0))
+		_set_rect(focus_placeholder_button, Rect2(286.0, 30.0, 260.0, 68.0))
+	else:
+		_set_rect(backup_button, Rect2(196.0, 30.0, 220.0, 68.0))
 
 	var subway_charges: int = int(cooling.get("subway_charges", 0))
 	var subway_disabled: bool = (
 		state != RunDirector.RunState.PATROLLING or subway_charges <= 0
 	)
-	var subway_text: String = "3 - SUBWAY\n%d CHG / -%dH" % [
+	var subway_text: String = "SUBWAY\n%dX / -%dH" % [
 		subway_charges,
 		int(cooling.get("subway_heat_reduction", 0)),
 	]
 	_present_action_button(subway_reroute_button, subway_text, subway_disabled)
+	subway_reroute_button.visible = not combat_hud
 
 	var shop_remaining: int = int(cooling.get("shop_purchases_remaining", 0))
 	var shop_cost: int = int(cooling.get("shop_coin_cost", 0))
@@ -2392,6 +3069,9 @@ func _refresh_run_actions(
 		shop_cost,
 	]
 	_present_action_button(shop_cooling_button, shop_text, shop_disabled)
+	# The focused shop shell owns the pointer/touch choice. The preserved Card03
+	# node remains for compatibility but no duplicate action is presented below it.
+	shop_cooling_button.visible = false
 
 	var extraction_disabled: bool = state != RunDirector.RunState.EXTRACTION_AVAILABLE
 	var extraction_text: String = (
@@ -2400,6 +3080,8 @@ func _refresh_run_actions(
 		else "EXTRACTION\nUNAVAILABLE"
 	)
 	_present_action_button(extraction_button, extraction_text, extraction_disabled)
+	district_card_compact_panel.visible = not combat_hud
+	_refresh_safe_area_layout()
 
 
 func _present_action_button(button: Button, text: String, disabled: bool) -> void:
@@ -2508,9 +3190,13 @@ func _refresh_build_presentation() -> void:
 		var button: LinkButton = _build_slot_buttons[slot_index]
 		var slot: Dictionary = slots[slot_index] if slot_index < slots.size() else {}
 		var equipment_id: StringName = StringName(slot.get("id", &""))
-		var display_name: String = str(slot.get("display_name", "EMPTY"))
+		var display_name: String = str(slot.get("display_name", "EMPTY")).to_upper()
 		button.disabled = equipment_id == &""
-		button.text = "%d  %s" % [slot_index + 1, display_name.to_upper()]
+		button.text = (
+			"%d  %s" % [slot_index + 1, display_name.left(3)]
+			if equipment_id != &""
+			else "%d  —" % (slot_index + 1)
+		)
 		button.tooltip_text = _equipment_slot_tooltip(slot)
 	var stored_count: int = 0
 	for value: Variant in _build_snapshot.get("backpack_slots", []):
@@ -2691,6 +3377,12 @@ func _refresh_equipment_reward_presentation() -> void:
 		button.icon = null
 		_reward_choice_icons[choice_index].texture = item.icon
 		button.tooltip_text = item.description
+		button.set_visual_state(
+			NeonChoiceCard.VisualState.SELECTED
+			if choice_index == _selected_reward_choice
+			else NeonChoiceCard.VisualState.DEFAULT,
+			"SELECTED" if choice_index == _selected_reward_choice else ""
+		)
 		button.configure_drag_source(
 			EquipmentDragPayload.new(
 				EquipmentDragPayload.Origin.REWARD,
@@ -2768,6 +3460,67 @@ func _refresh_equipment_reward_presentation() -> void:
 	)
 	reward_cancel_button.disabled = _equipment_choice_in_flight or not has_choice
 	reward_keep_current_button.disabled = _equipment_choice_in_flight
+	_refresh_reward_comparison()
+
+
+func _refresh_reward_comparison() -> void:
+	if _selected_reward_choice < 0 or _selected_reward_choice >= _reward_choices.size():
+		reward_comparison.present(
+			"BUILD PREVIEW",
+			"CURRENT BUILD",
+			"SELECT GEAR",
+			"Choose a reward, then an active or backpack destination for exact consequences.",
+			false
+		)
+		return
+	var item: EquipmentDefinition = _reward_choices[_selected_reward_choice]
+	if _selected_reward_destination == &"":
+		reward_comparison.present(
+			"BUILD PREVIEW",
+			"CURRENT BUILD",
+			item.display_name.to_upper(),
+			"Choose an active or backpack destination to calculate the exact result.",
+			false
+		)
+		return
+	if _selected_reward_destination == SynergySystem.AREA_BACKPACK:
+		var stored: Dictionary = _inventory_slot(
+			SynergySystem.AREA_BACKPACK,
+			_selected_reward_backpack_slot
+		)
+		reward_comparison.present(
+			"BACKPACK PREVIEW",
+			str(stored.get("display_name", "EMPTY")).to_upper(),
+			item.display_name.to_upper(),
+			"Stored gear remains inactive until equipped. Confirm is required.",
+			true
+		)
+		return
+	var active: Dictionary = _inventory_slot(
+		SynergySystem.AREA_EQUIPPED,
+		_selected_reward_slot
+	)
+	var preview: Dictionary = _preview_for_choice(
+		_selected_reward_choice,
+		_selected_reward_slot
+	)
+	var changes: PackedStringArray = PackedStringArray()
+	var activations: Array = preview.get("immediate_activations", [])
+	var deactivations: Array = preview.get("deactivations", [])
+	if not activations.is_empty():
+		changes.append("ACTIVATES %s" % _join_synergy_ids(activations))
+	if not deactivations.is_empty():
+		changes.append("DEACTIVATES %s" % _join_synergy_ids(deactivations))
+	if changes.is_empty():
+		changes.append("NO IMMEDIATE SYNERGY THRESHOLD CHANGE")
+	changes.append("CONFIRM REQUIRED  /  BACKPACK CONSEQUENCES REMAIN EXPLICIT")
+	reward_comparison.present(
+		"ACTIVE BUILD PREVIEW",
+		str(active.get("display_name", "EMPTY")).to_upper(),
+		item.display_name.to_upper(),
+		"  /  ".join(changes),
+		bool(preview.get("valid", false))
+	)
 
 
 func _present_inventory_slot_button(
@@ -3179,6 +3932,7 @@ func _equipment_slot_tooltip(slot: Dictionary) -> String:
 	if StringName(slot.get("id", &"")) == &"":
 		return "Empty generic slot. Drag an item here or use the click/tap destination controls."
 	var lines: PackedStringArray = PackedStringArray()
+	lines.append(str(slot.get("display_name", "EQUIPMENT")).to_upper())
 	lines.append("Tags: %s" % _join_string_names(slot.get("tags", [])))
 	for effect_text: Variant in slot.get("major_effects", PackedStringArray()):
 		lines.append("• %s" % str(effect_text))

@@ -2,11 +2,27 @@
 
 ## Catalog status
 
-This catalog reflects the implemented **Milestones 0–6**. Milestone 5 remains the last fully accepted 188-test/2,450-assertion baseline. Milestone 6 passed its 244-test/3,234-assertion automated gate and configured headless boot, and the owner marked it tentatively complete for Pages playtesting. Representative outcomes, cadence acceptance, browser/device/presentation checks, and final owner-manual acceptance remain explicit `MILESTONE_6_PLAYTEST.md` work; this catalogue does not invent a qualitative result.
+This catalog reflects the implemented **Milestones 0–6 plus WP01 presentation migration**. WP01 adds no gameplay/content definition: it contributes a replaceable UI icon family, reusable presentation components, the phase-led HUD/focused shells, and visual evidence fixtures. Milestone 6 remains the gameplay/content authority boundary and its final owner playtest remains separate.
 
 Milestone 5 was merged through PR #4 and published from `main` commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`; it remains the last fully accepted baseline. Milestone 6 was committed on `codex/milestone-6-vertical-slice` as `9c1cdaa` plus `ca3fe18`, and the owner authorized its tentative [GitHub Pages playtest](https://ariesyous.github.io/projectneon/) publication on 2026-07-22.
 
 The working tree separately carries the owner's tracked 17-file Godot-AI 3.0.5 update and the owner's `project.godot` deletions of `window/stretch/aspect="keep"` and `textures/default_filters/use_nearest_mipmap_filter=false`. Godot-AI remains enabled development tooling, not Neon Loop content or run authority. Milestone 6 adds only the specification-authorized `SaveService` and `AppState` Autoloads; it does not claim the owner-carried changes as milestone content.
+
+## WP00-approved prospective availability and classification
+
+WP00 changed documentation only and added no content, profile mutation, save version, gameplay asset, or runtime behavior. The tables below remain the exact implemented Milestone 0–6 catalogue until their owning work packages land.
+
+| Approved target | Current implementation boundary | Owning package |
+| --- | --- | --- |
+| Jax, Zoey, and Rex available on a fresh production profile | M6 currently defaults to Jax and gates Zoey/Rex | WP02 retires the two crew gates with legacy-profile compatibility |
+| Eight existing equipment entries and Arcade, Convenience Store, and Subway Entrance available by default | Already implemented | Preserve |
+| Hacker Deck and Gang Hideout remain breadth unlocks | Already implemented | Preserve through WP02 |
+| Two-choice, next-block District Plan from a four-card one-copy lap deck | M5/M6 currently use a persistent hand and five future route slots | WP03 migrates presentation and scheduling while preserving stable IDs and typed authority |
+| Combat roles are Environment, Focus, and Backup | M6 currently presents Fire Hydrant, Call Backup, and Subway Reroute | WP02/WP03 reclassify Subway as strategic travel; WP05 prototypes and selects Focus/Environment behavior |
+| Rally | Candidate only, not catalogued as promised content | WP05 owner gate if tested |
+| Scrap | Summary-only; no spend contract or economy | No package may infer a currency sink without separate approval |
+
+The approved breadth/cosmetic/challenge boundary adds no permanent stats and pre-authorizes no additional card, item, crew, enemy, boss, or cosmetic entry. Development/test availability remains 3/9/4.
 
 ## Implemented foundation content
 
@@ -30,15 +46,17 @@ The working tree separately carries the owner's tracked 17-file Godot-AI 3.0.5 u
 
 | Region | Reserved presentation |
 | --- | --- |
-| Minimap | District route, crew location, encounters, extraction point, and pending/resolved card modifications |
-| Heat and timer | Heat value/tier and run time |
-| Crew status | Compact and expanded crew health/status space |
-| Equipment and synergies | Equipment summary and synergy thresholds |
-| District cards | Live hand/draw/discard counts, detailed card review/reward choice, and five-slot future-route planning |
-| Interventions | Intervention controls and charge/cooldown space |
-| Extraction | Extraction action and reward multiplier space |
+| Phase banner | Current phase, current-route progress, named next event, countdown/approach/action status |
+| Heat, Night Pressure, timer, resources | Compact labelled values/meters; irreversible Pressure and Heat implication remain textual/inspectable |
+| Crew status | Compact health/state plus full authored name disclosure |
+| Equipment and synergies | Three-slot compact build identity with focused inspect/backpack/synergy disclosure |
+| District Plan compatibility | Compact safe-state entry into the still-authoritative M5 hand/five-slot planner until WP03 |
+| Interventions | Environment/Hydrant and Backup use shared icon-plus-label controls; absent Focus is visibly disabled; Subway remains strategic travel |
+| Focused decisions | Equipment reward, finite shop, current Extract/Push, pause/settings, and summary own attention while active |
 
-Run state, route progress, Heat/tier, Night Pressure, elapsed time, extraction/cooling actions, selected-crew health/state/target, coins/streak, all three intervention states, combo, boss health/phase/named warnings, three generic active equipment slots, one clearly named three-slot backpack, tag/synergy progress, equipment/card reward flows, contextual tutorial prompts, settings, final summary, fullscreen state, and player guidance are live presentation values. The native 1280 × 720 HUD retains the logical 640 × 360 world and a 16-pixel minimum for ordinary labels/buttons. `VerticalSliceOverlay` adds the crew menu, pause/settings surfaces, boss strip, tutorial/combo strips, victory treatment, and complete summary. Validity, cooldowns, warnings, locks, and progression state always include text rather than colour alone. No HUD or overlay region owns authoritative gameplay state.
+Run state, route progress, Heat/tier, Night Pressure, elapsed time, extraction/cooling actions, selected-crew health/state/target, coins/streak, all three current intervention states, combo, boss health/phase/named warnings, equipment/backpack/synergy state, equipment/card reward flows, contextual tutorials, settings, summary, fullscreen state, and guidance remain authoritative snapshot values. WP01's native 1280×720 layer uses 16-pixel minimum captions, visible focus, 48-pixel control targets, bounded ellipsis/tooltips, safe-area geometry, and text/shape cues in addition to color. `VerticalSliceOverlay` shares the same tokens for crew menu, pause/settings, boss/tutorial/combo, and complete summary. No HUD, overlay, component, icon, or visual fixture owns authoritative gameplay state.
+
+WP01 UI assets live under `res://assets/ui/icons/wp01/`. They are replaceable monochrome SVG presentation assets for health, Heat, Night Pressure, coins, phase states, Environment, Focus, Backup, confirm/inspect/pause, and Knockback/Bleed/Tech. They add no content ID, gameplay tag, reward, effect, or random draw.
 
 The HUD presents the Milestone 1 manual coin streak, Milestone 2 Hydrant/onboarding/display state, and Milestone 3 run/escalation/actions/summary state. Seed, schema, named-stream draw counts, encounter/cooling status, and latches are visible through the development overlay.
 
@@ -307,12 +325,12 @@ The nine `ActorVisual` variants use state-driven idle bob, walk stride, windup l
 
 Numeric fields sanitize to 0–1; missing/wrong-type optional fields use these defaults. Settings persist through the profile and are available from main menu or pause. The pause menu remains available through `Space`/`Escape` outside unskippable transitions; card-owned pause cannot be released by ordinary pause input.
 
-#### Profile schema and production access
+#### Implemented Milestone 6 profile schema and production access
 
 | Stable profile fact | Authored value |
 | --- | --- |
 | Path / version | `user://neon_loop_profile_v1.json`; `save_version = 1` |
-| Production default crew | `jax` |
+| Production default crew | `jax` (current M6 runtime; approved WP02 target is `jax`, `zoey`, and `rex`) |
 | Production default equipment | `chain_sneakers`, `magnetic_flail`, `reinforced_jacket`, `serrated_wraps`, `shock_gloves`, `spiked_bat`, `steel_toe_boots`, `voltaic_blade` |
 | Production default cards | `arcade`, `convenience_store`, `subway_entrance` |
 | Development/test access | all `jax`,`rex`,`zoey`; all nine existing equipment IDs; all four existing card IDs |
@@ -320,7 +338,7 @@ Numeric fields sanitize to 0–1; missing/wrong-type optional fields use these d
 
 The save service performs `.tmp`/`.bak` atomic replacement. Missing files load safe defaults; malformed JSON, non-object roots, invalid/missing version, unsupported old versions, and read I/O failure recover to defaults with an explicit status. A version newer than 1 loads a sanitized read-only projection and rejects overwrite. Development reset removes only the configured profile plus its `.tmp`/`.bak` siblings, then writes defaults. Active runs are not saved.
 
-#### Exact unlock policy
+#### Implemented Milestone 6 unlock policy
 
 | Stable rule ID | Trigger | Existing content unlocked |
 | --- | --- | --- |
@@ -330,6 +348,8 @@ The save service performs `.tmp`/`.bak` atomic replacement. Missing files load s
 | `first_victory_rex` | completed `victory` run | crew `rex` |
 
 Rules apply in stable rule-ID order and are idempotent. No rule creates a tenth item, fifth card, permanent statistical bonus, currency grant, or active-run mutation.
+
+WP00 prospectively retires `first_completed_run_zoey` and `first_victory_rex` as access gates because all three crew are part of the first-launch premise. This is not yet a save or code change. `first_elite_defeat_hacker_deck` and `first_extraction_gang_hideout` remain approved breadth rules. Legacy facts must remain safely loadable when WP02 performs the migration.
 
 ### Contextual tutorial catalogue
 
@@ -453,9 +473,11 @@ The native 1280 x 720 HUD shows all three active slots and all three slots in on
 
 Owner playtesting favors a fuller Diablo II-style character inventory in which the automatic fight remains visible while the character sheet is open. M4.2 now supplies the small baseline: one unambiguous backpack, three generic equipped cells, non-destructive cross-area drag staging, and click/tap/keyboard fallback. The current full-six-position answer is **Skip Gear / Keep Current Build**: the new item is skipped and the paired ordinary reward still resolves. No sale or salvage occurs.
 
-Historical out-of-scope itemization notes considered sell/salvage, auto-salvage, rarity, uniques, affixes, sets, a larger character sheet, category slots, item-instance rolls, and broader economy values. None are planned or authorized: Milestone 6 is the stopping boundary, and the implemented non-destructive drag/snap-back plus click/tap/keyboard confirmation contracts remain final-scope requirements.
+Historical out-of-scope itemization notes considered sell/salvage, auto-salvage, rarity, uniques, affixes, sets, a larger character sheet, category slots, item-instance rolls, and broader economy values. None are planned or authorized by WP00 or the bounded WP01–WP07 roadmap. The implemented non-destructive drag/snap-back plus click/tap/keyboard confirmation contracts remain current requirements until an owning package deliberately migrates their presentation.
 
-### District cards
+### Implemented Milestone 5/6 District cards
+
+This section records the current run-deck/hand/five-future-slot system. The WP00-approved release target is the focused District Plan described in the prospective table above; WP03, not WP00, owns that migration.
 
 Milestone 5 implements exactly four validated `DistrictCardDefinition` Resources and four typed `CardEffectDefinition` payloads. The authored deck contains one copy of each card. Every cost is `0` and is displayed as `FREE`; no card currency, shop, or broader economy exists.
 
@@ -522,6 +544,6 @@ Recorded event IDs are `coin_cluster_presented:<cluster-id>`, `encounter_reward:
 
 The complete `RunSummaryRecord` includes result (`VICTORY`, `EXTRACTED`, or `DEFEATED`), duration, seed, schema, maximum Heat, final Night Pressure, encounters, enemies/elites defeated, boss result (`DEFEATED`, `CREW DEFEATED`, or `NOT REACHED`), coins, manual clusters, maximum streak, scrap, highest combo, equipment build, active synergies, Restart Run, and Return to Main Menu. Unresolved clusters settle at base value before publication. Completed-run persistence happens only after this snapshot and cannot change it.
 
-No post-Milestone-6 content is catalogued or authorized: no procedural route generation, additional district/card/crew/enemy/boss/equipment content, multiplayer, controller support, localization, achievements, daily systems/leaderboards, advanced meta-progression/permanent stat tree, mid-run saving/replay, card economy, or equipment selling/salvage/rarity/uniques/affixes/sets.
+No new content is catalogued or authorized by WP00. The approved WP01–WP07 roadmap may restructure the existing experience within its recorded outcomes, but it does not pre-authorize procedural route generation, additional district/card/crew/enemy/boss/equipment content, multiplayer, controller support, localization, achievements, daily systems/leaderboards, advanced meta-progression/permanent stat trees, mid-run saving/replay, a card economy, or equipment selling/salvage/rarity/uniques/affixes/sets.
 
 Godot 4.7 passed **244/244 cumulative tests and 3,234 assertions with no failures or skips across 22 suites**, and the configured headless `/GameRun` boot was clean. Pages run 29960250903 successfully exported/deployed the Web build; the live page loaded a visible 1280×720 canvas with no warning/error console entry. The cumulative harness's 48 ObjectDB and four resource-in-use shutdown diagnostics remain a harness-cleanup audit. This content record does not claim accepted 1080p/1440p/touch layout, real-input Web flows, Windows export/runtime, visual evidence, representative outcome duration, cadence conformance, boss readability/defeatability, three-build viability, distinct crew feel, tutorial comprehension, or final owner acceptance.

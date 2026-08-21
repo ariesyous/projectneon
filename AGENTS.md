@@ -8,6 +8,22 @@ This repository is a Godot 4.x project. `GameSpecifications.md` is the product s
 - A task brief that says `gamespecifications.md`, `gamespec.md`, or uses another casing is referring to the tracked `GameSpecifications.md`; it does not identify a second specification.
 - On case-sensitive filesystems, always open and link the exact tracked filename. Do not create a lowercase alias, rename the canonical file, or attempt to reconcile the mismatch by copying or rewriting the specification.
 
+## WP00-approved product rebaseline
+
+The project owner explicitly approved the complete WP00 recommended D1–D7 package on 2026-08-20. `GameSpecifications.md` section 0 is the prospective product source of truth for WP01–WP07; `docs/product/WP00_DECISION_PACKET.md` records the alternatives/tradeoffs and `docs/product/WP00_ACCEPTANCE_EVIDENCE.md` records the documentation-only gate.
+
+Approved direction:
+
+- North star: plan the next block, watch the automatic build execute, intervene decisively, and Extract or Push through escalating district laps.
+- One boss run uses three laps of three blocks. Extract/Push follows laps one and two; pushing after lap two commits to lap three and the boss. Boss-run target is 8–12 eligible minutes.
+- District Plan is a focused two-card next-block choice with a lap-scoped one-copy finite deck, resolved history, and no release-facing persistent combat hand/five-slot legality planner.
+- Jax, Zoey, and Rex are fresh-production-profile defaults. Historical Zoey/Rex unlocks remain M6 facts but are retired prospectively; Hacker Deck and Gang Hideout remain breadth unlocks.
+- Progression may add separately approved breadth, cosmetics, compendium knowledge, optional goals, and challenge contracts, but no permanent statistical power or required grind. Scrap is summary-only until separately specified.
+- Permanent combat vocabulary is Environment, Focus, and Backup. Fire Hydrant is an Environment action, Call Backup is Backup, Subway Reroute becomes strategic travel vocabulary, and Rally remains an unpromised WP05 prototype candidate.
+- Qualitative gates use five unbriefed participants with the approved 4/5 clarity/consequence/variety/replay thresholds; timing targets are fight 20–45 seconds, block 45–90, lap 120–180, boss run 8–12 minutes, and ambient coins 10–20.
+
+The implementation remains the Milestone 6 codebase until each owning work package lands. Never describe an approved target as already implemented. Preserve all historical M0–M6 verification and current runtime contracts while migrating them prospectively through the correct owner. There is no Milestone 7; the approved future sequence is WP01–WP07, and this WP00 task must not begin WP01.
+
 ## Required reading order
 
 1. `GameSpecifications.md`
@@ -46,9 +62,11 @@ The Milestone 6 working-tree implementation adds the complete three-member crew 
 
 ## Current scope boundary
 
-Milestone 6 Vertical-Slice Content and Presentation is implemented and is the stopping boundary. Procedural route generation; any additional district, district card, crew member, basic enemy, elite, or boss; multiplayer; controller support; localization; achievements; daily-run scheduling/rewards/leaderboards; advanced meta-progression or permanent stat trees; mid-run saving/replays; equipment selling, salvage, rarity, uniques, affixes, or sets; a card currency/shop/economy; and every other post-vertical-slice system remain out of scope.
+Milestone 6 Vertical-Slice Content and Presentation is the implemented runtime boundary and remains the tentative playtest baseline. Its former status as the final prospective stopping boundary was superseded by the owner-approved WP00 roadmap. Only WP01–WP07 work needed to realize the approved product direction is eligible for separate authorization, package by package and behind each owner/acceptance gate.
 
-Milestone 6 implementation commits are `9c1cdaa` for the separately preserved owner-carried changes and `ca3fe18` for the vertical slice; `a147f93` adds the external playtest guide and tentative-release record. `main` was fast-forwarded through `a147f93`, and Pages run 29960250903 succeeded. This publication authorization does not extend to post-Milestone-6 expansion; there are no planned future milestones.
+Procedural route generation; additional districts or broad card/crew/enemy/elite/boss content; multiplayer; controller support; localization; achievements; daily-run scheduling/rewards/leaderboards; permanent statistical progression or stat trees; mid-run saving/replays; equipment selling, salvage, rarity, uniques, affixes, or sets; a card currency/shop/economy; direct character control; and every other undocumented expansion remain out of scope. Future breadth content is a permitted progression category, not pre-authorized content.
+
+Milestone 6 implementation commits are `9c1cdaa` for the separately preserved owner-carried changes and `ca3fe18` for the vertical slice; `a147f93` adds the external playtest guide and tentative-release record. `main` was fast-forwarded through `a147f93`, and Pages run 29960250903 succeeded. That publication authorized only the historical M6 playtest build. WP00 later approved the documentation-defined work-package roadmap as planning, not implementation, new publication, or unbounded post-M6 expansion.
 
 ## Owner-carried working-tree changes
 
@@ -57,6 +75,8 @@ Milestone 6 implementation commits are `9c1cdaa` for the separately preserved ow
 - The Milestone 6 `SaveService` and `AppState` application/persistence Autoload entries are separate authorized additions. They own no active-run gameplay state, Heat, Night Pressure, outcome, or random stream; `_mcp_game_helper` remains Godot-AI development tooling.
 
 ## Milestone 5 invariant contracts
+
+These are current implemented compatibility contracts. WP03 may migrate the release-facing hand/five-slot model only after the approved focused District Plan authority, deterministic vectors, stale/replay rejection, safe-boundary precedence, and input evidence exist. Until then, the implementation and tests below remain authoritative facts.
 
 - `DistrictCardDefinition` and `CardEffectDefinition` are typed, data-only Resources. The exactly four one-copy stable IDs are `arcade` (`FREE`, travel, +10 Heat), `convenience_store` (`FREE`, travel, -10 Heat), `gang_hideout` (`FREE`, encounter, +20 Heat), and `subway_entrance` (`FREE`, encounter, -15 Heat); each has validated tags, effect payload, progression copy, and a replaceable icon.
 - `CardSystem` owns the finite draw pile, capacity-three hand, discard pile, deterministic two-card opening draw, no-reshuffle rule, planning/staged-placement state, pending/resolved effects, card reward choices/acquisition, hand revisions, and confirmation/token ledgers. Restart clears all of them before resetting the `cards` stream and rebuilding the opening hand.
@@ -68,6 +88,8 @@ Milestone 6 implementation commits are `9c1cdaa` for the separately preserved ow
 - Planning is available only in safe `PATROLLING`, `SHOP`, or `EXTRACTION_AVAILABLE` states. Patrol planning uses a `RunDirector`-owned pause that ordinary pause input cannot release, so eligible time and Night Pressure do not advance. Any unsafe progression transition synchronously ends planning and clears the staged token; a stale confirmation is then authority-rejected before Heat or route mutation. `GameHUD` only presents hand/piles, typed card details, stable slots, textual validity/highlights, feedback, and pending/resolved minimap changes; typed native drag, 8-pixel mouse/touch fallback, first-touch ownership, right-click cancel, and click/tap/keyboard placement all forward the same validated intent.
 
 ## Milestone 6 implementation contracts
+
+These contracts describe the current runtime and historical automated baseline. The WP00 target supersedes only the prospective product choices named above; it does not pretend that all-crew defaults, district laps, focused District Plan, Focus, or the new HUD already exist.
 
 - The exact permanent crew IDs are `jax`, `zoey`, and `rex`; each run selects one member before the first gameplay draw and equips exactly one authored starter. Jax has 520 health, 112 movement speed, 20 base damage, 1.25x environmental-collision damage, and Spiked Bat. Zoey has 400 health, 124 movement speed, 12 base damage, a 0.85 intervention-cooldown multiplier, and Shock Gloves. Rex has 720 health, 84 movement speed, 30 base damage, 0.55 knockback resistance, 0.65 stagger resistance, 1.25x damage against elites/bosses, and Reinforced Jacket.
 - The exact basic enemy IDs are `street_punk`, `bat_thug`, and `bottle_thrower`. Street Punk is the 58-health/86-speed basic melee unit; Bat Thug is the 110-health/64-speed heavy melee unit with a 0.58-second windup and 185 knockback force; Bottle Thrower is the 50-health ranged unit that maintains 125–180 pixels and fires the deterministic `bottle_projectile` at 105 pixels/second with a 2.5-second lifetime.
@@ -185,6 +207,8 @@ Do not describe the implemented Milestone 3–6 directors as logic-free Mileston
 
 ## Verification requirements
 
+For WP00, verification is documentation-only: prove owner approval, cross-document agreement, valid/rendered wireframes, unchanged gameplay/project/save/external state, and preservation of unrelated changes. Do not launch or mutate the game merely to claim a documentation gate. The runtime requirements below apply when an implementation package changes the project.
+
 Before declaring an implementation task complete:
 
 1. Launch the project through Godot.
@@ -214,4 +238,4 @@ Milestone 4's executed matrix and preview record in `TEST_PLAN.md` is an accepta
 
 - **Milestone 6 (tentative playtest release):** Godot 4.7 passed **244/244 cumulative tests and 3,234 assertions with no failures or skips across 22 suites**, preserving all 188 accepted Milestone 0–5 tests and adding 56 M6 tests. A configured headless boot opened `/GameRun` without parser/runtime warnings, errors, or leaks. Pages run 29960250903 successfully exported and deployed the Web build; the live page loaded a visible 1280×720 canvas with title `Neon Loop` and an empty warning/error console. Browser screenshot capture timed out on the continuously rendered WebGL canvas, so fresh visual evidence and real-input browser flows remain playtest work rather than an invented pass. The cumulative runner-only 48-ObjectDB/four-resource shutdown report remains a cleanup-audit TODO. External sessions follow `MILESTONE_6_PLAYTEST.md` for Victory/Extraction/Defeat, actor/boss/intervention/settings/save/restart checks, cadence, resolutions, browsers/touch, and qualitative evidence.
 
-There is no planned Milestone 7 or later milestone. Continue only the documented Milestone 6 playtest, verification, and bounded-fix work after owner review; do not expand beyond it.
+There is no Milestone 7 or later milestone. WP00 replaces the former no-future-work statement with the approved WP01–WP07 sequence in `docs/product/ROADMAP.md`. After WP00, WP01 is the next eligible package, but it must begin only on an explicit owner request; do not start it as part of WP00. Historical M6 playtest evidence remains valid and must not be relabelled as final rebaseline acceptance.

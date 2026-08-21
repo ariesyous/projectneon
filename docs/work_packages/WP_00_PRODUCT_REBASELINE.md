@@ -1,6 +1,6 @@
 # WP00 — Product Rebaseline
 
-Status: proposed; first required package
+Status: **complete; owner-approved 2026-08-20**
 Branch suggestion: `codex/wp-00-product-rebaseline`
 
 ## Outcome
@@ -51,6 +51,8 @@ Turn the research proposal into an owner-approved, canonical product plan before
 - Canonical documents agree on runtime ownership, scope, phases, validation, and content availability.
 - The roadmap is adjusted to match the approved decisions.
 - No gameplay or external state has changed.
+
+**Result: Passed.** The owner approved the complete recommended D1–D7 package. Evidence is collected in [`docs/product/WP00_ACCEPTANCE_EVIDENCE.md`](../product/WP00_ACCEPTANCE_EVIDENCE.md), with the approved packet and representative wireframes linked there. Canonical reconciliation is documentation-only, preserves Milestone 6 history and unrelated Godot-AI/project-setting changes, and does not start WP01.
 
 ## Recommended parts
 

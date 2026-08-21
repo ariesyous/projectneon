@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Testing is milestone-scoped. Milestone 0 verifies the project foundation; Milestone 1 verifies the narrow Combat Lab, automatic combat, and coin-cluster accounting; Milestone 2 verifies the Fire Hydrant intervention, combat-safe space, and targeted presentation/usability improvements; Milestone 3 verifies the complete run structure, escalation, thresholds, cooling, deterministic streams, standard rewards, outcomes, and restart cleanup; Milestone 4 verifies equipment, statuses, synergies, and deterministic choices; Milestone 4.1 verifies the authorized equipment-safety and HUD-readability correction; Milestone 4.2 verifies the bounded inventory-drag and one-backpack-clarity correction; Milestone 5 verifies District Cards, deterministic finite deck state, future-route placement/resolution, supplemental card rewards, progression protections, and safe multimodal planning; and Milestone 6 verifies the bounded vertical-slice crew/enemy/elite/boss content, all three interventions, combo/projectiles, final presentation/audio/tutorials, settings, minimal versioned persistence/unlocks, complete summaries, cadence measurement, complete outcomes, and cross-system cleanup. Later checklists do not pretend that deferred gameplay systems are implemented.
+Testing is milestone- and work-package-scoped. Milestone 0 verifies the project foundation; Milestone 1 verifies the narrow Combat Lab, automatic combat, and coin-cluster accounting; Milestone 2 verifies the Fire Hydrant intervention, combat-safe space, and targeted presentation/usability improvements; Milestone 3 verifies the complete run structure, escalation, thresholds, cooling, deterministic streams, standard rewards, outcomes, and restart cleanup; Milestone 4 verifies equipment, statuses, synergies, and deterministic choices; Milestone 4.1 verifies the authorized equipment-safety and HUD-readability correction; Milestone 4.2 verifies the bounded inventory-drag and one-backpack-clarity correction; Milestone 5 verifies District Cards, deterministic finite deck state, future-route placement/resolution, supplemental card rewards, progression protections, and safe multimodal planning; and Milestone 6 verifies the bounded vertical-slice crew/enemy/elite/boss content, all three interventions, combo/projectiles, final presentation/audio/tutorials, settings, minimal versioned persistence/unlocks, complete summaries, cadence measurement, complete outcomes, and cross-system cleanup. WP00 defines the approved prospective acceptance contract; WP01 now verifies its presentation-only implementation without pretending WP02–WP07 authority/content exists.
 
 ## Error policy
 
@@ -19,6 +19,46 @@ Testing is milestone-scoped. Milestone 0 verifies the project foundation; Milest
 - **Owner-recorded** means only the project owner may enter the result.
 
 Milestone 1 through Milestone 5 technical suites are recorded as executed. Milestone 6 passed its 56-test cumulative addition, configured headless `/GameRun` boot, official Pages Web export/deployment, live 1280×720 canvas load, and warning/error-console smoke. Representative manual runs/interactions, broader browser/device coverage, Windows export/runtime, visual evidence, cleanup-diagnostic follow-up, and owner qualitative validation remain **Pending execution** until the checks below complete. The Milestone 1 Human Validation Gate result remains separately labelled as an owner-recorded qualitative decision and is neither repeated nor reopened.
+
+## WP00-approved rebaseline acceptance contract
+
+Status: **Approved target; execution belongs to WP01–WP07.** WP00 itself is accepted by document consistency, representative wireframes, explicit owner approval, and a no-runtime-change scope audit. A Godot launch would add no evidence for this documentation-only package and is intentionally not claimed.
+
+Use a designated five-person, unbriefed cohort at the relevant package gates. Do not replace a failed scored observation after designation and do not coach the requested answer. Record concise unattributed observations, build/content revision, seed/schema where applicable, device/input, run outcome, and eligible timing. Automated evidence may support authority and invariants but cannot manufacture qualitative passes.
+
+| Measure | Approved pass threshold |
+| --- | --- |
+| First-use and loop clarity | At least 4/5 identify current phase, next event, available action, selected card consequence, and Extract/Push difference; at least 4/5 recount Plan → Block/Fight → Reward → Lap Decision and predict the post-confirm state |
+| No dead-looking wait | Every noninteractive delay over one second has a named next event plus countdown, visible approach, or authored transition; participants do not broadly call the state stalled or broken |
+| Choice consequence | For one District Plan, equipment/shop, and Push choice per session, at least 4/5 predict the primary effect before confirmation and identify its next expression; every shipped major choice passes Preview, Magnitude, Expression, and Recall |
+| Build/intervention variety | Across five representative fixed-seed sessions spanning all crew, at least 4/5 name three meaningful decisions and explain a strong intervention case plus a reason to hold/choose differently; three viable builds differ in behavior/presentation and no universal action/starter dominates the approved matrix |
+| Replay desire | Before prompting, at least 4/5 start another run or explicitly want one; at least 3/5 name a concrete different crew, build, plan, intervention, or Push/Extract intention |
+| Fight timing | Typical resolved fights fall within 20–45 eligible seconds; report the distribution and every outlier rather than passing on an average alone |
+| Block timing | Plan through reward resolves within 45–90 eligible seconds under the tested content; report every outlier |
+| Lap timing | The lap decision targets every 120–180 eligible seconds; record the distribution, outliers, and owner-accepted exceptions |
+| Boss-run timing | Crew select through boss result targets 8–12 eligible minutes; early extraction targets are approximately 2–4 and 5–8 minutes |
+| Ambient opportunity | Coin/ambient opportunities remain approximately 10–20 eligible seconds apart and are never relabelled as strategic decisions |
+| Technical compatibility | Typed authorities, stable IDs/order, revision/token exact-once behavior, current seven stream names, and schema-1 derivation stay intact unless an owning package documents and tests a necessary incompatibility |
+
+The historical Milestone 6 cadence bands and pending playtest remain truthful evidence for that build. They are not the future rebaseline pass gate where they conflict with the fight/block/lap contract above.
+
+## WP01 — Interface and Visual Language
+
+Status: **Technical/visual gate passed — Godot 4.7, 2026-08-21.** The five-person unbriefed roadmap checkpoint remains owner-coordinated and is not claimed by automated evidence.
+
+- [x] Tokens cover typography, spacing, surface/border, semantic state, focus, disabled state, touch minimums, and motion timing.
+- [x] Choice, comparison, countdown, intervention, toast, tooltip, and phase components expose text/shape cues in addition to color.
+- [x] Replaceable icons exist for resources, phases, Environment/Focus/Backup, common actions, and all three synergy tags.
+- [x] Combat shows current phase, route progress, named next event/countdown, health, Heat, irreversible Night Pressure, compact build, and context-valid interventions without a persistent rules wall.
+- [x] Focused plan/reward/shop/Extract-Push/pause/settings/summary states are contained at 1280×720 and preserve existing typed intents/authority.
+- [x] Long names use bounded ellipsis plus full disclosure, keyboard focus is visible, ordinary interactive controls meet a 48-pixel minimum, and semantic state is not color-only.
+- [x] A 32/24-pixel representative safe area contains every edge-critical control; a 2560×1440 nearest-neighbour artifact verifies the supported 2× Web integer scale.
+- [x] Presentation calls consume no gameplay random stream, change no schema/state, and preserve the complete accepted M0–M6 suite.
+- [x] Cumulative result: **254/254 tests, 3,376 assertions, zero failures, zero skips** across 23 suites.
+- [x] Configured `/GameRun` interaction smoke exercised start, patrol, build disclosure, current District Plan open/close, invalid intervention rejection, pause/settings/back/resume, and safe area. Fresh `wp01_game_run.log` contains no warning/error/debugger entry.
+- [x] Visual matrix: eight native 1280×720 representative states, native safe-area combat, 2560×1440 Web integer scale, and configured `/GameRun` patrol capture were visually inspected and corrected.
+
+The cumulative runner still emits the pre-existing M6 shutdown-only 48-ObjectDB/four-resource diagnostic after reporting success. It is not present in the configured production scene log and was not introduced or suppressed by WP01.
 
 ## Milestone 0 static checks
 
@@ -660,7 +700,7 @@ A fixed-seed technical probe (`6062026`) using Rex with starter equipment only r
 
 - [ ] Record the `RunCadenceTracker` snapshot from at least one representative ordinary run, using only `RunDirector.run_elapsed_seconds`/eligible active time rather than wall-clock time.
 - [ ] Confirm ambient optional opportunities are approximately 10–20 eligible active seconds apart. Coin **presentation** may be ambient; coin collection remains optional and must not be relabelled as strategic.
-- [ ] Confirm meaningful strategic decisions are approximately 30–60 eligible active seconds apart and correspond to accepted reward, equipment/card, or shop opportunities rather than repeated/rejected UI actions.
+- [ ] Historical M6-only check: confirm meaningful strategic decisions are approximately 30–60 eligible active seconds apart and correspond to accepted reward, equipment/card, or shop opportunities rather than repeated/rejected UI actions. This does not satisfy the WP00-approved future 45–90-second complete-block target.
 - [ ] Confirm major risk decisions are approximately 120–180 eligible active seconds apart and correspond to extraction/boss-risk opportunities.
 - [ ] Exclude pause, reward/card/equipment/shop modals, introductions, extraction/boss/victory transitions, and every other ineligible period. Record early/late violations honestly rather than averaging them away.
 - [ ] Ignore all coin clusters during a representative segment and confirm every cluster still settles its full base value, manual collection remains only a modest capped bonus, and ignoring coins does not make the automatic run substantially nonviable.
@@ -692,4 +732,4 @@ Current honest limitations while final verification is pending:
 - Persistence is deliberately profile/settings/unlock-only. Mid-run saving/replay, permanent stat bonuses, advanced progression, a tenth equipment item, and a fifth card remain unimplemented and out of scope.
 - Reproduction remains limited to the same supported build, content revision, random-schema version, seed, ordered decisions/effect resolutions, and authoritative timing context; cross-version or bitwise physics replay is not promised.
 
-**Milestone 6 automated result: Passed — 244/244 tests and 3,234 assertions, 0 failed, 0 skipped. Milestone status: Tentatively complete for external Pages playtesting; final owner acceptance remains pending the documented playtest/manual evidence and runner-cleanup audit.** Stop after Milestone 6; there are no planned future milestones, and publication does not authorize feature expansion.
+**Milestone 6 automated result: Passed — 244/244 tests and 3,234 assertions, 0 failed, 0 skipped. Milestone status: Tentatively complete for external Pages playtesting; final owner acceptance remains pending the documented playtest/manual evidence and runner-cleanup audit.** This is the historical M6 build record. WP00 later approved a bounded WP01–WP07 rebaseline; no later package is implemented or authorized merely by this test-plan entry.
