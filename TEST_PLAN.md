@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Testing is milestone- and work-package-scoped. Milestone 0 verifies the project foundation; Milestone 1 verifies the narrow Combat Lab, automatic combat, and coin-cluster accounting; Milestone 2 verifies the Fire Hydrant intervention, combat-safe space, and targeted presentation/usability improvements; Milestone 3 verifies the complete run structure, escalation, thresholds, cooling, deterministic streams, standard rewards, outcomes, and restart cleanup; Milestone 4 verifies equipment, statuses, synergies, and deterministic choices; Milestone 4.1 verifies the authorized equipment-safety and HUD-readability correction; Milestone 4.2 verifies the bounded inventory-drag and one-backpack-clarity correction; Milestone 5 verifies District Cards, deterministic finite deck state, future-route placement/resolution, supplemental card rewards, progression protections, and safe multimodal planning; and Milestone 6 verifies the bounded vertical-slice crew/enemy/elite/boss content, all three interventions, combo/projectiles, final presentation/audio/tutorials, settings, minimal versioned persistence/unlocks, complete summaries, cadence measurement, complete outcomes, and cross-system cleanup. WP00 defines the approved product contract. WP01 verifies its presentation migration, and WP02 verifies the implemented authoritative three-lap/three-block lifecycle, exact-once lap decisions, all-crew production access, state clarity, and compatibility. WP03–WP07 remain prospective.
+Testing is milestone- and work-package-scoped. Milestone 0 verifies the project foundation; Milestone 1 verifies the narrow Combat Lab, automatic combat, and coin-cluster accounting; Milestone 2 verifies the Fire Hydrant intervention, combat-safe space, and targeted presentation/usability improvements; Milestone 3 verifies the complete run structure, escalation, thresholds, cooling, deterministic streams, standard rewards, outcomes, and restart cleanup; Milestone 4 verifies equipment, statuses, synergies, and deterministic choices; Milestone 4.1 verifies the authorized equipment-safety and HUD-readability correction; Milestone 4.2 verifies the bounded inventory-drag and one-backpack-clarity correction; Milestone 5 verifies the historical District Cards hand/future-route implementation; and Milestone 6 verifies the bounded vertical-slice content/presentation/persistence/outcomes. WP00 defines the approved product contract. WP01 verifies its presentation migration, WP02 verifies the authoritative three-lap/three-block lifecycle and access/state clarity, and WP03 verifies the focused next-block District Plan while preserving M5 compatibility. WP04–WP07 remain prospective.
 
 ## Error policy
 
@@ -82,6 +82,29 @@ Status: **Technical/runtime/visual gate passed — Godot 4.7.2, 2026-08-21. Five
 - [ ] The owner must run the fixed five-person unbriefed procedure and record the scored observations and decision in `docs/product/WP02_UNBRIEFED_COMPREHENSION_CHECK.md`.
 
 The aggregate cumulative harness still emits the pre-existing M6 shutdown-only 48-ObjectDB/four-resource diagnostic after the successful result. Focused, affected, configured-runtime, release-export, exported-Windows, and browser runs do not reproduce it. Evidence and the exact remaining gate are recorded in `docs/product/WP02_ACCEPTANCE_EVIDENCE.md`.
+
+## WP03 — District Planning and Cards
+
+Status: **Technical/runtime/visual/platform gate passed — Godot 4.7.2, 2026-08-22. Owner-run unbriefed first-use gate pending.**
+
+- [x] Production `/GameRun` configures a mandatory focused PLAN with up to two visible next-block cards, no hidden INTRO draw, no supplemental card rewards, and no release hand/five-slot route planner.
+- [x] The accessible one-copy lap deck draws/refills without replacement using only `cards`; unselected choices remain, three blocks consume at most three cards, current history archives at the next lap, and same-seed restart reproduces the offer given the same access snapshot.
+- [x] Locked schema-1 vector: seed `30301` with full access offers `[gang_hideout, subway_entrance]`; cosmetic perturbation and card selection leave all non-card stream snapshots unchanged.
+- [x] Exact offer/lifecycle revisions, stable lap/block IDs, and a monotonic confirmation token guard staging and confirmation. Stale, replayed, malformed, wrong-phase, wrong-context, and transition-race requests mutate nothing.
+- [x] Safe-boundary notification precedes card dispatch; lap decisions, final-lap commitment, block-nine boss precedence, irreversible Night Pressure, Heat ownership, authored effects, and exact-once resolution remain intact.
+- [x] Configured focused dispatch reaches all four live effects: Arcade standard fight/tier advance, Convenience Store one-purchase visit, Gang Hideout `viper_signal`/guaranteed equipment, and Subway no-combat block/unchanged intervention charges. Every case preserves stable history, exact-once Heat, no extra `cards` draw, and no supplemental hand reward.
+- [x] Large native choice buttons show location, block type, special rule, signed Heat, reward/risk, selection, and prediction. Click/tap/keyboard share one typed path; production card drag is disabled.
+- [x] Compact Next Block and current/archived history repeat the selected stable location when it occurs and completes. Legacy tutorial/help banners cannot obscure the required PLAN.
+- [x] Natural one-choice block-three presentation is centered, hides empty controls, remains mandatory, and cannot deadlock. Decline/back is not applicable because PLAN is required.
+- [x] Focused authority: **5/5 tests, 130 assertions, zero failures, zero skips**.
+- [x] Isolated release-snapshot affected card/UI/lifecycle/layout: **72/72 tests, 1,388 assertions, zero failures, zero skips**.
+- [x] Isolated release-snapshot cumulative: **274/274 tests, 3,919 assertions, zero failures, zero skips across 27 suites**.
+- [x] Native GUI input-routing smoke: keyboard select/confirm and touch select/confirm both passed through the live `Viewport`; real pointer input passed separately in the production-Web browser run.
+- [x] Configured native `/GameRun` passed prediction, confirmation/Heat, replay rejection, patrol occurrence, resolved recognition, next PLAN, insufficient-choice, and cleanup; three native 1280×720 captures were inspected.
+- [x] Windows and Web release exports passed; `.pck` payloads match byte-for-byte. Exported Windows runtime exited 0. Local production Web at 2560×1440 passed real pointer choice/prediction/confirmation, matching shop occurrence, completion/history, and next PLAN with an empty warning/error console.
+- [ ] Owner runs and records the designated five-person unbriefed first-use procedure in `docs/product/WP03_UNBRIEFED_FIRST_USE_CHECK.md`; no automated result satisfies this line.
+
+The successful aggregate retains the pre-existing post-summary 48-ObjectDB/four-resource shutdown diagnostic. A sandbox-only aggregate cannot write the persistence suite's disposable `user://` fixtures and is not acceptance evidence; the canonical normal-access run exited 0. Exact commands, captures, exports, platform observations, and the remaining qualitative boundary are recorded in `docs/product/WP03_ACCEPTANCE_EVIDENCE.md`.
 
 ## Milestone 0 static checks
 

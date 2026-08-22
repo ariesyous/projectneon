@@ -1,6 +1,6 @@
 # WP03 — District Planning and Cards
 
-Status: proposed; requires completed WP01 and WP02
+Status: implemented and technically evidenced on 2026-08-22; owner-authorized `main`/Pages browser-playtest publication; owner-run unbriefed first-use gate pending
 Branch suggestion: `codex/wp-03-district-plan`
 
 ## Outcome

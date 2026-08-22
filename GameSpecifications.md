@@ -1,13 +1,13 @@
 # Neon Loop — Game Specifications
 
-**Document status:** WP00-approved product rebaseline; WP01 and WP02 implementation status recorded; Milestones 0–6 retained as implemented history
+**Document status:** WP00-approved product rebaseline; WP01–WP03 implementation status recorded; Milestones 0–6 retained as implemented history
 **Working title:** Neon Loop
 **Engine:** Godot 4.x
 **Primary language:** Typed GDScript
 **Target platform:** Windows PC
 **Target display:** 16:9 desktop display
 **Internal design resolution:** 640 × 360
-**Current production boundary:** WP02 technical/runtime/visual implementation complete; owner five-person comprehension gate pending; WP03–WP07 unstarted
+**Current production boundary:** local WP03 technical/runtime/visual/platform implementation complete; owner unbriefed first-use gate pending; WP04–WP07 unstarted; published browser candidate remains WP02
 
 ---
 
@@ -53,8 +53,8 @@ Player-facing copy calls the interaction **District Plan**.
 - Each lap begins with one copy of every currently available stable card ID. The offer draws without replacement from that lap deck; unselected choices remain available and the offer refills to two while cards remain. Three block choices consume at most three cards. The next lap archives the resolved trail and rebuilds the available one-copy deck.
 - Resolved blocks form a simple history trail. Release presentation has no persistent combat hand, editable five-future-slot planner, route-legality words, or route-history dots.
 - The four existing identities remain `arcade`, `convenience_store`, `gang_hideout`, and `subway_entrance`. Arcade is a fight/reward block; Convenience Store is a finite-stock shop/recovery block; Gang Hideout is an elite/equipment block; Subway Entrance is a no-combat cooling/transit block that replaces one fight without changing Night Pressure or finite Subway-intervention stock.
-- `CardSystem` remains card-offer, deterministic `cards`-stream, revision/token, and exact-once authority. `PatrolController` remains current block/lap progress and safe-boundary authority. The current five-slot modification interface is an implemented Milestone 5–6 compatibility surface to be migrated or development-gated by WP03, not the approved release interaction.
-- Random schema version remains 1 in WP00. WP03 must lock deterministic vectors before migration and stop for a separately documented compatibility decision if the new scheduling changes the versioned derivation or draw primitive incompatibly.
+- `CardSystem` remains card-offer, deterministic `cards`-stream, revision/token, and exact-once authority. `PatrolController` remains fixed-route approach and safe-boundary authority beneath current block/lap progress. WP03 implements the focused production interaction; the five-slot modification interface remains only a Milestone 5–6 compatibility/development surface.
+- Random schema version remains 1. WP03 locks the visible full-access vector `30301 → [gang_hideout, subway_entrance]` and preserves the versioned derivation/draw primitive.
 
 ### 0.4 Fresh-profile content and progression boundary
 
@@ -104,13 +104,15 @@ Qualitative checkpoints use five unbriefed participants and record failures with
 
 WP00 itself changes documentation and wireframes only. It changes no gameplay code, scene, Resource, test implementation, project setting, save/profile file, random schema, Git history, build, publication, deployment, or external state.
 
-### 0.8 Implementation status after WP02 — 2026-08-21
+### 0.8 Implementation status after WP03 — 2026-08-22
 
-WP01 implements the approved visual language and focused state hierarchy. WP02 implements the authoritative three-lap/three-block lifecycle, stable lap/block IDs, exact-once revisioned Extract/Push decisions, explicit second-Push final-lap/boss commitment, block-nine boss boundary, all-crew production access, backward-safe retired crew facts, 10–20/45–90/120–180 cadence bands, and lifecycle result fields. The existing Milestone 5 hand/five-slot planner remains the runtime compatibility surface until WP03; no WP03 scheduling or release-facing District Plan migration has begun.
+WP01 implements the approved visual language and focused state hierarchy. WP02 implements the authoritative three-lap/three-block lifecycle, stable lap/block IDs, exact-once revisioned Extract/Push decisions, explicit second-Push final-lap/boss commitment, block-nine boss boundary, all-crew production access, backward-safe retired crew facts, 10–20/45–90/120–180 cadence bands, and lifecycle result fields. WP03 implements the focused next-block District Plan, accessible one-copy lap deck, visible two-card offer/refill, exact lifecycle revision/token binding, resolved history, and release removal/development-gating of the Milestone 5 hand/five-slot flow.
 
 The fixed authored route retains its stable ID and five nodes while using a 21.0-second represented approach for WP02 pacing. Fixed seed `6062026` reaches the first/second lap decisions at 121.267/292.683 eligible seconds, The Viper boundary at 584.200 seconds, and a boss-result summary at 599.883 seconds. Its full block, major, and ambient gap distributions—including every outlier—are recorded in `docs/product/WP02_ACCEPTANCE_EVIDENCE.md`; this one deterministic technical trace is not a substitute for WP07 representative distributions.
 
-WP02 has passed its focused, affected, cumulative, fixed-seed timing, configured-runtime, visual, Windows release-export/runtime, and local Web release/browser checks. The owner-run five-person unbriefed comprehension check remains pending and is not satisfied by automated evidence. The implementation task itself made no commit, push, publication, or deployment claim; on 2026-08-21 the owner separately authorized a `main` and GitHub Pages browser-playtest release. That publication does not satisfy the qualitative gate or authorize WP03.
+WP02 has passed its focused, affected, cumulative, fixed-seed timing, configured-runtime, visual, Windows release-export/runtime, and local Web release/browser checks. Its owner-run five-person comprehension check remains pending. The owner separately authorized a WP02 `main` and GitHub Pages browser-playtest release on 2026-08-21; that historical publication did not satisfy the qualitative gate or pre-authorize WP03.
+
+The isolated WP03 release snapshot has passed **5/5 focused tests/130 assertions**, **72/72 affected tests/1,388 assertions**, and **274/274 cumulative tests/3,919 assertions across 27 suites**, plus a configured all-four-card live-effect matrix, native keyboard/touch GUI routing, configured prediction/occurrence/history/cleanup, three inspected 1280×720 captures, Windows/Web release exports, exported-Windows runtime, and 2560×1440 production-Web real pointer/empty-console checks. The aggregate runner's pre-existing post-success shutdown diagnostic remains disclosed. The owner-run unbriefed first-use check remains pending and is not satisfied by automated evidence. On 2026-08-22 the owner separately authorized this exact WP03 boundary for a `main` and GitHub Pages browser-playtest release; publication does not authorize WP04 or establish qualitative acceptance.
 
 ---
 
@@ -465,7 +467,7 @@ The run summary first names outcome, build identity, and decisive choices/effect
 
 The vertical slice uses one fixed district stage called **Downtown Loop**.
 
-WP00 retains the fixed stage and logical combat lanes but supersedes the release-facing five-node patrol as the complete player mental model. The approved presentation is three laps of three selected blocks with a resolved history trail. WP02 reuses the authored route and occurrence machinery internally beneath explicit block/lap authority. WP03 still owns removal or development-gating of release-visible route-slot/debug clutter.
+WP00 retains the fixed stage and logical combat lanes but supersedes the release-facing five-node patrol as the complete player mental model. The implemented presentation is three laps of three selected blocks with a resolved history trail. WP02 reuses the authored route and occurrence machinery internally beneath explicit block/lap authority; WP03 removes/development-gates release-visible route-slot/debug clutter.
 
 ### Stage Visual Elements
 
@@ -1187,7 +1189,7 @@ With the initial nine-item catalogue, Knockback, Bleed, and Tech each satisfy th
 
 ## 23. District Plan and Card System
 
-District Cards define the next block through a focused District Plan. The Milestone 5–6 future-route placement model remains historical/current implementation until WP03 migrates it, but it is no longer the approved release interaction.
+District Cards define the next block through the focused District Plan implemented by WP03. The Milestone 5–6 future-route placement model remains historical compatibility behavior, not the production release interaction.
 
 ### Initial Cards
 
@@ -1230,7 +1232,7 @@ District Cards define the next block through a focused District Plan. The Milest
 
 ### Compatibility Boundary
 
-Stable IDs, typed effects, deterministic `cards`-stream selection, exact-once resolution, safe-boundary precedence, and revision/token rejection remain required. WP03 removes or development-gates the current hand/five-slot release UI only after authority migration and deterministic vectors pass. No procedural route, card currency, card shop, or deckbuilder meta is authorized.
+Stable IDs, typed effects, deterministic `cards`-stream selection, exact-once resolution, safe-boundary precedence, and revision/token rejection remain required. WP03 has removed or development-gated the hand/five-slot release UI after its authority migration and deterministic vectors passed. No procedural route, card currency, card shop, or deckbuilder meta is authorized.
 
 ---
 
@@ -1489,14 +1491,14 @@ Cooling feedback must never imply that Night Pressure decreased.
 
 Cards must show:
 
-- Name
+- Location/name and next-block type
 - Art or placeholder
-- Cost
-- Heat effect
-- Night Pressure or major-progression implications when relevant
-- Node effect
-- Tags
-- Valid placement feedback
+- Exact Heat effect
+- One short special rule
+- Reward/risk or major-progression implication when relevant
+- Visible selection, prediction, and confirmation state
+
+Release presentation must show compact Next Block and resolved-lap history, not hand capacity, future-slot validity, or route dots.
 
 ### 30.6 Synergy UI
 
@@ -1756,12 +1758,13 @@ Milestone 1 introduces only the narrow coin-ledger, single-resolution cluster, a
 
 Owns:
 
-- Draw pile
-- Hand
-- Discard pile
-- Placement validation
-- Card resolution
+- Accessible one-copy lap deck and visible offer/refill
+- Exact lifecycle-context selection validation and confirmation tokens
+- Selected/active next-block effect and resolved current/archived history
+- Exact-once card resolution and cleanup
 - Deterministic card stream usage
+
+The historical Milestone 5 draw-pile/hand/discard/future-slot API remains a compatibility record, not the configured WP03 release flow.
 
 ### SynergySystem
 
@@ -2734,7 +2737,7 @@ The project succeeds when a player can watch the crew fight, make a small number
 
 ## 51. WP00-Approved Work-Package Roadmap
 
-WP00 is the documentation/decision gate and changes no runtime. WP01 and the WP02 technical/runtime/visual implementation have landed. The WP02 owner-run comprehension gate remains pending, and later work proceeds only after the explicit authorization and gates named in `docs/product/ROADMAP.md`:
+WP00 is the documentation/decision gate and changes no runtime. WP01–WP03 are implemented within their bounded scopes. The WP02 comprehension and WP03 first-use owner gates remain pending, and later work proceeds only after the explicit authorization and gates named in `docs/product/ROADMAP.md`:
 
 1. **WP01 — Interface and Visual Language:** minimal combat HUD, focused decision shells, icon-plus-label language, accessibility and containment.
 2. **WP02 — Core Run Loop and State Clarity:** authoritative three-lap lifecycle, phase/next-event presentation, all-crew defaults, explicit Extract/Push and boss commitment.
@@ -2744,4 +2747,4 @@ WP00 is the documentation/decision gate and changes no runtime. WP01 and the WP0
 6. **WP06 — World, Combat, and Presentation Polish:** replace release-visible debug communication with authored city-block depth and accessible feedback without changing authority for convenience.
 7. **WP07 — Integration, Balance, and Release:** validate the approved cadence, clarity, consequence, variety, replay desire, compatibility, platforms, and owner-led final acceptance.
 
-There is no Milestone 7. WP03 is the next package in sequence but is not started or implicitly authorized by WP02. Procedural cities, direct character control, multiplayer, permanent statistical progression, large content expansion, controller support, localization, achievements, live-service systems, and other unapproved scope remain excluded.
+There is no Milestone 7. WP04 is the next package in sequence but is not started or implicitly authorized by WP03. Procedural cities, direct character control, multiplayer, permanent statistical progression, large content expansion, controller support, localization, achievements, live-service systems, and other unapproved scope remain excluded.

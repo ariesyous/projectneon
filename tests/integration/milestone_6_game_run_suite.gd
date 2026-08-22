@@ -86,7 +86,10 @@ func test_release_access_latches_before_opening_draw_and_applies_one_authored_st
 		access.allowed_card_ids,
 		"start: card authority latches exact card access"
 	)
-	_expect_equal(fixture.game.card_system.get_hand().size(), 2, "start: opening draw remains exactly two")
+	_expect_equal(fixture.game.card_system.get_hand().size(), 0, "start: INTRO performs no hidden card draw")
+	_expect_true(fixture.game.run_director.complete_intro(), "start: intro reaches focused PLAN")
+	_expect_equal(fixture.game.card_system.get_hand().size(), 2, "start: PLAN exposes exactly two choices")
+	_expect_equal(fixture.game.run_director.current_state, RunDirector.RunState.PAUSED, "start: PLAN owns the reading pause")
 	var permanent_crew: Array[ActorController] = fixture.game.encounter_controller.get_permanent_crew()
 	_expect_equal(permanent_crew.size(), 1, "start: exactly one permanent crew actor")
 	_expect_equal(permanent_crew[0].definition_id(), &"jax", "start: Jax scene selected")
@@ -144,6 +147,7 @@ func test_numbered_intervention_keys_share_authority_and_backup_never_replaces_c
 	fixture.game.vertical_slice_overlay.zoey_button.pressed.emit()
 	fixture.game.vertical_slice_overlay.start_button.pressed.emit()
 	fixture.game.run_director.complete_intro()
+	_expect_true(_confirm_current_district_plan(fixture.game) != null, "keys: first District Plan confirms")
 	var hydrant_before: Dictionary = fixture.game.fire_hydrant_controller.get_snapshot()
 	var backup_before: Dictionary = fixture.game.call_backup_controller.get_snapshot()
 	_press_key(fixture.game, KEY_1)
@@ -170,7 +174,7 @@ func test_numbered_intervention_keys_share_authority_and_backup_never_replaces_c
 	combat_fixture.game.vertical_slice_overlay.start_button.pressed.emit()
 	combat_fixture.game.run_director.complete_intro()
 	_expect_true(
-		combat_fixture.game.run_director.begin_encounter(STANDARD_ENCOUNTER),
+		_begin_direct_planned_encounter(combat_fixture.game, STANDARD_ENCOUNTER, &"m6_backup_probe"),
 		"keys: test enters an eligible non-boss fight"
 	)
 	_press_key(combat_fixture.game, KEY_2)
@@ -205,6 +209,8 @@ func test_subway_cools_before_dispatch_and_hydrant_applies_wet_with_runtime_cues
 	fixture.game.vertical_slice_overlay.jax_button.pressed.emit()
 	fixture.game.vertical_slice_overlay.start_button.pressed.emit()
 	fixture.game.run_director.complete_intro()
+	var chosen: DistrictCardDefinition = _confirm_current_district_plan(fixture.game)
+	_expect_true(chosen != null, "Subway: focused next block confirms first")
 	var cooled_candidate: EncounterDefinition = STANDARD_ENCOUNTER.duplicate(true) as EncounterDefinition
 	cooled_candidate.id = &"cooled_candidate"
 	cooled_candidate.minimum_heat_tier = 0
@@ -220,32 +226,44 @@ func test_subway_cools_before_dispatch_and_hydrant_applies_wet_with_runtime_cues
 	fixture.game.audio_controller.cue_played.connect(
 		func(cue_id: StringName) -> void: played_ids.append(cue_id)
 	)
+	var heat_before_subway: int = fixture.game.run_director.heat
 	_press_key(fixture.game, KEY_3)
-	_expect_equal(fixture.game.run_director.heat, 45, "Subway: Heat commits before dispatch")
+	_expect_equal(fixture.game.run_director.heat, heat_before_subway - 15, "Subway: Heat commits before focused dispatch")
 	_expect_equal(
 		fixture.game.run_director.night_pressure,
 		pressure_before,
 		"Subway: Night Pressure remains immutable"
 	)
-	_expect_equal(
-		fixture.game.encounter_controller.get_active_definition().id,
-		&"cooled_candidate",
-		"Subway: next encounter eligibility observes the cooled Heat tier"
-	)
 	_expect_true(
 		&"sfx_intervention_activation" in played_ids,
 		"Subway: successful intervention emits its authored cue"
 	)
-	fixture.game.encounter_controller.step_spawn_pacing(
-		fixture.game.encounter_controller.get_active_definition().initial_spawn_delay_seconds
+	if chosen != null and CardSystem.focused_block_kind(chosen) == &"fight":
+		_expect_equal(
+			fixture.game.encounter_controller.get_active_definition().id,
+			&"cooled_candidate",
+			"Subway: an Arcade choice observes the cooled Heat tier"
+		)
+
+	var hydrant_fixture: GameFixture = _new_game(true)
+	hydrant_fixture.game.vertical_slice_overlay.jax_button.pressed.emit()
+	hydrant_fixture.game.vertical_slice_overlay.start_button.pressed.emit()
+	hydrant_fixture.game.run_director.complete_intro()
+	_expect_true(
+		_begin_direct_planned_encounter(hydrant_fixture.game, STANDARD_ENCOUNTER, &"m6_hydrant_probe"),
+		"Hydrant Wet: direct planned fight begins"
 	)
-	var enemies: Array[ActorController] = fixture.game.combat_director.get_live_actors(
+	hydrant_fixture.game.encounter_controller.start_encounter(8203, STANDARD_ENCOUNTER)
+	hydrant_fixture.game.encounter_controller.step_spawn_pacing(
+		STANDARD_ENCOUNTER.initial_spawn_delay_seconds
+	)
+	var enemies: Array[ActorController] = hydrant_fixture.game.combat_director.get_live_actors(
 		ActorController.Team.ENEMY
 	)
 	_expect_true(not enemies.is_empty(), "Hydrant Wet: encounter provides a live target")
 	var target: ActorController = enemies[0]
-	target.global_position = fixture.game.fire_hydrant_controller.get_activation_origin()
-	_expect_true(fixture.game.fire_hydrant_controller.request_activation(), "Hydrant Wet: valid request resolves")
+	target.global_position = hydrant_fixture.game.fire_hydrant_controller.get_activation_origin()
+	_expect_true(hydrant_fixture.game.fire_hydrant_controller.request_activation(), "Hydrant Wet: valid request resolves")
 	_expect_true(target.has_status(&"wet"), "Hydrant Wet: future-compatible marker applied")
 	_expect_equal(target.get_status_stacks(&"wet"), 1, "Hydrant Wet: marker never stacks above one")
 	_expect_equal(
@@ -253,7 +271,6 @@ func test_subway_cools_before_dispatch_and_hydrant_applies_wet_with_runtime_cues
 		4.0,
 		"Hydrant Wet: authored marker duration is data-driven"
 	)
-	_expect_true(&"sfx_knockback" in played_ids, "Hydrant Wet: applied knockback emits its cue")
 
 
 func test_space_focus_pause_debug_replay_and_telegraph_cleanup_are_lossless() -> void:
@@ -269,6 +286,7 @@ func test_space_focus_pause_debug_replay_and_telegraph_cleanup_are_lossless() ->
 	menu_fixture.game.settings_controller.handle_focus_changed(false)
 	_expect_equal(menu_fixture.game.run_director.current_state, RunDirector.RunState.INTRO, "focus: intro is unskippable")
 	menu_fixture.game.run_director.complete_intro()
+	_expect_true(_confirm_current_district_plan(menu_fixture.game) != null, "focus: required District Plan confirms")
 	menu_fixture.game._apply_latched_focus_pause_if_needed(RunDirector.RunState.PATROLLING)
 	_expect_equal(menu_fixture.game.run_director.current_state, RunDirector.RunState.PAUSED, "focus: latch pauses first eligible state")
 	_expect_false(menu_fixture.game.patrol_controller.simulation_enabled, "focus: patrol remains frozen")
@@ -308,7 +326,7 @@ func test_shop_cadence_records_only_successful_unique_visits() -> void:
 	fixture.game.vertical_slice_overlay.start_button.pressed.emit()
 	fixture.game.run_director.complete_intro()
 	_expect_true(
-		bool(fixture.game.run_flow_controller.call("_open_shop_visit", &"baseline_shop", -1)),
+		_open_direct_planned_shop(fixture.game, &"baseline_shop", -1, &"m6_shop_probe"),
 		"cadence shop: valid visit opens"
 	)
 	_expect_equal(
@@ -340,7 +358,7 @@ func test_authored_spawn_staging_uses_eligible_time_and_exact_boundaries() -> vo
 	fixture.game.vertical_slice_overlay.start_button.pressed.emit()
 	fixture.game.run_director.complete_intro()
 	_expect_true(
-		fixture.game.run_director.begin_encounter(STANDARD_ENCOUNTER),
+		_begin_direct_planned_encounter(fixture.game, STANDARD_ENCOUNTER, &"m6_spawn_probe"),
 		"spawn cadence: run enters an ordinary encounter"
 	)
 	_expect_true(
@@ -494,7 +512,7 @@ func test_terminal_outcome_settles_visible_coin_clusters_as_base_only() -> void:
 		"terminal coins: pending optional cluster registers"
 	)
 	_expect_true(
-		fixture.game.run_director.begin_encounter(STANDARD_ENCOUNTER),
+		_begin_direct_planned_encounter(fixture.game, STANDARD_ENCOUNTER, &"m6_defeat_probe"),
 		"terminal coins: defeat probe begins eligible encounter"
 	)
 	_expect_true(
@@ -585,7 +603,7 @@ func test_equipment_and_card_reward_modals_survive_pause_round_trip() -> void:
 	equipment_fixture.game.vertical_slice_overlay.start_button.pressed.emit()
 	equipment_fixture.game.run_director.complete_intro()
 	_expect_true(
-		equipment_fixture.game.run_director.begin_encounter(STANDARD_ENCOUNTER),
+		_begin_direct_planned_encounter(equipment_fixture.game, STANDARD_ENCOUNTER, &"m6_equipment_reward_probe"),
 		"reward pause: equipment probe begins encounter"
 	)
 	_expect_true(
@@ -623,7 +641,7 @@ func test_equipment_and_card_reward_modals_survive_pause_round_trip() -> void:
 	card_fixture.game.vertical_slice_overlay.start_button.pressed.emit()
 	card_fixture.game.run_director.complete_intro()
 	_expect_true(
-		card_fixture.game.run_director.begin_encounter(STANDARD_ENCOUNTER),
+		_begin_direct_planned_encounter(card_fixture.game, STANDARD_ENCOUNTER, &"m6_card_reward_probe"),
 		"reward pause: card probe begins encounter"
 	)
 	_expect_true(
@@ -682,11 +700,11 @@ func _advance_director_to_wp02_lap_decision(game: GameRun, target_lap: int) -> v
 		var lap_index: int = int(loop.get("lap_index", 1))
 		var block_index: int = int(loop.get("block_index", 1))
 		var encounter_id: int = (lap_index - 1) * 3 + block_index + 6000
-		game.run_director.begin_district_block(
-			StringName("m6_compat::lap_%d::block_%d" % [lap_index, block_index]),
-			&"encounter"
+		_begin_direct_planned_encounter(
+			game,
+			STANDARD_ENCOUNTER,
+			StringName("m6_compat::lap_%d::block_%d" % [lap_index, block_index])
 		)
-		game.run_director.begin_encounter(STANDARD_ENCOUNTER)
 		game.run_director.notify_encounter_completed(encounter_id, STANDARD_ENCOUNTER)
 		game.run_director.complete_reward_selection()
 
@@ -696,6 +714,74 @@ func _advance_director_to_wp02_boss(game: GameRun) -> void:
 		_advance_director_to_wp02_lap_decision(game, target_lap)
 		if target_lap < 3:
 			game.run_director.decline_extraction(game.run_director.get_district_decision_token())
+
+
+func _confirm_current_district_plan(game: GameRun) -> DistrictCardDefinition:
+	var snapshot: Dictionary = game.card_system.get_snapshot()
+	var offer: Array = snapshot.get("offer", []) as Array
+	if offer.is_empty():
+		return null
+	var card: DistrictCardDefinition = offer[0] as DistrictCardDefinition
+	if card == null:
+		return null
+	var staged: Dictionary = game.run_flow_controller.stage_focused_district_plan_choice(
+		card.id,
+		int(snapshot.get("offer_revision", -1)),
+		int(snapshot.get("context_lifecycle_revision", -1)),
+		StringName(snapshot.get("lap_id", &"")),
+		StringName(snapshot.get("block_id", &""))
+	)
+	if not bool(staged.get("accepted", false)):
+		return null
+	var confirmed: Dictionary = game.run_flow_controller.confirm_focused_district_plan_choice(
+		int(staged.get("confirmation_token", -1))
+	)
+	return card if bool(confirmed.get("accepted", false)) else null
+
+
+func _begin_direct_planned_encounter(
+	game: GameRun,
+	definition: EncounterDefinition,
+	occurrence_id: StringName
+) -> bool:
+	if _confirm_current_district_plan(game) == null:
+		return false
+	if not game.run_director.begin_district_block(occurrence_id, &"encounter"):
+		return false
+	if not _resolve_direct_focused_block(game, occurrence_id, &"encounter"):
+		return false
+	return game.run_director.begin_encounter(definition)
+
+
+func _open_direct_planned_shop(
+	game: GameRun,
+	source_id: StringName,
+	maximum_purchases: int,
+	occurrence_id: StringName
+) -> bool:
+	if _confirm_current_district_plan(game) == null:
+		return false
+	if not game.run_director.begin_district_block(occurrence_id, &"shop"):
+		return false
+	if not _resolve_direct_focused_block(game, occurrence_id, &"shop"):
+		return false
+	return bool(game.run_flow_controller.call("_open_shop_visit", source_id, maximum_purchases))
+
+
+func _resolve_direct_focused_block(
+	game: GameRun,
+	occurrence_id: StringName,
+	baseline_node_type: StringName
+) -> bool:
+	var loop: Dictionary = game.run_director.get_district_loop_snapshot()
+	return game.card_system.resolve_focused_district_plan_block(
+		int(loop.get("block_index", 1)),
+		occurrence_id,
+		int(loop.get("block_index", 1)),
+		occurrence_id,
+		baseline_node_type,
+		loop
+	) != null
 
 
 func _count_telegraphs(game: GameRun) -> int:

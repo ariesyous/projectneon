@@ -4,6 +4,16 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 
 ## [Unreleased]
 
+### 2026-08-22 — WP03 District Planning and Cards
+
+- Replaced the production Milestone 5 persistent hand/five-future-slot flow with a mandatory focused District Plan: up to two large next-block location cards, exact block/Heat/special/reward-risk prediction, one confirmation, compact Next Block, and resolved lap history.
+- Added the accessible one-copy lap deck, draw-without-replacement refill, unselected-card retention, next-lap archive/rebuild, no hidden INTRO draw, and locked schema-1 `cards` vector `30301 → [gang_hideout, subway_entrance]` with cosmetic isolation.
+- Added exact offer/lifecycle/lap/block staging and confirmation tokens; stale, replayed, malformed, wrong-phase, wrong-context, unsafe-transition, restart, and menu paths reject or clear without hidden mutation.
+- Preserved all four stable IDs/authored effects, exact-once Heat/effect resolution, irreversible Night Pressure, WP02 lap-decision/block-nine boss precedence, fixed-route internals, same-seed access snapshots, random schema 1, and isolated Milestone 5 compatibility.
+- Made click/tap/keyboard native Buttons the sole production card mental model. Card drag, supplemental card rewards, hand/draw/discard jargon, five route targets, legality dots, and legacy tutorial overlap are removed or compatibility-gated from release.
+- The isolated release snapshot passed **5/5 focused tests (130 assertions)**, **72/72 affected tests (1,388 assertions)**, and **274/274 cumulative tests (3,919 assertions across 27 suites)** with no failures or skips. Configured all-four-card live-effect coverage, native keyboard/touch GUI routing, configured `/GameRun`, three inspected captures, Windows/Web release exports, exported-Windows runtime, and 2560×1440 Web real pointer prediction/occurrence/history passed with an empty warning/error console.
+- Recorded the technical evidence and precise migration map. The owner-run unbriefed first-use gate remains pending and no qualitative pass or WP04 work is claimed. On 2026-08-22 the owner separately authorized this exact evidenced WP03 boundary for a `main` and GitHub Pages browser-playtest release; publication does not close that gate.
+
 ### 2026-08-21 — WP02 Core Run Loop and State Clarity
 
 - Added typed `DistrictLoopDefinition` and run-owned `DistrictRunLifecycle` contracts for exactly three laps of three meaningful blocks, stable IDs, revisions, exact-once lap-decision tokens/trail, +6 Push Heat, per-lap Pressure/reward/modifier data, and final-lap boss commitment.

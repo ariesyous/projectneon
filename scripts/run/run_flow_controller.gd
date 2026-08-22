@@ -19,6 +19,11 @@ signal card_reward_ready(
 	hand_full: bool
 )
 signal card_planning_changed(is_active: bool)
+signal district_plan_choice_resolved(
+	card_id: StringName,
+	lap_id: StringName,
+	block_id: StringName
+)
 signal action_feedback(message: String)
 
 const ENCOUNTER_SOURCE_BASELINE: StringName = &"baseline"
@@ -107,6 +112,7 @@ func configure(
 	_run_director.run_state_changed.connect(_on_run_state_changed)
 	_run_director.run_completed.connect(_on_run_completed)
 	_run_director.snapshot_changed.connect(_on_authority_snapshot_changed)
+	_run_director.district_block_completed.connect(_on_district_block_completed)
 	_patrol_controller.route_node_entered.connect(_on_route_node_entered)
 	_patrol_controller.route_progress_changed.connect(_on_route_progress_changed)
 	_patrol_controller.route_slots_changed.connect(_on_route_slots_changed)
@@ -250,6 +256,9 @@ func skip_card_reward(encounter_instance_id: int, choice_token: int) -> bool:
 
 
 func begin_card_planning() -> bool:
+	if _card_system != null and _card_system.is_focused_district_plan_enabled():
+		action_feedback.emit("DISTRICT PLAN OPENS WHEN THE NEXT BLOCK NEEDS A CHOICE")
+		return false
 	if _card_system == null or _run_director.current_state not in [
 		RunDirector.RunState.PATROLLING,
 		RunDirector.RunState.SHOP,
@@ -274,14 +283,139 @@ func begin_card_planning() -> bool:
 func end_card_planning() -> bool:
 	if _card_system == null or not _card_system.is_planning_active():
 		return false
+	if (
+		_card_system.is_focused_district_plan_enabled()
+		and not _card_system.has_focused_next_block_selection()
+	):
+		action_feedback.emit("CHOOSE THE NEXT BLOCK BEFORE CONTINUING")
+		return false
 	var owns_pause: bool = _card_system.planning_owns_pause()
 	_card_system.end_planning()
 	var resumed: bool = true
 	if owns_pause:
 		resumed = _run_director.end_card_planning_pause()
 	card_planning_changed.emit(false)
+	if _card_system.is_focused_district_plan_enabled():
+		_continue_patrol_if_active()
 	_emit_status()
 	return resumed
+
+
+func stage_focused_district_plan_choice(
+	card_id: StringName,
+	expected_offer_revision: int,
+	expected_lifecycle_revision: int,
+	expected_lap_id: StringName,
+	expected_block_id: StringName
+) -> Dictionary:
+	if _card_system == null or not _card_system.is_focused_district_plan_enabled():
+		return _card_action_result(false, &"focused_plan_unavailable")
+	if not _is_card_planning_state_allowed(_run_director.current_state):
+		var invalid_state: Dictionary = _focused_card_action_result(
+			false,
+			&"planning_state_invalid"
+		)
+		_emit_focused_card_rejection(&"planning_state_invalid")
+		return invalid_state
+	var current: Dictionary = _run_director.get_district_loop_snapshot()
+	if (
+		String(current.get("phase_name", "")) != "PLAN"
+		or int(current.get("lifecycle_revision", -1)) != expected_lifecycle_revision
+		or StringName(current.get("lap_id", &"")) != expected_lap_id
+		or StringName(current.get("block_id", &"")) != expected_block_id
+	):
+		var stale: Dictionary = _focused_card_action_result(false, &"transition_race")
+		_emit_focused_card_rejection(&"transition_race")
+		return stale
+	var result: Dictionary = _card_system.stage_focused_district_plan_choice(
+		card_id,
+		expected_offer_revision,
+		expected_lifecycle_revision,
+		expected_lap_id,
+		expected_block_id
+	)
+	if bool(result.get("accepted", false)):
+		action_feedback.emit(
+			"CONFIRM %s AS THE NEXT BLOCK"
+			% String(card_id).replace("_", " ").to_upper()
+		)
+	else:
+		_emit_focused_card_rejection(result.get("reason", &"invalid"))
+	_emit_status()
+	return result
+
+
+func confirm_focused_district_plan_choice(
+	confirmation_token: int
+) -> Dictionary:
+	if _card_system == null or not _card_system.is_focused_district_plan_enabled():
+		return _focused_card_action_result(false, &"focused_plan_unavailable")
+	if (
+		not _card_system.is_planning_active()
+		or not _is_card_planning_state_allowed(_run_director.current_state)
+	):
+		_end_card_planning_for_unsafe_state(_run_director.current_state)
+		var unsafe: Dictionary = _focused_card_action_result(
+			false,
+			&"planning_state_invalid"
+		)
+		_emit_focused_card_rejection(&"planning_state_invalid")
+		_emit_status()
+		return unsafe
+	var record: CardPlacementRecord = (
+		_card_system.confirm_focused_district_plan_choice(
+			confirmation_token,
+			_run_director.get_district_loop_snapshot()
+		)
+	)
+	if record == null or record.card == null:
+		var rejected: Dictionary = _focused_card_action_result(
+			false,
+			&"stale_or_invalid"
+		)
+		_emit_focused_card_rejection(&"stale_or_invalid")
+		_emit_status()
+		return rejected
+
+	# CardSystem has latched the exact block/token before this sole Heat call.
+	# Replayed confirmation cannot return the record and therefore cannot heat.
+	_run_director.apply_heat_delta(record.card.heat_delta)
+	var result: Dictionary = _focused_card_action_result(true, &"ok")
+	result.merge({
+		"completed": true,
+		"confirmation_token": record.placement_token,
+		"card_id": record.card.id,
+		"card_name": record.card.display_name,
+		"block_id": record.slot_id,
+		"block_type": CardSystem.focused_block_type(record.card),
+		"special_rule": CardSystem.focused_special_rule(record.card),
+		"heat_delta": record.card.heat_delta,
+	})
+	action_feedback.emit(
+		"NEXT BLOCK: %s / %s / HEAT %s%d"
+		% [
+			record.card.display_name.to_upper(),
+			CardSystem.focused_block_type(record.card),
+			"+" if record.card.heat_delta >= 0 else "",
+			record.card.heat_delta,
+		]
+	)
+	end_card_planning()
+	_emit_status()
+	return result
+
+
+func cancel_focused_district_plan_choice(
+	confirmation_token: int = -1
+) -> bool:
+	if (
+		_card_system == null
+		or not _card_system.cancel_focused_district_plan_choice(confirmation_token)
+	):
+		return false
+	action_feedback.emit("SELECTION CLEARED - OFFER UNCHANGED")
+	_emit_status()
+	return true
 
 
 func stage_card_placement(
@@ -541,6 +675,8 @@ func _on_run_state_changed(_previous_state: int, new_state: int) -> void:
 	_patrol_controller.set_simulation_enabled(new_state == RunDirector.RunState.PATROLLING)
 	if new_state == RunDirector.RunState.BOSS_ACTIVE:
 		_start_boss_encounter()
+	if new_state == RunDirector.RunState.PATROLLING:
+		_begin_required_focused_district_plan()
 	_emit_status()
 
 
@@ -587,6 +723,13 @@ func _on_route_node_entered(
 func _dispatch_route_entry(entry: RouteEntryContext) -> void:
 	if entry == null or _run_director.current_state != RunDirector.RunState.PATROLLING:
 		return
+	if (
+		_card_system != null
+		and _card_system.is_focused_district_plan_enabled()
+		and _run_director.is_district_loop_enabled()
+	):
+		_dispatch_focused_district_plan_entry(entry)
+		return
 	var current_modification: RouteModificationRecord = null
 	if _card_system != null:
 		current_modification = _patrol_controller.get_current_route_modification()
@@ -608,6 +751,46 @@ func _dispatch_route_entry(entry: RouteEntryContext) -> void:
 		_resolve_card_route_effect(resolved)
 	else:
 		_resolve_baseline_route_node(entry.node_type)
+	_emit_status()
+
+
+func _dispatch_focused_district_plan_entry(entry: RouteEntryContext) -> void:
+	var card: DistrictCardDefinition = _card_system.get_focused_next_block_card()
+	if card == null:
+		action_feedback.emit("ROUTE HELD - CHOOSE THE NEXT DISTRICT BLOCK")
+		return
+	var block_kind: StringName = CardSystem.focused_block_kind(card)
+	if not _run_director.begin_district_block(entry.occurrence_id, block_kind):
+		action_feedback.emit("BLOCK START REJECTED - ROUTE HELD")
+		return
+	var resolved: CardResolutionRecord = (
+		_card_system.resolve_focused_district_plan_block(
+			entry.occurrence_index,
+			entry.occurrence_id,
+			entry.route_index,
+			entry.node_id,
+			entry.node_type,
+			_run_director.get_district_loop_snapshot()
+		)
+	)
+	if resolved == null or resolved.card == null or resolved.effect == null:
+		push_error("Focused District Plan could not resolve its accepted next block.")
+		action_feedback.emit("DISTRICT PLAN RESOLUTION FAILED - ROUTE HELD")
+		return
+	action_feedback.emit(
+		"%s NOW: %s - %s"
+		% [
+			resolved.card.display_name.to_upper(),
+			CardSystem.focused_block_type(resolved.card),
+			CardSystem.focused_special_rule(resolved.card),
+		]
+	)
+	district_plan_choice_resolved.emit(
+		resolved.card.id,
+		StringName(_run_director.get_district_loop_snapshot().get("lap_id", &"")),
+		StringName(_run_director.get_district_loop_snapshot().get("block_id", &""))
+	)
+	_resolve_card_route_effect(resolved)
 	_emit_status()
 
 
@@ -732,7 +915,11 @@ func _on_encounter_completed(
 	_active_encounter_context = null
 	_pending_reward_encounter_id = encounter_instance_id
 	_pending_card_reward_eligible = (
-		context.source_id == ENCOUNTER_SOURCE_BASELINE
+		not (
+			_card_system != null
+			and _card_system.is_focused_district_plan_enabled()
+		)
+		and context.source_id == ENCOUNTER_SOURCE_BASELINE
 		and context.allows_card_reward
 		and not definition.elite_eligible
 	)
@@ -772,7 +959,8 @@ func _finish_core_reward_selection() -> bool:
 
 func _prepare_supplemental_card_reward() -> bool:
 	if (
-		not _pending_card_reward_eligible
+		(_card_system != null and _card_system.is_focused_district_plan_enabled())
+		or not _pending_card_reward_eligible
 		or _card_system == null
 		or _pending_reward_encounter_id < 0
 	):
@@ -832,6 +1020,10 @@ func _complete_failed_or_utility_block() -> void:
 		if not _run_director.complete_district_utility_block():
 			action_feedback.emit("BLOCK COMPLETION REJECTED - ROUTE HELD")
 			return
+		# A utility completion can keep the run in PATROLLING while advancing the
+		# lifecycle back to PLAN. Open the required choice only after the
+		# completion call has returned, avoiding a re-entrant pause transition.
+		_begin_required_focused_district_plan()
 	_continue_patrol_if_active()
 
 
@@ -870,9 +1062,32 @@ func _card_action_result(accepted: bool, reason: StringName) -> Dictionary:
 	}
 
 
+func _focused_card_action_result(accepted: bool, reason: StringName) -> Dictionary:
+	var district: Dictionary = (
+		_run_director.get_district_loop_snapshot()
+		if _run_director != null
+		else {}
+	)
+	var cards: Dictionary = _card_system.get_snapshot() if _card_system != null else {}
+	return {
+		"accepted": accepted,
+		"reason": reason,
+		"confirmation_token": -1,
+		"offer_revision": int(cards.get("offer_revision", -1)),
+		"lifecycle_revision": int(district.get("lifecycle_revision", -1)),
+		"lap_id": StringName(district.get("lap_id", &"")),
+		"block_id": StringName(district.get("block_id", &"")),
+	}
+
+
 func _emit_card_rejection(reason_value: Variant) -> void:
 	var reason: String = String(reason_value).replace("_", " ").to_upper()
 	action_feedback.emit("INVALID CARD PLACEMENT: %s - RETURNED TO HAND" % reason)
+
+
+func _emit_focused_card_rejection(reason_value: Variant) -> void:
+	var reason: String = String(reason_value).replace("_", " ").to_upper()
+	action_feedback.emit("DISTRICT PLAN UNCHANGED: %s" % reason)
 
 
 func _is_card_planning_state_allowed(state: int) -> bool:
@@ -915,6 +1130,40 @@ func _on_encounter_status_changed(_snapshot: Dictionary) -> void:
 
 func _on_authority_snapshot_changed(_snapshot: Dictionary) -> void:
 	_emit_status()
+
+
+func _on_district_block_completed(
+	lap_index: int,
+	block_index: int,
+	_block_id: StringName
+) -> void:
+	if _card_system != null and _card_system.is_focused_district_plan_enabled():
+		_card_system.complete_focused_district_plan_block(lap_index, block_index)
+
+
+func _begin_required_focused_district_plan() -> bool:
+	if (
+		_resetting_run
+		or _card_system == null
+		or not _card_system.is_focused_district_plan_enabled()
+		or _card_system.is_planning_active()
+		or _card_system.has_focused_next_block_selection()
+		or _run_director.current_state != RunDirector.RunState.PATROLLING
+	):
+		return false
+	var district: Dictionary = _run_director.get_district_loop_snapshot()
+	if String(district.get("phase_name", "")) != "PLAN":
+		return false
+	if not _run_director.begin_card_planning_pause():
+		action_feedback.emit("DISTRICT PLAN COULD NOT PAUSE AT THE SAFE BOUNDARY")
+		return false
+	if not _card_system.begin_focused_district_plan(district, true):
+		_run_director.end_card_planning_pause()
+		action_feedback.emit("NO DISTRICT PLAN CHOICE IS AVAILABLE")
+		return false
+	card_planning_changed.emit(true)
+	_emit_status()
+	return true
 
 
 func _on_card_snapshot_changed(_snapshot: Dictionary) -> void:

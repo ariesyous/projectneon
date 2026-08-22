@@ -2,7 +2,7 @@
 
 ## Catalog status
 
-This catalog reflects the implemented **Milestones 0–6 plus WP01 and WP02**. WP01 contributes the reusable visual language without gameplay authority. WP02 adds the authoritative three-lap/three-block lifecycle, exact-once lap decisions, all-crew production access, cadence bands, state-clarity presentation, and summary fields while preserving the Milestone 5 card compatibility boundary. WP02's technical/runtime/visual gate has passed; its owner-run five-person comprehension gate remains pending.
+This catalog reflects the implemented **Milestones 0–6 plus WP01–WP03**. WP01 contributes the reusable visual language without gameplay authority. WP02 adds the authoritative three-lap/three-block lifecycle, exact-once lap decisions, all-crew production access, cadence bands, state-clarity presentation, and summary fields. WP03 migrates the production card interaction to the focused next-block District Plan while preserving the four-card catalogue and isolated Milestone 5 compatibility. WP03's technical/runtime/visual/platform gate has passed; its owner-run unbriefed first-use gate remains pending.
 
 Milestone 5 was merged through PR #4 and published from `main` commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`; it remains the last fully accepted baseline. Milestone 6 was committed on `codex/milestone-6-vertical-slice` as `9c1cdaa` plus `ca3fe18`, and the owner authorized its tentative [GitHub Pages playtest](https://ariesyous.github.io/projectneon/) publication on 2026-07-22.
 
@@ -10,14 +10,14 @@ The working tree separately carries the owner's tracked 17-file Godot-AI 3.0.5 u
 
 ## WP00-approved availability and classification
 
-WP00 changed documentation only. WP01 migrated presentation and WP02 migrated its owned lifecycle/profile behavior without adding a crew, card, equipment item, enemy, boss, save version, or permanent power system.
+WP00 changed documentation only. WP01 migrated presentation, WP02 migrated lifecycle/profile behavior, and WP03 migrated card scheduling/interaction without adding a crew, card, equipment item, enemy, boss, save version, stream, schema version, or permanent power system.
 
 | Approved target | Current implementation boundary | Owning package |
 | --- | --- | --- |
 | Jax, Zoey, and Rex available on a fresh production profile | Implemented by WP02; all three are selectable before the first gameplay draw | Preserve; historical serialized facts remain loadable |
 | Eight existing equipment entries and Arcade, Convenience Store, and Subway Entrance available by default | Already implemented | Preserve |
 | Hacker Deck and Gang Hideout remain breadth unlocks | Already implemented | Preserve through WP02 |
-| Two-choice, next-block District Plan from a four-card one-copy lap deck | M5/M6 currently use a persistent hand and five future route slots | WP03 migrates presentation and scheduling while preserving stable IDs and typed authority |
+| Two-choice, next-block District Plan from a four-card one-copy lap deck | Implemented by WP03 with a lap deck, visible offer/refill, exact next-block binding, and resolved history | Preserve stable IDs, authored effects, typed authority, and schema-1 `cards` determinism |
 | Combat roles are Environment, Focus, and Backup | WP02 state clarity keeps Hydrant/Backup and presents Subway as strategic travel; Focus remains visibly unavailable | WP05 prototypes and selects Focus/Environment behavior |
 | Rally | Candidate only, not catalogued as promised content | WP05 owner gate if tested |
 | Scrap | Summary-only; no spend contract or economy | No package may infer a currency sink without separate approval |
@@ -50,7 +50,7 @@ The approved breadth/cosmetic/challenge boundary adds no permanent stats and pre
 | Heat, Night Pressure, timer, resources | Compact labelled values/meters; irreversible Pressure and Heat implication remain textual/inspectable |
 | Crew status | Compact health/state plus full authored name disclosure |
 | Equipment and synergies | Three-slot compact build identity with focused inspect/backpack/synergy disclosure |
-| District Plan compatibility | Compact safe-state entry into the still-authoritative M5 hand/five-slot planner until WP03 |
+| District Plan | Mandatory focused next-block choice with large authored cards, exact prediction, one confirm, compact next state, and resolved history; no release hand/five-slot clutter |
 | Interventions | Environment/Hydrant and Backup use shared icon-plus-label controls; absent Focus is visibly disabled; Subway remains strategic travel |
 | Focused decisions | Equipment reward, finite shop, current Extract/Push, pause/settings, and summary own attention while active |
 
@@ -476,9 +476,26 @@ Owner playtesting favors a fuller Diablo II-style character inventory in which t
 
 Historical out-of-scope itemization notes considered sell/salvage, auto-salvage, rarity, uniques, affixes, sets, a larger character sheet, category slots, item-instance rolls, and broader economy values. None are planned or authorized by WP00 or the bounded WP01–WP07 roadmap. The implemented non-destructive drag/snap-back plus click/tap/keyboard confirmation contracts remain current requirements until an owning package deliberately migrates their presentation.
 
-### Implemented Milestone 5/6 District cards
+### Implemented WP03 focused District Plan
 
-This section records the current run-deck/hand/five-future-slot system. The WP00-approved release target is the focused District Plan described in the prospective table above; WP03, not WP00, owns that migration.
+Production `GameRun` uses the same exactly four validated `DistrictCardDefinition` and `CardEffectDefinition` Resources through a lap-scoped one-copy finite deck. PLAN draws an offer of up to two using only `cards`; the unselected card remains, the offer refills while the lap deck has a card, and three blocks consume at most three cards. The next lap archives the resolved trail and rebuilds the accessible deck. INTRO performs no hidden draw. Random schema remains 1; locked full-access seed `30301` offers `gang_hideout`, then `subway_entrance`.
+
+| Stable ID / name | Presented next block | Heat | One-line special rule | Reward/risk expression |
+| --- | --- | ---: | --- | --- |
+| `arcade` / Arcade | `FIGHT + REWARD` | `+10` | Standard fight; reward quality +1 existing tier | One non-recursive standard encounter and its ordinary upgraded reward |
+| `convenience_store` / Convenience Store | `SHOP + RECOVERY` | `-10` | One purchase from existing finite stock | One existing-stock cooling/shop purchase; no replenishment |
+| `gang_hideout` / Gang Hideout | `ELITE + GEAR` | `+20` | Scaled Viper Signal elite | Required Viper Enforcer path and the normal guaranteed equipment phase |
+| `subway_entrance` / Subway Entrance | `TRANSIT + COOLING` | `-15` | No combat; replaces one baseline fight | Skips exactly one baseline standard encounter without consuming Subway charges |
+
+Each selection is staged against the exact offer revision, lifecycle revision, stable lap ID, and stable block ID, then confirmed through one token. Successful confirmation applies Heat once and binds the exact next block; all stale/replayed/wrong-context/transition-race paths are no-ops. Safe-boundary progression runs before dispatch, and each consequence/history record resolves once. Cards never lower Night Pressure, change lap decisions, clear boss commitment, or bypass block nine.
+
+The release panel shows location icon/name, block type, Heat, special rule, reward/risk, selected prediction, compact Next Block, and current/archived history through native click/tap/keyboard controls. It has no close/decline path because PLAN is required. Production card dragging, persistent hand/draw/discard counts, supplemental card rewards, route dots, validity jargon, and five future-slot targets are disabled/hidden. A natural production lap can show one centered remaining block-three choice without deadlock.
+
+The isolated WP03 release snapshot passed **274/274 cumulative tests and 3,919 assertions across 27 suites**, configured all-four-card live-effect and keyboard/touch input routing checks, configured native `/GameRun`, three inspected 1280×720 captures, Windows/Web release exports, exported Windows runtime, and 2560×1440 production-Web real pointer prediction/occurrence/history with an empty warning/error console. The owner-run unbriefed first-use gate remains pending.
+
+### Historical Milestone 5/6 District cards
+
+This section preserves the historical run-deck/hand/five-future-slot contract and its verification. WP03 supersedes it only as the production release interaction; isolated Milestone 5 compatibility fixtures remain valid.
 
 Milestone 5 implements exactly four validated `DistrictCardDefinition` Resources and four typed `CardEffectDefinition` payloads. The authored deck contains one copy of each card. Every cost is `0` and is displayed as `FREE`; no card currency, shop, or broader economy exists.
 
@@ -537,7 +554,7 @@ Milestone 6 preserves stream ownership: encounter definition selection uses `enc
 
 Before the first draw, `RunContentAccessSnapshot` captures selected crew, sorted allowed equipment/card IDs, save version, and development-access flag. Same-seed restart reuses it. Reproduction is limited to the same supported build/content revision, schema 1, access snapshot, seed, gameplay decisions/effect resolutions, and authoritative timing; cross-version or bitwise physics replay is not promised.
 
-## Cadence, summary, and scope record after WP02
+## Cadence, summary, and scope record after WP03
 
 The measurement-only `wp02_cadence` bands are ambient 10–20, strategic complete-block 45–90, and major lap-decision 120–180 eligible active seconds. Composed instrumentation records coin-cluster presentation as ambient, each meaningful block completion as strategic, and each lap decision/boss commitment as major. The tracker rejects coin-labelled strategic events and never schedules or manufactures opportunities. The non-boss 3.0-second arrival beat and 12.0-second staged-actor interval remain authored pacing inputs; observed fight/block/lap distributions and the 8–12-minute boss-run target still require representative human sessions rather than an automated claim. The historical `milestone_6_cadence` resource and its 30–60 strategic record remain M6 evidence only.
 
@@ -545,6 +562,6 @@ WP02 strategic event IDs are keyed to accepted district block completion and maj
 
 The complete `RunSummaryRecord` includes result (`VICTORY`, `EXTRACTED`, or `DEFEATED`), duration, seed, schema, maximum Heat, final Night Pressure, completed laps/blocks, boss commitment, final stable lap/block IDs, accepted decision trail, encounters, enemies/elites defeated, boss result (`DEFEATED`, `CREW DEFEATED`, or `NOT REACHED`), coins, manual clusters, maximum streak, scrap, highest combo, equipment build, active synergies, Restart Run, and Return to Main Menu. Unresolved clusters settle at base value before publication. Completed-run persistence happens only after this snapshot and cannot change it.
 
-WP02 adds lifecycle definitions, not breadth content. WP03–WP07 may restructure the existing experience only after separate authorization; the roadmap does not pre-authorize procedural route generation, additional district/card/crew/enemy/boss/equipment content, multiplayer, controller support, localization, achievements, daily systems/leaderboards, advanced meta-progression/permanent stat trees, mid-run saving/replay, a card economy, or equipment selling/salvage/rarity/uniques/affixes/sets.
+WP02 adds lifecycle definitions and WP03 restructures the existing four-card interaction; neither adds breadth content. WP04–WP07 may change only their owned systems after separate authorization. The roadmap does not pre-authorize procedural route generation, additional district/card/crew/enemy/boss/equipment content, multiplayer, controller support, localization, achievements, daily systems/leaderboards, advanced meta-progression/permanent stat trees, mid-run saving/replay, a card economy, or equipment selling/salvage/rarity/uniques/affixes/sets.
 
 Godot 4.7.2 passed **264/264 cumulative tests and 3,646 assertions with no failures or skips across 25 suites**. The authored fixed route now uses a 21.0-second represented approach while preserving its stable ID and five nodes; fixed seed `6062026` reaches lap decisions at 121.267/292.683 eligible seconds and a boss result at 599.883 seconds. The configured `/GameRun` smoke covered the complete WP02 lifecycle; twelve native/safe-area/Web-scale captures were inspected; Windows and Web release exports completed; the exported Windows runtime exited cleanly; and local production Web at native and 2560×1440 entered PLAN through real pointer input with no warning/error console entry. The preserved `E` extraction shortcut is covered with its exact decision token. The cumulative harness's pre-existing 48 ObjectDB/four-resource shutdown diagnostic remains recorded and was not suppressed. Representative five-person comprehension, broader timing distributions, consequence/variety/replay results, and final owner acceptance remain pending.

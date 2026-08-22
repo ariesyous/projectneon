@@ -4,7 +4,7 @@ Neon Loop is a Godot 4.x pixel-art auto-brawler about shaping an automatic stree
 
 ## Play online
 
-Play the current WP02 browser-playtest build at **[ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/)**. The owner authorized the technically evidenced WP02 boundary for `main` and GitHub Pages publication on 2026-08-21; the separate five-person comprehension gate remains pending.
+Play the owner-authorized WP03 browser-playtest build at **[ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/)**. The owner authorized this technically evidenced boundary for `main` and GitHub Pages publication on 2026-08-22; the separate five-person first-use gate remains pending.
 
 Milestone 5 was implemented in feature commit `7ac7fa0794e79cfc60781b84ce7181f61e16bf7f`, merged through [PR #4](https://github.com/ariesyous/projectneon/pull/4), and published from `main` at merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`. [GitHub Pages run 29713282074](https://github.com/ariesyous/projectneon/actions/runs/29713282074) completed successfully. This records the actual release state without assigning a semantic version.
 
@@ -14,14 +14,17 @@ Repository: [github.com/ariesyous/projectneon](https://github.com/ariesyous/proj
 
 ## Project status
 
-**WP02 — Core Run Loop and State Clarity: technical/runtime/visual gate passed; owner five-person comprehension gate pending**
+**WP03 — District Planning and Cards: local technical/runtime/visual/platform gate passed; owner unbriefed first-use gate pending**
 
-The local WP02 working tree adds:
+The local WP03 working tree includes the WP02 lifecycle and adds:
 
 - An authoritative three-lap/three-block lifecycle with stable lap/block IDs, explicit PLAN → BLOCK/FIGHT → REWARD rhythm, Extract/Push after laps one and two, and an unmistakable second-Push commitment to lap three and The Viper
 - Exact-once lap-decision tokens, +6 Heat per Push, per-lap Pressure/reward/modifier data, stale/replay rejection, lifecycle summaries, and synchronous restart/menu cleanup without UI-owned progression
 - All three crew available on fresh production access snapshots while preserving serialized version-1 Zoey/Rex history; Hacker Deck and Gang Hideout remain breadth unlocks
-- Phase, next-event/countdown, current-action, shop, lap-decision, boss, extraction, and result presentation using the WP01 visual language; the Milestone 5 planner remains functional until WP03
+- A mandatory focused District Plan at every block boundary with up to two large next-block cards, exact Heat/special/reward-risk prediction, one confirmation, compact next state, and resolved lap history
+- A one-copy accessible lap deck using only the schema-1 `cards` stream, exact offer/lifecycle/lap/block revisions and tokens, immutable stale/replay/race rejection, and same-seed restart
+- Click/tap/keyboard-native choice parity with no production card drag, hand/draw/discard jargon, supplemental card reward, five future-slot targets, legality dots, or tutorial/help overlap
+- Phase, next-event/countdown, current-action, shop, lap-decision, boss, extraction, and result presentation using the WP01 visual language
 - Measurement-only 10–20-second ambient, 45–90-second complete-block, and 120–180-second lap-decision bands; schema 1 and all seven deterministic streams remain unchanged
 
 The preserved Milestone 6 content baseline supplies:
@@ -37,9 +40,9 @@ The preserved Milestone 6 content baseline supplies:
 - Presentation-only combo tracking and the historical M6 cadence record; WP02 supersedes only the active complete-block band as described above. Coin clicks remain ambient and ignoring them preserves the full base reward
 - The unchanged deterministic schema version 1 and the same seven named streams; Milestone 6 boss actions, summons, projectiles, interventions, tutorials, combo/cadence, audio synthesis, and screen shake add no unseeded gameplay randomness
 
-Godot 4.7.2 passed the current cumulative gate at **264/264 tests and 3,646 assertions with no failures or skips across 25 suites**. A fixed-seed ordinary composed trace reaches both lap decisions inside the 120–180-second band and a boss result at 599.883 eligible seconds. Configured `/GameRun`, twelve inspected native/safe-area/Web-scale captures, Windows/Web release exports, the exported Windows runtime, and native/2560×1440 local production-Web pointer/console checks passed. The cumulative harness still emits the pre-existing post-success 48 ObjectDB/four-resource shutdown diagnostic; focused, affected, configured, long-form, export/runtime, and browser runs do not reproduce it. The owner five-person WP02 comprehension check remains pending.
+Godot 4.7.2 passed the isolated release-snapshot cumulative gate at **274/274 tests and 3,919 assertions with no failures or skips across 27 suites**. WP03's configured checks passed all four live card effects, native keyboard/touch select and confirm, prediction, exact confirmation/Heat, replay rejection, matching occurrence, resolved history, natural one-choice handling, and cleanup. Three inspected native captures, Windows/Web release exports, the exported Windows runtime, and a 2560×1440 production-Web real pointer flow passed with an empty warning/error console. The cumulative harness still emits the pre-existing post-success 48 ObjectDB/four-resource shutdown diagnostic; focused, affected, configured, input-routing, export/runtime, and browser runs do not reproduce it. The owner-run WP02 comprehension and WP03 first-use checks both remain pending.
 
-**Milestone 5 remains the last fully owner-accepted historical baseline; WP02 is the current browser-playtest candidate, with its owner comprehension gate still pending.**
+**Milestone 5 remains the last fully owner-accepted historical baseline; WP03 is the current browser-playtest candidate, with its owner first-use gate still pending.**
 
 The accepted Milestone 5 baseline adds:
 
@@ -65,6 +68,10 @@ The published Pages build was smoke-checked at its native 1280 x 720 presentatio
 
 ![WP02 final-lap commitment verification](docs/screenshots/wp02/wp02_game_run_final_commitment_1280x720.png)
 
+![WP03 focused next-block prediction](docs/screenshots/wp03/wp03_game_run_plan_prediction_1280x720.png)
+
+![WP03 resolved consequence history](docs/screenshots/wp03/wp03_game_run_recognized_history_1280x720.png)
+
 ## Running the project
 
 1. Install Godot 4.7 or a compatible Godot 4.x release.
@@ -78,9 +85,8 @@ The configured main scene opens directly into `GameRun`; the current working tre
 - Click or tap a coin cluster to collect immediately and build a manual streak; ignoring it still grants the full base value
 - Click/tap the intervention buttons or press <kbd>1</kbd>, <kbd>2</kbd>, or <kbd>3</kbd> for Fire Hydrant, Call Backup, or Subway Reroute; invalid, cooling-down, active, or exhausted requests leave authoritative state unchanged
 - Use the visible run-action controls to claim rewards, spend finite shop cooling, continue, extract, and advance the boss trigger
-- Use **PLAN CARDS** at a safe route-planning state, then click/tap or drag a hand card to one of the five future route slots; review and press **Confirm** before authority changes
-- Right-click to cancel an active card drag; invalid or outside drops return the card to the hand without changing Heat, route state, piles, rewards, or deterministic streams
-- Use **Skip / Keep Hand** to decline a card reward, including when the three-card hand is full
+- At each mandatory **District Plan**, click/tap a large location card or focus it with the keyboard, review its exact next block, Heat, special rule, and reward/risk, then press **Confirm Next Block**
+- The selected location becomes the immediately next block; the compact Next Block label and resolved lap history repeat its name when it occurs and completes
 - Inspect or manage the three generic active equipment slots and one three-slot inactive backpack through the existing drag or click/tap/keyboard flows; destructive discard remains separately named and confirmed
 - Press <kbd>Space</kbd> to pause or resume eligible run time
 - Press <kbd>E</kbd> to confirm extraction while a lap decision is available; the shortcut forwards the same exact decision token as the visible control
@@ -101,11 +107,11 @@ Reward and run-action buttons respond to one ordinary click or tap.
 
 ## Current scope
 
-WP02 Core Run Loop and State Clarity is the current runtime and browser-playtest boundary. Its technical/runtime/visual gate is green, but its owner-run five-person comprehension gate remains pending in [the WP02 evidence template](docs/product/WP02_UNBRIEFED_COMPREHENSION_CHECK.md). The owner separately authorized the WP02 `main`/Pages release on 2026-08-21; publication does not constitute qualitative acceptance or downstream authorization. Milestone 5 District Cards remains the last fully owner-accepted baseline from `main` merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`.
+WP03 District Planning and Cards is the current runtime boundary and the owner-authorized `main`/Pages browser-playtest candidate as of 2026-08-22. Its technical/runtime/visual/platform gate is green, but its owner-run first-use gate remains pending in [the WP03 evidence template](docs/product/WP03_UNBRIEFED_FIRST_USE_CHECK.md); publication does not establish qualitative acceptance or authorize WP04. Milestone 5 remains the last fully owner-accepted historical baseline from `main` merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`.
 
-The preserved content boundary remains the three-member crew, three-basic/one-elite/one-boss roster, existing interventions, prototype presentation/audio/tutorial/settings/profile/summary layers, fixed authored route, and complete victory/extraction/defeat paths. WP02 restructures lifecycle, crew access, and state clarity only; it adds no breadth content, route generation, fifth card, tenth equipment entry, permanent stat bonus, or broad progression tree.
+The preserved content boundary remains the three-member crew, three-basic/one-elite/one-boss roster, four existing cards, existing interventions, presentation/audio/tutorial/settings/profile/summary layers, fixed authored route, and complete victory/extraction/defeat paths. WP03 restructures card scheduling and interaction only; it adds no breadth content, route generation, fifth card, tenth equipment entry, permanent stat bonus, card economy, or broad progression tree.
 
-There is no Milestone 7. The owner-approved roadmap uses WP01–WP07; WP01 and WP02 have landed only under separate explicit tasks. WP03 is unstarted and not authorized by this result. Additional districts/cards/crew/enemies/bosses; procedural routes; multiplayer; controller support; localization; achievements; daily-run systems; leaderboards; advanced meta-progression; permanent stat trees; mid-run saving/replays; equipment selling, salvage, rarity, uniques, affixes, or sets; a card currency/shop/economy; and every other undocumented expansion remain out of scope.
+There is no Milestone 7. The owner-approved roadmap uses WP01–WP07; WP01–WP03 began only under separate explicit tasks. WP04 is unstarted and not authorized by this result. Additional districts/cards/crew/enemies/bosses; procedural routes; multiplayer; controller support; localization; achievements; daily-run systems; leaderboards; advanced meta-progression; permanent stat trees; mid-run saving/replays; equipment selling, salvage, rarity, uniques, affixes, or sets; a card currency/shop/economy; and every other undocumented expansion remain out of scope.
 
 ### Working-tree provenance
 
@@ -122,6 +128,8 @@ There is no Milestone 7. The owner-approved roadmap uses WP01–WP07; WP01 and W
 - [TEST_PLAN.md](TEST_PLAN.md) — verification history and planned coverage
 - [WP02 acceptance evidence](docs/product/WP02_ACCEPTANCE_EVIDENCE.md) — current technical/runtime/visual gate and remaining owner check
 - [WP02 authority map](docs/product/WP02_CURRENT_TO_TARGET_AUTHORITY_MAP.md) — bounded lifecycle/profile migration and preserved contracts
+- [WP03 acceptance evidence](docs/product/WP03_ACCEPTANCE_EVIDENCE.md) — focused-plan technical/runtime/platform evidence and pending owner check
+- [WP03 authority map](docs/product/WP03_CURRENT_TO_TARGET_AUTHORITY_MAP.md) — exact hand/future-slot to next-block migration and preserved contracts
 - [MILESTONE_6_PLAYTEST.md](MILESTONE_6_PLAYTEST.md) — non-leading tester prompt, curator matrix, and feedback template
 - [CONTENT_CATALOG.md](CONTENT_CATALOG.md) — implemented and specified content
 - [CHANGELOG.md](CHANGELOG.md) — project history

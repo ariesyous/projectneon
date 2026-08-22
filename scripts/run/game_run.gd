@@ -132,6 +132,9 @@ func _ready() -> void:
 	game_hud.district_card_placement_cancel_requested.connect(
 		_on_card_placement_cancel_requested
 	)
+	game_hud.district_plan_choice_requested.connect(
+		_on_district_plan_choice_requested
+	)
 	game_hud.district_card_reward_acquisition_requested.connect(
 		_on_card_reward_acquisition_requested
 	)
@@ -158,6 +161,7 @@ func _ready() -> void:
 	vertical_slice_overlay.ui_confirmed.connect(_on_ui_confirmed)
 	vertical_slice_overlay.ui_hovered.connect(_on_ui_hovered)
 	card_system.card_placed.connect(_on_card_placed)
+	card_system.district_plan_offer_started.connect(_on_district_plan_offer_started)
 
 	fire_hydrant_controller.configure(combat_director, fire_hydrant.global_position)
 	combat_director.configure_build_system(synergy_system, run_director.get_random_streams())
@@ -180,6 +184,9 @@ func _ready() -> void:
 		_create_backup_ally,
 		_confirm_backup_ally_registered,
 		_remove_backup_ally
+	)
+	card_system.configure_focused_district_plan(
+		run_director.is_district_loop_enabled()
 	)
 	run_flow_controller.configure(
 		run_director,
@@ -986,6 +993,49 @@ func _on_card_placement_confirm_requested(confirmation_token: int) -> void:
 
 func _on_card_placement_cancel_requested(confirmation_token: int) -> void:
 	run_flow_controller.cancel_card_placement(confirmation_token)
+
+
+func _on_district_plan_choice_requested(
+	card_id: StringName,
+	offer_revision: int,
+	lifecycle_revision: int,
+	lap_id: StringName,
+	block_id: StringName
+) -> void:
+	var staged: Dictionary = run_flow_controller.stage_focused_district_plan_choice(
+		card_id,
+		offer_revision,
+		lifecycle_revision,
+		lap_id,
+		block_id
+	)
+	if not bool(staged.get("accepted", false)):
+		game_hud.present_district_card_placement_result(staged)
+		return
+	var confirmed: Dictionary = (
+		run_flow_controller.confirm_focused_district_plan_choice(
+			int(staged.get("confirmation_token", -1))
+		)
+	)
+	game_hud.present_district_card_placement_result(confirmed)
+
+
+func _on_district_plan_offer_started(
+	_lap_index: int,
+	_block_index: int,
+	_offer_revision: int,
+	_choices: Array[DistrictCardDefinition]
+) -> void:
+	# The focused plan is already the complete contextual teaching surface. The
+	# older nonmodal tutorial banner would otherwise sit over its prediction copy
+	# forever because mandatory planning owns a paused safe boundary.
+	while tutorial_controller.dismiss_current():
+		pass
+	tutorial_controller.request_trigger(&"card_planning_available")
+	while tutorial_controller.dismiss_current():
+		pass
+	_tutorial_remaining = 0.0
+	vertical_slice_overlay.hide_tutorial()
 
 
 func _on_card_reward_acquisition_requested(

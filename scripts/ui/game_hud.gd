@@ -53,6 +53,13 @@ signal district_card_placement_staged(
 )
 signal district_card_placement_confirm_requested(confirmation_token: int)
 signal district_card_placement_cancel_requested(confirmation_token: int)
+signal district_plan_choice_requested(
+	card_id: StringName,
+	offer_revision: int,
+	lifecycle_revision: int,
+	lap_id: StringName,
+	block_id: StringName
+)
 signal district_card_reward_acquisition_requested(
 	encounter_id: int,
 	choice_token: int,
@@ -322,6 +329,11 @@ var _district_card_reward_can_skip: bool = true
 var _district_card_action_in_flight: bool = false
 var _district_card_stage_in_flight: bool = false
 var _district_card_drag_cancelled: bool = false
+var _focused_district_plan: bool = false
+var _district_plan_offer_revision: int = -1
+var _district_plan_lifecycle_revision: int = -1
+var _district_plan_lap_id: StringName = &""
+var _district_plan_block_id: StringName = &""
 var _crew_display_name: String = "JAX"
 var _backup_snapshot: Dictionary = {}
 var _route_journey_text: String = (
@@ -786,6 +798,10 @@ func _layout_action_strip() -> void:
 	district_card_compact_panel.theme_type_variation = &"RaisedPanel"
 	_set_rect(district_card_compact_summary, Rect2(8.0, 5.0, 208.0, 24.0))
 	district_card_compact_summary.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	district_card_compact_summary.clip_text = true
+	district_card_compact_summary.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
+	district_card_compact_summary.max_lines_visible = 1
+	district_card_compact_summary.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	_set_rect(district_card_open_button, Rect2(8.0, 31.0, 208.0, 46.0))
 
 
@@ -1456,13 +1472,30 @@ func is_equipment_reward_visible() -> bool:
 func present_district_cards(cards: Dictionary, patrol: Dictionary) -> void:
 	_district_card_snapshot = cards.duplicate(true)
 	_district_patrol_snapshot = patrol.duplicate(true)
-	_district_card_hand = _extract_district_card_definitions(cards.get("hand", []))
+	_focused_district_plan = bool(cards.get("district_plan_enabled", false))
+	_district_card_hand = _extract_district_card_definitions(
+		cards.get("offer", []) if _focused_district_plan else cards.get("hand", [])
+	)
 	if _district_card_panel_mode != DistrictCardPanelMode.REWARD:
 		_district_card_choices = _district_card_hand.duplicate()
-	_district_route_slots = _extract_district_route_slots(patrol)
-	_district_card_hand_revision = int(cards.get("hand_revision", -1))
+	_district_route_slots.clear()
+	if not _focused_district_plan:
+		_district_route_slots = _extract_district_route_slots(patrol)
+	_district_card_hand_revision = int(
+		cards.get("offer_revision", -1)
+		if _focused_district_plan
+		else cards.get("hand_revision", -1)
+	)
 	_district_card_route_revision = int(patrol.get("route_revision", -1))
-	_district_card_planning_allowed = (
+	_district_plan_offer_revision = int(cards.get("offer_revision", -1))
+	_district_plan_lifecycle_revision = int(
+		cards.get("context_lifecycle_revision", -1)
+	)
+	_district_plan_lap_id = StringName(cards.get("lap_id", &""))
+	_district_plan_block_id = StringName(cards.get("block_id", &""))
+	_district_card_planning_allowed = bool(cards.get("planning_active", false)) if (
+		_focused_district_plan
+	) else (
 		bool(cards.get("planning_allowed", true))
 		and _card_planning_available_for_state(_last_flow_state)
 	)
@@ -1471,7 +1504,10 @@ func present_district_cards(cards: Dictionary, patrol: Dictionary) -> void:
 	if (
 		staged_token >= 0
 		and StringName(cards.get("staged_card_id", &"")) == _district_selected_card_id
-		and StringName(cards.get("staged_slot_id", &"")) == _district_selected_slot_id
+		and (
+			_focused_district_plan
+			or StringName(cards.get("staged_slot_id", &"")) == _district_selected_slot_id
+		)
 	):
 		_district_confirmation_token = staged_token
 		_district_card_stage_in_flight = false
@@ -1524,6 +1560,28 @@ func present_district_card_placement_result(result: Dictionary) -> void:
 	var accepted: bool = bool(result.get("accepted", false))
 	var reason: String = str(result.get("reason", &"invalid_placement"))
 	var completed: bool = bool(result.get("completed", false))
+	if _focused_district_plan:
+		if accepted and completed:
+			_district_confirmation_token = -1
+			_district_selected_card_index = -1
+			_district_selected_card_id = &""
+			district_card_feedback.text = (
+				"NEXT BLOCK LOCKED • %s • HEAT %s%d • WATCH FOR THIS RESULT"
+				% [
+					str(result.get("block_type", "DISTRICT BLOCK")),
+					"+" if int(result.get("heat_delta", 0)) >= 0 else "",
+					int(result.get("heat_delta", 0)),
+				]
+			)
+			action_toast.show_message(
+				"NEXT BLOCK: %s" % str(result.get("card_name", "PLAN")).to_upper(),
+				NeonToast.Tone.SUCCESS
+			)
+		elif not accepted:
+			district_card_feedback.text = "PLAN UNCHANGED • %s" % _humanize_card_result(reason)
+			action_toast.show_message("DISTRICT PLAN UNCHANGED", NeonToast.Tone.WARNING)
+		_refresh_district_card_panel_presentation()
+		return
 	if accepted and not completed:
 		_district_confirmation_token = int(result.get("confirmation_token", -1))
 		if _district_confirmation_token >= 0:
@@ -1979,6 +2037,16 @@ func _on_restart_new_seed_pressed() -> void:
 
 
 func _on_district_card_open_pressed() -> void:
+	if _focused_district_plan:
+		if not bool(_district_card_snapshot.get("planning_active", false)):
+			return
+		_district_card_choices = _district_card_hand.duplicate()
+		_clear_district_card_selection(false)
+		_set_district_card_panel_mode(DistrictCardPanelMode.PLANNING)
+		_refresh_district_card_panel_presentation()
+		if not _district_card_choice_buttons.is_empty():
+			_district_card_choice_buttons[0].grab_focus()
+		return
 	if (
 		equipment_reward_panel.visible
 		or not _district_card_planning_allowed
@@ -1999,6 +2067,9 @@ func _on_district_card_open_pressed() -> void:
 
 func _on_district_card_close_pressed() -> void:
 	if _district_card_panel_mode != DistrictCardPanelMode.PLANNING:
+		return
+	if _focused_district_plan:
+		district_card_feedback.text = "CHOOSE THE NEXT BLOCK BEFORE CONTINUING"
 		return
 	if _district_confirmation_token >= 0:
 		district_card_placement_cancel_requested.emit(_district_confirmation_token)
@@ -2023,17 +2094,26 @@ func _on_district_card_choice_pressed(choice_index: int) -> void:
 	_district_confirmation_token = -1
 	_district_card_stage_in_flight = false
 	if _district_card_panel_mode == DistrictCardPanelMode.PLANNING:
-		district_card_feedback.text = "CARD SELECTED • CHOOSE A VALID FUTURE SLOT"
+		district_card_feedback.text = (
+			"SELECTED • PREDICT THE HEAT, BLOCK TYPE, AND PAYOFF • CONFIRM ONCE"
+			if _focused_district_plan
+			else "CARD SELECTED • CHOOSE A VALID FUTURE SLOT"
+		)
 	else:
 		district_card_feedback.text = "CARD SELECTED • CONFIRM TO ADD IT ONCE"
 	_refresh_district_card_panel_presentation()
 	if _district_card_panel_mode == DistrictCardPanelMode.PLANNING:
-		_focus_first_valid_district_route_slot()
+		if _focused_district_plan:
+			district_card_confirm_button.grab_focus()
+		else:
+			_focus_first_valid_district_route_slot()
 	else:
 		district_card_confirm_button.grab_focus()
 
 
 func _on_district_card_drag_started(payload: DistrictCardDragPayload) -> void:
+	if _focused_district_plan:
+		return
 	if payload == null or payload.origin != DistrictCardDragPayload.Origin.HAND:
 		return
 	_district_card_drag_cancelled = false
@@ -2138,6 +2218,19 @@ func _on_district_card_confirm_pressed() -> void:
 	if _district_card_action_in_flight:
 		return
 	if _district_card_panel_mode == DistrictCardPanelMode.PLANNING:
+		if _focused_district_plan:
+			if _district_selected_card_id == &"":
+				return
+			_district_card_action_in_flight = true
+			_refresh_district_card_panel_presentation()
+			district_plan_choice_requested.emit(
+				_district_selected_card_id,
+				_district_plan_offer_revision,
+				_district_plan_lifecycle_revision,
+				_district_plan_lap_id,
+				_district_plan_block_id
+			)
+			return
 		if _district_confirmation_token < 0:
 			return
 		_district_card_action_in_flight = true
@@ -2166,6 +2259,14 @@ func _on_district_card_cancel_pressed() -> void:
 	if _district_card_action_in_flight:
 		return
 	if _district_card_panel_mode == DistrictCardPanelMode.PLANNING:
+		if _focused_district_plan:
+			_district_selected_card_index = -1
+			_district_selected_card_id = &""
+			district_card_feedback.text = "SELECTION CLEARED • OFFER AND HEAT UNCHANGED"
+			_refresh_district_card_panel_presentation()
+			if not _district_card_choices.is_empty():
+				_district_card_choice_buttons[0].grab_focus()
+			return
 		if _district_confirmation_token >= 0:
 			district_card_placement_cancel_requested.emit(_district_confirmation_token)
 		_district_selected_slot_id = &""
@@ -2536,13 +2637,26 @@ func _set_district_card_panel_mode(mode: int) -> void:
 	district_card_panel.visible = mode != DistrictCardPanelMode.CLOSED
 	if not district_card_panel.visible:
 		return
+	if (
+		_focused_district_plan
+		and mode == DistrictCardPanelMode.PLANNING
+		and action_toast != null
+	):
+		action_toast.hide()
 	build_details_panel.visible = false
-	help_panel.visible = false
+	_set_help_expanded(false)
 	district_card_panel.move_to_front()
-	district_card_close_button.disabled = mode == DistrictCardPanelMode.REWARD
+	district_card_close_button.visible = not (
+		_focused_district_plan and mode == DistrictCardPanelMode.PLANNING
+	)
+	district_card_close_button.disabled = (
+		mode == DistrictCardPanelMode.REWARD or _focused_district_plan
+	)
 	district_card_close_button.text = "CLOSE" if mode == DistrictCardPanelMode.PLANNING else "REWARD"
 	for button: DistrictCardDragSlot in _district_route_slot_buttons:
-		button.visible = mode == DistrictCardPanelMode.PLANNING
+		button.visible = (
+			mode == DistrictCardPanelMode.PLANNING and not _focused_district_plan
+		)
 	district_card_skip_button.visible = (
 		mode == DistrictCardPanelMode.REWARD and _district_card_reward_can_skip
 	)
@@ -2624,6 +2738,33 @@ func _card_planning_available_for_state(state: int) -> bool:
 func _refresh_district_card_compact_presentation() -> void:
 	if not is_node_ready():
 		return
+	if _focused_district_plan:
+		var pending: Dictionary = _district_card_snapshot.get("selected_next_block", {})
+		var active: Dictionary = _district_card_snapshot.get("active_block", {})
+		var planning_active: bool = bool(
+			_district_card_snapshot.get("planning_active", false)
+		)
+		if planning_active:
+			district_card_compact_summary.text = "PLAN • CHOOSE NEXT BLOCK"
+		elif not pending.is_empty():
+			district_card_compact_summary.text = "NEXT • %s" % str(
+				pending.get("card_name", "DISTRICT BLOCK")
+			).to_upper()
+		elif not active.is_empty():
+			district_card_compact_summary.text = "NOW • %s" % str(
+				active.get("card_name", "DISTRICT BLOCK")
+			).to_upper()
+		else:
+			district_card_compact_summary.text = "DISTRICT PLAN • HISTORY READY"
+		district_card_open_button.disabled = not planning_active or district_card_panel.visible
+		district_card_open_button.text = (
+			"PLAN OPEN" if district_card_panel.visible
+			else ("CHOOSE" if planning_active else "VIEW NEXT")
+		)
+		district_card_open_button.tooltip_text = (
+			"District Plan chooses the immediately next block. The confirmed card is shown until its consequence occurs."
+		)
+		return
 	var hand_count: int = int(
 		_district_card_snapshot.get("hand_count", _district_card_hand.size())
 	)
@@ -2662,6 +2803,9 @@ func _refresh_district_card_compact_presentation() -> void:
 
 func _refresh_district_card_panel_presentation() -> void:
 	if not is_node_ready() or _district_card_panel_mode == DistrictCardPanelMode.CLOSED:
+		return
+	if _focused_district_plan and _district_card_panel_mode == DistrictCardPanelMode.PLANNING:
+		_refresh_focused_district_plan_presentation()
 		return
 	district_card_title.text = (
 		"DISTRICT PLAN  /  CARD REWARD  /  CHOOSE ONE OR KEEP HAND"
@@ -2714,7 +2858,89 @@ func _refresh_district_card_panel_presentation() -> void:
 	_refresh_district_card_compact_presentation()
 
 
+func _refresh_focused_district_plan_presentation() -> void:
+	var lap_index: int = int(_district_card_snapshot.get("lap_index", 1))
+	var block_index: int = int(_district_card_snapshot.get("block_index", 1))
+	district_card_title.text = "DISTRICT PLAN • LAP %d / 3 • BLOCK %d / 3" % [
+		lap_index,
+		block_index,
+	]
+	district_card_counts.text = _district_card_counts_text()
+	district_card_instruction.text = (
+		"SELECT ONE LOCATION • PREDICT ITS BLOCK, HEAT, AND PAYOFF • CONFIRM ONCE"
+	)
+	_refresh_district_card_choice_presentation()
+	for button: DistrictCardDragSlot in _district_route_slot_buttons:
+		button.visible = false
+	district_card_route_preview.visible = true
+	district_card_route_preview.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	district_card_route_preview.text = _focused_district_plan_preview_text()
+	district_card_skip_button.visible = false
+	district_card_close_button.visible = false
+	district_card_confirm_button.visible = true
+	district_card_confirm_button.text = "CONFIRM NEXT BLOCK"
+	district_card_confirm_button.disabled = (
+		_district_selected_card_id == &"" or _district_card_action_in_flight
+	)
+	district_card_cancel_button.visible = true
+	district_card_cancel_button.text = "CLEAR SELECTION"
+	district_card_cancel_button.disabled = (
+		_district_selected_card_id == &"" or _district_card_action_in_flight
+	)
+	if _district_card_action_in_flight:
+		district_card_feedback.text = "CONFIRMING THE EXACT OFFER AND BLOCK REVISION..."
+	elif _district_selected_card_id == &"":
+		district_card_feedback.text = (
+			"WHAT YOU CONFIRM BECOMES THE IMMEDIATELY NEXT BLOCK. NIGHT PRESSURE NEVER COOLS."
+		)
+	else:
+		var selected: DistrictCardDefinition = _selected_district_card()
+		if selected != null:
+			district_card_feedback.text = (
+				"PREDICTION • NEXT: %s • HEAT %s • %s"
+				% [
+					CardSystem.focused_block_type(selected),
+					_signed_integer(selected.heat_delta),
+					CardSystem.focused_special_rule(selected),
+				]
+			)
+	_refresh_district_card_compact_presentation()
+
+
+func _layout_focused_district_choices() -> void:
+	if not _focused_district_plan or not is_node_ready():
+		return
+	_set_rect(district_card_title, Rect2(20.0, 8.0, 690.0, 38.0))
+	district_card_title.clip_text = true
+	district_card_title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	_set_rect(district_card_counts, Rect2(720.0, 10.0, 420.0, 32.0))
+	district_card_counts.clip_text = true
+	district_card_counts.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	district_card_counts.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	var choice_count: int = _district_card_choices.size()
+	if choice_count <= 1:
+		_set_rect(district_card_choice_01, Rect2(320.0, 54.0, 500.0, 250.0))
+	elif choice_count == 2:
+		_set_rect(district_card_choice_01, Rect2(50.0, 54.0, 500.0, 250.0))
+		_set_rect(district_card_choice_02, Rect2(590.0, 54.0, 500.0, 250.0))
+	else:
+		_set_rect(district_card_choice_01, Rect2(20.0, 54.0, 350.0, 250.0))
+		_set_rect(district_card_choice_02, Rect2(405.0, 54.0, 350.0, 250.0))
+		_set_rect(district_card_choice_03, Rect2(790.0, 54.0, 350.0, 250.0))
+	for choice_index: int in range(DISTRICT_CARD_HAND_CAPACITY):
+		var button: DistrictCardDragSlot = _district_card_choice_buttons[choice_index]
+		var details: Label = _district_card_choice_details[choice_index]
+		var detail_width: float = maxf(button.size.x - 122.0, 210.0)
+		_set_rect(details, Rect2(112.0, 6.0, detail_width, 238.0))
+	_set_rect(district_card_instruction, Rect2(20.0, 314.0, 1120.0, 46.0))
+	_set_rect(district_card_route_preview, Rect2(20.0, 366.0, 1120.0, 100.0))
+	_set_rect(district_card_feedback, Rect2(20.0, 476.0, 720.0, 126.0))
+	_set_rect(district_card_confirm_button, Rect2(760.0, 536.0, 210.0, 58.0))
+	_set_rect(district_card_cancel_button, Rect2(986.0, 536.0, 154.0, 58.0))
+
+
 func _refresh_district_card_choice_presentation() -> void:
+	_layout_focused_district_choices()
 	for choice_index: int in range(DISTRICT_CARD_HAND_CAPACITY):
 		var button: DistrictCardDragSlot = _district_card_choice_buttons[choice_index]
 		var icon_rect: TextureRect = _district_card_choice_icons[choice_index]
@@ -2723,11 +2949,18 @@ func _refresh_district_card_choice_presentation() -> void:
 		var card: DistrictCardDefinition = (
 			_district_card_choices[choice_index] if has_card else null
 		)
+		button.visible = has_card if _focused_district_plan else true
 		button.disabled = not has_card or _district_card_action_in_flight
 		button.text = ""
 		icon_rect.texture = card.icon if card != null else null
-		details.text = _district_card_overview(card) if card != null else "EMPTY HAND SLOT"
-		button.tooltip_text = _district_card_tooltip(card) if card != null else "No card in this slot."
+		details.text = _district_card_overview(card) if card != null else (
+			"NO THIRD CHOICE" if _focused_district_plan else "EMPTY HAND SLOT"
+		)
+		button.tooltip_text = _district_card_tooltip(card) if card != null else (
+			"A third choice appears only when an explicit effect grants it."
+			if _focused_district_plan
+			else "No card in this slot."
+		)
 		var selected: bool = card != null and card.id == _district_selected_card_id
 		button.self_modulate = Color.WHITE
 		button.set_visual_state(
@@ -2759,6 +2992,7 @@ func _refresh_district_card_choice_presentation() -> void:
 		button.configure_drag_source(
 			payload,
 			card != null
+			and not _focused_district_plan
 			and _district_card_panel_mode == DistrictCardPanelMode.PLANNING
 			and _district_card_planning_allowed
 			and not _district_card_action_in_flight
@@ -2811,6 +3045,18 @@ func _district_card_count(count_key: String, ids_key: String) -> int:
 
 
 func _district_card_counts_text() -> String:
+	if _focused_district_plan:
+		return "OFFER %d / %d • LAP DECK %d • CHOSEN %d" % [
+			int(_district_card_snapshot.get("offer_count", _district_card_choices.size())),
+			int(
+				_district_card_snapshot.get(
+					"offer_capacity",
+					CardSystem.DISTRICT_PLAN_OFFER_COUNT
+				)
+			),
+			int(_district_card_snapshot.get("lap_deck_remaining", 0)),
+			int(_district_card_snapshot.get("lap_selected_count", 0)),
+		]
 	var hand_count: int = int(
 		_district_card_snapshot.get("hand_count", _district_card_hand.size())
 	)
@@ -2937,6 +3183,23 @@ func _focus_first_valid_district_route_slot() -> void:
 func _district_card_overview(card: DistrictCardDefinition) -> String:
 	if card == null:
 		return "EMPTY HAND SLOT"
+	if _focused_district_plan:
+		var focused_lines: PackedStringArray = PackedStringArray()
+		focused_lines.append_array(_limited_card_lines(card.display_name.to_upper(), 28, 2))
+		focused_lines.append("LOCATION • %s" % card.display_name.to_upper())
+		focused_lines.append("BLOCK • %s" % CardSystem.focused_block_type(card))
+		focused_lines.append("HEAT • %s" % _signed_integer(card.heat_delta))
+		focused_lines.append_array(_limited_card_lines(
+			"SPECIAL • %s" % CardSystem.focused_special_rule(card),
+			28,
+			3
+		))
+		focused_lines.append_array(_limited_card_lines(
+			"REWARD / RISK • %s" % card.progression_implications.to_upper(),
+			28,
+			3
+		))
+		return "\n".join(focused_lines)
 	var lines: PackedStringArray = PackedStringArray()
 	lines.append_array(_limited_card_lines(card.display_name.to_upper(), 22, 2))
 	lines.append("%s | %s HEAT" % [card.cost_label(), _signed_integer(card.heat_delta)])
@@ -2953,6 +3216,14 @@ func _district_card_overview(card: DistrictCardDefinition) -> String:
 func _district_card_tooltip(card: DistrictCardDefinition) -> String:
 	if card == null:
 		return "No card in this slot."
+	if _focused_district_plan:
+		return "%s\nNext block: %s\nHeat %s\n%s\n%s" % [
+			card.display_name,
+			CardSystem.focused_block_type(card),
+			_signed_integer(card.heat_delta),
+			CardSystem.focused_special_rule(card),
+			card.progression_implications,
+		]
 	return "%s\n%s | %s Heat\n%s\nTags: %s\n%s" % [
 		card.display_name,
 		card.cost_label(),
@@ -3015,6 +3286,8 @@ func _limited_card_lines(
 
 
 func _district_route_preview_text() -> String:
+	if _focused_district_plan:
+		return _focused_district_plan_preview_text()
 	var pending: Variant = _district_card_snapshot.get("pending_route_effects", [])
 	var resolved: Variant = _district_card_snapshot.get("resolved_route_effects", [])
 	var pending_text: String = _district_record_list_marker(pending)
@@ -3024,6 +3297,57 @@ func _district_route_preview_text() -> String:
 		pending_text,
 		resolved_text,
 	]
+
+
+func _focused_district_plan_preview_text() -> String:
+	var lines: PackedStringArray = PackedStringArray()
+	var pending: Dictionary = _district_card_snapshot.get("selected_next_block", {})
+	var active: Dictionary = _district_card_snapshot.get("active_block", {})
+	if not pending.is_empty():
+		lines.append("NEXT BLOCK • %s • %s • HEAT %s" % [
+			str(pending.get("card_name", "DISTRICT BLOCK")).to_upper(),
+			str(pending.get("block_type", "DISTRICT BLOCK")),
+			_signed_integer(int(pending.get("heat_delta", 0))),
+		])
+	elif not active.is_empty():
+		lines.append("HAPPENING NOW • %s • %s" % [
+			str(active.get("card_name", "DISTRICT BLOCK")).to_upper(),
+			str(active.get("special_rule", "AUTHORED EFFECT")),
+		])
+	else:
+		lines.append("NEXT BLOCK • CONFIRM ONE OF THE OFFERED LOCATIONS")
+	var history_value: Variant = _district_card_snapshot.get("current_lap_history", [])
+	var history_parts: PackedStringArray = PackedStringArray()
+	if history_value is Array:
+		for entry_value: Variant in history_value as Array:
+			if not (entry_value is Dictionary):
+				continue
+			var entry: Dictionary = entry_value as Dictionary
+			history_parts.append("B%d %s %s" % [
+				int(entry.get("block_index", 0)),
+				str(entry.get("card_name", "BLOCK")).to_upper(),
+				str(entry.get("status", &"selected")).to_upper(),
+			])
+	lines.append(
+		"THIS LAP • %s"
+		% (" > ".join(history_parts) if not history_parts.is_empty() else "NO RESOLVED BLOCKS YET")
+	)
+	var archived_value: Variant = _district_card_snapshot.get("archived_lap_history", [])
+	if archived_value is Array and not (archived_value as Array).is_empty():
+		var archived: Dictionary = (archived_value as Array)[-1] as Dictionary
+		var archived_history: Variant = archived.get("history", [])
+		var archived_names: PackedStringArray = PackedStringArray()
+		if archived_history is Array:
+			for entry_value: Variant in archived_history as Array:
+				if entry_value is Dictionary:
+					archived_names.append(str(
+						(entry_value as Dictionary).get("card_name", "BLOCK")
+					).to_upper())
+		lines.append("ARCHIVED LAP %d • %s" % [
+			int(archived.get("lap_index", 0)),
+			" > ".join(archived_names),
+		])
+	return "\n".join(lines)
 
 
 func _district_route_history_text() -> String:
@@ -3052,6 +3376,22 @@ func _district_route_history_text() -> String:
 
 func _refresh_route_label_with_card_markers() -> void:
 	if not is_node_ready():
+		return
+	if _focused_district_plan:
+		var pending: Dictionary = _district_card_snapshot.get("selected_next_block", {})
+		var active: Dictionary = _district_card_snapshot.get("active_block", {})
+		var state_text: String = "PLAN REQUIRED"
+		if not pending.is_empty():
+			state_text = "NEXT %s • %s" % [
+				str(pending.get("card_name", "BLOCK")).to_upper(),
+				str(pending.get("block_type", "DISTRICT BLOCK")),
+			]
+		elif not active.is_empty():
+			state_text = "NOW %s • %s" % [
+				str(active.get("card_name", "BLOCK")).to_upper(),
+				str(active.get("block_type", "DISTRICT BLOCK")),
+			]
+		route_label.text = "%s\n%s" % [_route_journey_text, state_text]
 		return
 	var pending: Variant = _district_card_snapshot.get("pending_route_effects", [])
 	var resolved: Variant = _district_card_snapshot.get("resolved_route_effects", [])

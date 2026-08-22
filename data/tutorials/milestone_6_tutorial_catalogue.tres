@@ -40,7 +40,7 @@ script = ExtResource("2_prompt")
 id = &"tutorial_district_cards"
 trigger_id = &"card_planning_available"
 heading = "DISTRICT CARDS"
-body = "Place a card only on a future slot labelled VALID, then confirm. Heat changes; Night Pressure never cools."
+body = "Choose the immediately next block. Read its block type, exact Heat change, and payoff, then confirm once. Watch for that named consequence; Night Pressure never cools."
 priority = 75
 
 [sub_resource type="Resource" id="Prompt_extraction"]

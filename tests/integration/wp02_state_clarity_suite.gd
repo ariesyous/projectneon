@@ -109,16 +109,37 @@ func test_preserved_e_shortcut_confirms_with_exact_wp02_token() -> void:
 	assert_true(fixture.game.run_director.complete_intro(), "keyboard: intro reaches PLAN")
 	for block_number: int in range(1, 4):
 		assert_true(
+			_confirm_current_district_plan(fixture.game) != null,
+			"keyboard: required plan %d confirms" % block_number
+		)
+		var occurrence_id: StringName = StringName("keyboard_block_%02d" % block_number)
+		assert_true(
 			fixture.game.run_director.begin_district_block(
-				StringName("keyboard_block_%02d" % block_number),
+				occurrence_id,
 				&"utility"
 			),
 			"keyboard: utility block %d begins" % block_number
 		)
 		assert_true(
+			fixture.game.card_system.resolve_focused_district_plan_block(
+				block_number,
+				occurrence_id,
+				block_number,
+				StringName("keyboard_route_%02d" % block_number),
+				&"travel",
+				fixture.game.run_director.get_district_loop_snapshot()
+			) != null,
+			"keyboard: focused card %d resolves before utility completion" % block_number
+		)
+		assert_true(
 			fixture.game.run_director.complete_district_utility_block(),
 			"keyboard: utility block %d completes" % block_number
 		)
+		if block_number < 3:
+			assert_true(
+				fixture.game.run_flow_controller._begin_required_focused_district_plan(),
+				"keyboard: next required PLAN %d opens" % (block_number + 1)
+			)
 	assert_eq(
 		fixture.game.run_director.current_state,
 		RunDirector.RunState.EXTRACTION_AVAILABLE,
@@ -147,27 +168,37 @@ func test_configured_flow_enters_first_stable_block_and_records_wp02_cadence() -
 	fixture.game.vertical_slice_overlay.jax_button.pressed.emit()
 	fixture.game.vertical_slice_overlay.start_button.pressed.emit()
 	fixture.game.run_director.complete_intro()
+	var chosen: DistrictCardDefinition = _confirm_current_district_plan(fixture.game)
+	assert_true(chosen != null, "flow: focused next-block choice confirms")
+	if chosen == null:
+		return
+	var planned: Dictionary = fixture.game.card_system.get_snapshot().get(
+		"selected_next_block",
+		{}
+	) as Dictionary
+	assert_eq(planned.get("block_id"), &"district_lap_01::block_01", "flow: stable first block ID is selected")
 	fixture.game.patrol_controller.step_patrol(100.0)
-	assert_eq(fixture.game.run_director.current_state, RunDirector.RunState.ENCOUNTER_ACTIVE, "flow: first authored route outcome is a fight")
 	var active_loop: Dictionary = fixture.game.run_director.get_district_loop_snapshot()
-	assert_eq(active_loop.get("phase_name"), "FIGHT", "flow: authoritative phase is FIGHT")
 	assert_eq(active_loop.get("lap_id"), &"district_lap_01", "flow: stable first lap ID")
-	assert_eq(active_loop.get("block_id"), &"district_lap_01::block_01", "flow: stable first block ID")
-	assert_true(StringName(active_loop.get("current_route_occurrence_id", &"")) != &"", "flow: internal route occurrence retained")
 	assert_eq(fixture.game.cadence_tracker.definition.id, &"wp02_block_lap_cadence", "cadence: WP02 measurement resource configured")
 	assert_eq(fixture.game.cadence_tracker.definition.strategic_minimum_seconds, 45.0, "cadence: block minimum is 45 seconds")
 	assert_eq(fixture.game.cadence_tracker.definition.strategic_maximum_seconds, 90.0, "cadence: block maximum is 90 seconds")
-
-	var encounter_id: int = fixture.game.encounter_controller.get_active_encounter_instance_id()
-	var definition: EncounterDefinition = fixture.game.encounter_controller.get_active_definition()
-	fixture.game.run_flow_controller._on_encounter_completed(encounter_id, definition)
-	assert_eq(fixture.game.run_director.current_state, RunDirector.RunState.REWARD_SELECTION, "flow: fight enters reward")
-	fixture.game.run_flow_controller.decline_equipment_reward()
-	if bool(fixture.game.run_flow_controller.get_snapshot().get("card_reward_phase_active", false)):
-		fixture.game.run_flow_controller.skip_card_reward(
-			encounter_id,
-			fixture.game.reward_director.get_pending_card_choice_token()
-		)
+	var block_kind: StringName = CardSystem.focused_block_kind(chosen)
+	match block_kind:
+		&"fight", &"elite":
+			assert_eq(fixture.game.run_director.current_state, RunDirector.RunState.ENCOUNTER_ACTIVE, "flow: chosen fight enters combat")
+			assert_eq(active_loop.get("phase_name"), "FIGHT", "flow: authoritative phase is FIGHT")
+			assert_true(StringName(active_loop.get("current_route_occurrence_id", &"")) != &"", "flow: internal route occurrence retained")
+			var encounter_id: int = fixture.game.encounter_controller.get_active_encounter_instance_id()
+			var definition: EncounterDefinition = fixture.game.encounter_controller.get_active_definition()
+			fixture.game.run_flow_controller._on_encounter_completed(encounter_id, definition)
+			assert_eq(fixture.game.run_director.current_state, RunDirector.RunState.REWARD_SELECTION, "flow: fight enters reward")
+			fixture.game.run_flow_controller.decline_equipment_reward()
+		&"shop":
+			assert_eq(fixture.game.run_director.current_state, RunDirector.RunState.SHOP, "flow: chosen recovery enters shop")
+			assert_true(fixture.game.run_flow_controller.leave_shop(), "flow: leaving shop completes block")
+		&"utility":
+			assert_eq(active_loop.get("completed_blocks"), 1, "flow: transit utility completes immediately")
 	var completed_loop: Dictionary = fixture.game.run_director.get_district_loop_snapshot()
 	assert_eq(completed_loop.get("completed_blocks"), 1, "flow: reward closes exactly one block")
 	assert_eq(completed_loop.get("block_id"), &"district_lap_01::block_02", "flow: next stable block prepared")
@@ -212,6 +243,29 @@ func _new_game() -> GameFixture:
 	fixture.game.app_state_override = fixture.app
 	fixture.viewport.add_child(fixture.game)
 	return fixture
+
+
+func _confirm_current_district_plan(game: GameRun) -> DistrictCardDefinition:
+	var cards: Dictionary = game.card_system.get_snapshot()
+	var offer: Array = cards.get("offer", []) as Array
+	if offer.is_empty():
+		return null
+	var card: DistrictCardDefinition = offer[0] as DistrictCardDefinition
+	if card == null:
+		return null
+	var staged: Dictionary = game.run_flow_controller.stage_focused_district_plan_choice(
+		card.id,
+		int(cards.get("offer_revision", -1)),
+		int(cards.get("context_lifecycle_revision", -1)),
+		StringName(cards.get("lap_id", &"")),
+		StringName(cards.get("block_id", &""))
+	)
+	if not bool(staged.get("accepted", false)):
+		return null
+	var confirmed: Dictionary = game.run_flow_controller.confirm_focused_district_plan_choice(
+		int(staged.get("confirmation_token", -1))
+	)
+	return card if bool(confirmed.get("accepted", false)) else null
 
 
 func _new_hud() -> GameHUD:
