@@ -58,6 +58,15 @@ The first Web pass exposed a legacy run-controls tutorial banner over the paused
 - The browser warning/error console remained empty throughout selection, occurrence, completion, and next PLAN.
 - Fresh configured native boot and explicit runtime logs contain no new parser, runtime, warning, or debugger entry.
 
+## Published browser-playtest provenance
+
+- Implementation commit: [`a6ef571942afb319b3e2c0cdd9c9cffcc1f1bc93`](https://github.com/ariesyous/projectneon/commit/a6ef571942afb319b3e2c0cdd9c9cffcc1f1bc93) on `main`.
+- GitHub Pages: [run 32586634393](https://github.com/ariesyous/projectneon/actions/runs/32586634393) successfully completed the official Godot Web export, artifact upload, and deployment in 44 seconds.
+- Live build: [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/), smoke-checked at 1280×720 with real pointer input.
+- Live sequence: choose Convenience Store → see `PREDICTION • NEXT: SHOP + RECOVERY • HEAT -10` → confirm once → see `NEXT BLOCK: CONVENIENCE STORE` → enter `SHOP / CONVENIENCE STORE` → leave → see `B1 CONVENIENCE STORE COMPLETED` on the next District Plan.
+- The live browser warning/error console remained empty through selection, occurrence, completion, and next PLAN.
+- This is an owner-authorized browser-playtest publication, not qualitative acceptance; it does not authorize WP04.
+
 ## Input parity and release cleanup
 
 - Choice cards and confirmation are native focusable Buttons with at least the 48-pixel touch target.

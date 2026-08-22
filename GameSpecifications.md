@@ -7,7 +7,7 @@
 **Target platform:** Windows PC
 **Target display:** 16:9 desktop display
 **Internal design resolution:** 640 × 360
-**Current production boundary:** local WP03 technical/runtime/visual/platform implementation complete; owner unbriefed first-use gate pending; WP04–WP07 unstarted; published browser candidate remains WP02
+**Current production boundary:** WP03 technical/runtime/visual/platform implementation published as the owner-authorized browser-playtest candidate; owner unbriefed first-use gate pending; WP04–WP07 unstarted
 
 ---
 
@@ -112,7 +112,7 @@ The fixed authored route retains its stable ID and five nodes while using a 21.0
 
 WP02 has passed its focused, affected, cumulative, fixed-seed timing, configured-runtime, visual, Windows release-export/runtime, and local Web release/browser checks. Its owner-run five-person comprehension check remains pending. The owner separately authorized a WP02 `main` and GitHub Pages browser-playtest release on 2026-08-21; that historical publication did not satisfy the qualitative gate or pre-authorize WP03.
 
-The isolated WP03 release snapshot has passed **5/5 focused tests/130 assertions**, **72/72 affected tests/1,388 assertions**, and **274/274 cumulative tests/3,919 assertions across 27 suites**, plus a configured all-four-card live-effect matrix, native keyboard/touch GUI routing, configured prediction/occurrence/history/cleanup, three inspected 1280×720 captures, Windows/Web release exports, exported-Windows runtime, and 2560×1440 production-Web real pointer/empty-console checks. The aggregate runner's pre-existing post-success shutdown diagnostic remains disclosed. The owner-run unbriefed first-use check remains pending and is not satisfied by automated evidence. On 2026-08-22 the owner separately authorized this exact WP03 boundary for a `main` and GitHub Pages browser-playtest release; publication does not authorize WP04 or establish qualitative acceptance.
+The isolated WP03 release snapshot has passed **5/5 focused tests/130 assertions**, **72/72 affected tests/1,388 assertions**, and **274/274 cumulative tests/3,919 assertions across 27 suites**, plus a configured all-four-card live-effect matrix, native keyboard/touch GUI routing, configured prediction/occurrence/history/cleanup, three inspected 1280×720 captures, Windows/Web release exports, exported-Windows runtime, and 2560×1440 production-Web real pointer/empty-console checks. The aggregate runner's pre-existing post-success shutdown diagnostic remains disclosed. The owner-run unbriefed first-use check remains pending and is not satisfied by automated evidence. On 2026-08-22 the owner separately authorized this exact WP03 boundary for a `main` and GitHub Pages browser-playtest release. Commit `a6ef571942afb319b3e2c0cdd9c9cffcc1f1bc93` was pushed to `main`; [Pages run 32586634393](https://github.com/ariesyous/projectneon/actions/runs/32586634393) exported and deployed it successfully, and the live real-pointer prediction/occurrence/history flow passed with an empty warning/error console. Publication does not authorize WP04 or establish qualitative acceptance.
 
 ---
 

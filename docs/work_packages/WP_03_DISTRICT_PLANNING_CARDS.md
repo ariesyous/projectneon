@@ -1,6 +1,6 @@
 # WP03 — District Planning and Cards
 
-Status: implemented and technically evidenced on 2026-08-22; owner-authorized `main`/Pages browser-playtest publication; owner-run unbriefed first-use gate pending
+Status: implemented, technically evidenced, and published from `main` commit `a6ef571942afb319b3e2c0cdd9c9cffcc1f1bc93` by successful Pages run 32586634393 on 2026-08-22; owner-run unbriefed first-use gate pending
 Branch suggestion: `codex/wp-03-district-plan`
 
 ## Outcome

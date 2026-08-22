@@ -54,7 +54,7 @@ Replace or radically simplify the current planner through the approved District 
 
 Exit gate: an unbriefed player makes a valid first card choice, predicts its consequence, and recognizes that consequence in the next block.
 
-WP03 technical/runtime/visual/platform gate: **Passed — 2026-08-22.** See [WP03 acceptance evidence](WP03_ACCEPTANCE_EVIDENCE.md) and the [authority map](WP03_CURRENT_TO_TARGET_AUTHORITY_MAP.md). The owner-coordinated five-person first-use check remains pending; use [the fixed procedure](WP03_UNBRIEFED_FIRST_USE_CHECK.md) and do not infer a qualitative pass from automation.
+WP03 technical/runtime/visual/platform gate: **Passed and published for browser playtest — 2026-08-22.** Implementation commit `a6ef571942afb319b3e2c0cdd9c9cffcc1f1bc93` and [Pages run 32586634393](https://github.com/ariesyous/projectneon/actions/runs/32586634393) are the publication provenance. See [WP03 acceptance evidence](WP03_ACCEPTANCE_EVIDENCE.md) and the [authority map](WP03_CURRENT_TO_TARGET_AUTHORITY_MAP.md). The owner-coordinated five-person first-use check remains pending; use [the fixed procedure](WP03_UNBRIEFED_FIRST_USE_CHECK.md) and do not infer a qualitative pass from automation.
 
 ## Phase C — Make choices and fights matter
 

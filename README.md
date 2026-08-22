@@ -4,7 +4,7 @@ Neon Loop is a Godot 4.x pixel-art auto-brawler about shaping an automatic stree
 
 ## Play online
 
-Play the owner-authorized WP03 browser-playtest build at **[ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/)**. The owner authorized this technically evidenced boundary for `main` and GitHub Pages publication on 2026-08-22; the separate five-person first-use gate remains pending.
+Play the owner-authorized WP03 browser-playtest build at **[ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/)**. It was published from `main` implementation commit `a6ef571942afb319b3e2c0cdd9c9cffcc1f1bc93` by successful [GitHub Pages run 32586634393](https://github.com/ariesyous/projectneon/actions/runs/32586634393) on 2026-08-22. The separate five-person first-use gate remains pending.
 
 Milestone 5 was implemented in feature commit `7ac7fa0794e79cfc60781b84ce7181f61e16bf7f`, merged through [PR #4](https://github.com/ariesyous/projectneon/pull/4), and published from `main` at merge commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`. [GitHub Pages run 29713282074](https://github.com/ariesyous/projectneon/actions/runs/29713282074) completed successfully. This records the actual release state without assigning a semantic version.
 
@@ -14,7 +14,7 @@ Repository: [github.com/ariesyous/projectneon](https://github.com/ariesyous/proj
 
 ## Project status
 
-**WP03 — District Planning and Cards: local technical/runtime/visual/platform gate passed; owner unbriefed first-use gate pending**
+**WP03 — District Planning and Cards: technical/runtime/visual/platform gate passed and browser-playtest build published; owner unbriefed first-use gate pending**
 
 The local WP03 working tree includes the WP02 lifecycle and adds:
 
