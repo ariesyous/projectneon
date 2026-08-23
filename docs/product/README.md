@@ -1,6 +1,6 @@
 # Neon Loop Product Rebaseline
 
-Status: **WP00 owner-approved and canonical; WP01 complete; WP02 technical/runtime/visual gate passed — 2026-08-21; WP02 human gate pending**
+Status: **WP00 canonical; WP01–WP04 implemented/published within recorded boundaries; WP05 owner-approved local handoff implemented with final gates pending; human gates remain separately pending**
 Prepared: 2026-08-20
 
 This folder turns the August 2026 owner playtest into a research-backed product direction and an executable roadmap. It does not authorize post-Milestone-6 gameplay work by itself. The existing specification remains canonical until the owner approves a direction and Work Package 00 updates the specification and architecture records.
@@ -29,6 +29,6 @@ The current vertical slice is mechanically substantial and technically verified,
 
 The owner approved the complete recommended D1–D7 package on 2026-08-20. The canonical target is three laps of three blocks; Extract/Push after laps one and two; a lap-two push that commits to the final boss lap; a focused two-choice District Plan backed by a four-card one-copy lap deck; all three crew available on fresh profiles; breadth/cosmetic/challenge progression only; Environment/Focus/Backup combat roles; and the measurable five-person and timing gates in `TEST_PLAN.md`.
 
-See the [owner decision packet](WP00_DECISION_PACKET.md), [WP00 acceptance evidence](WP00_ACCEPTANCE_EVIDENCE.md), [WP01 acceptance evidence](WP01_ACCEPTANCE_EVIDENCE.md), [WP02 acceptance evidence](WP02_ACCEPTANCE_EVIDENCE.md), [WP02 authority map](WP02_CURRENT_TO_TARGET_AUTHORITY_MAP.md), [WP02 comprehension template](WP02_UNBRIEFED_COMPREHENSION_CHECK.md), [wireframes](wireframes/README.md), and [accepted architecture decision](../decisions/0002-wp00-product-rebaseline.md).
+See the [owner decision packet](WP00_DECISION_PACKET.md), [roadmap](ROADMAP.md), [WP04 acceptance evidence](WP04_ACCEPTANCE_EVIDENCE.md), [WP05 research](WP05_RESEARCH_AND_DECISION_RECORD.md), [WP05 prototype comparison](WP05_PROTOTYPE_COMPARISON.md), [WP05 authority map](WP05_CURRENT_TO_TARGET_AUTHORITY_MAP.md), [WP05 Part A evidence](WP05_ACCEPTANCE_EVIDENCE.md), [WP05 owner checkpoint](WP05_OWNER_SELECTION.md), [fixed WP05 human procedure](WP05_UNBRIEFED_INTENT_VARIETY_CHECK.md), [wireframes](wireframes/README.md), and [accepted architecture decision](../decisions/0002-wp00-product-rebaseline.md).
 
-WP00 is documentation-only. WP01 changed presentation only. WP02 now implements the authoritative three-lap/three-block lifecycle, exact-once lap decisions, all-crew production access, state clarity, cadence instrumentation, and lifecycle result fields while preserving the M5 card compatibility boundary. Its five-person owner comprehension gate remains pending. WP03 has not started, and no later package begins without a separate explicit task.
+WP00 is documentation-only. WP01–WP04 implement their bounded presentation, lifecycle/access, focused-plan, and consequence scopes. WP04 remains the published browser-playtest boundary. The owner approved WP05 Environment / Focus / Backup on 2026-08-23; its local handoff and remaining gates are recorded in `WP05_HANDOFF.md`. No later package begins without its explicit gate.

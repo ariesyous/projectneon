@@ -66,6 +66,8 @@ var _card_system: CardSystem
 var _call_backup_controller: CallBackupController
 var _combo_tracker: ComboTracker
 var _cadence_tracker: RunCadenceTracker
+var _environment_controller: EnvironmentController
+var _focus_controller: FocusController
 var _starting_equipment: Array[EquipmentDefinition] = []
 var _next_encounter_instance_id: int = 1
 var _next_shop_opportunity_id: int = 1
@@ -89,7 +91,9 @@ func configure(
 	card_system: CardSystem = null,
 	call_backup_controller: CallBackupController = null,
 	combo_tracker: ComboTracker = null,
-	cadence_tracker: RunCadenceTracker = null
+	cadence_tracker: RunCadenceTracker = null,
+	environment_controller: EnvironmentController = null,
+	focus_controller: FocusController = null
 ) -> void:
 	_run_director = run_director
 	_patrol_controller = patrol_controller
@@ -103,6 +107,8 @@ func configure(
 	_call_backup_controller = call_backup_controller
 	_combo_tracker = combo_tracker
 	_cadence_tracker = cadence_tracker
+	_environment_controller = environment_controller
+	_focus_controller = focus_controller
 	_reward_director.configure_equipment(_synergy_system)
 	_reward_director.configure_cards(_card_system)
 	if _card_system != null:
@@ -598,6 +604,10 @@ func return_to_main_menu() -> bool:
 		_card_system.clear_for_main_menu()
 	if _call_backup_controller != null:
 		_call_backup_controller.reset_for_run()
+	if _environment_controller != null:
+		_environment_controller.reset_for_run()
+	if _focus_controller != null:
+		_focus_controller.reset_for_run()
 	if _combo_tracker != null:
 		_combo_tracker.reset_for_run()
 	if _cadence_tracker != null:
@@ -640,6 +650,12 @@ func get_snapshot() -> Dictionary:
 			if _call_backup_controller != null
 			else {}
 		),
+		"environment": (
+			_environment_controller.get_snapshot()
+			if _environment_controller != null
+			else {}
+		),
+		"focus": _focus_controller.get_snapshot() if _focus_controller != null else {},
 		"combo": _combo_tracker.get_snapshot() if _combo_tracker != null else {},
 		"cadence": _cadence_tracker.get_snapshot() if _cadence_tracker != null else {},
 		"pending_reward_encounter_id": _pending_reward_encounter_id,
@@ -669,6 +685,10 @@ func _on_run_started(_seed: int, _schema_version: int) -> void:
 				push_error("Starting equipment '%s' could not be equipped." % item.id)
 	if _call_backup_controller != null:
 		_call_backup_controller.reset_for_run()
+	if _environment_controller != null:
+		_environment_controller.reset_for_run()
+	if _focus_controller != null:
+		_focus_controller.reset_for_run()
 	if _combo_tracker != null:
 		_combo_tracker.reset_for_run()
 	if _cadence_tracker != null:
@@ -686,7 +706,7 @@ func _on_run_started(_seed: int, _schema_version: int) -> void:
 	_emit_status()
 
 
-func _on_run_state_changed(_previous_state: int, new_state: int) -> void:
+func _on_run_state_changed(previous_state: int, new_state: int) -> void:
 	if new_state == RunDirector.RunState.INITIALIZING:
 		_resetting_run = true
 	_end_card_planning_for_unsafe_state(new_state)
@@ -694,14 +714,28 @@ func _on_run_state_changed(_previous_state: int, new_state: int) -> void:
 	_combat_director.set_simulation_enabled(simulation_active)
 	_reward_director.set_simulation_enabled(simulation_active)
 	_fire_hydrant_controller.set_simulation_enabled(simulation_active)
+	var combat_state: bool = new_state in [
+		RunDirector.RunState.ENCOUNTER_ACTIVE,
+		RunDirector.RunState.BOSS_ACTIVE,
+	]
+	var paused_combat_context: bool = (
+		new_state == RunDirector.RunState.PAUSED
+		and previous_state in [
+			RunDirector.RunState.ENCOUNTER_ACTIVE,
+			RunDirector.RunState.BOSS_ACTIVE,
+		]
+	)
+	if _environment_controller != null:
+		_environment_controller.set_simulation_enabled(simulation_active)
+		_environment_controller.set_combat_available(combat_state)
+		if not combat_state and not paused_combat_context:
+			_environment_controller.set_context_action(&"")
+	if _focus_controller != null:
+		_focus_controller.set_simulation_enabled(simulation_active)
+		_focus_controller.set_combat_available(combat_state)
 	if _call_backup_controller != null:
 		_call_backup_controller.set_simulation_enabled(simulation_active)
-		_call_backup_controller.set_combat_available(
-			new_state in [
-				RunDirector.RunState.ENCOUNTER_ACTIVE,
-				RunDirector.RunState.BOSS_ACTIVE,
-			]
-		)
+		_call_backup_controller.set_combat_available(combat_state)
 		if new_state in [
 			RunDirector.RunState.EXTRACTING,
 			RunDirector.RunState.VICTORY,
@@ -710,6 +744,17 @@ func _on_run_state_changed(_previous_state: int, new_state: int) -> void:
 			RunDirector.RunState.INITIALIZING,
 		]:
 			_call_backup_controller.cleanup_for_terminal_state()
+	if new_state in [
+		RunDirector.RunState.EXTRACTING,
+		RunDirector.RunState.VICTORY,
+		RunDirector.RunState.DEFEAT,
+		RunDirector.RunState.RUN_SUMMARY,
+		RunDirector.RunState.INITIALIZING,
+	]:
+		if _environment_controller != null:
+			_environment_controller.cleanup_for_terminal_state()
+		if _focus_controller != null:
+			_focus_controller.cleanup_for_terminal_state()
 	_patrol_controller.set_simulation_enabled(new_state == RunDirector.RunState.PATROLLING)
 	if new_state == RunDirector.RunState.BOSS_ACTIVE:
 		_start_boss_encounter()
@@ -726,10 +771,16 @@ func _start_boss_encounter() -> bool:
 		return _encounter_controller.get_active_definition() == boss_encounter_definition
 	var encounter_instance_id: int = _next_encounter_instance_id
 	_next_encounter_instance_id += 1
+	if _environment_controller != null and not _environment_controller.set_context_action(
+		boss_encounter_definition.environment_action_id
+	):
+		return false
 	if not _encounter_controller.start_boss_encounter(
 		encounter_instance_id,
 		boss_encounter_definition
 	):
+		if _environment_controller != null:
+			_environment_controller.set_context_action(&"")
 		push_error("The Viper boss encounter failed to start.")
 		return false
 	return true
@@ -906,7 +957,13 @@ func _start_encounter(
 		return false
 	var encounter_instance_id: int = _next_encounter_instance_id
 	_next_encounter_instance_id += 1
+	if _environment_controller != null and not _environment_controller.set_context_action(
+		definition.environment_action_id
+	):
+		return false
 	if not _run_director.begin_encounter(definition):
+		if _environment_controller != null:
+			_environment_controller.set_context_action(&"")
 		return false
 	var context: EncounterRewardContext = EncounterRewardContext.new()
 	context.encounter_instance_id = encounter_instance_id
@@ -916,6 +973,8 @@ func _start_encounter(
 	_active_encounter_context = context
 	if not _encounter_controller.start_encounter(encounter_instance_id, definition):
 		_active_encounter_context = null
+		if _environment_controller != null:
+			_environment_controller.set_context_action(&"")
 		push_error("Encounter '%s' failed to start." % definition.id)
 		return false
 	return true

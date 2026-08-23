@@ -7,7 +7,7 @@
 **Target platform:** Windows PC
 **Target display:** 16:9 desktop display
 **Internal design resolution:** 640 × 360
-**Current production boundary:** WP04 is technically implemented, evidenced, and owner-authorized on 2026-08-22 as the next `main`/GitHub Pages browser-playtest candidate. Its five-person consequence/variety gate remains pending; publication does not satisfy that gate. WP05–WP07 are unstarted.
+**Current published boundary:** WP04 is technically implemented, evidenced, and published from `782f7fe18fa434d47020f1d4bc837c9c05790dad` as the current `main`/GitHub Pages browser-playtest boundary. Its five-person consequence/variety gate remains pending. The owner approved WP05's Environment / Focus / Backup recommendation on 2026-08-23 and a local handoff branch now implements it; final cumulative/platform/visual/human acceptance and any publication remain pending. WP06–WP07 are unstarted.
 
 ---
 
@@ -115,6 +115,8 @@ WP02 has passed its focused, affected, cumulative, fixed-seed timing, configured
 The isolated WP03 release snapshot has passed **5/5 focused tests/130 assertions**, **72/72 affected tests/1,388 assertions**, and **274/274 cumulative tests/3,919 assertions across 27 suites**, plus a configured all-four-card live-effect matrix, native keyboard/touch GUI routing, configured prediction/occurrence/history/cleanup, three inspected 1280×720 captures, Windows/Web release exports, exported-Windows runtime, and 2560×1440 production-Web real pointer/empty-console checks. The aggregate runner's pre-existing post-success shutdown diagnostic remains disclosed. The owner-run unbriefed first-use check remains pending and is not satisfied by automated evidence. On 2026-08-22 the owner separately authorized this exact WP03 boundary for a `main` and GitHub Pages browser-playtest release. Commit `a6ef571942afb319b3e2c0cdd9c9cffcc1f1bc93` was pushed to `main`; [Pages run 32586634393](https://github.com/ariesyous/projectneon/actions/runs/32586634393) exported and deployed it successfully, and the live real-pointer prediction/occurrence/history flow passed with an empty warning/error console. Publication does not authorize WP04 or establish qualitative acceptance.
 
 WP04 locally passes **15/15 focused tests with 247 assertions**, **226/226 affected tests with 3,175 assertions**, and **291/291 cumulative tests with 4,192 assertions across 30 suites**, plus configured `/GameRun`, native mouse/touch/keyboard routing, four inspected 1280×720 captures, Windows/Web release exports, exported-Windows runtime, and local production-Web real-pointer reward/shop/exit plus 2560×1440 containment with an empty warning/error console. The aggregate runner retains the pre-existing 48-ObjectDB/four-resource shutdown diagnostic; the other gates do not reproduce it. The owner-run five-person WP04 consequence/variety gate remains pending. On 2026-08-22 the owner separately authorized this exact evidenced boundary for a `main` and GitHub Pages browser-playtest release; publication does not close the gate or authorize WP05.
+
+WP05 Part A completed the separately authorized research, authority audit, development-gated Environment/Focus/Rally/Backup comparison, exact strong/weak/invalid/hold/counter cases, deterministic 60-row encounter matrix, and owner-selection packet. At that checkpoint, prototype Resources used `wp05_proto_`, default `/GameRun` created no prototype, and Part A passed 13/13 focused tests with 180 assertions plus 304/304 cumulative tests with 4,373 assertions on the final run. The owner approved the recommended Environment / Focus / Backup set on 2026-08-23. The local handoff implementation adds Power Box and Focus production authorities, hardens Backup caller context, removes Rally/Hanging Sign and Part A GameRun debug seams from release composition, and passes its focused and deterministic production-matrix gates. Final cumulative/platform/visual evidence and the human intent/variety gate remain pending; no publication is authorized or claimed.
 
 ---
 
@@ -1050,9 +1052,11 @@ Subway Reroute must not be an infinitely repeatable cooling ability. Charge coun
 
 WP05 owns prototyping, exact tuning, authority, counterplay, and owner selection before production implementation. Focus must have a strong case, weak/invalid case, reason to hold it, and readable counter/tradeoff.
 
+Implementation status: the owner approved the Part A recommendation on 2026-08-23. The local WP05 handoff implements the three-second/ten-second-cooldown one-press priority authority with exact live target/attack/revision/token revalidation and a 0.35-second cutoff. Final acceptance remains subject to the recorded technical/platform and five-person gates.
+
 ### 20.5 Rally candidate
 
-Defensive rally/reposition is a WP05 prototype candidate, not an approved permanent slot. It may be productionized only after comparative evidence and a separate owner mechanic selection.
+Defensive rally/reposition was a WP05 Part A prototype candidate. The owner selected Environment / Focus / Backup instead; Rally remains isolated historical evidence and is not an approved permanent slot.
 
 ### 20.6 Intervention Requirements
 
@@ -2753,8 +2757,8 @@ WP00 is the documentation/decision gate and changes no runtime. WP01–WP04 are 
 2. **WP02 — Core Run Loop and State Clarity:** authoritative three-lap lifecycle, phase/next-event presentation, all-crew defaults, explicit Extract/Push and boss commitment.
 3. **WP03 — District Planning and Cards:** migrate the release interaction to the focused next-block District Plan while preserving deterministic/token authority.
 4. **WP04 — Builds, Rewards, and Shop:** make existing choices materially and visibly change the next fight; preserve lossless inventory and bounded economy scope.
-5. **WP05 — Interventions and Encounter Variety:** prototype and owner-select the smallest production mechanics within Environment/Focus/Backup vocabulary and a bounded encounter matrix.
+5. **WP05 — Interventions and Encounter Variety:** Part A development prototypes/evidence are complete; owner selection is pending before the smallest production mechanics may be implemented within Environment/Focus/Backup and the bounded encounter matrix.
 6. **WP06 — World, Combat, and Presentation Polish:** replace release-visible debug communication with authored city-block depth and accessible feedback without changing authority for convenience.
 7. **WP07 — Integration, Balance, and Release:** validate the approved cadence, clarity, consequence, variety, replay desire, compatibility, platforms, and owner-led final acceptance.
 
-There is no Milestone 7. WP04 is implemented and owner-authorized as the next `main`/Pages browser-playtest boundary, but it is not qualitatively accepted while its five-person gate remains pending. WP05 is not started or implicitly authorized by WP04. Procedural cities, direct character control, multiplayer, permanent statistical progression, large content expansion, controller support, localization, achievements, live-service systems, and other unapproved scope remain excluded.
+There is no Milestone 7. WP04 remains the published production/browser-playtest boundary and is not qualitatively accepted while its five-person gate remains pending. WP05 Part A began only under separate explicit authorization and remains development-only at its owner-selection checkpoint; Part B is not authorized until the owner answers. Procedural cities, direct character control, multiplayer, permanent statistical progression, large content expansion, controller support, localization, achievements, live-service systems, and other unapproved scope remain excluded.

@@ -19,4 +19,7 @@ knockback_duration = 0.20
 hit_stop_duration = 0.09
 special_cooldown_seconds = 6.0
 telegraph_seconds = 1.10
+focus_priority_eligible = true
+focus_threat_priority = 80
+intent_label = "VENOM AREA"
 area_radius = 92.0

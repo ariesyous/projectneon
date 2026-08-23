@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="WP05PrototypeActionDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/interventions/wp05_prototype_action_definition.gd" id="1_action"]
+[ext_resource type="Texture2D" path="res://assets/icons/interventions/prototypes/rally.svg" id="2_icon"]
+
+[resource]
+script = ExtResource("1_action")
+id = &"wp05_proto_rally_reposition"
+role_id = &"rally"
+display_name = "Rally"
+contextual_verb = "FALL BACK"
+effect_kind = 3
+icon = ExtResource("2_icon")
+cooldown_seconds = 18.0
+active_duration_seconds = 1.1
+minimum_decision_window_seconds = 0.65
+reposition_speed_multiplier = 1.5
+strong_case = "Trade attacks for a formation retreat during The Viper's readable area warning."
+weak_case = "A tracking charge, ranged projectile, or already-safe crew gains little while the retreat sacrifices damage uptime."
+invalid_case = "No area or charge windup with at least 0.65 seconds left, no live permanent crew, cooldown, pause, or terminal state."
+hold_case = "Keep attacking when the crew is already outside the warned area or can finish the threat before impact."
+counter_case = "Slow Rex may not clear the footprint, tracking attacks follow, and a fourth permanent role creates direct-control and HUD pressure."

@@ -1,6 +1,6 @@
 # WP05 — Interventions and Encounter Variety
 
-Status: proposed; requires completed WP02 and coordination with WP04
+Status: Owner recommendation approved 2026-08-23; Parts B/C implementation and focused matrix complete; cumulative/platform/visual/human gates remain in handoff
 Branch suggestion: `codex/wp-05-tactical-variety`
 
 ## Outcome
@@ -39,6 +39,19 @@ Sustain tactical attention across a run with a small, coherent set of interventi
 - Testers can anticipate enemy intent and explain at least one reason to use or hold an intervention.
 - Invalid/duplicate/stale/cooldown/exhaustion/terminal requests consume nothing.
 - Combat, intervention, deterministic, cleanup, restart, and cumulative tests pass cleanly.
+
+## Part A result — 2026-08-22
+
+- Research/decision record: `docs/product/WP05_RESEARCH_AND_DECISION_RECORD.md`.
+- Exact prototype/matrix comparison: `docs/product/WP05_PROTOTYPE_COMPARISON.md`.
+- Current-to-target authority map: `docs/product/WP05_CURRENT_TO_TARGET_AUTHORITY_MAP.md`.
+- Technical evidence: `docs/product/WP05_ACCEPTANCE_EVIDENCE.md`.
+- Single owner checkpoint: `docs/product/WP05_OWNER_SELECTION.md`.
+- Fixed later human procedure: `docs/product/WP05_UNBRIEFED_INTENT_VARIETY_CHECK.md`.
+- Focused result: **13/13 tests, 180 assertions**. Final cumulative result: **304/304 tests, 4,373 assertions across 32 suites**, zero failures/skips; clean repeats reported 4,372/4,373 from inherited WP02/M6 conditional branches.
+- Configured matrix: 60 rows spanning all crew, exact WP04 builds, early/middle/elite/boss contexts, and hold/Environment/Focus/Backup/Rally policies; exact repeat and cosmetic isolation passed.
+
+The owner answered **“Approved”** on 2026-08-23. The recommendation is now implemented on the handoff branch described in `docs/product/WP05_HANDOFF.md`; the historical Part A result above remains unchanged evidence rather than release content.
 
 ## Recommended parts
 

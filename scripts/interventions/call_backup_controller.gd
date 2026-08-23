@@ -33,6 +33,9 @@ const REASON_NO_CHARGES: StringName = &"no_charges"
 const REASON_COOLDOWN: StringName = &"cooldown"
 const REASON_SPAWN_FAILED: StringName = &"spawn_failed"
 const REASON_REGISTRATION_FAILED: StringName = &"registration_failed"
+const REASON_MALFORMED_REQUEST: StringName = &"malformed_request"
+const REASON_STALE_REQUEST: StringName = &"stale_request"
+const REASON_REPLAYED_REQUEST: StringName = &"replayed_request"
 
 const END_DURATION_EXPIRED: StringName = &"duration_expired"
 const END_ALLIES_DEFEATED: StringName = &"allies_defeated"
@@ -59,6 +62,11 @@ var _last_accepted_token: int = -1
 var _next_activation_token: int = 1
 var _active_allies: Array[Node2D] = []
 var _request_in_progress: bool = false
+var _request_context_revision: int = 0
+var _request_token: int = -1
+var _next_request_token: int = 1
+var _consumed_request_tokens: Dictionary[int, bool] = {}
+var _last_request_context_signature: String = ""
 
 
 func _ready() -> void:
@@ -92,8 +100,10 @@ func reset_for_run() -> void:
 	_next_activation_token = 1
 	_cooldown_multiplier = 1.0
 	_request_in_progress = false
+	_last_request_context_signature = ""
 	simulation_enabled = false
 	combat_available = false
+	_refresh_request_context(true)
 	_emit_state()
 
 
@@ -114,7 +124,27 @@ func set_combat_available(is_available: bool) -> void:
 	_emit_state()
 
 
-func request_activation() -> bool:
+func request_activation(
+	expected_context_revision: int = -1,
+	request_token: int = -1
+) -> bool:
+	# The no-argument alias preserves isolated historical M6 fixtures. Production
+	# callers always pass the exact published revision/token.
+	if expected_context_revision < 0 and request_token < 0:
+		expected_context_revision = _request_context_revision
+		request_token = _request_token
+	elif expected_context_revision < 0 or request_token <= 0:
+		activation_rejected.emit(REASON_MALFORMED_REQUEST)
+		return false
+	if _consumed_request_tokens.has(request_token):
+		activation_rejected.emit(REASON_REPLAYED_REQUEST)
+		return false
+	if (
+		expected_context_revision != _request_context_revision
+		or request_token != _request_token
+	):
+		activation_rejected.emit(REASON_STALE_REQUEST)
+		return false
 	if _request_in_progress:
 		activation_rejected.emit(REASON_ALREADY_ACTIVE)
 		return false
@@ -151,7 +181,10 @@ func request_activation() -> bool:
 	_active_duration_remaining = _get_definition().active_combat_duration_seconds
 	_charges_remaining -= 1
 	_cooldown_remaining = get_cooldown_duration()
+	_consumed_request_tokens[request_token] = true
 	_request_in_progress = false
+	_last_request_context_signature = ""
+	_refresh_request_context(true)
 	activation_accepted.emit(
 		_active_token,
 		_active_allies.duplicate(),
@@ -275,6 +308,8 @@ func get_snapshot() -> Dictionary:
 		"active_token": _active_token,
 		"last_accepted_token": _last_accepted_token,
 		"next_activation_token": _next_activation_token,
+		"request_context_revision": _request_context_revision,
+		"request_token": _request_token,
 		"active_ally_count": _active_allies.size(),
 		"required_ally_count": _get_definition().ally_count,
 		"active_ally_instance_ids": ally_instance_ids,
@@ -329,7 +364,25 @@ func _remove_ally(ally: Node2D, reason: StringName) -> void:
 
 
 func _emit_state() -> void:
+	_refresh_request_context(false)
 	state_changed.emit(get_snapshot())
+
+
+func _refresh_request_context(force: bool) -> void:
+	var signature: String = "%s|%d|%d|%s|%s|%s" % [
+		get_state_name(),
+		_charges_remaining,
+		_active_token,
+		_cooldown_remaining > 0.0,
+		simulation_enabled,
+		combat_available,
+	]
+	if not force and signature == _last_request_context_signature:
+		return
+	_last_request_context_signature = signature
+	_request_context_revision += 1
+	_request_token = _next_request_token
+	_next_request_token += 1
 
 
 func _get_definition() -> CallBackupDefinition:

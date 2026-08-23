@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="WP05PrototypeActionDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/interventions/wp05_prototype_action_definition.gd" id="1_action"]
+[ext_resource type="Texture2D" path="res://assets/icons/interventions/prototypes/power_box.svg" id="2_icon"]
+
+[resource]
+script = ExtResource("1_action")
+id = &"wp05_proto_power_box"
+role_id = &"environment"
+display_name = "Power Box"
+contextual_verb = "CUT POWER"
+effect_kind = 0
+icon = ExtResource("2_icon")
+cooldown_seconds = 12.0
+world_origin = Vector2(370, 226)
+range_radius = 96.0
+base_damage = 4
+stun_seconds = 1.0
+status_id = &"shock"
+status_duration_seconds = 3.0
+strong_case = "Interrupt a clustered Bottle Thrower or Enforcer windup inside the marked power-box footprint."
+weak_case = "Four damage and a short Shock marker are poor value against one ordinary enemy with no dangerous intent."
+invalid_case = "No live enemy inside the authored 96-pixel footprint, shared Environment cooldown, pause, or terminal state."
+hold_case = "Hold the breaker while only low-impact basics are nearby so it remains available for a charge or projectile windup."
+counter_case = "Elite and boss stagger resistance shorten control; the boss control lockout prevents repeated interruption."

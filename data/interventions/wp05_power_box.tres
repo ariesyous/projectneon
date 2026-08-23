@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PowerBoxDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/interventions/power_box_definition.gd" id="1_definition"]
+[ext_resource type="Texture2D" path="res://assets/icons/interventions/power_box.svg" id="2_icon"]
+
+[resource]
+script = ExtResource("1_definition")
+id = &"power_box"
+display_name = "Power Box"
+contextual_verb = "BREAKER"
+description = "During a named enemy windup, trip the breaker: the marked cluster takes 4 damage, is interrupted, and is Shocked for 3 seconds."
+icon = ExtResource("2_icon")
+range_radius = 96.0
+damage = 4
+stun_seconds = 1.0
+status_id = &"shock"
+status_duration_seconds = 3.0
+cooldown_seconds = 12.0

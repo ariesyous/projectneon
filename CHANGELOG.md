@@ -4,6 +4,20 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 
 ## [Unreleased]
 
+### 2026-08-22 — WP05 Part A Interventions and Encounter Variety
+
+- Audited Hydrant, Backup, Subway, targeting/interruption, all existing enemy intents, encounters, lap modifiers, HUD, pause/eligible-time, terminal/restart, caps, and deterministic authority from published WP04 `782f7fe18fa434d47020f1d4bc837c9c05790dad`.
+- Recorded current primary/authoritative research, applicable findings, rejected adaptive/direct-control lessons, and Neon Loop-specific implications in `docs/product/WP05_RESEARCH_AND_DECISION_RECORD.md`.
+- Added four explicitly development-only `wp05_proto_` action definitions: contextual Power Box, one-charge Hanging Sign, one-press Focus priority, and Rally reposition. Hydrant/Backup use their existing authorities; no production content ID is added.
+- Added four exact existing-roster early/middle/elite/boss scenarios and deterministic non-authoritative opportunity/use/hold/rejection/result telemetry.
+- Added monotonic exact context revision/request tokens around every prototype request, with immutable invalid/malformed/stale/replayed/cooldown/exhaustion/pause/terminal/restart behavior.
+- Added an explicit debug-only `GameRun` entry, contextual Environment icon/verb, enabled Focus shell, Backup key 3, code-drawn target/range cues, and separately labelled `4 DEV` Rally. Default/release `/GameRun` creates no prototype and retains WP04.
+- Ran 60 configured rows across all crew, exact disjoint WP04 builds, four contexts, and five use/hold policies. Exact repeat and 50-draw cosmetic isolation passed; the result identifies Environment/Focus/Rally tradeoffs and Backup's whole-run scarcity requirement.
+- Passed **13/13 focused tests with 180 assertions** and **304/304 cumulative tests with 4,373 assertions across 32 suites** on the final run, zero failures/skips. Clean repeats reported 4,372 or 4,373 because inherited WP02/M6 branches conditionally execute one assertion; no WP05 suite count varied. The aggregate retains the inherited 48-ObjectDB/four-resource shutdown signature; focused/configured boots do not.
+- Launched graphical configured `/GameRun`, found and repaired prototype onboarding obstruction/inaccurate copy/clipping, captured a readable 1280×720 Focus opportunity, and used real pointer input to retarget Jax automatically to Bottle Thrower exactly once.
+- Added the authority map, prototype comparison, Part A acceptance evidence, fixed later five-person procedure, and the single owner-selection packet. Recommended production set is Hydrant+Power Box Environment, Focus, and unchanged finite Backup; Sign/Rally remain development-only pending owner response.
+- No productionization, participant pass, commit, push, publication, deployment, external message, or WP06 work was performed.
+
 ### 2026-08-22 — WP04 Builds, Rewards, and Shop
 
 - Completed a deterministic audit of all nine items, three synergies, three starters, reward tiers, six inventory destinations, and finite shop paths; recorded research, balance versus presentation failures, approved decisions, and rejected expansion in `docs/product/WP04_CONSEQUENCE_AUDIT.md`.

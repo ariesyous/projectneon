@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="WP05PrototypeScenarioDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/interventions/wp05_prototype_scenario_definition.gd" id="1_scenario"]
+[ext_resource type="Resource" path="res://data/encounters/viper_showdown.tres" id="2_encounter"]
+
+[resource]
+script = ExtResource("1_scenario")
+id = &"wp05_proto_scenario_boss_defense"
+display_name = "Boss: Area Warning and Commitment"
+context_id = &"boss"
+encounter_definition = ExtResource("2_encounter")
+boss_context = true
+environment_action_id = &"wp05_proto_hanging_sign"
+expected_enemy_ids = Array[StringName]([&"the_viper"])
+primary_threat_attack_id = &"viper_area_warning"
+lap_index = 2
+fixed_seed = 50504
+tactical_question = "Commit the one sign drop, spend finite Backup, Focus the boss, or sacrifice damage uptime to Rally from the area warning?"

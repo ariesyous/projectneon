@@ -24,6 +24,8 @@ var app_state_override: NeonAppState
 @onready var combat_director: CombatDirector = $CombatDirector
 @onready var reward_director: RewardDirector = $RewardDirector
 @onready var fire_hydrant_controller: FireHydrantController = $FireHydrantController
+@onready var environment_controller: EnvironmentController = $EnvironmentController
+@onready var focus_controller: FocusController = $FocusController
 @onready var call_backup_controller: CallBackupController = $CallBackupController
 @onready var combo_tracker: ComboTracker = $ComboTracker
 @onready var cadence_tracker: RunCadenceTracker = $RunCadenceTracker
@@ -42,6 +44,7 @@ var app_state_override: NeonAppState
 @onready var vertical_slice_overlay: VerticalSliceOverlay = $VerticalSliceOverlay
 @onready var debug_overlay: DebugOverlay = $DebugOverlay
 @onready var fire_hydrant: FireHydrant = $DowntownLoop/Interactables/FireHydrant
+@onready var power_box: PowerBox = $DowntownLoop/Interactables/PowerBox
 @onready var combat_feedback: CombatFeedback = $DowntownLoop/EffectsContainer/CombatFeedback
 @onready var app_state: NeonAppState = (
 	app_state_override
@@ -63,6 +66,7 @@ var _tutorial_remaining: float = 0.0
 var _last_recorded_summary: RunSummaryRecord
 var _strategic_reward_encounters: Dictionary[int, bool] = {}
 var _hit_flash_reduction: float = 0.0
+var _focus_visual_actor: ActorController
 
 
 func _ready() -> void:
@@ -112,9 +116,25 @@ func _ready() -> void:
 	fire_hydrant_controller.activation_resolved.connect(_on_hydrant_activation_resolved)
 	fire_hydrant_controller.activation_rejected.connect(_on_hydrant_activation_rejected)
 	fire_hydrant.activation_requested.connect(_request_hydrant_activation)
+	environment_controller.state_changed.connect(_on_environment_state_changed)
+	environment_controller.activation_accepted.connect(_on_environment_activation_accepted)
+	environment_controller.activation_rejected.connect(_on_environment_activation_rejected)
+	focus_controller.state_changed.connect(game_hud.present_focus_state)
+	focus_controller.activation_accepted.connect(_on_focus_activation_accepted)
+	focus_controller.activation_rejected.connect(_on_focus_activation_rejected)
+	focus_controller.focus_result.connect(_on_focus_result)
+	focus_controller.focus_ended.connect(_on_focus_ended)
+	power_box.activation_requested.connect(_request_environment_activation)
+	power_box.preview_visibility_changed.connect(_on_environment_preview_requested)
 
 	game_hud.hydrant_activation_requested.connect(_request_hydrant_activation)
 	game_hud.backup_activation_requested.connect(_request_backup_activation)
+	game_hud.environment_activation_requested.connect(_on_environment_activation_requested)
+	game_hud.focus_activation_requested.connect(_on_focus_activation_requested)
+	game_hud.backup_activation_context_requested.connect(
+		_on_backup_activation_context_requested
+	)
+	game_hud.environment_preview_requested.connect(_on_environment_preview_requested)
 	game_hud.hydrant_preview_requested.connect(fire_hydrant.set_external_preview_visible)
 	game_hud.fullscreen_requested.connect(display_controller.toggle_fullscreen)
 	game_hud.primary_action_requested.connect(_on_primary_action_requested)
@@ -172,6 +192,13 @@ func _ready() -> void:
 	card_system.district_plan_offer_started.connect(_on_district_plan_offer_started)
 
 	fire_hydrant_controller.configure(combat_director, fire_hydrant.global_position)
+	environment_controller.configure(
+		combat_director,
+		fire_hydrant_controller,
+		fire_hydrant.global_position,
+		power_box.global_position
+	)
+	focus_controller.configure(combat_director)
 	combat_director.configure_build_system(synergy_system, run_director.get_random_streams())
 	cooling_controller.configure(run_director, reward_director, patrol_controller)
 	encounter_controller.configure_coin_interaction_exclusion(
@@ -208,7 +235,9 @@ func _ready() -> void:
 		card_system,
 		call_backup_controller,
 		combo_tracker,
-		cadence_tracker
+		cadence_tracker,
+		environment_controller,
+		focus_controller
 	)
 	run_flow_controller.flow_status_changed.connect(_on_flow_status_changed)
 	run_flow_controller.action_feedback.connect(_on_action_feedback)
@@ -231,6 +260,8 @@ func _ready() -> void:
 		_apply_settings(GameSettingsData.create_default())
 	display_controller.refresh_state(true)
 	_refresh_hydrant_presentation()
+	_on_environment_state_changed(environment_controller.get_snapshot())
+	game_hud.present_focus_state(focus_controller.get_snapshot())
 	game_hud.present_backup_state(call_backup_controller.get_snapshot())
 	_on_build_changed(synergy_system.get_snapshot())
 	game_hud.visible = false
@@ -315,15 +346,15 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif key_event.keycode in [KEY_1, KEY_KP_1]:
 		if not vertical_slice_overlay.has_blocking_modal():
-			_request_hydrant_activation()
+			_request_environment_activation()
 		get_viewport().set_input_as_handled()
 	elif key_event.keycode in [KEY_2, KEY_KP_2]:
 		if not vertical_slice_overlay.has_blocking_modal():
-			_request_backup_activation()
+			_request_focus_activation()
 		get_viewport().set_input_as_handled()
 	elif key_event.keycode in [KEY_3, KEY_KP_3]:
 		if not vertical_slice_overlay.has_blocking_modal():
-			run_flow_controller.request_subway_reroute()
+			_request_backup_activation()
 		get_viewport().set_input_as_handled()
 	elif key_event.keycode == KEY_TAB:
 		if not vertical_slice_overlay.has_blocking_modal():
@@ -693,7 +724,42 @@ func _summary_outcome_id(result: int) -> StringName:
 
 
 func _request_backup_activation() -> void:
-	call_backup_controller.request_activation()
+	var snapshot: Dictionary = call_backup_controller.get_snapshot()
+	call_backup_controller.request_activation(
+		int(snapshot.get("request_context_revision", -1)),
+		int(snapshot.get("request_token", -1))
+	)
+
+
+func _on_backup_activation_context_requested(
+	expected_context_revision: int,
+	request_token: int
+) -> void:
+	call_backup_controller.request_activation(expected_context_revision, request_token)
+
+
+func _request_focus_activation() -> void:
+	var snapshot: Dictionary = focus_controller.get_snapshot()
+	focus_controller.request_activation(
+		int(snapshot.get("target_instance_id", -1)),
+		StringName(snapshot.get("attack_id", &"")),
+		int(snapshot.get("context_revision", -1)),
+		int(snapshot.get("request_token", -1))
+	)
+
+
+func _on_focus_activation_requested(
+	target_instance_id: int,
+	attack_id: StringName,
+	expected_context_revision: int,
+	request_token: int
+) -> void:
+	focus_controller.request_activation(
+		target_instance_id,
+		attack_id,
+		expected_context_revision,
+		request_token
+	)
 
 
 func _create_backup_ally(_activation_token: int, ally_index: int) -> Node2D:
@@ -912,7 +978,8 @@ func _refresh_intervention_cooldown_multiplier() -> void:
 		else 1.0
 	)
 	var cooldown_multiplier: float = maxf(crew_multiplier * equipment_multiplier, 0.05)
-	fire_hydrant_controller.set_cooldown_multiplier(cooldown_multiplier)
+	environment_controller.set_cooldown_multiplier(cooldown_multiplier)
+	focus_controller.set_cooldown_multiplier(cooldown_multiplier)
 	call_backup_controller.set_cooldown_multiplier(cooldown_multiplier)
 
 
@@ -1395,10 +1462,14 @@ func _on_attack_telegraphed(
 	world_position: Vector2,
 	area_radius: float
 ) -> void:
-	if attacker == null or attack == null or not attacker.is_boss():
+	if attacker == null or attack == null:
 		return
-	_boss_telegraph_text = "WARNING: %s" % attack.display_name.to_upper()
-	_boss_telegraph_remaining = maxf(duration_seconds, BOSS_TELEGRAPH_MINIMUM_SECONDS)
+	if not attacker.is_boss() and not attack.focus_priority_eligible:
+		return
+	var visible_duration: float = maxf(duration_seconds, BOSS_TELEGRAPH_MINIMUM_SECONDS)
+	if attacker.is_boss():
+		_boss_telegraph_text = "WARNING: %s" % attack.display_name.to_upper()
+		_boss_telegraph_remaining = visible_duration
 	var marker_radius: float = area_radius
 	if marker_radius <= 0.0:
 		match attack.delivery_kind:
@@ -1406,16 +1477,21 @@ func _on_attack_telegraphed(
 				marker_radius = 48.0
 			AttackDefinition.DeliveryKind.SUMMON:
 				marker_radius = 64.0
+			AttackDefinition.DeliveryKind.PROJECTILE:
+				marker_radius = 28.0
+			AttackDefinition.DeliveryKind.MELEE:
+				marker_radius = 34.0
 	if marker_radius > 0.0:
 		var telegraph: CombatTelegraph = CombatTelegraph.new()
 		$DowntownLoop/EffectsContainer.add_child(telegraph)
 		telegraph.present(
 			world_position,
 			marker_radius,
-			_boss_telegraph_remaining,
-			attack.display_name
+			visible_duration,
+			attack.intent_label if not attack.intent_label.is_empty() else attack.display_name
 		)
-	_refresh_boss_presentation()
+	if attacker.is_boss():
+		_refresh_boss_presentation()
 
 
 func _set_combat_telegraphs_suspended(suspended: bool) -> void:
@@ -1537,7 +1613,7 @@ func _on_equipment_status_applied(
 
 
 func _on_environmental_hit_landed(
-	_source_id: StringName,
+	source_id: StringName,
 	_target: ActorController,
 	damage: int,
 	world_position: Vector2,
@@ -1548,11 +1624,19 @@ func _on_environmental_hit_landed(
 		screen_shake_controller.request_environmental_hit()
 	if _target != null and _knockback_force > 0.0 and _target.is_knocked_back():
 		audio_controller.play_cue(&"sfx_knockback")
-	combat_feedback.show_hydrant_impact(
-		world_position + Vector2(0.0, -28.0),
-		float(damage),
-		fire_hydrant_controller.tuning.impact_duration
-	)
+	if source_id == EnvironmentController.ACTION_POWER_BOX:
+		audio_controller.play_cue(&"sfx_environment_collision")
+		combat_feedback.show_hit(
+			world_position + Vector2(0.0, -28.0),
+			float(damage),
+			false
+		)
+	else:
+		combat_feedback.show_hydrant_impact(
+			world_position + Vector2(0.0, -28.0),
+			float(damage),
+			fire_hydrant_controller.tuning.impact_duration
+		)
 
 
 func _on_environmental_collision_landed(
@@ -1647,7 +1731,151 @@ func _on_cluster_resolved(
 
 func _request_hydrant_activation() -> void:
 	if RunDirector.is_eligible_active_state(run_director.current_state):
-		fire_hydrant_controller.request_activation()
+		_request_environment_activation()
+
+
+func _request_environment_activation() -> void:
+	var snapshot: Dictionary = environment_controller.get_snapshot()
+	environment_controller.request_activation(
+		StringName(snapshot.get("action_id", &"")),
+		int(snapshot.get("context_revision", -1)),
+		int(snapshot.get("request_token", -1))
+	)
+
+
+func _on_environment_activation_requested(
+	action_id: StringName,
+	expected_context_revision: int,
+	request_token: int
+) -> void:
+	environment_controller.request_activation(
+		action_id,
+		expected_context_revision,
+		request_token
+	)
+
+
+func _on_environment_preview_requested(is_visible: bool) -> void:
+	var action_id: StringName = environment_controller.get_current_action_id()
+	fire_hydrant.set_external_preview_visible(
+		is_visible and action_id == EnvironmentController.ACTION_HYDRANT
+	)
+	power_box.set_external_preview_visible(
+		is_visible and action_id == EnvironmentController.ACTION_POWER_BOX
+	)
+
+
+func _on_environment_state_changed(snapshot: Dictionary) -> void:
+	game_hud.present_environment_state(snapshot)
+	var action_id: StringName = StringName(snapshot.get("action_id", &""))
+	var hydrant_active: bool = action_id == EnvironmentController.ACTION_HYDRANT
+	var power_box_active: bool = action_id == EnvironmentController.ACTION_POWER_BOX
+	fire_hydrant.set_context_active(hydrant_active)
+	if hydrant_active:
+		var hydrant_state: int = FireHydrantController.State.NO_TARGET
+		if StringName(snapshot.get("validity_reason", &"")) == EnvironmentController.REASON_COOLDOWN:
+			hydrant_state = FireHydrantController.State.COOLING_DOWN
+		elif bool(snapshot.get("can_activate", false)):
+			hydrant_state = FireHydrantController.State.READY
+		fire_hydrant.present_state(
+			hydrant_state,
+			float(snapshot.get("cooldown_remaining", 0.0)),
+			float(snapshot.get("cooldown_duration", 0.0)),
+			int(snapshot.get("target_count", 0))
+		)
+	power_box.present_snapshot(snapshot if power_box_active else {"action_id": &""})
+
+
+func _on_environment_activation_accepted(
+	action_id: StringName,
+	_request_token: int,
+	result: Dictionary
+) -> void:
+	if action_id == EnvironmentController.ACTION_HYDRANT:
+		return
+	power_box.play_activation()
+	audio_controller.play_cue(&"sfx_intervention_activation")
+	screen_shake_controller.request_environmental_hit()
+	_on_action_feedback("POWER BOX • %d SHOCKED • %d INTERRUPTED" % [
+		int(result.get("status_count", 0)),
+		int(result.get("interrupted_count", 0)),
+	])
+	_present_tech_cooldown_callout(
+		"POWER BOX",
+		environment_controller.power_box_definition.cooldown_seconds
+	)
+
+
+func _on_environment_activation_rejected(
+	action_id: StringName,
+	reason: StringName
+) -> void:
+	if action_id == EnvironmentController.ACTION_POWER_BOX:
+		power_box.play_rejection()
+	else:
+		fire_hydrant.play_rejection()
+	combat_feedback.play_hydrant_rejection()
+	_on_action_feedback("ENVIRONMENT REJECTED • %s" % String(reason).replace("_", " ").to_upper())
+
+
+func _on_focus_activation_accepted(
+	request_token: int,
+	target: ActorController,
+	attack: AttackDefinition,
+	retargeted_count: int
+) -> void:
+	if _focus_visual_actor != null and is_instance_valid(_focus_visual_actor):
+		_focus_visual_actor.set_focus_indicator(false)
+	_focus_visual_actor = target
+	if _focus_visual_actor != null and is_instance_valid(_focus_visual_actor):
+		_focus_visual_actor.set_focus_indicator(true)
+	audio_controller.play_cue(&"sfx_intervention_activation")
+	_on_action_feedback("FOCUS • %s • %s • %d RETARGETED" % [
+		target.actor_definition.display_name.to_upper(),
+		attack.intent_label.to_upper(),
+		retargeted_count,
+	])
+	_present_tech_cooldown_callout("FOCUS", focus_controller.definition.cooldown_seconds)
+	game_hud.present_build_callout(
+		focus_controller.definition.icon,
+		"FOCUS LOCKED • %s" % target.actor_definition.display_name.to_upper(),
+		"%s • PRIORITY %.1fs • TOKEN %d" % [
+			attack.intent_label.to_upper(),
+			focus_controller.definition.priority_duration_seconds,
+			request_token,
+		],
+		&"focus_locked"
+	)
+
+
+func _on_focus_activation_rejected(reason: StringName) -> void:
+	_on_action_feedback("FOCUS REJECTED • %s" % String(reason).replace("_", " ").to_upper())
+
+
+func _on_focus_result(
+	_request_token: int,
+	result_id: StringName,
+	target: ActorController,
+	attack_id: StringName
+) -> void:
+	var target_name: String = (
+		target.actor_definition.display_name.to_upper()
+		if target != null and is_instance_valid(target) and target.actor_definition != null
+		else "TARGET"
+	)
+	_on_action_feedback("FOCUS %s • %s • %s" % [
+		String(result_id).replace("_", " ").to_upper(),
+		target_name,
+		String(attack_id).replace("_", " ").to_upper(),
+	])
+
+
+func _on_focus_ended(_request_token: int, reason: StringName) -> void:
+	if _focus_visual_actor != null and is_instance_valid(_focus_visual_actor):
+		_focus_visual_actor.set_focus_indicator(false)
+	_focus_visual_actor = null
+	if reason not in [FocusController.END_RESTART, FocusController.END_TERMINAL]:
+		_on_action_feedback("FOCUS ENDED • %s" % String(reason).replace("_", " ").to_upper())
 
 
 func _on_hydrant_state_changed(
@@ -1712,6 +1940,9 @@ func _on_hydrant_activation_rejected(reason: int) -> void:
 
 
 func _refresh_hydrant_presentation() -> void:
+	if environment_controller != null:
+		_on_environment_state_changed(environment_controller.get_snapshot())
+		return
 	if fire_hydrant_controller == null or fire_hydrant == null or game_hud == null:
 		return
 	var state: int = fire_hydrant_controller.get_state()

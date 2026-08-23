@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://data/encounters/encounter_definition.gd" id="1_encounter"]
+[ext_resource type="Script" path="res://data/encounters/encounter_spawn_entry.gd" id="2_spawn"]
+
+[sub_resource type="Resource" id="Spawn_bottle"]
+script = ExtResource("2_spawn")
+actor_id = &"bottle_thrower"
+minimum_count = 2
+maximum_count = 2
+budget_cost = 1
+
+[sub_resource type="Resource" id="Spawn_street"]
+script = ExtResource("2_spawn")
+actor_id = &"street_punk"
+minimum_count = 1
+maximum_count = 1
+budget_cost = 1
+
+[resource]
+script = ExtResource("1_encounter")
+id = &"wp05_proto_middle_ranged"
+display_name = "WP05 Prototype: Ranged Pressure"
+base_spawn_budget = 3
+maximum_concurrent_enemies = 3
+allowed_enemy_ids = Array[StringName]([&"bottle_thrower", &"street_punk"])
+spawn_entries = Array[EncounterSpawnEntry]([SubResource("Spawn_bottle"), SubResource("Spawn_street")])
+spawn_position_ids = Array[StringName]([&"lane_0", &"lane_1", &"lane_2"])
+reward_table_ids = Array[StringName]([&"neon_stash"])
+completion_condition = &"all_required_defeated"
+heat_gain_on_completion = 0
+elite_eligible = false
+boss = false

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="WP05PrototypeScenarioDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/interventions/wp05_prototype_scenario_definition.gd" id="1_scenario"]
+[ext_resource type="Resource" path="res://data/encounters/prototypes/wp05_elite_interrupt.tres" id="2_encounter"]
+
+[resource]
+script = ExtResource("1_scenario")
+id = &"wp05_proto_scenario_elite_interrupt"
+display_name = "Elite: Charge and Crossfire"
+context_id = &"elite"
+encounter_definition = ExtResource("2_encounter")
+boss_context = false
+environment_action_id = &"wp05_proto_power_box"
+expected_enemy_ids = Array[StringName]([&"bat_thug", &"bottle_thrower", &"viper_enforcer"])
+primary_threat_attack_id = &"viper_enforcer_charge"
+lap_index = 2
+fixed_seed = 50503
+tactical_question = "Hold the breaker and Focus for the Enforcer charge, or spend scarce Backup before the crossfire escalates?"

@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="WP05PrototypeActionDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/interventions/wp05_prototype_action_definition.gd" id="1_action"]
+[ext_resource type="Texture2D" path="res://assets/icons/interventions/prototypes/hanging_sign.svg" id="2_icon"]
+
+[resource]
+script = ExtResource("1_action")
+id = &"wp05_proto_hanging_sign"
+role_id = &"environment"
+display_name = "Hanging Sign"
+contextual_verb = "DROP SIGN"
+effect_kind = 1
+icon = ExtResource("2_icon")
+initial_charges = 1
+world_origin = Vector2(420, 226)
+range_radius = 56.0
+base_damage = 65
+knockback_force = 260.0
+knockback_duration = 0.2
+knockback_direction_x = -1.0
+strong_case = "Commit the one drop to an elite or boss positioned under the narrow sign footprint."
+weak_case = "A one-target drop is inefficient against a spread crowd and adds no lasting control after impact."
+invalid_case = "No enemy under the 56-pixel footprint, the single drop is spent, pause, or terminal state."
+hold_case = "Do not spend the only drop on a low-health basic when an elite or boss is still ahead."
+counter_case = "Positioning can deny the drop, and its high burst risks becoming an obvious scripted answer whenever valid."

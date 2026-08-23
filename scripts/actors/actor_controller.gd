@@ -624,6 +624,10 @@ func set_targeted_indicator(is_targeted: bool) -> void:
 	actor_visual.set_targeted(is_targeted)
 
 
+func set_focus_indicator(is_focused: bool) -> void:
+	actor_visual.set_focus_priority(is_focused)
+
+
 func face_toward(world_x: float) -> void:
 	if is_equal_approx(world_x, global_position.x):
 		return
@@ -674,9 +678,19 @@ func get_snapshot() -> Dictionary:
 		"active_attack_id": (
 			_active_attack_definition.id if _active_attack_definition != null else &""
 		),
+		"attack_phase": attack_controller.current_phase,
+		"attack_phase_remaining": attack_controller.phase_remaining,
 		"enraged": _enraged,
 		"control_lockout_remaining": _control_lockout_remaining,
 	}
+
+
+func get_active_attack_definition() -> AttackDefinition:
+	return _active_attack_definition
+
+
+func get_attack_phase_remaining() -> float:
+	return maxf(attack_controller.phase_remaining, 0.0)
 
 
 static func lane_y(requested_lane: int) -> float:

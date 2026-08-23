@@ -28,7 +28,9 @@
 
 **WP03 — District Planning and Cards: implemented and technically evidenced on 2026-08-22; owner unbriefed first-use gate remains pending**
 
-**WP04 — Builds, Rewards, and Shop: implemented, technically evidenced, and owner-authorized for `main`/Pages browser playtest on 2026-08-22; owner five-person consequence/variety gate remains pending; WP05 not started**
+**WP04 — Builds, Rewards, and Shop: implemented, technically evidenced, published from `782f7fe18fa434d47020f1d4bc837c9c05790dad`, and current browser-playtest boundary; owner five-person consequence/variety gate remains pending**
+
+**WP05 — Interventions and Encounter Variety: Part A research/development prototypes/evidence complete; paused at the single owner mechanic-selection checkpoint; no production candidate implemented**
 
 The Combat Lab foundation and Fire Hydrant intervention are preserved inside a complete run lifecycle with the verified Milestone 4 equipment/synergy layer, Milestone 4.1 usability/readability correction, bounded Milestone 4.2 drag/backpack-clarity implementation, and the separately verified Milestone 5 District Cards implementation. Technical Milestone 1 acceptance remains the unchanged owner record. Milestone 6 passed its cumulative automated gate, configured headless `/GameRun` boot, and GitHub Pages Web export/deployment. Representative manual paths, real-input browser/device checks, Windows export/runtime, visual evidence, cadence acceptance, and final owner qualitative validation remain under the playtest guide.
 
@@ -45,7 +47,7 @@ WP00 preserves all Milestone 0–6 implementation and verification records while
 | WP02 | Core three-lap run loop and state clarity | **Implemented and technically evidenced; five-person comprehension gate pending** |
 | WP03 | Focused District Plan | **Implemented and technically evidenced; owner first-use gate pending** |
 | WP04 | Builds, rewards, and shop consequence | **Implemented and technically evidenced locally; human gate pending** |
-| WP05 | Intervention and encounter-variety prototypes | Planned; not started |
+| WP05 | Interventions and encounter variety | **Owner-approved local Parts B/C handoff implemented; final gates pending** |
 | WP06 | World, combat, and presentation polish | Planned; not started |
 | WP07 | Integration, balance, and release acceptance | Planned; not started |
 
@@ -119,6 +121,27 @@ WP03 adds no card, district, procedural route, currency/economy, save version, s
 - [ ] Owner executes `docs/product/WP04_UNBRIEFED_CONSEQUENCE_VARIETY_CHECK.md` with five genuine unbriefed participants.
 
 The cumulative runner retains the exact inherited post-success 48-ObjectDB/four-resource shutdown diagnostic; focused, affected, input, configured runtime, graphical capture, export, exported-Windows, and browser runs do not reproduce it. WP04 changes no save version, random schema/stream list, card/lifecycle authority, broad economy, or permanent power. The owner separately authorized this exact evidenced boundary for a `main`/Pages browser-playtest release on 2026-08-22; publication does not close the pending human gate or authorize WP05.
+
+## WP05 Part A — Interventions and Encounter Variety
+
+**Status: Part A passed on 2026-08-22; owner approved Environment / Focus / Backup on 2026-08-23; local handoff implemented with final gates pending.** Evidence: `docs/product/WP05_ACCEPTANCE_EVIDENCE.md`; handoff: `docs/product/WP05_HANDOFF.md`; checkpoint: `docs/product/WP05_OWNER_SELECTION.md`.
+
+- [x] Audited Hydrant, Backup, Subway, targeting, interruption, enemy intents, encounters, lap modifiers, HUD, pause, eligible time, terminal/restart, and deterministic boundaries.
+- [x] Recorded authoritative current research and rejected incompatible adaptive/direct-control lessons.
+- [x] Added one development-only contextual Environment slot comparing preserved Hydrant, 96px/4-damage/1s-stun/3s-Shock Power Box, and one-charge 56px/65-damage Sign.
+- [x] Added a development-only 3s/10s-cooldown one-press Focus priority with exact target/attack/revision/token context and no direct damage/stun/attack command.
+- [x] Reused exact finite Backup behind a caller request gate; documented that isolated six-second dominance makes whole-run charge scarcity essential.
+- [x] Added a separate `4 DEV` 1.1s/18s-cooldown Rally retreat to expose its survival/damage and direct-control/HUD tradeoffs; it is not promised production content.
+- [x] Added deterministic non-authoritative telemetry and four exact existing-roster scenarios spanning early, middle, elite, and boss contexts.
+- [x] Ran 60 configured rows across all crew, exact WP04 builds, and hold/Environment/Focus/Backup/Rally policies; exact repeat and 50-draw cosmetic isolation passed.
+- [x] Passed **13/13 focused tests/180 assertions** and **304/304 cumulative tests/4,373 assertions across 32 suites** on the final run, zero failures/skips. Clean repeats reported 4,372 or 4,373 because inherited WP02/M6 branches conditionally execute one assertion; no WP05 count varied. The aggregate retains only the inherited shutdown signature.
+- [x] Launched graphical configured `/GameRun`, repaired prototype obstruction/copy/clipping, and exercised exact real-pointer Focus retargeting at a captured Bottle Thrower window.
+- [x] Fixed the later five-person procedure before production tuning; no participant result is invented.
+- [x] Owner approved the recommended Environment / Focus / Backup set on 2026-08-23.
+- [x] Implemented the selected production authorities, removed Rally/Hanging Sign and GameRun prototype seams from release composition, and passed focused/affected/production-matrix checks.
+- [ ] Complete cumulative normal-access, graphical production captures, Windows/Web export/runtime/browser, clean-log, and five-person human evidence listed in `docs/product/WP05_HANDOFF.md`.
+
+WP05 adds no save/schema/stream, Autoload, economy, progression, broad content, publication, deployment, or WP06 work. WP04 remains the published boundary.
 
 ## Milestone 0 implementation
 
@@ -480,6 +503,6 @@ Working-tree provenance remains separate from gameplay authorship. The historica
 
 ## Scope gate
 
-WP04 is the implemented runtime and owner-authorized browser-playtest boundary on top of the preserved Milestone 6 content baseline and WP01–WP03 migrations. The Milestone 5 card planner remains an isolated compatibility surface, not the release flow. Procedural generation, additional districts/cards/crew/enemies/bosses, multiplayer, controller support, localization, achievements, daily scheduling/leaderboards/rewards, advanced meta-progression, permanent stat trees, mid-run saving/replay, broader equipment/card economies, and every undocumented system remain out of scope. Run-seed and named-stream infrastructure remains schema version 1 unless a later owning package proves and records an incompatible semantics change.
+WP04 remains the published browser-playtest boundary on top of the preserved Milestone 6 content baseline and WP01–WP03 migrations. WP05 is implemented only on its local handoff branch pending final gates. The Milestone 5 card planner remains an isolated compatibility surface, not the release flow. Procedural generation, additional districts/cards/crew/enemies/bosses, multiplayer, controller support, localization, achievements, daily scheduling/leaderboards/rewards, advanced meta-progression, permanent stat trees, mid-run saving/replay, broader equipment/card economies, and every undocumented system remain out of scope. Run-seed and named-stream infrastructure remains schema version 1 unless a later owning package proves and records an incompatible semantics change.
 
-The owner-authorized 2026-07-22 Milestone 6 and 2026-08-21 WP02 Pages publications remain historical playtest records. On 2026-08-22 the owner separately authorized WP03 as the next `main`/Pages browser-playtest candidate; commit `a6ef571942afb319b3e2c0cdd9c9cffcc1f1bc93` and successful Pages run 32586634393 completed that publication. WP04 then began under a separate explicit owner task, completed its technical gate, and received separate owner authorization on 2026-08-22 for the next `main`/Pages browser-playtest release. That publication does not close the pending human gate. WP05 remains unstarted and requires separate authorization.
+The owner-authorized 2026-07-22 Milestone 6 and 2026-08-21 WP02 Pages publications remain historical playtest records. WP03 was published from `a6ef571942afb319b3e2c0cdd9c9cffcc1f1bc93`; WP04 is published from `782f7fe18fa434d47020f1d4bc837c9c05790dad` with owner-supplied Pages run 32607599862. Publication closes no pending human gate. WP05 is owner-approved and implemented only on its local handoff branch; no WP05 publication is authorized or claimed.

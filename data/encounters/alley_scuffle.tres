@@ -35,3 +35,4 @@ completion_condition = &"all_required_defeated"
 heat_gain_on_completion = 4
 elite_eligible = false
 boss = false
+environment_action_id = &"fire_hydrant"

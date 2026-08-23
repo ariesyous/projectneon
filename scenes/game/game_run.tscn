@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3]
+[gd_scene load_steps=50 format=3]
 
 [ext_resource type="Script" path="res://scripts/run/game_run.gd" id="1_game"]
 [ext_resource type="PackedScene" path="res://scenes/stages/downtown_loop.tscn" id="2_stage"]
@@ -45,6 +45,10 @@
 [ext_resource type="Resource" path="res://data/run/milestone_6_starting_loadout.tres" id="43_loadout"]
 [ext_resource type="Resource" path="res://data/run/wp02_district_loop.tres" id="44_wp02_loop"]
 [ext_resource type="Resource" path="res://data/run/wp02_cadence.tres" id="45_wp02_cadence"]
+[ext_resource type="Script" path="res://scripts/interventions/environment_controller.gd" id="46_environment"]
+[ext_resource type="Resource" path="res://data/interventions/wp05_power_box.tres" id="47_power_box"]
+[ext_resource type="Script" path="res://scripts/interventions/focus_controller.gd" id="48_focus"]
+[ext_resource type="Resource" path="res://data/interventions/wp05_focus.tres" id="49_focus_definition"]
 
 [node name="GameRun" type="Node"]
 script = ExtResource("1_game")
@@ -74,6 +78,14 @@ standard_rewards = [ExtResource("26_reward"), ExtResource("27_reward"), ExtResou
 [node name="FireHydrantController" type="Node" parent="."]
 script = ExtResource("15_hydrant_controller")
 tuning = ExtResource("16_hydrant_tuning")
+
+[node name="EnvironmentController" type="Node" parent="."]
+script = ExtResource("46_environment")
+power_box_definition = ExtResource("47_power_box")
+
+[node name="FocusController" type="Node" parent="."]
+script = ExtResource("48_focus")
+definition = ExtResource("49_focus_definition")
 
 [node name="CallBackupController" type="Node" parent="."]
 script = ExtResource("33_backup")

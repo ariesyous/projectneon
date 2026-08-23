@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="WP05PrototypeScenarioDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/interventions/wp05_prototype_scenario_definition.gd" id="1_scenario"]
+[ext_resource type="Resource" path="res://data/encounters/prototypes/wp05_middle_ranged.tres" id="2_encounter"]
+
+[resource]
+script = ExtResource("1_scenario")
+id = &"wp05_proto_scenario_middle_ranged"
+display_name = "Middle: Ranged Pressure"
+context_id = &"middle"
+encounter_definition = ExtResource("2_encounter")
+boss_context = false
+environment_action_id = &"wp05_proto_power_box"
+expected_enemy_ids = Array[StringName]([&"bottle_thrower", &"street_punk"])
+primary_threat_attack_id = &"bottle_throw"
+lap_index = 1
+fixed_seed = 50502
+tactical_question = "Use one-press Focus on a readable Bottle Thrower, trip the contextual Power Box, or accept one projectile?"

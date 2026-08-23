@@ -152,6 +152,7 @@ func test_numbered_intervention_keys_share_authority_and_backup_never_replaces_c
 	var backup_before: Dictionary = fixture.game.call_backup_controller.get_snapshot()
 	_press_key(fixture.game, KEY_1)
 	_press_key(fixture.game, KEY_2)
+	_press_key(fixture.game, KEY_3)
 	_expect_equal(
 		fixture.game.fire_hydrant_controller.get_snapshot().get("cooldown_remaining"),
 		hydrant_before.get("cooldown_remaining"),
@@ -163,7 +164,7 @@ func test_numbered_intervention_keys_share_authority_and_backup_never_replaces_c
 		"keys: invalid Backup spends no charge"
 	)
 	var subway_before: int = fixture.game.cooling_controller.get_subway_charges()
-	_press_key(fixture.game, KEY_3)
+	fixture.game.game_hud.subway_reroute_button.pressed.emit()
 	_expect_equal(
 		fixture.game.cooling_controller.get_subway_charges(),
 		subway_before - 1,
@@ -177,7 +178,7 @@ func test_numbered_intervention_keys_share_authority_and_backup_never_replaces_c
 		_begin_direct_planned_encounter(combat_fixture.game, STANDARD_ENCOUNTER, &"m6_backup_probe"),
 		"keys: test enters an eligible non-boss fight"
 	)
-	_press_key(combat_fixture.game, KEY_2)
+	_press_key(combat_fixture.game, KEY_3)
 	_expect_equal(combat_fixture.game.call_backup_controller.get_active_allies().size(), 2, "keys: Backup spawns two")
 	_expect_contains(
 		(combat_fixture.game.game_hud.get_node("Root/CrewPanel/CrewName") as Label).text,
@@ -227,7 +228,7 @@ func test_subway_cools_before_dispatch_and_hydrant_applies_wet_with_runtime_cues
 		func(cue_id: StringName) -> void: played_ids.append(cue_id)
 	)
 	var heat_before_subway: int = fixture.game.run_director.heat
-	_press_key(fixture.game, KEY_3)
+	fixture.game.game_hud.subway_reroute_button.pressed.emit()
 	_expect_equal(fixture.game.run_director.heat, heat_before_subway - 15, "Subway: Heat commits before focused dispatch")
 	_expect_equal(
 		fixture.game.run_director.night_pressure,

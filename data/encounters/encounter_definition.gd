@@ -24,3 +24,4 @@ const EncounterSpawnEntryType = preload("res://data/encounters/encounter_spawn_e
 @export_range(0, 100, 1) var heat_gain_on_completion: int = 4
 @export var elite_eligible: bool = false
 @export var boss: bool = false
+@export var environment_action_id: StringName = &"fire_hydrant"

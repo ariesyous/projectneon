@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Testing is milestone- and work-package-scoped. Milestone 0 verifies the project foundation; Milestone 1 verifies the narrow Combat Lab, automatic combat, and coin-cluster accounting; Milestone 2 verifies the Fire Hydrant intervention, combat-safe space, and targeted presentation/usability improvements; Milestone 3 verifies the complete run structure, escalation, thresholds, cooling, deterministic streams, standard rewards, outcomes, and restart cleanup; Milestone 4 verifies equipment, statuses, synergies, and deterministic choices; Milestone 4.1 verifies the authorized equipment-safety and HUD-readability correction; Milestone 4.2 verifies the bounded inventory-drag and one-backpack-clarity correction; Milestone 5 verifies the historical District Cards hand/future-route implementation; and Milestone 6 verifies the bounded vertical-slice content/presentation/persistence/outcomes. WP00 defines the approved product contract. WP01 verifies presentation, WP02 lifecycle/access/state clarity, WP03 the focused next-block District Plan, and WP04 exact build/reward/shop consequence while preserving every earlier authority. WP05–WP07 remain prospective.
+Testing is milestone- and work-package-scoped. Milestones 0–6 retain their historical gates. WP00 defines the approved product contract; WP01 verifies presentation, WP02 lifecycle/access/state clarity, WP03 the focused next-block District Plan, WP04 exact build/reward/shop consequence, and WP05 the owner-selected Environment / Focus / Backup implementation plus bounded encounter variety. Part A remains archived comparison evidence; final WP05 cumulative/platform/visual/human acceptance is tracked in `docs/product/WP05_HANDOFF.md`. WP06–WP07 remain prospective.
 
 ## Error policy
 
@@ -137,6 +137,43 @@ Executed results:
 - [ ] Owner executes `docs/product/WP04_UNBRIEFED_CONSEQUENCE_VARIETY_CHECK.md`; automation cannot satisfy it.
 
 The aggregate alone retains the exact inherited 48-ObjectDB/four-resource shutdown signature. Focused, affected, input, configured boot, configured graphical smoke, exports, exported Windows, and browser runs do not reproduce it. Failed intermediate runs (including the discovered wall-clock spawn-fixture assumption and obstructing/overflowing first visual pass) are not acceptance evidence; each cause was repaired and rerun.
+
+## WP05 Part A — Interventions and Encounter Variety
+
+Status: **Part A passed; owner selected Environment / Focus / Backup; production focused/affected/matrix gates pass; cumulative/platform/visual/human acceptance remains pending**.
+
+Canonical Part A commands use Godot `4.7.2.stable.official.ed1daf0bf`:
+
+```text
+--headless --path . --script res://tests/run_wp05_part_a_focused.gd
+--headless --path . --script res://tests/run_wp05_part_a_cumulative.gd
+--headless --path . --script res://tests/probes/wp05_prototype_matrix_probe.gd
+```
+
+Executed result:
+
+- [x] Focused authority/UI: **13/13 tests, 180 assertions, 0 failed, 0 skipped**.
+- [x] Cumulative final run: **304/304 tests, 4,373 assertions, 0 failed, 0 skipped across 32 suites**. Clean diagnostic repeats reported 4,372 or 4,373. Per-suite output showed inherited `wp02_state_clarity` at 99/100 and `milestone_6_game_run` at 160/161 depending on generated/runtime branches; test count/result and both WP05 suite counts were identical.
+- [x] Catalogue has exactly four `wp05_proto_` action definitions and four early/middle/elite/boss scenario definitions; scenarios use only Bat Thug, Bottle Thrower, Street Punk, The Viper, and Viper Enforcer.
+- [x] Context Environment presents only Hydrant, Power Box, or Sign in the existing slot; exact action/revision/token, range, target, cooldown/charge, effect, rejection, and result are snapshot-driven.
+- [x] Focus detects the actual windup/attack ID, stable-ranks one threat, and redirects only non-committed permanent crew for 3s; no damage/stun/movement/attack command is added.
+- [x] Rally is separately `4 DEV`, valid only on authored area/charge intent, repositions for 1.1s, sacrifices attacks, and never appears outside the debug gate.
+- [x] Backup retains exact two allies/two charges/12s/30s plus rollback, and the prototype request gate rejects stale/replayed caller context.
+- [x] Every prototype covers strong, weak, invalid, hold, and counter cases; late Backup use proves a charge can be spent for 0.1s of expression with no refund.
+- [x] Invalid, malformed, stale, replayed, no-target, cooldown, exhaustion, pause, terminal, target-death, expiry, restart, and menu paths are non-mutating as applicable.
+- [x] Telemetry receives eligible time only, is development-only/non-authoritative, consumes no stream, and records opportunities/uses/holds/rejections/results without scheduling.
+- [x] Configured matrix: **60 rows** = all three crew × exact WP04 builds × four contexts × Hold/Environment/Focus/Backup/Rally.
+- [x] Same-seed Zoey/elite/Focus projection repeated exactly; 50 additional `cosmetic` draws changed no gameplay projection.
+- [x] Dominance result against Hold: Environment 8 better/2 tradeoff/2 worse; Focus 1 better/3 tradeoff/2 worse/6 same; Backup 12 better within isolated six-second windows; Rally valid in 6 and better in only 1, tradeoff in 2, worse in 3.
+- [x] Configured headless `/GameRun` boot is clean. Graphical 1280×720 inspection found and repaired prototype obstruction, inaccurate inherited copy, and clipping.
+- [x] Real pointer and keyboard `2` Focus checks at fresh captured 0.62s Bottle Thrower windups each forwarded one exact context, recorded one use, and changed Jax's automatic target without direct attack control.
+- [x] Default `/GameRun` creates no prototype and release builds reject the debug enable method. Disabling restores Hydrant/disabled Focus/Backup and hides Rally.
+- [x] Owner approved Environment / Focus / Backup on 2026-08-23.
+- [x] Production focused **18/18 / 381** and affected **64/64 / 911** pass; the 60-row production matrix repeats exactly and is isolated from 50 cosmetic draws.
+- [ ] Complete normal-access cumulative, graphical production captures, Windows/Web export/runtime/browser, larger-view containment, clean-log, and human evidence listed in `docs/product/WP05_HANDOFF.md`.
+- [ ] Owner later executes `docs/product/WP05_UNBRIEFED_INTENT_VARIETY_CHECK.md`; automation cannot satisfy it.
+
+The cumulative runner retains the inherited post-success 48-ObjectDB/four-resource shutdown signature. Focused and configured boots do not reproduce it. The first sandboxed baseline run also produced user-directory/certificate-access diagnostics; normal-access rerun removed both, proving they were sandbox-only rather than project regressions.
 
 ## Milestone 0 static checks
 

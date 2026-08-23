@@ -1,0 +1,46 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/interactables/power_box.gd" id="1_power_box"]
+[ext_resource type="Resource" path="res://data/interventions/wp05_power_box.tres" id="2_definition"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_interaction"]
+radius = 34.0
+
+[node name="PowerBox" type="Area2D"]
+z_index = 226
+collision_layer = 8
+collision_mask = 0
+input_pickable = false
+script = ExtResource("1_power_box")
+definition = ExtResource("2_definition")
+
+[node name="InteractionShape" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_interaction")
+disabled = true
+
+[node name="StateLabel" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = -35.0
+offset_top = -42.0
+offset_right = 36.0
+offset_bottom = -31.0
+mouse_filter = 2
+theme_override_colors/font_shadow_color = Color(0.025, 0.02, 0.08, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 7
+horizontal_alignment = 1
+
+[node name="InteractionLabel" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = -38.0
+offset_top = 18.0
+offset_right = 39.0
+offset_bottom = 29.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.4, 0.96)
+theme_override_colors/font_shadow_color = Color(0.025, 0.02, 0.08, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 6
+horizontal_alignment = 1

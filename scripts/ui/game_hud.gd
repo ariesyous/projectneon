@@ -14,6 +14,22 @@ signal lap_extract_requested(decision_token: int)
 signal lap_push_requested(decision_token: int)
 signal subway_reroute_requested()
 signal backup_activation_requested()
+signal environment_activation_requested(
+	action_id: StringName,
+	expected_context_revision: int,
+	request_token: int
+)
+signal focus_activation_requested(
+	target_instance_id: int,
+	attack_id: StringName,
+	expected_context_revision: int,
+	request_token: int
+)
+signal backup_activation_context_requested(
+	expected_context_revision: int,
+	request_token: int
+)
+signal environment_preview_requested(is_visible: bool)
 signal shop_cooling_requested(expected_visit_revision: int, expected_source_id: StringName)
 signal restart_same_seed_requested()
 signal restart_new_seed_requested()
@@ -119,6 +135,9 @@ const ICON_ENVIRONMENT: Texture2D = preload("res://assets/ui/icons/wp01/environm
 const ICON_FOCUS: Texture2D = preload("res://assets/ui/icons/wp01/focus.svg")
 const ICON_BACKUP: Texture2D = preload("res://assets/ui/icons/wp01/backup.svg")
 const ICON_CONFIRM: Texture2D = preload("res://assets/ui/icons/wp01/confirm.svg")
+const ICON_POWER_BOX: Texture2D = preload(
+	"res://assets/icons/interventions/power_box.svg"
+)
 
 @onready var timer_label: Label = $Root/RunStatusPanel/TimerLabel
 @onready var root_control: Control = $Root
@@ -350,6 +369,8 @@ var _district_plan_lap_id: StringName = &""
 var _district_plan_block_id: StringName = &""
 var _crew_display_name: String = "JAX"
 var _backup_snapshot: Dictionary = {}
+var _environment_snapshot: Dictionary = {}
+var _focus_snapshot: Dictionary = {}
 var _shop_snapshot: Dictionary = {}
 var _last_shop_purchase_result: Dictionary = {}
 var _route_journey_text: String = (
@@ -563,16 +584,17 @@ func _install_wp01_components() -> void:
 	focus_placeholder_button.expand_icon = true
 	focus_placeholder_button.add_theme_constant_override(&"icon_max_width", 32)
 	focus_placeholder_button.tooltip_text = (
-		"Focus is the precision-action slot. No Focus action is equipped in this build, "
-		+ "so the slot is visibly disabled and cannot change the run."
+		"Focus temporarily prioritizes one named live enemy intent. "
+		+ "It never directly moves crew or orders an attack."
 	)
 	focus_placeholder_button.present(
-		"FOCUS",
-		"PRECISION",
-		"NO ACTION EQUIPPED",
+		"2 FOCUS",
+		"PRIORITY",
+		"NO TELEGRAPH",
 		NeonInterventionButton.VisualState.UNAVAILABLE,
 		true
 	)
+	focus_placeholder_button.pressed.connect(_on_wp05_focus_pressed)
 	cards_panel.add_child(focus_placeholder_button)
 
 	shop_decision_panel = Panel.new()
@@ -720,7 +742,7 @@ func _apply_wp01_visual_language() -> void:
 	resource_values.theme_type_variation = &"BodyLabel"
 	run_actions_title.theme_type_variation = &"EyebrowLabel"
 	build_title_button.theme_type_variation = &"SecondaryButton"
-	($Root/InterventionsPanel/Title as Label).text = "ENVIRONMENT  /  HYDRANT"
+	($Root/InterventionsPanel/Title as Label).text = "1  ENVIRONMENT  /  CONTEXT"
 	($Root/InterventionsPanel/Title as Label).theme_type_variation = &"EyebrowLabel"
 	($Root/EquipmentRewardPanel/Title as Label).theme_type_variation = &"HeadingLabel"
 	reward_instruction_label.theme_type_variation = &"BodyLabel"
@@ -739,6 +761,13 @@ func _apply_wp01_visual_language() -> void:
 	_layout_compact_run_status()
 	($Root/HelpPanel/Title as Label).theme_type_variation = &"EyebrowLabel"
 	auto_help_label.theme_type_variation = &"BodyLabel"
+	($Root/HelpPanel/InterventionHelp as Label).text = (
+		"1 ENV • 2 FOCUS • 3 BACKUP.\n"
+		+ "3 EQUIPPED + 3 STORED; BACKPACK INACTIVE.\n"
+		+ "SUBWAY TRAVEL; INVALID SPENDS NOTHING."
+	)
+	($Root/HelpPanel/InterventionHelp as Label).autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	($Root/HelpPanel/InterventionHelp as Label).clip_text = true
 	action_toast.position = Vector2(420.0, 118.0)
 	action_toast.size = Vector2(440.0, 56.0)
 	build_callout.position = Vector2(420.0, 182.0)
@@ -993,6 +1022,9 @@ func present_backup_state(snapshot: Dictionary) -> void:
 		"unconfigured": "UNAVAILABLE",
 		"spawn failed": "SPAWN FAILED",
 		"registration failed": "REG FAILED",
+		"malformed request": "BAD REQUEST",
+		"stale request": "STALE CONTEXT",
+		"replayed request": "ALREADY USED",
 	}.get(reason.to_lower(), reason.to_upper())
 	var visual_state: int = NeonInterventionButton.VisualState.UNAVAILABLE
 	var status_text: String = compact_reason
@@ -1012,7 +1044,7 @@ func present_backup_state(snapshot: Dictionary) -> void:
 		visual_state = NeonInterventionButton.VisualState.READY
 		status_text = "READY  /  %d LEFT" % charges
 	(backup_button as NeonInterventionButton).present(
-		"2",
+		"3",
 		"BACKUP",
 		status_text,
 		visual_state,
@@ -1020,9 +1052,57 @@ func present_backup_state(snapshot: Dictionary) -> void:
 	)
 	backup_button.tooltip_text = (
 		"Call Backup: two temporary allied NPCs fight for 12 eligible combat seconds. "
+		+ "Its two charges cover the whole run and never recharge. "
 		+ "State: %s. Invalid requests do not consume a charge or cooldown." % reason
 	)
 
+
+func present_environment_state(snapshot: Dictionary) -> void:
+	_environment_snapshot = snapshot.duplicate(true)
+	_refresh_hydrant_presentation()
+
+
+func present_focus_state(snapshot: Dictionary) -> void:
+	_focus_snapshot = snapshot.duplicate(true)
+	if focus_placeholder_button == null:
+		return
+	var visual_state: int = NeonInterventionButton.VisualState.UNAVAILABLE
+	var status_text: String = String(
+		_focus_snapshot.get("validity_reason", "no focus target")
+	).replace("_", " ").to_upper()
+	if float(_focus_snapshot.get("active_remaining", 0.0)) > 0.0:
+		visual_state = NeonInterventionButton.VisualState.COOLING
+		status_text = "ACTIVE %.1fs  /  %s" % [
+			float(_focus_snapshot.get("active_remaining", 0.0)),
+			_compact_wp05_target_name(str(_focus_snapshot.get("target_name", "THREAT"))),
+		]
+	elif float(_focus_snapshot.get("cooldown_remaining", 0.0)) > 0.0:
+		visual_state = NeonInterventionButton.VisualState.COOLING
+		status_text = "COOLDOWN %.1fs" % float(_focus_snapshot.get("cooldown_remaining", 0.0))
+	elif bool(_focus_snapshot.get("can_activate", false)):
+		visual_state = NeonInterventionButton.VisualState.READY
+		status_text = "%s  /  %.1fs" % [
+			_compact_wp05_target_name(str(_focus_snapshot.get("target_name", "THREAT"))),
+			float(_focus_snapshot.get("window_seconds", 0.0)),
+		]
+	var intent_label: String = str(
+		_focus_snapshot.get("intent_label", _focus_snapshot.get("attack_name", "NO INTENT"))
+	)
+	focus_placeholder_button.present(
+		"2 FOCUS",
+		_compact_wp05_attack_name(intent_label),
+		status_text,
+		visual_state,
+		false
+	)
+	focus_placeholder_button.tooltip_text = (
+		"Focus: temporarily prioritize %s during %s. Crew movement and attacks remain automatic. "
+		+ "State: %s. Invalid requests consume no cooldown."
+	) % [
+		str(_focus_snapshot.get("target_name", "no current threat")),
+		str(_focus_snapshot.get("attack_name", "no current intent")),
+		String(_focus_snapshot.get("validity_reason", &"invalid_state")).replace("_", " "),
+	]
 
 func present_coin_status(total_coins: int, streak_count: int, status_message: String) -> void:
 	var streak_text: String = "x%d" % streak_count if streak_count > 0 else "—"
@@ -1048,6 +1128,12 @@ func present_flow_snapshot(snapshot: Dictionary) -> void:
 	var encounter: Dictionary = snapshot.get("encounter", {})
 	var rewards: Dictionary = snapshot.get("rewards", {})
 	var cooling: Dictionary = snapshot.get("cooling", {})
+	if snapshot.has("environment"):
+		present_environment_state(snapshot.get("environment", {}))
+	if snapshot.has("focus"):
+		present_focus_state(snapshot.get("focus", {}))
+	if snapshot.has("backup"):
+		present_backup_state(snapshot.get("backup", {}))
 	_shop_snapshot = cooling.duplicate(true)
 	if not bool(_shop_snapshot.get("shop_visit_active", false)):
 		_last_shop_purchase_result.clear()
@@ -2134,6 +2220,9 @@ func _safe_area_matches_window(safe_area: Rect2i, window_size: Vector2i) -> bool
 
 
 func _refresh_hydrant_presentation() -> void:
+	if not _environment_snapshot.is_empty():
+		_refresh_production_environment_presentation()
+		return
 	hydrant_button.disabled = false
 	var visual_state: int = NeonInterventionButton.VisualState.UNAVAILABLE
 	var action_text: String = "HYDRANT"
@@ -2173,6 +2262,87 @@ func _refresh_hydrant_presentation() -> void:
 		else "READY + ENEMY IN RANGE"
 	)
 
+func _refresh_production_environment_presentation() -> void:
+	var environment: Dictionary = _environment_snapshot
+	var action_id: StringName = StringName(environment.get("action_id", &""))
+	var can_activate: bool = bool(environment.get("can_activate", false))
+	var cooldown: float = maxf(float(environment.get("cooldown_remaining", 0.0)), 0.0)
+	var cooldown_duration: float = maxf(float(environment.get("cooldown_duration", 0.0)), 0.001)
+	var target_count: int = maxi(int(environment.get("target_count", 0)), 0)
+	var visual_state: int = NeonInterventionButton.VisualState.UNAVAILABLE
+	var status_text: String = String(
+		environment.get("validity_reason", "no environment context")
+	).replace("_", " ").to_upper()
+	if cooldown > 0.0:
+		visual_state = NeonInterventionButton.VisualState.COOLING
+		status_text = "COOLDOWN %.1fs" % cooldown
+	elif can_activate:
+		visual_state = NeonInterventionButton.VisualState.READY
+		status_text = "%d TARGET%s" % [target_count, "" if target_count == 1 else "S"]
+	var action_icon: Texture2D = environment.get("icon") as Texture2D
+	if action_icon == null:
+		action_icon = ICON_ENVIRONMENT
+	var compact_verb: String = str(environment.get("verb", "INTERACT")).to_upper()
+	if action_id == &"power_box":
+		action_icon = ICON_POWER_BOX
+		compact_verb = "BREAKER"
+	hydrant_button.icon = action_icon
+	($Root/InterventionsPanel/Title as Label).text = "1  ENVIRONMENT  /  CONTEXT"
+	hydrant_state_label.text = str(environment.get("display_name", "NO CONTEXT")).to_upper()
+	(hydrant_button as NeonInterventionButton).present(
+		"1 ENV",
+		compact_verb,
+		status_text,
+		visual_state,
+		false
+	)
+	var elapsed_cooldown: float = clampf(cooldown_duration - cooldown, 0.0, cooldown_duration)
+	hydrant_cooldown_meter.max_value = cooldown_duration
+	hydrant_cooldown_meter.value = elapsed_cooldown
+	hydrant_cooldown_label.text = (
+		"READY  /  REVISION + TOKEN"
+		if can_activate
+		else status_text
+	)
+	var effect_label: Label = $Root/InterventionsPanel/EffectLabel as Label
+	if action_id == &"power_box":
+		effect_label.text = "4 DAMAGE • INTERRUPT • SHOCK\n96PX MARKED AREA"
+	elif action_id == &"fire_hydrant":
+		effect_label.text = "18 DAMAGE • WET\nSTRONG LEFT KNOCKBACK"
+	else:
+		effect_label.text = "NO COMBAT ENVIRONMENT\nWAIT FOR NEXT FIGHT"
+	hydrant_feedback_label.text = status_text
+	hydrant_button.tooltip_text = "%s State: %s. Invalid/stale requests consume no cooldown." % [
+		str(environment.get("description", "Context Environment action.")),
+		String(environment.get("validity_reason", &"invalid_state")).replace("_", " "),
+	]
+
+
+func _compact_wp05_attack_name(attack_name: String) -> String:
+	var upper: String = attack_name.to_upper()
+	if upper.contains("BOTTLE"):
+		return "THROW"
+	if upper.contains("ARMOURED CHARGE"):
+		return "CHARGE"
+	if upper.contains("VENOM RING"):
+		return "AREA"
+	if upper.contains("VIPER RUSH"):
+		return "RUSH"
+	if upper.contains("THREE-HIT"):
+		return "COMBO"
+	return upper.left(16)
+
+
+func _compact_wp05_target_name(target_name: String) -> String:
+	var upper: String = target_name.to_upper()
+	if upper == "BOTTLE THROWER":
+		return "THROWER"
+	if upper == "VIPER ENFORCER":
+		return "ENFORCER"
+	if upper == "THE VIPER":
+		return "VIPER"
+	return upper.left(12)
+
 
 func _refresh_fullscreen_presentation() -> void:
 	fullscreen_button.text = "EXIT FULL" if _fullscreen_active else "FULLSCREEN"
@@ -2198,14 +2368,27 @@ func _set_help_expanded(is_expanded: bool) -> void:
 
 
 func _on_hydrant_button_pressed() -> void:
+	if not _environment_snapshot.is_empty():
+		environment_activation_requested.emit(
+			StringName(_environment_snapshot.get("action_id", &"")),
+			int(_environment_snapshot.get("context_revision", -1)),
+			int(_environment_snapshot.get("request_token", -1))
+		)
+		return
 	hydrant_activation_requested.emit()
 
 
 func _on_hydrant_preview_entered() -> void:
+	if not _environment_snapshot.is_empty():
+		environment_preview_requested.emit(true)
+		return
 	hydrant_preview_requested.emit(true)
 
 
 func _on_hydrant_preview_exited() -> void:
+	if not _environment_snapshot.is_empty():
+		environment_preview_requested.emit(false)
+		return
 	hydrant_preview_requested.emit(false)
 
 
@@ -2218,8 +2401,22 @@ func _on_primary_action_pressed() -> void:
 
 
 func _on_backup_pressed() -> void:
+	if _backup_snapshot.has("request_context_revision"):
+		backup_activation_context_requested.emit(
+			int(_backup_snapshot.get("request_context_revision", -1)),
+			int(_backup_snapshot.get("request_token", -1))
+		)
+		return
 	backup_activation_requested.emit()
 
+
+func _on_wp05_focus_pressed() -> void:
+	focus_activation_requested.emit(
+		int(_focus_snapshot.get("target_instance_id", -1)),
+		StringName(_focus_snapshot.get("attack_id", &"")),
+		int(_focus_snapshot.get("context_revision", -1)),
+		int(_focus_snapshot.get("request_token", -1))
+	)
 
 func _on_subway_reroute_pressed() -> void:
 	subway_reroute_requested.emit()
@@ -3738,13 +3935,14 @@ func _refresh_run_actions(
 			primary_text = "RUN\nCOMPLETE"
 	_present_action_button(primary_action_button, primary_text, primary_disabled)
 	primary_action_button.visible = not combat_hud
-	backup_button.visible = true
+	backup_button.visible = combat_hud
 	focus_placeholder_button.visible = combat_hud
+	interventions_panel.visible = combat_hud
 	if combat_hud:
 		_set_rect(backup_button, Rect2(14.0, 30.0, 260.0, 68.0))
 		_set_rect(focus_placeholder_button, Rect2(286.0, 30.0, 260.0, 68.0))
 	else:
-		_set_rect(backup_button, Rect2(196.0, 30.0, 220.0, 68.0))
+		_set_rect(subway_reroute_button, Rect2(196.0, 30.0, 220.0, 68.0))
 
 	var subway_charges: int = int(cooling.get("subway_charges", 0))
 	var subway_disabled: bool = (

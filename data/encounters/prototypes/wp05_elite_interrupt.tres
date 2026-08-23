@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://data/encounters/encounter_definition.gd" id="1_encounter"]
+[ext_resource type="Script" path="res://data/encounters/encounter_spawn_entry.gd" id="2_spawn"]
+
+[sub_resource type="Resource" id="Spawn_bat"]
+script = ExtResource("2_spawn")
+actor_id = &"bat_thug"
+minimum_count = 1
+maximum_count = 1
+budget_cost = 1
+
+[sub_resource type="Resource" id="Spawn_bottle"]
+script = ExtResource("2_spawn")
+actor_id = &"bottle_thrower"
+minimum_count = 1
+maximum_count = 1
+budget_cost = 1
+
+[sub_resource type="Resource" id="Spawn_enforcer"]
+script = ExtResource("2_spawn")
+actor_id = &"viper_enforcer"
+minimum_count = 1
+maximum_count = 1
+budget_cost = 1
+
+[resource]
+script = ExtResource("1_encounter")
+id = &"wp05_proto_elite_interrupt"
+display_name = "WP05 Prototype: Elite Interrupt"
+base_spawn_budget = 3
+maximum_concurrent_enemies = 3
+allowed_enemy_ids = Array[StringName]([&"bat_thug", &"bottle_thrower", &"viper_enforcer"])
+spawn_entries = Array[EncounterSpawnEntry]([SubResource("Spawn_bat"), SubResource("Spawn_bottle"), SubResource("Spawn_enforcer")])
+spawn_position_ids = Array[StringName]([&"lane_0", &"lane_1", &"lane_2"])
+reward_table_ids = Array[StringName]([&"viper_cache"])
+completion_condition = &"all_required_defeated"
+heat_gain_on_completion = 0
+elite_eligible = true
+boss = false

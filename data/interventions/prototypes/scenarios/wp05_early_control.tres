@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="WP05PrototypeScenarioDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/interventions/wp05_prototype_scenario_definition.gd" id="1_scenario"]
+[ext_resource type="Resource" path="res://data/encounters/prototypes/wp05_early_control.tres" id="2_encounter"]
+
+[resource]
+script = ExtResource("1_scenario")
+id = &"wp05_proto_scenario_early_control"
+display_name = "Early: Crowd and Heavy Tell"
+context_id = &"early"
+encounter_definition = ExtResource("2_encounter")
+boss_context = false
+environment_action_id = &"fire_hydrant"
+expected_enemy_ids = Array[StringName]([&"bat_thug", &"street_punk"])
+primary_threat_attack_id = &"bat_thug_heavy_swing"
+lap_index = 0
+fixed_seed = 50501
+tactical_question = "Spend Hydrant on the opening cluster, Focus the heavy tell, or hold both for a denser moment?"

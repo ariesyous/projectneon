@@ -105,7 +105,7 @@ func test_viper_enforcer_has_elite_charge_armour_reward_and_control_tuning() -> 
 	assert_eq(enforcer.special_attack_definitions.size(), 1, "elite: one authored charge special")
 	var charge: AttackDefinition = enforcer.special_attack_definitions[0]
 	assert_eq(charge.delivery_kind, AttackDefinition.DeliveryKind.CHARGE, "elite: special uses charge delivery")
-	assert_eq(charge.telegraph_seconds, 0.75, "elite: charge telegraph is readable")
+	assert_eq(charge.telegraph_seconds, 1.0, "elite: WP05 prospective tell is readable while historical 0.75 remains documented")
 	assert_true(charge.knockback_force > enforcer.attack_definition.knockback_force, "elite: charge is the stronger impact")
 
 

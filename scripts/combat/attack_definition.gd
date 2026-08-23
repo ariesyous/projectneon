@@ -35,6 +35,9 @@ enum ImpactKind {
 @export_range(0.0, 500.0, 1.0) var minimum_range: float = 0.0
 @export_range(0.0, 10.0, 0.01) var special_cooldown_seconds: float = 0.0
 @export_range(0.0, 5.0, 0.01) var telegraph_seconds: float = 0.0
+@export var focus_priority_eligible: bool = false
+@export_range(0, 100, 1) var focus_threat_priority: int = 0
+@export var intent_label: String = ""
 @export_range(1, 8, 1) var combo_hit_count: int = 1
 @export_range(0.0, 500.0, 1.0) var charge_distance: float = 0.0
 @export_range(0.0, 500.0, 1.0) var area_radius: float = 0.0

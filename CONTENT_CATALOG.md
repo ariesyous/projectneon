@@ -2,9 +2,9 @@
 
 ## Catalog status
 
-This catalog reflects the implemented **Milestones 0–6 plus WP01–WP04**. WP01 contributes the reusable visual language, WP02 the district lifecycle/access, WP03 the focused District Plan, and WP04 exact build/reward/shop consequence without adding catalogue breadth. WP04's technical/runtime/visual/platform gate has passed locally; its owner-run five-person gate remains pending.
+This catalog reflects the implementation through **Milestones 0–6 plus WP01–WP04 and the owner-approved WP05 handoff**, while retaining Part A prototypes only as labelled historical evidence. WP05 adds the selected Environment / Focus / Backup behavior without broad catalogue expansion; WP04 remains the published boundary.
 
-Milestone 5 was merged through PR #4 and published from `main` commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`; it remains the last fully accepted baseline. Milestone 6 was committed on `codex/milestone-6-vertical-slice` as `9c1cdaa` plus `ca3fe18`, and the owner authorized its tentative [GitHub Pages playtest](https://ariesyous.github.io/projectneon/) publication on 2026-07-22.
+Milestone 5 was merged through PR #4 and published from `main` commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`; it remains the last fully accepted baseline. Milestone 6 was committed on `codex/milestone-6-vertical-slice` as `9c1cdaa` plus `ca3fe18`. WP04 commit `782f7fe18fa434d47020f1d4bc837c9c05790dad` is the current [GitHub Pages browser-playtest](https://ariesyous.github.io/projectneon/) production boundary; owner-supplied Pages run 32607599862 succeeded without satisfying the pending qualitative gate.
 
 The working tree separately carries the owner's Godot-AI 3.1.5 update across 57 dirty addon paths, reward-modal simplification, combo-visibility correction, and `project.godot` deletions. They remain preserved owner work, not WP04 content or run authority.
 
@@ -18,8 +18,8 @@ WP00 changed documentation only. WP01 migrated presentation, WP02 lifecycle/prof
 | Eight existing equipment entries and Arcade, Convenience Store, and Subway Entrance available by default | Already implemented | Preserve |
 | Hacker Deck and Gang Hideout remain breadth unlocks | Already implemented | Preserve through WP02 |
 | Two-choice, next-block District Plan from a four-card one-copy lap deck | Implemented by WP03 with a lap deck, visible offer/refill, exact next-block binding, and resolved history | Preserve stable IDs, authored effects, typed authority, and schema-1 `cards` determinism |
-| Combat roles are Environment, Focus, and Backup | WP02 state clarity keeps Hydrant/Backup and presents Subway as strategic travel; Focus remains visibly unavailable | WP05 prototypes and selects Focus/Environment behavior |
-| Rally | Candidate only, not catalogued as promised content | WP05 owner gate if tested |
+| Combat roles are Environment, Focus, and Backup | Local handoff implements contextual Hydrant/Power Box, Focus, and finite Backup; Subway is strategic travel | Owner approved 2026-08-23; final gates/publication pending |
+| Rally | Development-only candidate, never catalogued as promised production content | WP05 owner checkpoint rejects or explicitly selects it |
 | Scrap | Summary-only; no spend contract or economy | No package may infer a currency sink without separate approval |
 
 The approved breadth/cosmetic/challenge boundary adds no permanent stats and pre-authorizes no additional card, item, crew, enemy, boss, or cosmetic entry. Development/test availability remains 3/9/4.
@@ -137,7 +137,7 @@ The existing project icon and Godot MCP addon files are project/development supp
 
 Milestone 0 visual evidence is stored at `res://docs/screenshots/milestone_0_foundation.png`.
 
-The visual-direction reference is stored at `res://docs/reference/neon_loop_gameplay_mockup.png`; it remains inspiration rather than a source of extra scope. Milestone 1 evidence is stored at `res://docs/screenshots/milestone_1_combat_lab.png`. Milestone 2 evidence is stored at `res://docs/screenshots/milestone_2_player_intervention.png`. Milestone 3 evidence is stored at `res://docs/screenshots/milestone_3_complete_run_structure.png`. Milestone 4 evidence is stored at `res://docs/screenshots/milestone_4_equipment_synergies.png`. Milestone 4.1 evidence is stored at `res://docs/screenshots/milestone_4_1_inventory_readability.png`. Milestone 4.2 evidence is stored at `res://docs/screenshots/milestone_4_2_inventory_drag.png`. Milestone 5 evidence is stored at `res://docs/screenshots/milestone_5_district_cards.png`. WP01's inspected matrix is under `res://docs/screenshots/wp01/`; WP02's twelve-state inspected matrix is under `res://docs/screenshots/wp02/`. Fresh Milestone 6 visual evidence has not separately received final owner acceptance.
+The visual-direction reference is stored at `res://docs/reference/neon_loop_gameplay_mockup.png`; it remains inspiration rather than a source of extra scope. Milestone 1 evidence is stored at `res://docs/screenshots/milestone_1_combat_lab.png`. Milestone 2 evidence is stored at `res://docs/screenshots/milestone_2_player_intervention.png`. Milestone 3 evidence is stored at `res://docs/screenshots/milestone_3_complete_run_structure.png`. Milestone 4 evidence is stored at `res://docs/screenshots/milestone_4_equipment_synergies.png`. Milestone 4.1 evidence is stored at `res://docs/screenshots/milestone_4_1_inventory_readability.png`. Milestone 4.2 evidence is stored at `res://docs/screenshots/milestone_4_2_inventory_drag.png`. Milestone 5 evidence is stored at `res://docs/screenshots/milestone_5_district_cards.png`. WP01's inspected matrix is under `res://docs/screenshots/wp01/`; WP02's twelve-state inspected matrix is under `res://docs/screenshots/wp02/`. WP05 Part A development-only evidence is `res://docs/screenshots/wp05_part_a_focus_1280x720.png` and `res://docs/screenshots/wp05_part_a_rally_1280x720.png`. Fresh Milestone 6 visual evidence has not separately received final owner acceptance.
 
 ## Implemented Combat Lab content
 
@@ -301,6 +301,37 @@ Special definitions are deduplicated and sorted by stable attack ID. After at le
 | `subway_reroute` / Subway Reroute | 2 run charges (cap 2); -15 Heat; immediate next authored occurrence | Requires `PATROLLING`, `PatrolController.can_reroute()`, and charge; cannot activate during boss/encounter, reduce Pressure, clear/reopen thresholds, regenerate, or consume a card-owned Subway skip; invalid/exhausted requests mutate nothing | SVG icon, charge and `-15H` text, tooltip, enabled/disabled state, typed applied/rejected feedback |
 
 Zoey's 0.85 authored cooldown multiplier multiplies the active-equipment/synergy intervention multiplier. Hacker Deck contributes -10% and Tech 2 contributes -15% additively within that equipment multiplier. Both Hydrant and Backup preserve their remaining-cooldown ratio when the composed multiplier changes; no modifier changes Subway charges.
+
+### WP05 owner-selected intervention catalogue
+
+| Stable ID | Role / authored behavior | Permanent validity/tradeoff |
+| --- | --- | --- |
+| `fire_hydrant` | Environment; preserved 112px, 18 damage, fixed-left knockback, Wet 4s, 8s base cooldown | Context footprint and shared Environment cooldown; hold for density/wall value |
+| `power_box` | Environment; 96px, 4 damage, 1.0s authored stun before resistance/caps, base Shock 3s, 12s base cooldown | Requires a named interruptible windup in the footprint, then affects the marked cluster |
+| `focus_priority` | Focus; 3s automatic target priority, 10s base cooldown, 0.35s live cutoff | Exact target/attack/revision/token; protects committed attacks; no direct power/control |
+| `call_backup` | Backup; preserved 2 allies, 2 run charges, 12 combat seconds, 30s base cooldown | Whole-run scarcity, active/cooldown/exhaustion, exact caller revision/token, no recharge |
+
+Configured combat keys are `1 Environment`, `2 Focus`, and `3 Backup`. Subway is travel. Rally and Hanging Sign remain only in the historical `wp05_proto_` evidence catalogue below.
+
+### WP05 Part A development-only prototype catalogue
+
+None of the rows below is a production content-access, encounter-selection, save, reward, or random-stream entry. IDs use `wp05_proto_`; the default scene instantiates no prototype and release builds reject the explicit debug gate.
+
+| Prototype ID | Role / exact data | Part A disposition |
+| --- | --- | --- |
+| `wp05_proto_power_box` | Environment; 96px, 4 damage, 1.0s authored stun before resistance, existing Shock 3s, 12s shared prototype cooldown | Recommended beside Hydrant after owner selection |
+| `wp05_proto_hanging_sign` | Environment; 56px, 65 damage, 260 force/0.20s, one charge | Development-only/rejected under recommendation |
+| `wp05_proto_focus_priority` | Focus; 3s priority, 10s base cooldown, 0.35s minimum remaining context; no damage/stun/attack command | Recommended after owner selection and intent-readability tuning |
+| `wp05_proto_rally_reposition` | Rally; 1.1s retreat, 1.5× movement, 18s cooldown, defensive area/charge window | `4 DEV`; rejected under recommendation |
+
+| Scenario ID | Existing roster | Context Environment |
+| --- | --- | --- |
+| `wp05_proto_scenario_early_control` | Bat Thug + 2 Street Punks | Fire Hydrant |
+| `wp05_proto_scenario_middle_ranged` | 2 Bottle Throwers + Street Punk | Power Box |
+| `wp05_proto_scenario_elite_interrupt` | Viper Enforcer + Bottle Thrower + Bat Thug | Power Box |
+| `wp05_proto_scenario_boss_defense` | The Viper | Hanging Sign prototype |
+
+`WP05PrototypeTelemetry` records only deterministic eligible-time opportunities, uses, holds, rejections, and results. It is explicitly non-authoritative and consumes no named stream. The exact 60-row matrix and candidate dispositions are in `docs/product/WP05_PROTOTYPE_COMPARISON.md`.
 
 ### Combo, telegraphs, animation, and screen effects
 
@@ -573,6 +604,6 @@ WP02 strategic event IDs are keyed to accepted district block completion and maj
 
 The complete `RunSummaryRecord` includes result (`VICTORY`, `EXTRACTED`, or `DEFEATED`), duration, seed, schema, maximum Heat, final Night Pressure, completed laps/blocks, boss commitment, final stable lap/block IDs, accepted decision trail, encounters, enemies/elites defeated, boss result (`DEFEATED`, `CREW DEFEATED`, or `NOT REACHED`), coins, manual clusters, maximum streak, scrap, highest combo, equipment build, active synergies, Restart Run, and Return to Main Menu. Unresolved clusters settle at base value before publication. Completed-run persistence happens only after this snapshot and cannot change it.
 
-WP02 adds lifecycle definitions, WP03 restructures the four-card interaction, and WP04 repairs consequence within the same item/shop catalogue. WP05–WP07 may change only their owned systems after separate authorization. The roadmap does not pre-authorize procedural route generation, additional district/card/crew/enemy/boss/equipment content, multiplayer, controller support, localization, achievements, daily systems/leaderboards, advanced meta-progression/permanent stat trees, mid-run saving/replay, a card economy, or equipment selling/salvage/rarity/uniques/affixes/sets.
+WP02 adds lifecycle definitions, WP03 restructures the four-card interaction, and WP04 repairs consequence within the same item/shop catalogue. WP05 Part A changes only isolated development data; Part B and WP06–WP07 may change their owned production systems only after their explicit gates. The roadmap does not pre-authorize procedural route generation, additional district/card/crew/enemy/boss/equipment content, multiplayer, controller support, localization, achievements, daily systems/leaderboards, advanced meta-progression/permanent stat trees, mid-run saving/replay, a card economy, or equipment selling/salvage/rarity/uniques/affixes/sets.
 
 Godot 4.7.2 passed **264/264 cumulative tests and 3,646 assertions with no failures or skips across 25 suites**. The authored fixed route now uses a 21.0-second represented approach while preserving its stable ID and five nodes; fixed seed `6062026` reaches lap decisions at 121.267/292.683 eligible seconds and a boss result at 599.883 seconds. The configured `/GameRun` smoke covered the complete WP02 lifecycle; twelve native/safe-area/Web-scale captures were inspected; Windows and Web release exports completed; the exported Windows runtime exited cleanly; and local production Web at native and 2560×1440 entered PLAN through real pointer input with no warning/error console entry. The preserved `E` extraction shortcut is covered with its exact decision token. The cumulative harness's pre-existing 48 ObjectDB/four-resource shutdown diagnostic remains recorded and was not suppressed. Representative five-person comprehension, broader timing distributions, consequence/variety/replay results, and final owner acceptance remain pending.

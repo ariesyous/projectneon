@@ -2,11 +2,11 @@
 
 ## Status
 
-This document describes the implemented **Milestones 0–6 plus WP01–WP04**. WP01 adds the reusable visual language without gameplay authority. WP02 migrates the core run authority to an explicit three-lap/three-block lifecycle, exact-once lap decisions, all-crew production access, cadence bands, state-clarity presentation, and lifecycle summary fields. WP03 replaces the production Milestone 5 hand/five-slot interaction with a focused next-block District Plan. WP04 preserves the bounded catalogue and economy while making build, reward, inventory, and shop consequences exact and visibly expressed. WP04's technical/runtime/visual/platform gate has passed locally; its owner-run five-person consequence/variety gate remains pending.
+This document describes the implementation through **Milestones 0–6 plus WP01–WP04 and the owner-approved WP05 handoff**. WP01 adds the reusable visual language without gameplay authority. WP02 migrates the core run authority to an explicit three-lap/three-block lifecycle, exact-once lap decisions, all-crew production access, cadence bands, state-clarity presentation, and lifecycle summary fields. WP03 replaces the production Milestone 5 hand/five-slot interaction with a focused next-block District Plan. WP04 preserves the bounded catalogue and economy while making build, reward, inventory, and shop consequences exact and visibly expressed. WP05 adds the selected Environment / Focus / Backup authority locally; WP04 remains the published boundary and WP05's final gates are recorded in `docs/product/WP05_HANDOFF.md`.
 
-Milestone 5 was merged through PR #4 and remains the last fully accepted baseline at `da934897cbdee44cb4d1a44b25e91b458558bfbc`. Milestone 6 was fast-forwarded to `main` through `a147f93`; Pages run 29960250903 successfully exported and deployed its tentative playtest build. WP03 implementation commit `a6ef571942afb319b3e2c0cdd9c9cffcc1f1bc93` is the current published browser-playtest boundary at [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/); Pages run 32586634393 succeeded, while its owner-run first-use gate remains pending.
+Milestone 5 was merged through PR #4 and remains the last fully accepted baseline at `da934897cbdee44cb4d1a44b25e91b458558bfbc`. Milestone 6 was fast-forwarded to `main` through `a147f93`; Pages run 29960250903 successfully exported and deployed its tentative playtest build. WP04 commit `782f7fe18fa434d47020f1d4bc837c9c05790dad` is the current published browser-playtest boundary at [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/); owner-supplied Pages run 32607599862 succeeded. Its five-person consequence/variety gate remains pending.
 
-WP04 is implemented on the WP03/documentation baseline `48ffb58fdcdcb1bd4d74bd011c2115c91a5f42a5` and was owner-authorized on 2026-08-22 as the next `main`/GitHub Pages browser-playtest boundary. Publication does not satisfy its pending five-person consequence/variety gate or authorize WP05.
+WP04 was implemented on the WP03/documentation baseline `48ffb58fdcdcb1bd4d74bd011c2115c91a5f42a5`, owner-authorized, and subsequently published from `782f7fe18fa434d47020f1d4bc837c9c05790dad`. Publication does not satisfy its pending five-person consequence/variety gate. WP05 Part A began under a later explicit task; its recommendation was owner-approved on 2026-08-23 and is now implemented only on the local handoff branch.
 
 On 2026-08-21 the owner separately authorized the technically evidenced WP02 boundary for a `main` and GitHub Pages browser-playtest release. On 2026-08-22 the owner separately authorized the evidenced WP03 boundary for the next `main` and Pages browser-playtest release. Publication does not close the still-pending WP02 comprehension or WP03 first-use qualitative gates.
 
@@ -16,7 +16,7 @@ The rationale for the revised downstream boundaries is recorded in `docs/decisio
 
 ## WP00-approved target and migration architecture
 
-WP00 is documentation-only. WP01–WP04 have implemented their bounded portions of the migration map. This section distinguishes the implemented lifecycle/presentation/profile/card/build-reward-shop boundary from still-prospective WP05–WP07 work.
+WP00 is documentation-only. WP01–WP04 have implemented their bounded portions of the migration map. This section distinguishes their published/runtime boundaries from the owner-approved local WP05 implementation and the still-prospective WP06–WP07 work.
 
 ### Implemented WP02 lifecycle with WP03 focused PLAN
 
@@ -38,7 +38,7 @@ SELECT CREW
 | All three crew on fresh production profiles | Implemented by `PersistentProfileData`/`AppState` access policy and `RunContentAccessSnapshot` | WP02 exposes all crew while retaining the serialized v1 Jax fact and retired Zoey/Rex history | Same-seed reproduction includes the access snapshot; loading never invents or rewrites legacy facts |
 | Focused next-block District Plan | Implemented by `CardSystem` lap deck/offer/selection/history; `RunFlowController` safe dispatch; internal `PatrolController` approach boundary; snapshot-only `GameHUD` | WP03 keeps stable IDs, authored effects, `cards` stream, revision/token/exact-once authority; the production flow uses lap-scoped offers and resolved history with no hand/five-slot release UI | Locked schema-1 vector and stream isolation prove the new visible PLAN draw boundary; isolated M5 fixtures retain legacy compatibility |
 | Minimal combat HUD and focused decisions | `GameHUD` plus `VerticalSliceOverlay` broad simultaneous presentation | WP01 owns reusable icon-plus-label components, minimal HUD, and focused shells; gameplay owners continue to publish snapshots and receive typed intent | Do not hide required state without an inspect path; do not move calculations or validation into UI |
-| Environment/Focus/Backup combat vocabulary | `FireHydrantController`, `CallBackupController`, `RunCoolingController`; M6 bar uses Hydrant/Backup/Subway | WP05 prototypes/owner-selects bounded mechanics; Environment dispatches a context-valid object, Focus gets a typed combat authority, Backup reuses finite authority; Subway is presented through WP02/WP03 strategic travel | Rally is not promised; avoid a global event bus, direct-control creep, or multiple environment buttons |
+| Environment/Focus/Backup combat vocabulary | `EnvironmentController`, `FocusController`, `CallBackupController`; configured bar uses context Hydrant/Power Box, Focus, and finite Backup; Subway is strategic travel | Owner-approved local WP05 implementation; Rally/Hanging Sign and prototype GameRun seams removed from release composition | WP04 remains published; avoid a global event bus, direct-control creep, or multiple environment buttons |
 | Breadth/cosmetic/challenge progression only | `SaveService`/`AppState` version-1 settings/unlocks; Scrap summary field | WP02 retires crew grants; Hacker Deck/Gang Hideout remain active breadth rules; later content still needs approval | No save-version change. Scrap remains summary-only; no hidden permanent power |
 | New acceptance/cadence targets | `RunCadenceTracker` configured by `wp02_cadence` | WP02 records ambient 10–20, block 45–90, and lap 120–180; WP07 owns representative fight/run distribution acceptance | Measurement never schedules gameplay; averages alone do not pass |
 
@@ -64,7 +64,7 @@ Fresh production access is all three crew, eight existing equipment entries, and
 
 ### Implementation sequencing
 
-WP01 presentation, WP02 lifecycle/crew-profile migration, WP03 card/route interaction, and WP04 consequence/balance migration are implemented. WP05 owns intervention prototypes and mechanic selection. WP06 owns art/presentation polish without authority changes for convenience. WP07 owns integration and final owner acceptance. WP04 technical completion does not authorize any later package.
+WP01 presentation, WP02 lifecycle/crew-profile migration, WP03 card/route interaction, and WP04 consequence/balance migration are implemented. WP05 Part A owns the archived comparison; the owner-approved Part B/C handoff implements Environment / Focus / Backup but still awaits final verification/human gates. WP06 owns art/presentation polish without authority changes for convenience. WP07 owns integration and final owner acceptance.
 
 ## Architectural principles
 
@@ -202,6 +202,8 @@ debug-marker drawing.
 `GameRun` owns assembly only. It connects explicit cross-owner signals required by the implemented systems; it must not grow into a second implementation of each child system.
 
 The tree above is the implemented composition through WP04. `DistrictLoopDefinition` is configured on `RunDirector`; `DistrictRunLifecycle` is a run-owned helper rather than a second scene authority. `BuildConsequenceEvaluator` is a pure helper and `NeonBuildCallout` is composed inside the HUD, so WP04 adds no scene-scoped gameplay owner or Autoload. `RunRandomStreams` remains a direct child of `RunDirector`.
+
+WP05 Part A's `wp05_proto_` Resources/runtime/tests remain isolated historical evidence. The former `GameRun` enable/freeze/world-cue seams were removed after owner selection. Configured `GameRun` now composes `EnvironmentController` and `FocusController`, while `RunFlowController` supplies the encounter-authored Environment context; no prototype node is created in release composition.
 
 ## Scene ownership
 
@@ -481,9 +483,18 @@ Milestone 6 adds exactly the two Autoload roles allowed by `GameSpecifications.m
 
 The existing `_mcp_game_helper` entry and current 57-path Godot-AI 3.1.5 working-tree update belong to owner-carried development tooling. Historical Milestone 6 documentation retains its earlier 3.0.5/17-file snapshot. WP04 neither removes nor converts the plugin into gameplay authority.
 
+## WP05 selected intervention boundary
+
+- `EnvironmentController` owns the encounter-authored Hydrant/Power Box context, exact caller revision/token, shared eligible-time cooldown, and immutable rejection. Existing `FireHydrantController` still owns Hydrant effect resolution.
+- `FocusController` observes `CombatDirector`'s stable live-intent projection, revalidates the exact target/attack/revision/token and cutoff, and applies temporary priority only through existing automatic targeting methods.
+- `CallBackupController` retains its finite two-ally transaction and now validates the exact published caller revision/token. UI owns no charge, cooldown, ally, or effect result.
+- `RunFlowController` supplies the selected encounter's Environment ID and clears it at safe noncombat/terminal boundaries; pause preserves identity while invalidating the caller context.
+- `GameHUD` exposes exactly Environment / Focus / Backup in combat and forwards snapshots through typed signals. Subway remains a strategic travel control.
+- `WP05PrototypeRuntime`, definitions, telemetry, and screenshots remain isolated Part A evidence. Rally/Hanging Sign and the former GameRun enable/freeze seams are absent from release composition.
+
 ## Deferred architecture
 
-WP04 is the implemented runtime and owner-authorized browser-playtest boundary. WP05–WP07 remain separate work packages, and neither the pending WP02/WP03/WP04 human gates nor WP04's technical result/publication authorizes them. The following remain intentionally absent and unauthorized unless a later explicit owner decision changes the specification:
+WP04 is the published runtime/browser-playtest boundary. WP05's owner-approved implementation remains local and unaccepted/unpublished until its handoff gates close; WP06–WP07 remain separate, unauthorized work. The following remain intentionally absent and unauthorized unless a later explicit owner decision changes the specification:
 
 - Procedural route generation, additional districts/cards, a card currency/shop/economy, or broader production shop content
 - Additional crew, enemy, elite, boss, intervention, equipment, synergy, or status content beyond the specified vertical-slice catalogues

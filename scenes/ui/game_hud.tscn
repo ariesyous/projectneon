@@ -985,7 +985,7 @@ theme_override_font_sizes/font_size = 16
 icon = ExtResource("5_backup_icon")
 expand_icon = true
 icon_max_width = 32
-text = "2 - BACKUP\nREADY - 2 LEFT"
+text = "3 - BACKUP\nREADY - 2 LEFT"
 tooltip_text = "Call Backup: spawn two temporary allied NPCs for 12 eligible combat seconds. Requires an active enemy encounter."
 script = ExtResource("7_intervention")
 
@@ -1311,7 +1311,7 @@ offset_right = 234.0
 offset_bottom = 36.0
 theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 18
-text = "1 - FIRE HYDRANT"
+text = "1 - ENVIRONMENT"
 
 [node name="StateLabel" type="Label" parent="Root/InterventionsPanel"]
 layout_mode = 0
@@ -1335,7 +1335,7 @@ theme_override_font_sizes/font_size = 20
 icon = ExtResource("4_hydrant_icon")
 expand_icon = true
 icon_max_width = 36
-text = "TRY HYDRANT"
+text = "CONTEXT ACTION\nNO FIGHT"
 tooltip_text = "Fire Hydrant: light area damage and strong knockback. Requires readiness and an enemy in range."
 script = ExtResource("7_intervention")
 
@@ -1445,7 +1445,9 @@ offset_bottom = 118.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.84, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 16
-text = "3 EQUIPPED + 3 STORED.\nBACKPACK = INACTIVE; NO BUYBACK.\nCARDS: FUTURE SLOT, THEN CONFIRM."
+text = "1 ENV • 2 FOCUS • 3 BACKUP.\n3 EQUIPPED + 3 STORED; BACKPACK INACTIVE.\nSUBWAY TRAVEL; INVALID SPENDS NOTHING."
+autowrap_mode = 2
+clip_text = true
 
 [node name="HelpButton" type="Button" parent="Root"]
 layout_mode = 0

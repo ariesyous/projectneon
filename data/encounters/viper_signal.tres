@@ -46,3 +46,4 @@ completion_condition = &"all_required_defeated"
 heat_gain_on_completion = 8
 elite_eligible = true
 boss = false
+environment_action_id = &"power_box"

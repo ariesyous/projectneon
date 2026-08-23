@@ -24,7 +24,7 @@ script = ExtResource("2_prompt")
 id = &"tutorial_interventions"
 trigger_id = &"intervention_available"
 heading = "INTERVENTIONS"
-body = "Choose Hydrant, Backup, or Reroute when its text says VALID. Rejected or exhausted requests spend nothing."
+body = "In fights use 1 Environment, 2 Focus, or 3 Backup when its labelled state is valid. Subway is travel. Rejected, stale, cooldown, or exhausted requests spend nothing."
 priority = 90
 
 [sub_resource type="Resource" id="Prompt_equipment"]

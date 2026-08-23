@@ -23,6 +23,7 @@ var _facing: float = 1.0
 var _current_health: int = 1
 var _maximum_health: int = 1
 var _is_targeted: bool = false
+var _is_focus_priority: bool = false
 var _has_target: bool = false
 var _flash_remaining: float = 0.0
 var _animation_clock: float = 0.0
@@ -60,6 +61,11 @@ func set_health(current_health: int, maximum_health: int) -> void:
 
 func set_targeted(is_targeted: bool) -> void:
 	_is_targeted = is_targeted
+	queue_redraw()
+
+
+func set_focus_priority(is_focused: bool) -> void:
+	_is_focus_priority = is_focused
 	queue_redraw()
 
 
@@ -211,6 +217,12 @@ func _draw_indicators() -> void:
 			Vector2(0.0, -76.0), Vector2(5.0, -71.0), Vector2(0.0, -68.0), Vector2(-5.0, -71.0),
 		])
 		draw_colored_polygon(marker, Color("ffd34e"))
+	if _is_focus_priority and _state != ActorStateMachine.State.DEAD:
+		var focus_pulse: float = 0.72 + sin(_animation_clock * 12.0) * 0.20
+		var focus_color: Color = Color(1.0, 0.28, 0.75, focus_pulse)
+		draw_arc(Vector2(0.0, -31.0), 25.0, 0.0, TAU, 32, focus_color, 2.0)
+		draw_line(Vector2(-32.0, -31.0), Vector2(-22.0, -31.0), focus_color, 2.0)
+		draw_line(Vector2(22.0, -31.0), Vector2(32.0, -31.0), focus_color, 2.0)
 	if _has_target and _state != ActorStateMachine.State.DEAD:
 		var direction_marker := PackedVector2Array([
 			Vector2(12.0 * _facing, -55.0),

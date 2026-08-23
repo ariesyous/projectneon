@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="WP05PrototypeActionDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/interventions/wp05_prototype_action_definition.gd" id="1_action"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/wp01/focus.svg" id="2_icon"]
+
+[resource]
+script = ExtResource("1_action")
+id = &"wp05_proto_focus_priority"
+role_id = &"focus"
+display_name = "Focus"
+contextual_verb = "PRIORITIZE THREAT"
+effect_kind = 2
+icon = ExtResource("2_icon")
+cooldown_seconds = 10.0
+active_duration_seconds = 3.0
+minimum_decision_window_seconds = 0.35
+strong_case = "Redirect available automatic crew attention to a named Bottle Thrower or Enforcer windup before it resolves."
+weak_case = "It adds no damage and gains little when the crew already targets the threat, cannot reach it, or the target is nearly defeated."
+invalid_case = "No live enemy windup with at least 0.35 seconds left, stale target identity, cooldown, pause, or terminal state."
+hold_case = "Accept a low-impact basic tell or use Environment instead so Focus remains ready for a ranged, elite, or boss threat."
+counter_case = "Travel time, current crew attack commitment, target death, light-stagger armour, and short telegraphs can defeat the priority order."

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="WP05PrototypeCatalogue" load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/interventions/wp05_prototype_catalogue.gd" id="1_catalogue"]
+[ext_resource type="Resource" path="res://data/interventions/prototypes/wp05_power_box_prototype.tres" id="2_power"]
+[ext_resource type="Resource" path="res://data/interventions/prototypes/wp05_hanging_sign_prototype.tres" id="3_sign"]
+[ext_resource type="Resource" path="res://data/interventions/prototypes/wp05_focus_priority_prototype.tres" id="4_focus"]
+[ext_resource type="Resource" path="res://data/interventions/prototypes/wp05_rally_reposition_prototype.tres" id="5_rally"]
+[ext_resource type="Resource" path="res://data/interventions/prototypes/scenarios/wp05_early_control.tres" id="6_early"]
+[ext_resource type="Resource" path="res://data/interventions/prototypes/scenarios/wp05_middle_ranged.tres" id="7_middle"]
+[ext_resource type="Resource" path="res://data/interventions/prototypes/scenarios/wp05_elite_interrupt.tres" id="8_elite"]
+[ext_resource type="Resource" path="res://data/interventions/prototypes/scenarios/wp05_boss_defense.tres" id="9_boss"]
+
+[resource]
+script = ExtResource("1_catalogue")
+action_definitions = Array[WP05PrototypeActionDefinition]([ExtResource("2_power"), ExtResource("3_sign"), ExtResource("4_focus"), ExtResource("5_rally")])
+scenario_definitions = Array[WP05PrototypeScenarioDefinition]([ExtResource("6_early"), ExtResource("7_middle"), ExtResource("8_elite"), ExtResource("9_boss")])

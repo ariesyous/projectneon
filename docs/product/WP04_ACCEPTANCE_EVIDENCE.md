@@ -2,9 +2,9 @@
 
 Date: 2026-08-22
 
-Status: **technical/runtime/visual/platform gate passed locally; owner-run five-person consequence/variety gate pending**
+Status: **technical/runtime/visual/platform gate passed and browser-playtest build published; owner-run five-person consequence/variety gate pending**
 
-WP04 begins from published WP03 implementation `a6ef571942afb319b3e2c0cdd9c9cffcc1f1bc93` and documentation HEAD `48ffb58fdcdcb1bd4d74bd011c2115c91a5f42a5`. The owner authorized the bounded consequence audit and balance decisions, then separately authorized this exact evidenced boundary for a `main` and GitHub Pages browser-playtest release on 2026-08-22. That publication authorization does not include WP05 or satisfy the human gate.
+WP04 begins from published WP03 implementation `a6ef571942afb319b3e2c0cdd9c9cffcc1f1bc93` and documentation HEAD `48ffb58fdcdcb1bd4d74bd011c2115c91a5f42a5`. The owner authorized the bounded consequence audit and balance decisions, then separately authorized this exact evidenced boundary for a `main` and GitHub Pages browser-playtest release on 2026-08-22. It was subsequently published from commit `782f7fe18fa434d47020f1d4bc837c9c05790dad`; owner-supplied Pages run 32607599862 succeeded. Publication did not authorize WP05 or satisfy the human gate.
 
 ## Decision evidence
 
@@ -98,6 +98,7 @@ The final browser warning/error console was empty. Default/1280×720 presentatio
 ## Scope and provenance
 
 - On 2026-08-22 the owner authorized this exact snapshot for commit to `main` and GitHub Pages deployment, including the integrated owner-carried reward/inventory/combo corrections.
+- Commit `782f7fe18fa434d47020f1d4bc837c9c05790dad` and Pages run 32607599862 subsequently completed that browser-playtest publication.
 - No WP05 mechanic/content was started.
 - No rarity, affix, set, selling, salvage, broad economy, permanent power, save/schema change, new item/card/crew/enemy/boss, or procedural route was added.
 - The owner-carried Godot-AI 3.1.5 update remains intact across the same 57 addon paths and is unattributed to WP04.
@@ -106,4 +107,4 @@ The final browser warning/error console was empty. Default/1280×720 presentatio
 
 ## Pending human gate
 
-No participant result is claimed. The owner must run and sign [WP04_UNBRIEFED_CONSEQUENCE_VARIETY_CHECK.md](WP04_UNBRIEFED_CONSEQUENCE_VARIETY_CHECK.md). Until then, describe WP04 as technically evidenced locally, not qualitatively accepted or published.
+No participant result is claimed. The owner must run and sign [WP04_UNBRIEFED_CONSEQUENCE_VARIETY_CHECK.md](WP04_UNBRIEFED_CONSEQUENCE_VARIETY_CHECK.md). Until then, describe WP04 as technically evidenced and published for browser playtest, not qualitatively accepted.

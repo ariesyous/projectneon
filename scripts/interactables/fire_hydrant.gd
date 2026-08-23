@@ -32,6 +32,7 @@ var _external_preview_visible: bool = false
 var _water_remaining: float = 0.0
 var _rejection_remaining: float = 0.0
 var _presentation_clock: float = 0.0
+var _context_active: bool = true
 
 
 func _ready() -> void:
@@ -70,6 +71,19 @@ func present_state(
 	queue_redraw()
 
 
+func set_context_active(is_active: bool) -> void:
+	_context_active = is_active
+	visible = is_active
+	input_pickable = is_active
+	var interaction_shape: CollisionShape2D = $InteractionShape as CollisionShape2D
+	if interaction_shape != null:
+		interaction_shape.set_deferred(&"disabled", not is_active)
+	if not is_active:
+		_hovered = false
+		_external_preview_visible = false
+	queue_redraw()
+
+
 func set_external_preview_visible(preview_is_visible: bool) -> void:
 	if _external_preview_visible == preview_is_visible:
 		return
@@ -101,6 +115,8 @@ func is_preview_visible() -> bool:
 
 
 func _input_event(_viewport: Node, event: InputEvent, _shape_index: int) -> void:
+	if not _context_active:
+		return
 	var mouse_event: InputEventMouseButton = event as InputEventMouseButton
 	if (
 		mouse_event != null

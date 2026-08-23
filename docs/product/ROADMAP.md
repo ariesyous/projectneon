@@ -17,8 +17,8 @@ This roadmap is intentionally organized by player outcome rather than subsystem 
 | 01 | The interface has a coherent visual language and clear screen hierarchy | WP00 | **Implemented and technically evidenced — 2026-08-21** | Rendered screen set, accessibility/readability review, 254-test cumulative gate, clean `/GameRun` smoke |
 | 02 | The run visibly repeats Plan → Fight → Reward → Push/Extract | WP00; WP01 tokens may proceed in parallel | **Implemented and technically evidenced — 2026-08-21; five-person gate pending** | Playable loop slice, deterministic lifecycle tests, runtime/platform/visual evidence |
 | 03 | District planning is understandable on first use | WP01, WP02 | **Implemented and technically evidenced — 2026-08-22; first-use gate pending** | Focused authority/card/UI tests, configured runtime/platform evidence, owner first-use record |
-| 04 | Equipment, rewards, and the shop create obvious build consequences | WP02, WP03 | **Implemented and technically evidenced locally — 2026-08-22; five-person gate pending** | Consequence audit, three disjoint builds, exact decision captures/runtime/platform evidence |
-| 05 | Encounters remain varied through a small, coherent intervention system | WP02; coordinate with WP04 | Planned | Encounter matrix, combat tests, intervention playtest |
+| 04 | Equipment, rewards, and the shop create obvious build consequences | WP02, WP03 | **Implemented, evidenced, and published for browser playtest — 2026-08-22; five-person gate pending** | Consequence audit, three disjoint builds, exact decision captures/runtime/platform evidence |
+| 05 | Encounters remain varied through a small, coherent intervention system | WP02; coordinate with WP04 | **Owner selection approved — 2026-08-23; local implementation handoff present; final gates pending** | Research record, production 60-row matrix, focused/affected/cumulative/platform/visual evidence, human check |
 | 06 | The world and combat feel authored, legible, and satisfying | WP01, WP03, WP04, WP05 | Planned | Final art/presentation captures, Windows/Web smoke |
 | 07 | The rebaseline is balanced, integrated, documented, and release-ready | WP00–WP06 | Planned | Full gate, owner playtest record, release candidate |
 
@@ -72,6 +72,8 @@ Prototype the smallest intervention and encounter set that sustains tactical att
 
 Exit gate: the player encounters recurring but non-identical tactical questions, and no intervention is a universally correct cooldown button.
 
+Part A technical/research/prototype gate: **Passed — 2026-08-22.** See [research](WP05_RESEARCH_AND_DECISION_RECORD.md), [comparison matrix](WP05_PROTOTYPE_COMPARISON.md), [authority map](WP05_CURRENT_TO_TARGET_AUTHORITY_MAP.md), [technical evidence](WP05_ACCEPTANCE_EVIDENCE.md), and the [single owner-selection checkpoint](WP05_OWNER_SELECTION.md). Default/release `/GameRun` remains WP04; Part B is paused and no qualitative pass is inferred.
+
 ## Phase D — Make it feel finished
 
 ### [WP06 — World, Combat, and Presentation Polish](../work_packages/WP_06_WORLD_COMBAT_POLISH.md)
@@ -95,7 +97,7 @@ Exit gate: all automated and platform checks pass, the manual matrix is complete
 - Keep debug tooling available in development while removing debug affordances from release presentation.
 - Each package includes automated coverage, fresh Godot/runtime inspection, changed-input exercise, documentation updates, visual evidence when relevant, and proportionate Windows/Web checks.
 - No package may silently expand into procedural maps, direct-control combat, multiplayer, permanent stats, or unrelated platform features.
-- Roadmap approval is not implementation authorization. WP01–WP04 began only under separate explicit tasks; the WP04 result does not authorize WP05.
+- Roadmap approval is not implementation authorization. WP01–WP05 began only under separate explicit tasks; the owner explicitly approved WP05's recommendation on 2026-08-23. That decision does not authorize WP05 publication or WP06.
 
 ## Playtest checkpoints
 

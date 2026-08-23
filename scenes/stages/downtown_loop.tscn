@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/stages/downtown_loop.gd" id="1_stage"]
 [ext_resource type="Script" path="res://scripts/stages/downtown_backdrop.gd" id="2_backdrop"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scripts/stages/debug_lane_markers.gd" id="4_lanes"]
 [ext_resource type="PackedScene" path="res://scenes/effects/combat_feedback.tscn" id="5_feedback"]
 [ext_resource type="PackedScene" path="res://scenes/interactables/fire_hydrant.tscn" id="6_hydrant"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/power_box.tscn" id="7_power_box"]
 
 [node name="DowntownLoop" type="Node2D"]
 script = ExtResource("1_stage")
@@ -86,6 +87,9 @@ position = Vector2(456, 226)
 
 [node name="FireHydrant" parent="Interactables" instance=ExtResource("6_hydrant")]
 position = Vector2(410, 239)
+
+[node name="PowerBox" parent="Interactables" instance=ExtResource("7_power_box")]
+position = Vector2(370, 226)
 
 [node name="CrewContainer" type="Node2D" parent="."]
 

@@ -611,6 +611,40 @@ func request_environmental_hit(
 	return applied_damage
 
 
+func request_intervention_status(
+	source_id: StringName,
+	target: ActorController,
+	status_id: StringName,
+	stacks: int,
+	base_duration_seconds: float,
+	maximum_stacks_override: int = -1
+) -> float:
+	if (
+		source_id == &""
+		or status_id == &""
+		or target == null
+		or not is_instance_valid(target)
+		or not _actors.has(target)
+		or not target.can_be_targeted()
+		or stacks <= 0
+		or base_duration_seconds <= 0.0
+	):
+		return 0.0
+	var duration: float = base_duration_seconds
+	if status_id == &"shock" and _synergy_system != null:
+		duration += _synergy_system.get_flat_modifier(&"shock_duration")
+	duration = maxf(duration, 0.05)
+	if not target.apply_status(
+		status_id,
+		stacks,
+		duration,
+		maximum_stacks_override
+	):
+		return 0.0
+	status_applied.emit(target, status_id, stacks, duration, source_id)
+	return duration
+
+
 func request_environmental_collision(
 	source_id: StringName,
 	source_actor: ActorController,
@@ -685,6 +719,65 @@ func get_live_actors(team: int) -> Array[ActorController]:
 	for actor: ActorController in _actors:
 		if actor.team == team and actor.can_be_targeted():
 			result.append(actor)
+	return result
+
+
+func get_actor_by_instance_id(instance_id: int) -> ActorController:
+	if instance_id <= 0:
+		return null
+	for actor: ActorController in _actors:
+		if actor != null and is_instance_valid(actor) and actor.get_instance_id() == instance_id:
+			return actor
+	return null
+
+
+func get_attack_definition_for_actor(
+	actor: ActorController,
+	attack_id: StringName
+) -> AttackDefinition:
+	if actor == null or not is_instance_valid(actor) or attack_id == &"":
+		return null
+	if actor.attack_definition != null and actor.attack_definition.id == attack_id:
+		return actor.attack_definition
+	for attack: AttackDefinition in actor.special_attack_definitions:
+		if attack != null and attack.id == attack_id:
+			return attack
+	return null
+
+
+func get_active_threat_intents() -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for actor: ActorController in _actors:
+		if (
+			actor == null
+			or not is_instance_valid(actor)
+			or actor.team != ActorController.Team.ENEMY
+			or not actor.can_be_targeted()
+			or actor.state_machine.current_state != ActorStateMachine.State.ATTACK_WINDUP
+			or actor.attack_controller.current_phase != AttackController.Phase.WINDUP
+		):
+			continue
+		var attack: AttackDefinition = actor.get_active_attack_definition()
+		if attack == null or not attack.focus_priority_eligible:
+			continue
+		result.append({
+			"target_instance_id": actor.get_instance_id(),
+			"target_id": actor.definition_id(),
+			"target_name": actor.actor_definition.display_name,
+			"target_position": actor.global_position,
+			"registration_order": actor.registration_order,
+			"attack_id": attack.id,
+			"attack_name": attack.display_name,
+			"intent_label": (
+				attack.intent_label
+				if not attack.intent_label.strip_edges().is_empty()
+				else attack.display_name
+			),
+			"delivery_kind": attack.delivery_kind,
+			"window_seconds": actor.get_attack_phase_remaining(),
+			"threat_priority": attack.focus_threat_priority,
+		})
+	result.sort_custom(_threat_intent_before)
 	return result
 
 
@@ -928,6 +1021,18 @@ func _registration_order_before(left: ActorController, right: ActorController) -
 
 func _projectile_order_before(left: CombatProjectileType, right: CombatProjectileType) -> bool:
 	return left.spawn_order < right.spawn_order
+
+
+func _threat_intent_before(left: Dictionary, right: Dictionary) -> bool:
+	var left_priority: int = int(left.get("threat_priority", 0))
+	var right_priority: int = int(right.get("threat_priority", 0))
+	if left_priority != right_priority:
+		return left_priority > right_priority
+	var left_window: float = float(left.get("window_seconds", 0.0))
+	var right_window: float = float(right.get("window_seconds", 0.0))
+	if not is_equal_approx(left_window, right_window):
+		return left_window < right_window
+	return int(left.get("registration_order", 0)) < int(right.get("registration_order", 0))
 
 
 func _string_name_before(left: StringName, right: StringName) -> bool:
