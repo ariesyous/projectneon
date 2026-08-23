@@ -356,6 +356,18 @@ func test_authored_spawn_staging_uses_eligible_time_and_exact_boundaries() -> vo
 	var fixture: GameFixture = _new_game(true)
 	fixture.game.vertical_slice_overlay.rex_button.pressed.emit()
 	fixture.game.vertical_slice_overlay.start_button.pressed.emit()
+	# Spawn-interval assertions require a fixed roster draw. Preserve the real
+	# crew/menu path, then restart the same configured content with a supplied
+	# seed instead of depending on wall-clock seed entropy in a cumulative run.
+	_expect_true(
+		fixture.game.run_director.return_to_initializing(),
+		"spawn cadence: generated bootstrap run returns to a clean boundary"
+	)
+	_expect_equal(
+		fixture.game.run_flow_controller.start_initial_run(6062026, true),
+		6062026,
+		"spawn cadence: supplied seed locks the authored roster"
+	)
 	fixture.game.run_director.complete_intro()
 	_expect_true(
 		_begin_direct_planned_encounter(fixture.game, STANDARD_ENCOUNTER, &"m6_spawn_probe"),
@@ -611,9 +623,9 @@ func test_equipment_and_card_reward_modals_survive_pause_round_trip() -> void:
 		"reward pause: equipment probe enters reward selection"
 	)
 	equipment_fixture.game._on_equipment_reward_ready(8101, [REWARD_EQUIPMENT])
-	_expect_true(
+	_expect_false(
 		&"tutorial_equipment" in equipment_fixture.game.tutorial_controller.get_queued_ids(),
-		"reward tutorial: equipment choice queues its authored contextual prompt"
+		"reward tutorial: focused WP04 choice teaches without an obscuring banner"
 	)
 	_press_key(equipment_fixture.game, KEY_SPACE)
 	_expect_equal(
@@ -669,6 +681,40 @@ func test_equipment_and_card_reward_modals_survive_pause_round_trip() -> void:
 	_expect_true(
 		card_fixture.game.game_hud.district_card_panel.visible,
 		"reward pause: card modal returns without re-emission"
+	)
+
+
+func test_combo_banner_is_combat_only_while_combo_authority_survives_reward() -> void:
+	var fixture: GameFixture = _new_game(true)
+	fixture.game.vertical_slice_overlay.jax_button.pressed.emit()
+	fixture.game.vertical_slice_overlay.start_button.pressed.emit()
+	fixture.game.run_director.complete_intro()
+	_expect_true(
+		_begin_direct_planned_encounter(fixture.game, STANDARD_ENCOUNTER, &"m6_combo_probe"),
+		"combo clarity: encounter begins"
+	)
+	_expect_true(fixture.game.combo_tracker.record_crew_hit(), "combo clarity: hit is recorded")
+	_expect_true(
+		fixture.game.vertical_slice_overlay.combo_panel.visible,
+		"combo clarity: active combat can show the banner"
+	)
+	_expect_true(
+		fixture.game.run_director.notify_encounter_completed(8103, STANDARD_ENCOUNTER),
+		"combo clarity: encounter advances to reward"
+	)
+	_expect_equal(
+		fixture.game.run_director.current_state,
+		RunDirector.RunState.REWARD_SELECTION,
+		"combo clarity: reward state is authoritative"
+	)
+	_expect_false(
+		fixture.game.vertical_slice_overlay.combo_panel.visible,
+		"combo clarity: reward decision suppresses combat-only banner"
+	)
+	_expect_equal(
+		fixture.game.combo_tracker.get_current_combo(),
+		1,
+		"combo clarity: presentation suppression does not mutate combo authority"
 	)
 
 

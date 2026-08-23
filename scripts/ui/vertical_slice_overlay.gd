@@ -326,6 +326,10 @@ func present_combo(current_combo: int, highest_combo: int) -> void:
 	combo_label.text = "COMBO %d - BEST %d" % [maxi(current_combo, 0), maxi(highest_combo, 0)]
 
 
+func hide_combo() -> void:
+	combo_panel.visible = false
+
+
 func present_run_summary(summary: RunSummaryRecord) -> void:
 	if summary == null:
 		return

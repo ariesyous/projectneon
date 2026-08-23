@@ -675,7 +675,7 @@ offset_right = 1142.0
 offset_bottom = 40.0
 theme_override_colors/font_color = Color(1, 0.82, 0.38, 1)
 theme_override_font_sizes/font_size = 20
-text = "CHOOSE EQUIPMENT - REVIEW CONSEQUENCES BEFORE CONFIRMING"
+text = "CHOOSE GEAR"
 horizontal_alignment = 1
 
 [node name="Target01" type="Button" parent="Root/EquipmentRewardPanel"]
@@ -824,7 +824,7 @@ offset_right = 750.0
 offset_bottom = 340.0
 theme_override_colors/font_color = Color(1, 0.76, 0.42, 1)
 theme_override_font_sizes/font_size = 16
-text = "DRAG GEAR TO A SLOT • OR CLICK GEAR + DESTINATION • REVIEW • CONFIRM"
+text = "1. CHOOSE OR DRAG ONE ITEM • OR SKIP"
 horizontal_alignment = 1
 clip_text = true
 autowrap_mode = 2
@@ -837,7 +837,7 @@ offset_right = 1140.0
 offset_bottom = 338.0
 theme_override_colors/font_color = Color(0.74, 0.84, 1, 1)
 theme_override_font_sizes/font_size = 17
-text = "SKIP GEAR • KEEP RUN REWARD"
+text = "SKIP GEAR\nKEEP RUN REWARD"
 
 [node name="Store01" type="Button" parent="Root/EquipmentRewardPanel"]
 layout_mode = 0

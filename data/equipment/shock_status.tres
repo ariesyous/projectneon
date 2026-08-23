@@ -10,4 +10,5 @@ base_duration_seconds = 3.0
 base_maximum_stacks = 1
 tick_interval_seconds = 0.0
 damage_per_stack = 0
+intervention_damage_taken_bonus = 0.25
 presentation_color = Color(0.25, 0.9, 1, 1)

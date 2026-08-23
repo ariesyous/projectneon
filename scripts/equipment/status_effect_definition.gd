@@ -11,6 +11,7 @@ extends Resource
 @export_range(1, 99, 1) var base_maximum_stacks: int = 1
 @export_range(0.0, 60.0, 0.05) var tick_interval_seconds: float = 0.0
 @export_range(0, 999, 1) var damage_per_stack: int = 0
+@export_range(0.0, 5.0, 0.05) var intervention_damage_taken_bonus: float = 0.0
 @export var presentation_color: Color = Color.WHITE
 
 
@@ -26,4 +27,6 @@ func validation_errors() -> PackedStringArray:
 		errors.append("status '%s' maximum stacks must be positive" % id)
 	if tick_interval_seconds < 0.0 or damage_per_stack < 0:
 		errors.append("status '%s' tick tuning cannot be negative" % id)
+	if intervention_damage_taken_bonus < 0.0:
+		errors.append("status '%s' intervention damage bonus cannot be negative" % id)
 	return errors

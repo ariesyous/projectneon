@@ -564,6 +564,7 @@ func request_environmental_hit(
 		return 0
 	var environmental_damage_multiplier: float = 1.0
 	var environmental_knockback_multiplier: float = 1.0
+	environmental_damage_multiplier += target.get_intervention_damage_taken_bonus()
 	if _synergy_system != null:
 		environmental_damage_multiplier += _synergy_system.get_percent_modifier(
 			&"environmental_collision_damage"

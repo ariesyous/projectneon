@@ -26,7 +26,9 @@
 
 **WP02 — Core Run Loop and State Clarity: implemented and technically evidenced on 2026-08-21; owner five-person comprehension gate remains pending**
 
-**WP03 — District Planning and Cards: implemented and technically evidenced on 2026-08-22; owner unbriefed first-use gate remains pending; WP04 not started**
+**WP03 — District Planning and Cards: implemented and technically evidenced on 2026-08-22; owner unbriefed first-use gate remains pending**
+
+**WP04 — Builds, Rewards, and Shop: implemented, technically evidenced, and owner-authorized for `main`/Pages browser playtest on 2026-08-22; owner five-person consequence/variety gate remains pending; WP05 not started**
 
 The Combat Lab foundation and Fire Hydrant intervention are preserved inside a complete run lifecycle with the verified Milestone 4 equipment/synergy layer, Milestone 4.1 usability/readability correction, bounded Milestone 4.2 drag/backpack-clarity implementation, and the separately verified Milestone 5 District Cards implementation. Technical Milestone 1 acceptance remains the unchanged owner record. Milestone 6 passed its cumulative automated gate, configured headless `/GameRun` boot, and GitHub Pages Web export/deployment. Representative manual paths, real-input browser/device checks, Windows export/runtime, visual evidence, cadence acceptance, and final owner qualitative validation remain under the playtest guide.
 
@@ -42,12 +44,12 @@ WP00 preserves all Milestone 0–6 implementation and verification records while
 | WP01 | Interface and visual language | **Implemented and technically evidenced; no gameplay authority change** |
 | WP02 | Core three-lap run loop and state clarity | **Implemented and technically evidenced; five-person comprehension gate pending** |
 | WP03 | Focused District Plan | **Implemented and technically evidenced; owner first-use gate pending** |
-| WP04 | Builds, rewards, and shop consequence | Planned; not started |
+| WP04 | Builds, rewards, and shop consequence | **Implemented and technically evidenced locally; human gate pending** |
 | WP05 | Intervention and encounter-variety prototypes | Planned; not started |
 | WP06 | World, combat, and presentation polish | Planned; not started |
 | WP07 | Integration, balance, and release acceptance | Planned; not started |
 
-The current local gameplay/content authority is Milestone 6 migrated through the WP01 presentation layer, WP02 district lifecycle/profile-access authority, and WP03 focused District Plan. The M5 hand/five-slot planner remains only an isolated compatibility authority. A target statement is not evidence that its owning later work package exists. Each later package requires its own explicit task, branch discipline, tests, runtime verification, documentation, and owner gate where specified.
+The current local gameplay/content authority is Milestone 6 migrated through WP01 presentation, WP02 lifecycle/profile access, WP03 focused District Plan, and WP04 build/reward/shop consequence. The M5 hand/five-slot planner remains only an isolated compatibility authority. A target statement is not evidence that its owning later work package exists. Each later package requires its own explicit task, branch discipline, tests, runtime verification, documentation, and owner gate where specified.
 
 ## WP01 implementation — Interface and Visual Language
 
@@ -96,6 +98,27 @@ WP02 added no District Plan migration, new gameplay content, new stream/schema, 
 - [ ] Owner executes and records the fixed unbriefed first-use check in `docs/product/WP03_UNBRIEFED_FIRST_USE_CHECK.md`.
 
 WP03 adds no card, district, procedural route, currency/economy, save version, stream, schema version, permanent progression, equipment/shop rebalance, or WP04 consequence work. On 2026-08-22 the owner separately authorized the evidenced WP03 boundary for a `main` and GitHub Pages browser-playtest release without closing the qualitative gate. Implementation commit `a6ef571942afb319b3e2c0cdd9c9cffcc1f1bc93` was pushed to `main`; Pages run 32586634393 exported/deployed it successfully, and the live pointer prediction/occurrence/history smoke passed with an empty warning/error console.
+
+## WP04 implementation — Builds, Rewards, and Shop
+
+**Status: Technical/runtime/visual/platform gate passed locally on 2026-08-22.** The owner-run five-person unbriefed consequence/variety gate remains pending and is not fabricated. Evidence: `docs/product/WP04_ACCEPTANCE_EVIDENCE.md`; audit: `docs/product/WP04_CONSEQUENCE_AUDIT.md`.
+
+- [x] Audited every item, threshold, starter, tier, destination, and finite shop path; separated balance failures from presentation failures and recorded research/rejected alternatives.
+- [x] Added validated role/promise metadata without changing the nine stable IDs, three threshold IDs, icons, slot count, content access, or schema.
+- [x] Made Shock provide +25% Environment intervention vulnerability, made build attack speed affect the complete crew timeline, added 35% on-hit Bleed to Serrated Wraps, and replaced Chain's unreachable follow-up with +10% knockback distance.
+- [x] Kept Spiked Bat, Reinforced Jacket, Hacker Deck, Steel-Toe Boots, Magnetic Flail, Voltaic Blade, and all three threshold values unchanged after the matrix found distinct axes rather than universal dominance.
+- [x] Latched/applied authored Heat multipliers to standard-reward coins only with half-up rounding; Scrap remains raw. Added immutable exact payout snapshots.
+- [x] Added monotonic equipment-choice tokens and shop-visit revisions/sources that survive run reset; stale/malformed/wrong-source/reentrant requests are exact no-ops.
+- [x] Extended `SynergySystem` non-mutating previews and pure `BuildConsequenceEvaluator` crew values for exact selected/destination/outgoing/post-state/synergy/value/next-fight presentation.
+- [x] Preserved the owner-carried single staged reward layer, drag/click/tap/keyboard parity, active/backpack semantics, lossless replacement/swap/storage, named discard, and Skip Gear; legacy banners/toasts no longer obscure focused consequence layers.
+- [x] Added exact finite-shop affordability, Heat/tier, reward tradeoff, global/visit stock, purchase acknowledgement, decline, and exit presentation while retaining 60 coins/-18 Heat/two global stock/one Convenience purchase.
+- [x] Added rate-limited icon-plus-label status, environment, Tech, synergy, and build-entry acknowledgement with no gameplay draw.
+- [x] Locked three disjoint viable vectors using all nine items once: Jax Bat/Boots/Chain, Zoey Gloves/Hacker/Flail, and Rex Jacket/Wraps/Blade.
+- [x] Passed **15/15 focused tests/247 assertions**, **226/226 affected tests/3,175 assertions**, and **291/291 cumulative tests/4,192 assertions across 30 suites**, with zero failures/skips.
+- [x] Passed configured `/GameRun`, mouse/touch/keyboard routing, four inspected native captures, Windows/Web release exports, exported Windows runtime, and local production-Web real pointer reward/shop/purchase/exit plus 2560×1440 containment and empty warning/error console.
+- [ ] Owner executes `docs/product/WP04_UNBRIEFED_CONSEQUENCE_VARIETY_CHECK.md` with five genuine unbriefed participants.
+
+The cumulative runner retains the exact inherited post-success 48-ObjectDB/four-resource shutdown diagnostic; focused, affected, input, configured runtime, graphical capture, export, exported-Windows, and browser runs do not reproduce it. WP04 changes no save version, random schema/stream list, card/lifecycle authority, broad economy, or permanent power. The owner separately authorized this exact evidenced boundary for a `main`/Pages browser-playtest release on 2026-08-22; publication does not close the pending human gate or authorize WP05.
 
 ## Milestone 0 implementation
 
@@ -453,10 +476,10 @@ Verification record and remaining work:
 - [ ] Complete real-input Web playtesting at 1280×720, 1920×1080, 2560×1440, and touch/mobile where available; produce and smoke a fresh Windows export/runtime; and capture fresh Milestone 6 visual evidence. The official Pages Web export, live 1280×720 canvas load, and empty warning/error console already passed.
 - [ ] Leave actor feel, telegraph readability, tutorial comprehension without explanation, cadence quality, build viability, and representative-run quality clearly identified for owner validation. Automated implementation checks cannot invent those qualitative results.
 
-Working-tree provenance remains separate from Milestone 6: the owner's pre-existing tracked Godot-AI 3.0.5 update across 17 addon files remains tracked and enabled, and the owner's two pre-existing `project.godot` deletions (`window/stretch/aspect="keep"` and `textures/default_filters/use_nearest_mipmap_filter=false`) remain preserved. The M6 non-gameplay Autoload additions above are the only intentional overlap in `project.godot`; no owner change is counted as new M6 work.
+Working-tree provenance remains separate from gameplay authorship. The historical Milestone 6 snapshot recorded Godot-AI 3.0.5/17 files; the current WP04 start audit records the owner's later 3.1.5 update across 57 dirty addon paths. The owner's `project.godot` deletions remain preserved. No owner change is counted as WP04 work.
 
 ## Scope gate
 
-WP03 is the implemented local runtime boundary on top of the preserved Milestone 6 content baseline, WP01 presentation layer, and WP02 lifecycle/profile authority. The Milestone 5 card planner remains an isolated compatibility surface, not the release flow. Procedural generation, additional districts/cards/crew/enemies/bosses, multiplayer, controller support, localization, achievements, daily scheduling/leaderboards/rewards, advanced meta-progression, permanent stat trees, mid-run saving/replay, broader equipment/card economies, and every undocumented system remain out of scope. Run-seed and named-stream infrastructure remains schema version 1 unless a later owning package proves and records an incompatible semantics change.
+WP04 is the implemented runtime and owner-authorized browser-playtest boundary on top of the preserved Milestone 6 content baseline and WP01–WP03 migrations. The Milestone 5 card planner remains an isolated compatibility surface, not the release flow. Procedural generation, additional districts/cards/crew/enemies/bosses, multiplayer, controller support, localization, achievements, daily scheduling/leaderboards/rewards, advanced meta-progression, permanent stat trees, mid-run saving/replay, broader equipment/card economies, and every undocumented system remain out of scope. Run-seed and named-stream infrastructure remains schema version 1 unless a later owning package proves and records an incompatible semantics change.
 
-The owner-authorized 2026-07-22 Milestone 6 and 2026-08-21 WP02 Pages publications remain historical playtest records. On 2026-08-22 the owner separately authorized WP03 as the next `main`/Pages browser-playtest candidate; commit `a6ef571942afb319b3e2c0cdd9c9cffcc1f1bc93` and successful Pages run 32586634393 completed that publication. The 2026-08-20 WP00 approval authorizes the bounded roadmap as planning, not implementation, commits, pushes, publication, deployment, or unreviewed content expansion. WP01–WP03 began only under separate explicit tasks. WP04 remains unstarted and requires separate authorization.
+The owner-authorized 2026-07-22 Milestone 6 and 2026-08-21 WP02 Pages publications remain historical playtest records. On 2026-08-22 the owner separately authorized WP03 as the next `main`/Pages browser-playtest candidate; commit `a6ef571942afb319b3e2c0cdd9c9cffcc1f1bc93` and successful Pages run 32586634393 completed that publication. WP04 then began under a separate explicit owner task, completed its technical gate, and received separate owner authorization on 2026-08-22 for the next `main`/Pages browser-playtest release. That publication does not close the pending human gate. WP05 remains unstarted and requires separate authorization.

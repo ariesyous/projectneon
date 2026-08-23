@@ -12,6 +12,9 @@ const JAX_DEFINITION: ActorDefinition = preload("res://data/crew/jax.tres")
 const ZOEY_DEFINITION: ActorDefinition = preload("res://data/crew/zoey.tres")
 const REX_DEFINITION: ActorDefinition = preload("res://data/crew/rex.tres")
 const BOSS_TELEGRAPH_MINIMUM_SECONDS: float = 0.45
+const SHOCK_STATUS: StatusEffectDefinition = preload(
+	"res://data/equipment/shock_status.tres"
+)
 
 @export var loadout_definition: RunLoadoutDefinition = LOADOUT_DEFINITION
 var app_state_override: NeonAppState
@@ -78,10 +81,12 @@ func _ready() -> void:
 	combat_director.hit_landed.connect(_on_hit_landed)
 	combat_director.environmental_hit_landed.connect(_on_environmental_hit_landed)
 	combat_director.environmental_collision_landed.connect(_on_environmental_collision_landed)
+	combat_director.status_applied.connect(_on_equipment_status_applied)
 	combat_director.attack_telegraphed.connect(_on_attack_telegraphed)
 	combat_director.boss_phase_changed.connect(_on_boss_phase_changed)
 	combat_director.crew_status_changed.connect(_on_crew_status_changed)
 	encounter_controller.boss_encounter_started.connect(_on_boss_encounter_started)
+	encounter_controller.encounter_started.connect(_on_encounter_started_build_expression)
 	encounter_controller.boss_defeated.connect(_on_boss_defeated)
 	encounter_controller.coin_cluster_presented.connect(_on_coin_cluster_presented)
 	reward_director.coins_changed.connect(_on_coins_changed)
@@ -89,7 +94,9 @@ func _ready() -> void:
 	reward_director.streak_changed.connect(_on_streak_changed)
 	reward_director.cluster_resolved.connect(_on_cluster_resolved)
 	reward_director.equipment_choice_resolved.connect(_on_equipment_choice_resolved)
+	reward_director.standard_reward_result_available.connect(_on_standard_reward_result_available)
 	cooling_controller.cooling_applied.connect(_on_cooling_audio_applied)
+	cooling_controller.shop_purchase_resolved.connect(_on_shop_purchase_resolved)
 	run_director.run_started.connect(_on_run_started)
 	run_director.run_state_changed.connect(_on_run_state_changed)
 	run_director.run_summary_ready.connect(_on_run_summary_ready)
@@ -123,6 +130,7 @@ func _ready() -> void:
 	game_hud.inventory_swap_requested.connect(_on_inventory_swap_requested)
 	game_hud.inventory_move_requested.connect(_on_inventory_move_requested)
 	game_hud.inventory_discard_requested.connect(_on_inventory_discard_requested)
+	game_hud.inventory_preview_requested.connect(_on_inventory_preview_requested)
 	game_hud.district_card_planning_open_requested.connect(_on_card_planning_open_requested)
 	game_hud.district_card_planning_close_requested.connect(_on_card_planning_close_requested)
 	game_hud.district_card_placement_staged.connect(_on_card_placement_staged)
@@ -612,6 +620,14 @@ func _on_run_started(seed: int, _schema_version: int) -> void:
 
 func _on_run_state_changed(previous_state: int, new_state: int) -> void:
 	_set_combat_telegraphs_suspended(new_state == RunDirector.RunState.PAUSED)
+	_refresh_combo_presentation_for_state(new_state)
+	if new_state not in [RunDirector.RunState.ENCOUNTER_ACTIVE, RunDirector.RunState.BOSS_ACTIVE]:
+		game_hud.clear_build_callout()
+	if new_state in [RunDirector.RunState.REWARD_SELECTION, RunDirector.RunState.SHOP]:
+		# Focused consequence layers teach themselves; queued legacy banners must
+		# never cover exact destinations, prices, stock, or Confirm/Exit actions.
+		while tutorial_controller.dismiss_current():
+			pass
 	if new_state == RunDirector.RunState.PAUSED:
 		if not run_director.is_card_planning_pause_active():
 			vertical_slice_overlay.show_pause(_current_settings_dictionary())
@@ -709,6 +725,10 @@ func _on_backup_activation_accepted(
 		charges_remaining,
 		"" if charges_remaining == 1 else "S",
 	])
+	_present_tech_cooldown_callout(
+		"BACKUP",
+		call_backup_controller.definition.cooldown_seconds
+	)
 
 
 func _on_backup_activation_rejected(reason: StringName) -> void:
@@ -725,10 +745,20 @@ func _on_actor_incapacitated(actor: ActorController) -> void:
 
 
 func _on_combo_snapshot_changed(snapshot: Dictionary) -> void:
+	if run_director.current_state != RunDirector.RunState.ENCOUNTER_ACTIVE:
+		vertical_slice_overlay.hide_combo()
+		return
 	vertical_slice_overlay.present_combo(
 		int(snapshot.get("current_combo", 0)),
 		int(snapshot.get("highest_combo", 0))
 	)
+
+
+func _refresh_combo_presentation_for_state(state: int) -> void:
+	if state != RunDirector.RunState.ENCOUNTER_ACTIVE:
+		vertical_slice_overlay.hide_combo()
+		return
+	_on_combo_snapshot_changed(combo_tracker.get_snapshot())
 
 
 func _on_tutorial_prompt_presented(prompt: TutorialPromptDefinition) -> void:
@@ -893,21 +923,76 @@ func _on_equipment_reward_ready(
 	var previews_by_choice: Array[Dictionary] = []
 	for choice_index: int in range(choices.size()):
 		var by_slot: Array[Dictionary] = []
+		var by_slot_and_backpack: Array = []
 		for slot_index: int in range(SynergySystem.SLOT_COUNT):
-			by_slot.append(
+			by_slot.append(_enrich_build_preview(
 				reward_director.get_equipment_choice_preview(
 					encounter_instance_id,
 					choice_index,
 					slot_index
 				)
-			)
-		previews_by_choice.append({"by_slot": by_slot})
-	game_hud.present_equipment_reward(encounter_instance_id, choices, previews_by_choice)
-	if not choices.is_empty():
-		tutorial_controller.request_trigger(&"equipment_choice_available")
+			))
+			var by_backpack_target: Array[Dictionary] = []
+			for backpack_slot: int in range(SynergySystem.BACKPACK_SLOT_COUNT):
+				by_backpack_target.append(_enrich_build_preview(
+					reward_director.get_equipment_choice_preview(
+						encounter_instance_id,
+						choice_index,
+						slot_index,
+						backpack_slot
+					)
+				))
+			by_slot_and_backpack.append(by_backpack_target)
+		var by_backpack_slot: Array[Dictionary] = []
+		for backpack_slot: int in range(SynergySystem.BACKPACK_SLOT_COUNT):
+			by_backpack_slot.append(_enrich_build_preview(
+				synergy_system.preview_stored_equipment(
+					choices[choice_index],
+					backpack_slot
+				)
+			))
+		previews_by_choice.append({
+			"by_slot": by_slot,
+			"by_slot_and_backpack": by_slot_and_backpack,
+			"by_backpack_slot": by_backpack_slot,
+		})
+	var standard_preview: Dictionary = reward_director.get_pending_standard_reward_preview(
+		encounter_instance_id
+	)
+	var standard_reward: StandardRewardDefinition = reward_director.get_pending_standard_reward(
+		encounter_instance_id
+	)
+	if standard_reward != null:
+		standard_preview["display_name"] = standard_reward.display_name
+		standard_preview["reward_id"] = standard_reward.id
+	game_hud.present_equipment_reward(
+		encounter_instance_id,
+		choices,
+		previews_by_choice,
+		reward_director.get_pending_equipment_choice_token(encounter_instance_id),
+		standard_preview
+	)
+	# The focused WP04 surface contains the complete staged transaction lesson.
+	# A legacy tutorial banner would obscure the exact destination and payout.
+	while tutorial_controller.dismiss_current():
+		pass
+
+
+func _enrich_build_preview(preview: Dictionary) -> Dictionary:
+	if _selected_crew_actor == null or not is_instance_valid(_selected_crew_actor):
+		return preview
+	return BuildConsequenceEvaluator.enrich_preview(
+		preview,
+		_selected_crew_actor.actor_definition,
+		_selected_crew_actor.attack_definition,
+		fire_hydrant_controller.tuning.cooldown_seconds,
+		call_backup_controller.definition.cooldown_seconds
+	)
 
 
 func _on_equipment_acquisition_requested(
+	encounter_instance_id: int,
+	choice_token: int,
 	choice_index: int,
 	destination: StringName,
 	equipment_slot: int,
@@ -921,7 +1006,9 @@ func _on_equipment_acquisition_requested(
 		equipment_slot,
 		backpack_slot,
 		replace_confirmed,
-		expected_revision
+		expected_revision,
+		encounter_instance_id,
+		choice_token
 	)
 	game_hud.present_equipment_action_result(applied)
 	if applied:
@@ -930,12 +1017,24 @@ func _on_equipment_acquisition_requested(
 		_on_action_feedback("EQUIPMENT CHOICE REJECTED")
 
 
-func _on_equipment_reward_decline_requested() -> void:
-	var declined: bool = run_flow_controller.decline_equipment_reward()
+func _on_equipment_reward_decline_requested(
+	encounter_instance_id: int,
+	choice_token: int
+) -> void:
+	var declined: bool = run_flow_controller.decline_equipment_reward(
+		encounter_instance_id,
+		choice_token
+	)
 	game_hud.present_equipment_action_result(declined)
 	if declined:
 		game_hud.dismiss_equipment_reward()
-		_on_action_feedback("CURRENT BUILD KEPT - RUN REWARD SECURED")
+		var reward_result: Dictionary = reward_director.get_applied_standard_reward_result(
+			encounter_instance_id
+		)
+		_on_action_feedback("SKIPPED GEAR • CURRENT BUILD KEPT • RUN REWARD +%d COINS +%d SCRAP" % [
+			int(reward_result.get("awarded_coins", 0)),
+			int(reward_result.get("awarded_scrap", 0)),
+		])
 
 
 func _on_card_reward_ready(
@@ -1070,6 +1169,25 @@ func _on_card_reward_skip_requested(
 	)
 
 
+func _on_inventory_preview_requested(
+	action: StringName,
+	source_area: StringName,
+	source_slot: int,
+	target_slot: int,
+	equipment_id: StringName,
+	expected_revision: int
+) -> void:
+	var preview: Dictionary = synergy_system.preview_inventory_transaction(
+		action,
+		source_area,
+		source_slot,
+		target_slot,
+		equipment_id,
+		expected_revision
+	)
+	game_hud.present_inventory_transaction_preview(_enrich_build_preview(preview))
+
+
 func _on_inventory_swap_requested(
 	equipment_slot: int,
 	backpack_slot: int,
@@ -1135,22 +1253,32 @@ func _on_inventory_discard_requested(
 
 
 func _on_equipment_choice_resolved(
-	_encounter_instance_id: int,
+	encounter_instance_id: int,
 	_choice_index: int,
 	equipment: EquipmentDefinition,
 	destination: StringName,
 	equipment_slot: int,
 	backpack_slot: int
 ) -> void:
+	var reward_result: Dictionary = reward_director.get_applied_standard_reward_result(
+		encounter_instance_id
+	)
+	var reward_suffix: String = " • RUN REWARD +%d COINS +%d SCRAP" % [
+		int(reward_result.get("awarded_coins", 0)),
+		int(reward_result.get("awarded_scrap", 0)),
+	]
 	if destination == SynergySystem.AREA_BACKPACK:
-		_on_action_feedback("STORED %s IN BACKPACK SLOT %d" % [
+		_on_action_feedback("STORED %s IN BACKPACK SLOT %d • ACTIVE BUILD UNCHANGED%s" % [
 			equipment.display_name.to_upper(),
 			backpack_slot + 1,
+			reward_suffix,
 		])
 	else:
-		_on_action_feedback("EQUIPPED %s IN ACTIVE SLOT %d" % [
+		_on_action_feedback("EQUIPPED %s IN ACTIVE SLOT %d • %s%s" % [
 			equipment.display_name.to_upper(),
 			equipment_slot + 1,
+			equipment.combat_promise.to_upper(),
+			reward_suffix,
 		])
 
 
@@ -1165,10 +1293,22 @@ func _inventory_management_allowed() -> bool:
 
 func _on_synergy_activated(synergy: SynergyDefinition) -> void:
 	_on_action_feedback("%s ACTIVATED" % synergy.display_name.to_upper())
+	game_hud.present_build_callout(
+		synergy.badge,
+		"SYNERGY ACTIVE • %s" % synergy.display_name,
+		synergy.combat_promise,
+		StringName("synergy_active:%s" % synergy.id)
+	)
 
 
 func _on_synergy_deactivated(synergy: SynergyDefinition) -> void:
 	_on_action_feedback("%s DEACTIVATED" % synergy.display_name.to_upper())
+	game_hud.present_build_callout(
+		synergy.badge,
+		"SYNERGY LOST • %s" % synergy.display_name,
+		synergy.combat_promise,
+		StringName("synergy_lost:%s" % synergy.id)
+	)
 
 
 func _on_lane_visibility_requested(lanes_are_visible: bool) -> void:
@@ -1190,6 +1330,33 @@ func _on_actor_registered(actor: ActorController) -> void:
 func _on_actor_died(actor: ActorController) -> void:
 	combat_feedback.show_death(actor.global_position + Vector2(0.0, -25.0))
 	_refresh_combat_presentation()
+
+
+func _on_encounter_started_build_expression(
+	_encounter_instance_id: int,
+	_definition: EncounterDefinition,
+	_spawn_budget: int
+) -> void:
+	var active_synergies: Array[SynergyDefinition] = synergy_system.get_active_synergies()
+	if not active_synergies.is_empty():
+		var synergy: SynergyDefinition = active_synergies[0]
+		game_hud.present_build_callout(
+			synergy.badge,
+			"BUILD ONLINE • %s" % synergy.display_name,
+			synergy.combat_promise,
+			StringName("encounter_build:%s" % synergy.id)
+		)
+		return
+	var active_items: Array[EquipmentDefinition] = synergy_system.get_equipped_items_stable()
+	if active_items.is_empty():
+		return
+	var item: EquipmentDefinition = active_items[0]
+	game_hud.present_build_callout(
+		item.icon,
+		"BUILD ONLINE • %s" % item.display_name,
+		item.combat_promise,
+		StringName("encounter_build:%s" % item.id)
+	)
 
 
 func _on_boss_encounter_started(
@@ -1269,6 +1436,21 @@ func _on_cooling_audio_applied(source_id: StringName, _heat_reduction: int) -> v
 		audio_controller.play_cue(&"sfx_intervention_activation")
 
 
+func _on_shop_purchase_resolved(result: Dictionary) -> void:
+	game_hud.present_shop_purchase_result(result)
+	if bool(result.get("accepted", false)):
+		audio_controller.play_cue(&"sfx_ui_confirm")
+
+
+func _on_standard_reward_result_available(result: Dictionary) -> void:
+	if not bool(result.get("applied", false)):
+		return
+	_on_action_feedback("RUN REWARD SECURED • +%d COINS +%d SCRAP" % [
+		int(result.get("awarded_coins", 0)),
+		int(result.get("awarded_scrap", 0)),
+	])
+
+
 func _on_boss_phase_changed(boss: ActorController, phase_id: StringName) -> void:
 	if boss == null or boss != _boss_actor:
 		return
@@ -1326,6 +1508,34 @@ func _on_hit_landed(
 	)
 
 
+func _on_equipment_status_applied(
+	_target: ActorController,
+	status_id: StringName,
+	stacks: int,
+	duration_seconds: float,
+	source_effect_id: StringName
+) -> void:
+	var source: Dictionary = synergy_system.get_triggered_effect_source(source_effect_id)
+	if source.is_empty():
+		return
+	var detail: String = "%s +%d • %.1fs" % [
+		String(status_id).to_upper(),
+		maxi(stacks, 1),
+		maxf(duration_seconds, 0.0),
+	]
+	if status_id == &"shock":
+		detail = "SHOCKED %.1fs • ENV DMG +%d%%" % [
+			maxf(duration_seconds, 0.0),
+			int(round(SHOCK_STATUS.intervention_damage_taken_bonus * 100.0)),
+		]
+	game_hud.present_build_callout(
+		source.get("icon") as Texture2D,
+		str(source.get("display_name", "BUILD PROC")),
+		detail,
+		StringName("status_proc:%s" % source_effect_id)
+	)
+
+
 func _on_environmental_hit_landed(
 	_source_id: StringName,
 	_target: ActorController,
@@ -1351,13 +1561,25 @@ func _on_environmental_collision_landed(
 	_target: ActorController,
 	damage: int,
 	_world_position: Vector2,
-	_impact_force: float
+	impact_force: float
 ) -> void:
 	if damage <= 0:
 		return
 	combo_tracker.record_environmental_hit()
 	screen_shake_controller.request_environmental_hit()
 	audio_controller.play_cue(&"sfx_environment_collision")
+	var synergy: SynergyDefinition = synergy_system.get_synergy_definition(&"knockback_2")
+	if synergy != null and synergy_system.is_synergy_active(synergy.id):
+		game_hud.present_build_callout(
+			synergy.badge,
+			synergy.display_name,
+			"WALL HIT %d DAMAGE • IMPACT %.0f • %s" % [
+				damage,
+				impact_force,
+				str(synergy.major_effects[1]).to_upper() if synergy.major_effects.size() > 1 else "SYNERGY ACTIVE",
+			],
+			&"knockback_wall_hit"
+		)
 
 
 func _on_crew_status_changed(
@@ -1450,7 +1672,31 @@ func _on_hydrant_activation_resolved(
 		"Y" if affected_count == 1 else "IES",
 	]
 	_hydrant_feedback_remaining = maxf(fire_hydrant_controller.tuning.impact_duration, 0.01)
+	_present_tech_cooldown_callout(
+		"HYDRANT",
+		fire_hydrant_controller.tuning.cooldown_seconds
+	)
 	_refresh_hydrant_presentation()
+
+
+func _present_tech_cooldown_callout(action_name: String, base_cooldown: float) -> void:
+	var equipment_modifier: float = synergy_system.get_percent_modifier(&"intervention_cooldown")
+	if equipment_modifier >= -0.0001:
+		return
+	var crew_multiplier: float = (
+		_selected_crew_actor.get_intervention_cooldown_multiplier()
+		if _selected_crew_actor != null and is_instance_valid(_selected_crew_actor)
+		else 1.0
+	)
+	var crew_baseline: float = maxf(base_cooldown, 0.0) * crew_multiplier
+	var actual: float = crew_baseline * maxf(1.0 + equipment_modifier, 0.05)
+	var synergy: SynergyDefinition = synergy_system.get_synergy_definition(&"tech_2")
+	game_hud.present_build_callout(
+		synergy.badge if synergy != null else null,
+		"TECH BUILD • %s" % action_name,
+		"COOLDOWN %.2fs • READY %.2fs SOONER" % [actual, crew_baseline - actual],
+		StringName("tech_cooldown:%s" % action_name.to_lower())
+	)
 
 
 func _on_hydrant_activation_rejected(reason: int) -> void:

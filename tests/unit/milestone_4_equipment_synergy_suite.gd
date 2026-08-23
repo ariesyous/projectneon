@@ -92,12 +92,13 @@ func test_authored_required_tuning_values_are_locked() -> void:
 	_expect_approx(_modifier_amount(system, &"steel_toe_boots", &"environmental_collision_damage"), 0.15, "tuning: boots collision")
 	_expect_approx(_modifier_amount(system, &"serrated_wraps", &"bleed_maximum_stacks"), 1.0, "tuning: wraps stacks")
 	_expect_approx(_modifier_amount(system, &"serrated_wraps", &"damage_against_bleeding"), 0.15, "tuning: wraps damage")
+	_expect_equal(_effect(system, &"serrated_wraps", &"bleed").chance_basis_points, 3500, "tuning: wraps Bleed")
 	_expect_approx(_modifier_amount(system, &"magnetic_flail", &"environmental_knockback"), 0.20, "tuning: flail interaction")
 	_expect_equal(_effect(system, &"voltaic_blade", &"bleed").chance_basis_points, 10000, "tuning: blade Bleed")
 	_expect_approx(_modifier_amount(system, &"voltaic_blade", &"damage_against_shocked"), 0.20, "tuning: blade Shock")
 	_expect_approx(_modifier_amount(system, &"chain_sneakers", &"movement_speed"), 0.06, "tuning: sneakers movement")
 	_expect_approx(_modifier_amount(system, &"chain_sneakers", &"attack_speed"), 0.06, "tuning: sneakers attack")
-	_expect_approx(_modifier_amount(system, &"chain_sneakers", &"knockback_followup"), 0.10, "tuning: sneakers follow-up")
+	_expect_approx(_modifier_amount(system, &"chain_sneakers", &"knockback_distance"), 0.10, "tuning: sneakers knockback")
 
 
 func test_three_generic_slots_equip_replace_and_remove() -> void:
@@ -174,7 +175,7 @@ func test_knockback_2_activation_and_exact_effects() -> void:
 	system.equip_by_id(&"spiked_bat", 0)
 	system.equip_by_id(&"chain_sneakers", 1)
 	_expect_true(system.is_synergy_active(&"knockback_2"), "knockback: threshold activates")
-	_expect_approx(system.get_percent_modifier(&"knockback_distance"), 0.35, "knockback: bat +20% synergy")
+	_expect_approx(system.get_percent_modifier(&"knockback_distance"), 0.45, "knockback: bat + sneakers +20% synergy")
 	_expect_approx(system.get_percent_modifier(&"environmental_collision_damage"), 0.25, "knockback: exact +25% synergy collision")
 
 
@@ -338,6 +339,8 @@ func _custom_synergy(synergy_id: StringName, threshold: int) -> SynergyDefinitio
 	var synergy: SynergyDefinition = SynergyDefinition.new()
 	synergy.id = synergy_id
 	synergy.display_name = String(synergy_id)
+	synergy.role_label = "TEST ROLE"
+	synergy.combat_promise = "Test combat promise."
 	synergy.required_tag = &"TECH"
 	synergy.threshold = threshold
 	var modifiers: Array[EquipmentModifierDefinition] = [modifier]

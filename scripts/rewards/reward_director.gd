@@ -21,6 +21,7 @@ signal standard_reward_applied(
 	total_coins: int,
 	total_scrap: int
 )
+signal standard_reward_result_available(result: Dictionary)
 signal equipment_choices_prepared(
 	encounter_instance_id: int,
 	choices: Array[EquipmentDefinition]
@@ -57,6 +58,7 @@ signal card_choice_skipped(encounter_instance_id: int, choice_token: int)
 const RESPONSIBILITY: String = "Own the coin ledger and resolve each coin cluster at most once."
 const MAX_MANUAL_BONUS_BASIS_POINTS: int = 1000
 const BASIS_POINTS_DENOMINATOR: int = 10000
+const REWARD_MULTIPLIER_SCALE: int = 10000
 const DEFAULT_TUNING: CoinClusterTuning = preload(
 	"res://data/rewards/milestone_1_coin_cluster_tuning.tres"
 )
@@ -97,10 +99,14 @@ var _streak_expires_at_msec: int = -1
 var _active_awards: Dictionary[int, PendingCoinAward] = {}
 var _registered_cluster_ids: Dictionary[int, bool] = {}
 var _pending_standard_rewards: Dictionary[int, StandardRewardDefinition] = {}
+var _pending_standard_reward_previews: Dictionary[int, Dictionary] = {}
 var _applied_standard_reward_ids: Dictionary[int, bool] = {}
+var _applied_standard_reward_results: Dictionary[int, Dictionary] = {}
 var _pending_equipment_choices: Dictionary = {}
+var _pending_equipment_choice_tokens: Dictionary[int, int] = {}
 var _applied_equipment_reward_ids: Dictionary[int, bool] = {}
 var _resolving_equipment_reward_ids: Dictionary[int, bool] = {}
+var _next_equipment_choice_token: int = 1
 var _last_equipment_candidate_order: Array[StringName] = []
 var _random_streams: RunRandomStreams
 var _synergy_system: SynergySystem
@@ -175,8 +181,11 @@ func reset_for_run() -> void:
 	_active_awards.clear()
 	_registered_cluster_ids.clear()
 	_pending_standard_rewards.clear()
+	_pending_standard_reward_previews.clear()
 	_applied_standard_reward_ids.clear()
+	_applied_standard_reward_results.clear()
 	_pending_equipment_choices.clear()
+	_pending_equipment_choice_tokens.clear()
 	_applied_equipment_reward_ids.clear()
 	_resolving_equipment_reward_ids.clear()
 	_last_equipment_candidate_order.clear()
@@ -307,7 +316,8 @@ func get_card_debug_snapshot() -> Dictionary:
 func prepare_standard_reward(
 	encounter_instance_id: int,
 	maximum_quality_tier: int,
-	allowed_reward_ids: Array[StringName] = []
+	allowed_reward_ids: Array[StringName] = [],
+	reward_multiplier: float = 1.0
 ) -> StandardRewardDefinition:
 	if (
 		encounter_instance_id < 0
@@ -353,6 +363,13 @@ func prepare_standard_reward(
 	if selected == null:
 		return null
 	_pending_standard_rewards[encounter_instance_id] = selected
+	_pending_standard_reward_previews[encounter_instance_id] = (
+		_build_standard_reward_preview(
+			encounter_instance_id,
+			selected,
+			_normalize_reward_multiplier(reward_multiplier)
+		)
+	)
 	standard_reward_prepared.emit(encounter_instance_id, selected)
 	return selected
 
@@ -414,16 +431,72 @@ func apply_standard_reward(encounter_instance_id: int) -> bool:
 	) as StandardRewardDefinition
 	if reward == null:
 		return false
+	var preview: Dictionary = _pending_standard_reward_previews.get(
+		encounter_instance_id,
+		_build_standard_reward_preview(encounter_instance_id, reward, 1.0)
+	) as Dictionary
+	var awarded_coins: int = maxi(int(preview.get("awarded_coins", 0)), 0)
+	var awarded_scrap: int = maxi(reward.scrap, 0)
+	var coins_before: int = _coin_total
+	var scrap_before: int = _scrap_total
+	# Latch before any synchronous signal. Reentrant requests cannot apply the
+	# same encounter twice, and observers see the complete transaction result.
 	_pending_standard_rewards.erase(encounter_instance_id)
+	_pending_standard_reward_previews.erase(encounter_instance_id)
 	_applied_standard_reward_ids[encounter_instance_id] = true
-	grant_coins(reward.coins)
-	grant_scrap(reward.scrap)
+	_coin_total += awarded_coins
+	_scrap_total += awarded_scrap
+	var result: Dictionary = preview.duplicate(true)
+	result.merge({
+		"applied": true,
+		"coins_before": coins_before,
+		"coins_after": _coin_total,
+		"scrap_before": scrap_before,
+		"scrap_after": _scrap_total,
+	}, true)
+	_applied_standard_reward_results[encounter_instance_id] = result.duplicate(true)
+	if awarded_coins > 0:
+		coins_changed.emit(_coin_total)
+	if awarded_scrap > 0:
+		scrap_changed.emit(_scrap_total)
 	standard_reward_applied.emit(encounter_instance_id, reward, _coin_total, _scrap_total)
+	standard_reward_result_available.emit(result.duplicate(true))
 	return true
 
 
 func get_pending_standard_reward(encounter_instance_id: int) -> StandardRewardDefinition:
 	return _pending_standard_rewards.get(encounter_instance_id) as StandardRewardDefinition
+
+
+func get_pending_standard_reward_preview(encounter_instance_id: int) -> Dictionary:
+	var preview: Dictionary = _pending_standard_reward_previews.get(
+		encounter_instance_id,
+		{}
+	) as Dictionary
+	return preview.duplicate(true)
+
+
+func get_pending_standard_reward_snapshot(encounter_instance_id: int) -> Dictionary:
+	return get_pending_standard_reward_preview(encounter_instance_id)
+
+
+func get_applied_standard_reward_result(encounter_instance_id: int) -> Dictionary:
+	var result: Dictionary = _applied_standard_reward_results.get(
+		encounter_instance_id,
+		{}
+	) as Dictionary
+	return result.duplicate(true)
+
+
+func get_applied_standard_reward_snapshot(encounter_instance_id: int) -> Dictionary:
+	return get_applied_standard_reward_result(encounter_instance_id)
+
+
+func get_last_standard_reward_result() -> Dictionary:
+	var encounter_instance_id: int = _latest_int_key(
+		_applied_standard_reward_results
+	)
+	return get_applied_standard_reward_result(encounter_instance_id)
 
 
 func prepare_equipment_choices(encounter_instance_id: int) -> Array[EquipmentDefinition]:
@@ -471,6 +544,8 @@ func prepare_equipment_choices(encounter_instance_id: int) -> Array[EquipmentDef
 	if choices.is_empty():
 		return empty_result
 	_pending_equipment_choices[encounter_instance_id] = choices
+	_pending_equipment_choice_tokens[encounter_instance_id] = _next_equipment_choice_token
+	_next_equipment_choice_token += 1
 	equipment_choices_prepared.emit(encounter_instance_id, choices)
 	return choices
 
@@ -534,12 +609,19 @@ func apply_equipment_choice_to_inventory(
 	equipment_slot: int,
 	backpack_slot: int,
 	replace_confirmed: bool,
-	expected_revision: int
+	expected_revision: int,
+	expected_encounter_instance_id: int = -1,
+	expected_choice_token: int = -1
 ) -> bool:
 	if (
 		_applied_equipment_reward_ids.has(encounter_instance_id)
 		or _resolving_equipment_reward_ids.has(encounter_instance_id)
 		or _synergy_system == null
+		or not _equipment_choice_context_matches(
+			encounter_instance_id,
+			expected_encounter_instance_id,
+			expected_choice_token
+		)
 	):
 		return false
 	var choices: Array = _pending_equipment_choices.get(encounter_instance_id, [])
@@ -581,14 +663,24 @@ func apply_equipment_choice_to_inventory(
 
 ## Keeps the current inventory while still resolving the encounter's paired
 ## standard reward. This is the safe default when all six positions are full.
-func decline_equipment_reward(encounter_instance_id: int) -> bool:
+func decline_equipment_reward(
+	encounter_instance_id: int,
+	expected_encounter_instance_id: int = -1,
+	expected_choice_token: int = -1
+) -> bool:
 	if (
 		_applied_equipment_reward_ids.has(encounter_instance_id)
 		or _resolving_equipment_reward_ids.has(encounter_instance_id)
 		or not _pending_equipment_choices.has(encounter_instance_id)
+		or not _equipment_choice_context_matches(
+			encounter_instance_id,
+			expected_encounter_instance_id,
+			expected_choice_token
+		)
 	):
 		return false
 	_pending_equipment_choices.erase(encounter_instance_id)
+	_pending_equipment_choice_tokens.erase(encounter_instance_id)
 	_applied_equipment_reward_ids[encounter_instance_id] = true
 	_resolving_equipment_reward_ids.erase(encounter_instance_id)
 	apply_standard_reward(encounter_instance_id)
@@ -606,6 +698,21 @@ func get_pending_equipment_choices(
 		if item != null:
 			result.append(item)
 	return result
+
+
+func get_pending_equipment_choice_token(encounter_instance_id: int = -1) -> int:
+	var resolved_encounter_id: int = encounter_instance_id
+	if resolved_encounter_id < 0:
+		resolved_encounter_id = get_pending_equipment_encounter_id()
+	return int(_pending_equipment_choice_tokens.get(resolved_encounter_id, -1))
+
+
+func get_pending_equipment_encounter_id() -> int:
+	var encounter_ids: Array[int] = []
+	for value: Variant in _pending_equipment_choices.keys():
+		encounter_ids.append(int(value))
+	encounter_ids.sort()
+	return encounter_ids[0] if not encounter_ids.is_empty() else -1
 
 
 func get_equipment_choice_preview(
@@ -791,8 +898,20 @@ func get_debug_snapshot() -> Dictionary:
 		"pending_equipment_encounter_id": (
 			pending_encounter_ids[0] if not pending_encounter_ids.is_empty() else -1
 		),
+		"pending_equipment_choice_token": get_pending_equipment_choice_token(),
+		"next_equipment_choice_token": _next_equipment_choice_token,
 		"pending_equipment_ids": pending_equipment_ids,
 		"equipment_rewards_applied": _applied_equipment_reward_ids.size(),
+		"pending_standard_reward_preview": get_pending_standard_reward_preview(
+			_latest_int_key(_pending_standard_reward_previews)
+		),
+		"last_standard_reward_result": get_last_standard_reward_result(),
+		"pending_standard_reward_previews": _snapshot_dictionary_by_int_key(
+			_pending_standard_reward_previews
+		),
+		"applied_standard_reward_results": _snapshot_dictionary_by_int_key(
+			_applied_standard_reward_results
+		),
 		"card_reward": get_card_debug_snapshot(),
 	}
 
@@ -836,6 +955,7 @@ func _finalize_equipment_reward(
 	# Clear and latch before callbacks. Repeated clicks cannot reapply either
 	# inventory mutation or the paired standard encounter reward.
 	_pending_equipment_choices.erase(encounter_instance_id)
+	_pending_equipment_choice_tokens.erase(encounter_instance_id)
 	_applied_equipment_reward_ids[encounter_instance_id] = true
 	_resolving_equipment_reward_ids.erase(encounter_instance_id)
 	apply_standard_reward(encounter_instance_id)
@@ -891,6 +1011,89 @@ func _calculate_manual_bonus(base_value: int, resulting_streak: int) -> int:
 		(float(base_value) * float(basis_points))
 		/ float(BASIS_POINTS_DENOMINATOR)
 	)
+
+
+func _build_standard_reward_preview(
+	encounter_instance_id: int,
+	reward: StandardRewardDefinition,
+	reward_multiplier: float
+) -> Dictionary:
+	var base_coins: int = maxi(reward.coins, 0)
+	var awarded_coins: int = _scale_standard_reward_coins(
+		base_coins,
+		reward_multiplier
+	)
+	return {
+		"encounter_instance_id": encounter_instance_id,
+		"reward_id": reward.id,
+		"quality_tier": reward.quality_tier,
+		"base_coins": base_coins,
+		"reward_multiplier": reward_multiplier,
+		"awarded_coins": maxi(awarded_coins, 0),
+		"awarded_scrap": maxi(reward.scrap, 0),
+		"coin_award": maxi(awarded_coins, 0),
+		"scrap_award": maxi(reward.scrap, 0),
+		"coins_before": _coin_total,
+		"coins_after": _coin_total + maxi(awarded_coins, 0),
+		"scrap_before": _scrap_total,
+		"scrap_after": _scrap_total + maxi(reward.scrap, 0),
+		"applied": false,
+	}
+
+
+func _normalize_reward_multiplier(value: float) -> float:
+	if is_nan(value) or is_inf(value):
+		return 0.0
+	return maxf(value, 0.0)
+
+
+func _scale_standard_reward_coins(base_coins: int, reward_multiplier: float) -> int:
+	# Quantize the authored multiplier first so PackedFloat32 representation
+	# cannot turn an intended x.5 result (for example 30 * 1.05) into x.49999.
+	var multiplier_units: int = floori(
+		(reward_multiplier * float(REWARD_MULTIPLIER_SCALE)) + 0.5
+	)
+	var scaled_units: int = maxi(base_coins, 0) * maxi(multiplier_units, 0)
+	return floori(
+		(float(scaled_units) + (float(REWARD_MULTIPLIER_SCALE) * 0.5))
+		/ float(REWARD_MULTIPLIER_SCALE)
+	)
+
+
+func _equipment_choice_context_matches(
+	encounter_instance_id: int,
+	expected_encounter_instance_id: int,
+	expected_choice_token: int
+) -> bool:
+	if expected_encounter_instance_id < -1 or expected_choice_token < -1:
+		return false
+	if (
+		expected_encounter_instance_id >= 0
+		and expected_encounter_instance_id != encounter_instance_id
+	):
+		return false
+	if (
+		expected_choice_token >= 0
+		and expected_choice_token
+		!= int(_pending_equipment_choice_tokens.get(encounter_instance_id, -1))
+	):
+		return false
+	return true
+
+
+func _snapshot_dictionary_by_int_key(source: Dictionary) -> Dictionary:
+	var result: Dictionary = {}
+	for key: Variant in source.keys():
+		var value: Variant = source[key]
+		result[int(key)] = value.duplicate(true) if value is Dictionary else value
+	return result
+
+
+func _latest_int_key(source: Dictionary) -> int:
+	var latest: int = -1
+	for key: Variant in source.keys():
+		latest = maxi(latest, int(key))
+	return latest
 
 
 func _get_tuning() -> CoinClusterTuning:

@@ -191,6 +191,18 @@ func get_attack_speed_multiplier() -> float:
 	)
 
 
+func get_build_attack_speed_multiplier() -> float:
+	return maxf(0.05, 1.0 + get_build_percent_modifier(&"attack_speed"))
+
+
+func get_intervention_damage_taken_bonus() -> float:
+	return (
+		status_controller.get_intervention_damage_taken_bonus()
+		if status_controller != null
+		else 0.0
+	)
+
+
 func get_intervention_cooldown_multiplier() -> float:
 	return (
 		actor_definition.intervention_cooldown_multiplier
@@ -394,7 +406,12 @@ func _start_planned_attack(planned_attack: AttackDefinition) -> void:
 	_active_attack_definition = planned_attack
 	if planned_attack.telegraph_seconds > 0.0:
 		_notify_attack_telegraph(planned_attack)
-	if not attack_controller.start_attack(planned_attack):
+	# Equipment attack speed changes the complete readable attack cadence. Boss
+	# enrage intentionally retains its established cooldown-only acceleration.
+	if not attack_controller.start_attack(
+		planned_attack,
+		get_build_attack_speed_multiplier()
+	):
 		_active_attack_definition = null
 		return
 	if planned_attack == attack_definition:

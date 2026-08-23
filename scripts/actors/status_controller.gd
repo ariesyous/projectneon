@@ -108,6 +108,17 @@ func get_remaining(status_id: StringName) -> float:
 	return _remaining_by_id.get(status_id, 0.0)
 
 
+func get_intervention_damage_taken_bonus() -> float:
+	var total_bonus: float = 0.0
+	for status_id: StringName in _remaining_by_id:
+		if not has_status(status_id):
+			continue
+		var definition: StatusEffectDefinition = _definition_by_id.get(status_id)
+		if definition != null:
+			total_bonus += maxf(definition.intervention_damage_taken_bonus, 0.0)
+	return total_bonus
+
+
 func clear_all() -> void:
 	var active_ids: Array[StringName] = []
 	for status_id: StringName in _remaining_by_id.keys():

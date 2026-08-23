@@ -18,10 +18,10 @@ stat_id = &"attack_speed"
 operation = 1
 amount = 0.06
 
-[sub_resource type="Resource" id="Modifier_followup"]
+[sub_resource type="Resource" id="Modifier_knockback"]
 script = ExtResource("2_modifier")
-id = &"chain_sneakers_knockback_followup"
-stat_id = &"knockback_followup"
+id = &"chain_sneakers_knockback_distance"
+stat_id = &"knockback_distance"
 operation = 1
 amount = 0.10
 
@@ -29,8 +29,10 @@ amount = 0.10
 script = ExtResource("1_item")
 id = &"chain_sneakers"
 display_name = "Chain Sneakers"
+role_label = "CHASE + KNOCKBACK"
+combat_promise = "+6% movement and attack speed; +10% knockback distance."
 icon = ExtResource("9_icon")
-description = "Fast footwear that helps chase and extend knockback follow-ups."
+description = "Fast footwear that helps chase targets and extend every knockback."
 tags = Array[StringName]([&"FAST", &"KNOCKBACK"])
-modifiers = Array[EquipmentModifierDefinition]([SubResource("Modifier_movement"), SubResource("Modifier_attack_speed"), SubResource("Modifier_followup")])
-major_effects = PackedStringArray("+6% movement speed", "+6% attack speed", "+10% knockback follow-up damage")
+modifiers = Array[EquipmentModifierDefinition]([SubResource("Modifier_movement"), SubResource("Modifier_attack_speed"), SubResource("Modifier_knockback")])
+major_effects = PackedStringArray("+6% movement speed", "+6% attack speed", "+10% knockback distance")

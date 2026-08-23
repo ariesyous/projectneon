@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="EquipmentDefinition" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="EquipmentDefinition" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/equipment/equipment_definition.gd" id="1_item"]
 [ext_resource type="Script" path="res://scripts/equipment/equipment_modifier_definition.gd" id="2_modifier"]
+[ext_resource type="Script" path="res://scripts/equipment/triggered_effect_definition.gd" id="3_effect"]
 [ext_resource type="Texture2D" path="res://assets/ui/equipment/icons/serrated_wraps.png" id="9_icon"]
 
 [sub_resource type="Resource" id="Modifier_bleed_stacks"]
@@ -18,12 +19,24 @@ stat_id = &"damage_against_bleeding"
 operation = 1
 amount = 0.15
 
+[sub_resource type="Resource" id="Effect_bleed"]
+script = ExtResource("3_effect")
+id = &"serrated_wraps_bleed"
+trigger = 0
+status_id = &"bleed"
+chance_basis_points = 3500
+stacks = 1
+duration_seconds = 4.0
+
 [resource]
 script = ExtResource("1_item")
 id = &"serrated_wraps"
 display_name = "Serrated Wraps"
+role_label = "BLEED PRESSURE"
+combat_promise = "35% of hits apply 1 Bleed for 4s; +1 maximum stack; +15% damage against Bleeding."
 icon = ExtResource("9_icon")
 description = "Fast-cutting wraps that reward maintaining Bleed pressure."
 tags = Array[StringName]([&"BLEED", &"FAST"])
 modifiers = Array[EquipmentModifierDefinition]([SubResource("Modifier_bleed_stacks"), SubResource("Modifier_bleeding_damage")])
-major_effects = PackedStringArray("+1 maximum Bleed stack", "+15% damage against bleeding enemies")
+triggered_effects = Array[TriggeredEffectDefinition]([SubResource("Effect_bleed")])
+major_effects = PackedStringArray("35% hit Bleed chance (4.0s)", "+1 maximum Bleed stack", "+15% damage against bleeding enemies")

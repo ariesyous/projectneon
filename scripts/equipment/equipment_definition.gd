@@ -6,6 +6,8 @@ extends Resource
 
 @export var id: StringName
 @export var display_name: String = "Equipment"
+@export var role_label: String = ""
+@export_multiline var combat_promise: String = ""
 @export_multiline var description: String = ""
 @export var icon: Texture2D
 @export var tags: Array[StringName] = []
@@ -20,6 +22,14 @@ func validation_errors() -> PackedStringArray:
 		errors.append("equipment id is empty")
 	if display_name.strip_edges().is_empty():
 		errors.append("equipment '%s' has no display name" % id)
+	if role_label.strip_edges().is_empty():
+		errors.append("equipment '%s' has no role label" % id)
+	elif role_label.length() > 40 or "\n" in role_label:
+		errors.append("equipment '%s' role label must be one concise line" % id)
+	if combat_promise.strip_edges().is_empty():
+		errors.append("equipment '%s' has no combat promise" % id)
+	elif combat_promise.length() > 160 or "\n" in combat_promise:
+		errors.append("equipment '%s' combat promise must be one concise line" % id)
 	if tags.is_empty():
 		errors.append("equipment '%s' has no tags" % id)
 	if modifiers.is_empty() and triggered_effects.is_empty():

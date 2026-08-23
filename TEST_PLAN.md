@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Testing is milestone- and work-package-scoped. Milestone 0 verifies the project foundation; Milestone 1 verifies the narrow Combat Lab, automatic combat, and coin-cluster accounting; Milestone 2 verifies the Fire Hydrant intervention, combat-safe space, and targeted presentation/usability improvements; Milestone 3 verifies the complete run structure, escalation, thresholds, cooling, deterministic streams, standard rewards, outcomes, and restart cleanup; Milestone 4 verifies equipment, statuses, synergies, and deterministic choices; Milestone 4.1 verifies the authorized equipment-safety and HUD-readability correction; Milestone 4.2 verifies the bounded inventory-drag and one-backpack-clarity correction; Milestone 5 verifies the historical District Cards hand/future-route implementation; and Milestone 6 verifies the bounded vertical-slice content/presentation/persistence/outcomes. WP00 defines the approved product contract. WP01 verifies its presentation migration, WP02 verifies the authoritative three-lap/three-block lifecycle and access/state clarity, and WP03 verifies the focused next-block District Plan while preserving M5 compatibility. WP04–WP07 remain prospective.
+Testing is milestone- and work-package-scoped. Milestone 0 verifies the project foundation; Milestone 1 verifies the narrow Combat Lab, automatic combat, and coin-cluster accounting; Milestone 2 verifies the Fire Hydrant intervention, combat-safe space, and targeted presentation/usability improvements; Milestone 3 verifies the complete run structure, escalation, thresholds, cooling, deterministic streams, standard rewards, outcomes, and restart cleanup; Milestone 4 verifies equipment, statuses, synergies, and deterministic choices; Milestone 4.1 verifies the authorized equipment-safety and HUD-readability correction; Milestone 4.2 verifies the bounded inventory-drag and one-backpack-clarity correction; Milestone 5 verifies the historical District Cards hand/future-route implementation; and Milestone 6 verifies the bounded vertical-slice content/presentation/persistence/outcomes. WP00 defines the approved product contract. WP01 verifies presentation, WP02 lifecycle/access/state clarity, WP03 the focused next-block District Plan, and WP04 exact build/reward/shop consequence while preserving every earlier authority. WP05–WP07 remain prospective.
 
 ## Error policy
 
@@ -105,6 +105,38 @@ Status: **Technical/runtime/visual/platform gate passed — Godot 4.7.2, 2026-08
 - [ ] Owner runs and records the designated five-person unbriefed first-use procedure in `docs/product/WP03_UNBRIEFED_FIRST_USE_CHECK.md`; no automated result satisfies this line.
 
 The successful aggregate retains the pre-existing post-summary 48-ObjectDB/four-resource shutdown diagnostic. A sandbox-only aggregate cannot write the persistence suite's disposable `user://` fixtures and is not acceptance evidence; the canonical normal-access run exited 0. Exact commands, captures, exports, platform observations, and the remaining qualitative boundary are recorded in `docs/product/WP03_ACCEPTANCE_EVIDENCE.md`.
+
+## WP04 — Builds, Rewards, and Shop
+
+Status: **technical/runtime/visual/platform gate passed locally; five-person qualitative gate pending**.
+
+Canonical commands use Godot `4.7.2.stable.official.ed1daf0bf`:
+
+```text
+--headless --path . --script res://tests/run_wp04_focused.gd
+--headless --path . --script res://tests/run_wp04_affected.gd
+--headless --path . --script res://tests/run_wp04_cumulative.gd
+--headless --path . --script res://tests/visual/wp04_input_parity_smoke.gd
+--path . --rendering-method gl_compatibility --audio-driver Dummy --script res://tests/visual/wp04_game_run_smoke.gd
+```
+
+Executed results:
+
+- [x] Focused: **15/15 tests, 247 assertions, 0 failed, 0 skipped** across balance/runtime, reward/shop authority, and build/reward/shop UI suites.
+- [x] Affected: **226/226 tests, 3,175 assertions, 0 failed, 0 skipped** across all changed downstream M3–WP03 surfaces plus WP04.
+- [x] Cumulative: **291/291 tests, 4,192 assertions, 0 failed, 0 skipped across 30 suites**.
+- [x] Fixed three-build matrix uses all nine items once and locks Jax control/Environment, Zoey Shock/intervention, and Rex survival/Bleed axes without a universal core.
+- [x] Exact balance coverage: Shock +25% Environment-only vulnerability; full build attack-speed phases; Serrated 35% on-hit Bleed; Chain +10% knockback; unchanged boss-enrage phase behavior.
+- [x] Reward coverage: stable selection, latched/quantized Heat multiplier, half-up coin payout, raw Scrap, exact-once application, token replay rejection, restart monotonicity, and stream isolation.
+- [x] Shop grid: affordable, insufficient, Heat zero, sold out, visit used, stale, partial/malformed, wrong source, reentrant, accepted, decline, exit, and restart; preview equals result and Night Pressure/streams remain unchanged.
+- [x] Inventory coverage: full capacity, exact replacement, storage, active/backpack swap, named discard, Skip Gear, stale revision/token, malformed context, post-state, and paired reward.
+- [x] Native GUI routing: keyboard, touch, mouse, and shop context all reach the same typed Button intent; M4.2 still covers drag threshold, outside return, and first-touch ownership.
+- [x] Configured `/GameRun`: reward token/replay, full inventory/Skip, shop purchase/stale/exit, proc feedback, and menu cleanup pass; four screenshots are visually inspected under `docs/screenshots/wp04/`.
+- [x] Configured main-scene boot, fresh Windows/Web release exports, exported Windows five-frame runtime, and log inspection pass.
+- [x] Local production Web: real pointer PLAN → Arcade fight → equipment choice/destination/Confirm → Convenience Store purchase → exit; 1280×720/default and 2560×1440 containment pass; warning/error console is empty.
+- [ ] Owner executes `docs/product/WP04_UNBRIEFED_CONSEQUENCE_VARIETY_CHECK.md`; automation cannot satisfy it.
+
+The aggregate alone retains the exact inherited 48-ObjectDB/four-resource shutdown signature. Focused, affected, input, configured boot, configured graphical smoke, exports, exported Windows, and browser runs do not reproduce it. Failed intermediate runs (including the discovered wall-clock spawn-fixture assumption and obstructing/overflowing first visual pass) are not acceptance evidence; each cause was repaired and rerun.
 
 ## Milestone 0 static checks
 
@@ -672,7 +704,7 @@ Milestone 6 was implemented on `codex/milestone-6-vertical-slice` from the accep
 
 External sessions use `MILESTONE_6_PLAYTEST.md`. Its short tester prompt is intentionally non-leading; the curator-only matrix covers representative Victory/Extraction/Defeat, crew/enemy/boss identity, interventions, builds/cards, tutorials, settings/accessibility, persistence/unlocks, summaries/restarts, cadence, resolutions, browsers, and touch. Feedback must retain device/browser, outcome, summary duration, seed, reproduction steps, and qualitative wording rather than inventing a pass.
 
-The build under test must retain the owner's separate pre-existing changes: the tracked/enabled 17-file Godot-AI 3.0.5 update and the two `project.godot` deletions of `window/stretch/aspect="keep"` and `textures/default_filters/use_nearest_mipmap_filter=false`. Milestone 6's intentional `project.godot` additions are the non-gameplay `SaveService` and `AppState` Autoloads. Verification must not count the owner changes as M6 work or silently restore either deletion.
+The build under test must retain the owner's separate pre-existing changes: the current tracked/enabled Godot-AI 3.1.5 update across 57 dirty addon paths and the two `project.godot` deletions of `window/stretch/aspect="keep"` and `textures/default_filters/use_nearest_mipmap_filter=false`. Historical M6 records of the earlier 3.0.5/17-file state remain factual for that snapshot. Verification must not count current owner changes as WP04 work or silently restore either deletion.
 
 #### Authored automated coverage matrix
 

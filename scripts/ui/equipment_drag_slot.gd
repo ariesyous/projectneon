@@ -30,6 +30,12 @@ var _pointer_drag_origin: Vector2 = Vector2.ZERO
 var _pointer_drag_index: int = -1
 
 
+func _ready() -> void:
+	super._ready()
+	set_process_shortcut_input(true)
+	set_process_unhandled_key_input(true)
+
+
 func configure_drag_source(
 	payload: EquipmentDragPayload,
 	is_enabled: bool
@@ -84,6 +90,13 @@ func accepts_drag_payload(data: Variant) -> bool:
 
 
 func _gui_input(event: InputEvent) -> void:
+	# A reward card remains a first-class keyboard Button even while it is also
+	# configured as a drag source. Godot's drag callback path can otherwise
+	# consume synthetic/native ui_accept routing before BaseButton activates.
+	if event.is_action_pressed(&"ui_accept") and has_focus() and not disabled:
+		pressed.emit()
+		accept_event()
+		return
 	if event is InputEventMouseButton:
 		var mouse_button: InputEventMouseButton = event as InputEventMouseButton
 		if mouse_button.button_index != MOUSE_BUTTON_LEFT:
@@ -126,6 +139,18 @@ func _gui_input(event: InputEvent) -> void:
 			and touch_drag.position.distance_to(_pointer_drag_origin) >= POINTER_DRAG_THRESHOLD
 		):
 			_force_pointer_drag()
+
+
+func _shortcut_input(event: InputEvent) -> void:
+	if event.is_action_pressed(&"ui_accept") and has_focus() and not disabled:
+		pressed.emit()
+		get_viewport().set_input_as_handled()
+
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	if event.is_action_pressed(&"ui_accept") and has_focus() and not disabled:
+		pressed.emit()
+		get_viewport().set_input_as_handled()
 
 
 func _get_drag_data(_at_position: Vector2) -> Variant:

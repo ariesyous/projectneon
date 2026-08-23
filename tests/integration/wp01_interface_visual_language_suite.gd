@@ -18,7 +18,7 @@ class IntentCapture:
 	func on_primary() -> void:
 		primary_count += 1
 
-	func on_cooling() -> void:
+	func on_cooling(_visit_revision: int, _source_id: StringName) -> void:
 		cooling_count += 1
 
 	func on_extraction() -> void:

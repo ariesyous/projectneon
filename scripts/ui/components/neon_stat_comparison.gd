@@ -32,6 +32,11 @@ func get_comparison_text() -> String:
 	return _before_after.text
 
 
+func get_expression_text() -> String:
+	_ensure_content()
+	return _expression.text
+
+
 func _ensure_content() -> void:
 	if _heading != null:
 		return

@@ -4,6 +4,22 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 
 ## [Unreleased]
 
+### 2026-08-22 — WP04 Builds, Rewards, and Shop
+
+- Completed a deterministic audit of all nine items, three synergies, three starters, reward tiers, six inventory destinations, and finite shop paths; recorded research, balance versus presentation failures, approved decisions, and rejected expansion in `docs/product/WP04_CONSEQUENCE_AUDIT.md`.
+- Added validated item/synergy role labels and combat promises without changing catalogue IDs or breadth.
+- Made Shock grant +25% damage taken from Environment interventions only; made equipment attack speed scale the complete crew attack timeline while preserving boss-enrage phase semantics; added 35% on-hit Bleed to Serrated Wraps; replaced Chain Sneakers' hidden follow-up with +10% knockback distance.
+- Latched the existing Heat reward multiplier and applied it to standard-reward coins with half-up rounding; Scrap remains raw. Added immutable pending/applied reward snapshots.
+- Added monotonic equipment-choice tokens plus encounter/revision validation; exact Confirm/Skip outcomes cannot replay across runs.
+- Added exact non-mutating reward/inventory previews and crew-specific before/after values through `SynergySystem` and pure `BuildConsequenceEvaluator`.
+- Extended the owner-carried single 1→2→3 gear layer inline: selected item, active/backpack destination, outgoing/stored/left-behind item, post state, synergy edges, exact values, next-fight promise, and paired payout. Native drag and click/tap/keyboard paths remain one rules model; legacy tutorial/toast overlap is removed.
+- Added monotonic shop visit revision/source, a reentrancy guard, and exact coins/Heat/tier/reward/global-stock/visit-stock/Pressure previews/results. Values remain 60 coins, -18 Heat, two global purchases, and one Convenience purchase.
+- Added rate-limited icon-plus-label status, Environment, Tech, synergy, and build-entry acknowledgements. Combo presentation remains combat-only per the preserved owner correction.
+- Locked disjoint Jax Bat/Boots/Chain, Zoey Gloves/Hacker/Flail, and Rex Jacket/Wraps/Blade vectors using all nine items once and no universal core.
+- Passed **15/15 focused tests (247 assertions)**, **226/226 affected tests (3,175 assertions)**, and **291/291 cumulative tests (4,192 assertions across 30 suites)** with no failures or skips. The aggregate retains the inherited 48-ObjectDB/four-resource post-success diagnostic; other gates are clean.
+- Passed configured `/GameRun`, real native mouse/touch/keyboard routing, four inspected 1280×720 captures, Windows/Web release exports, exported Windows runtime, and local production-Web real-pointer plan/reward/shop/purchase/exit plus 2560×1440 containment with an empty warning/error console.
+- Preserved all unrelated owner changes, random schema 1, WP02 lifecycle/WP03 District Plan, lossless inventory, summaries/restart/cleanup, and bounded economy. On 2026-08-22 the owner authorized this exact evidenced snapshot for a `main` and GitHub Pages browser-playtest release, including the integrated owner-carried reward/inventory/combo corrections while leaving the Godot-AI 3.1.5 addon update uncommitted. The five-person consequence/variety gate remains pending and publication does not authorize WP05.
+
 ### 2026-08-22 — WP03 District Planning and Cards
 
 - Replaced the production Milestone 5 persistent hand/five-future-slot flow with a mandatory focused District Plan: up to two large next-block location cards, exact block/Heat/special/reward-risk prediction, one confirmation, compact Next Block, and resolved lap history.

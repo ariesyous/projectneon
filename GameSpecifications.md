@@ -1,13 +1,13 @@
 # Neon Loop — Game Specifications
 
-**Document status:** WP00-approved product rebaseline; WP01–WP03 implementation status recorded; Milestones 0–6 retained as implemented history
+**Document status:** WP00-approved product rebaseline; WP01–WP04 implementation status recorded; Milestones 0–6 retained as implemented history
 **Working title:** Neon Loop
 **Engine:** Godot 4.x
 **Primary language:** Typed GDScript
 **Target platform:** Windows PC
 **Target display:** 16:9 desktop display
 **Internal design resolution:** 640 × 360
-**Current production boundary:** WP03 technical/runtime/visual/platform implementation published as the owner-authorized browser-playtest candidate; owner unbriefed first-use gate pending; WP04–WP07 unstarted
+**Current production boundary:** WP04 is technically implemented, evidenced, and owner-authorized on 2026-08-22 as the next `main`/GitHub Pages browser-playtest candidate. Its five-person consequence/variety gate remains pending; publication does not satisfy that gate. WP05–WP07 are unstarted.
 
 ---
 
@@ -104,15 +104,17 @@ Qualitative checkpoints use five unbriefed participants and record failures with
 
 WP00 itself changes documentation and wireframes only. It changes no gameplay code, scene, Resource, test implementation, project setting, save/profile file, random schema, Git history, build, publication, deployment, or external state.
 
-### 0.8 Implementation status after WP03 — 2026-08-22
+### 0.8 Implementation status after WP04 — 2026-08-22
 
-WP01 implements the approved visual language and focused state hierarchy. WP02 implements the authoritative three-lap/three-block lifecycle, stable lap/block IDs, exact-once revisioned Extract/Push decisions, explicit second-Push final-lap/boss commitment, block-nine boss boundary, all-crew production access, backward-safe retired crew facts, 10–20/45–90/120–180 cadence bands, and lifecycle result fields. WP03 implements the focused next-block District Plan, accessible one-copy lap deck, visible two-card offer/refill, exact lifecycle revision/token binding, resolved history, and release removal/development-gating of the Milestone 5 hand/five-slot flow.
+WP01 implements the approved visual language and focused state hierarchy. WP02 implements the authoritative three-lap/three-block lifecycle, stable lap/block IDs, exact-once revisioned Extract/Push decisions, explicit second-Push final-lap/boss commitment, block-nine boss boundary, all-crew production access, backward-safe retired crew facts, 10–20/45–90/120–180 cadence bands, and lifecycle result fields. WP03 implements the focused next-block District Plan, accessible one-copy lap deck, visible two-card offer/refill, exact lifecycle revision/token binding, resolved history, and release removal/development-gating of the Milestone 5 hand/five-slot flow. WP04 preserves the same nine-item/three-synergy catalogue and finite shop while adding exact role/promise metadata, crew-specific before/after snapshots, monotonic equipment-choice and shop-visit contexts, Heat-multiplied coin rewards, rate-limited build acknowledgements, and the smallest evidence-backed repairs to Shock, attack speed, Serrated Wraps, and Chain Sneakers.
 
 The fixed authored route retains its stable ID and five nodes while using a 21.0-second represented approach for WP02 pacing. Fixed seed `6062026` reaches the first/second lap decisions at 121.267/292.683 eligible seconds, The Viper boundary at 584.200 seconds, and a boss-result summary at 599.883 seconds. Its full block, major, and ambient gap distributions—including every outlier—are recorded in `docs/product/WP02_ACCEPTANCE_EVIDENCE.md`; this one deterministic technical trace is not a substitute for WP07 representative distributions.
 
 WP02 has passed its focused, affected, cumulative, fixed-seed timing, configured-runtime, visual, Windows release-export/runtime, and local Web release/browser checks. Its owner-run five-person comprehension check remains pending. The owner separately authorized a WP02 `main` and GitHub Pages browser-playtest release on 2026-08-21; that historical publication did not satisfy the qualitative gate or pre-authorize WP03.
 
 The isolated WP03 release snapshot has passed **5/5 focused tests/130 assertions**, **72/72 affected tests/1,388 assertions**, and **274/274 cumulative tests/3,919 assertions across 27 suites**, plus a configured all-four-card live-effect matrix, native keyboard/touch GUI routing, configured prediction/occurrence/history/cleanup, three inspected 1280×720 captures, Windows/Web release exports, exported-Windows runtime, and 2560×1440 production-Web real pointer/empty-console checks. The aggregate runner's pre-existing post-success shutdown diagnostic remains disclosed. The owner-run unbriefed first-use check remains pending and is not satisfied by automated evidence. On 2026-08-22 the owner separately authorized this exact WP03 boundary for a `main` and GitHub Pages browser-playtest release. Commit `a6ef571942afb319b3e2c0cdd9c9cffcc1f1bc93` was pushed to `main`; [Pages run 32586634393](https://github.com/ariesyous/projectneon/actions/runs/32586634393) exported and deployed it successfully, and the live real-pointer prediction/occurrence/history flow passed with an empty warning/error console. Publication does not authorize WP04 or establish qualitative acceptance.
+
+WP04 locally passes **15/15 focused tests with 247 assertions**, **226/226 affected tests with 3,175 assertions**, and **291/291 cumulative tests with 4,192 assertions across 30 suites**, plus configured `/GameRun`, native mouse/touch/keyboard routing, four inspected 1280×720 captures, Windows/Web release exports, exported-Windows runtime, and local production-Web real-pointer reward/shop/exit plus 2560×1440 containment with an empty warning/error console. The aggregate runner retains the pre-existing 48-ObjectDB/four-resource shutdown diagnostic; the other gates do not reproduce it. The owner-run five-person WP04 consequence/variety gate remains pending. On 2026-08-22 the owner separately authorized this exact evidenced boundary for a `main` and GitHub Pages browser-playtest release; publication does not close the gate or authorize WP05.
 
 ---
 
@@ -764,8 +766,8 @@ Initial status effects:
 
 #### Shock
 
-- Briefly increases damage taken from interventions
-- May chain to one nearby target when synergy is active
+- While active, increases damage taken from Environment interventions by 25%; ordinary attacks and collision damage do not receive this inherent bonus
+- May chain to one nearby target only if a separately authored future synergy effect implements that behavior
 
 #### Stun
 
@@ -1093,7 +1095,8 @@ The vertical slice uses three generic equipment slots so any two distinct catalo
 
 - Tags: `TECH`, `SHOCK`, `FAST`
 - Chance to apply Shock
-- Slight attack speed bonus
+- +8% attack speed across the complete crew attack timeline
+- Shocked targets take +25% damage from Environment interventions
 
 #### Reinforced Jacket
 
@@ -1118,6 +1121,7 @@ The vertical slice uses three generic equipment slots so any two distinct catalo
 - Tags: `BLEED`, `FAST`
 - Increased Bleed stack limit
 - Increased damage against bleeding targets
+- 35% chance on any hit to apply one four-second Bleed stack
 
 #### Magnetic Flail
 
@@ -1132,7 +1136,8 @@ The vertical slice uses three generic equipment slots so any two distinct catalo
 #### Chain Sneakers
 
 - Tags: `FAST`, `KNOCKBACK`
-- Improves movement or attack speed and knockback follow-up
+- +6% movement speed and +6% complete attack cadence
+- +10% knockback distance
 
 Exact numerical balance remains provisional.
 
@@ -1268,6 +1273,9 @@ Each option must include:
 - Numerical values where useful
 - Current synergy impact preview
 - Immediate synergy activations and progress toward alternative synergy paths
+- Exact active/backpack destination, outgoing/stored/left-behind item, and post-confirm inventory state
+- Exact relevant before/after crew values and one plain-language next-fight consequence
+- The paired standard reward's exact coin/Scrap payout, including that Skip Gear keeps it
 
 The run pauses during major reward selection.
 
@@ -1297,6 +1305,8 @@ Coin collection rules:
 - Missing or ignoring a cluster never loses its base value.
 
 Shop purchases that reduce Heat must have meaningful cost and finite stock or an explicit per-run purchase limit; increasing price alone is not a sufficient anti-farming limit. Coins must not enable unlimited cooling.
+
+Standard reward coins apply the current authored Heat reward multiplier latched when the reward is prepared, using non-negative half-up rounding. Scrap remains the raw authored summary-only value. A shop decision previews and then reports coins, Heat, Heat tier, reward quality/multiplier, global stock, per-visit stock, and unchanged Night Pressure from `RunCoolingController` authority. Production purchase requests carry the exact monotonic visit revision and source; stale, malformed, wrong-source, reentrant, unaffordable, exhausted, and Heat-zero requests mutate nothing.
 
 ### Scrap
 
@@ -2737,7 +2747,7 @@ The project succeeds when a player can watch the crew fight, make a small number
 
 ## 51. WP00-Approved Work-Package Roadmap
 
-WP00 is the documentation/decision gate and changes no runtime. WP01–WP03 are implemented within their bounded scopes. The WP02 comprehension and WP03 first-use owner gates remain pending, and later work proceeds only after the explicit authorization and gates named in `docs/product/ROADMAP.md`:
+WP00 is the documentation/decision gate and changes no runtime. WP01–WP04 are implemented within their bounded scopes. The WP02 comprehension, WP03 first-use, and WP04 consequence/variety owner gates remain pending, and later work proceeds only after the explicit authorization and gates named in `docs/product/ROADMAP.md`:
 
 1. **WP01 — Interface and Visual Language:** minimal combat HUD, focused decision shells, icon-plus-label language, accessibility and containment.
 2. **WP02 — Core Run Loop and State Clarity:** authoritative three-lap lifecycle, phase/next-event presentation, all-crew defaults, explicit Extract/Push and boss commitment.
@@ -2747,4 +2757,4 @@ WP00 is the documentation/decision gate and changes no runtime. WP01–WP03 are 
 6. **WP06 — World, Combat, and Presentation Polish:** replace release-visible debug communication with authored city-block depth and accessible feedback without changing authority for convenience.
 7. **WP07 — Integration, Balance, and Release:** validate the approved cadence, clarity, consequence, variety, replay desire, compatibility, platforms, and owner-led final acceptance.
 
-There is no Milestone 7. WP04 is the next package in sequence but is not started or implicitly authorized by WP03. Procedural cities, direct character control, multiplayer, permanent statistical progression, large content expansion, controller support, localization, achievements, live-service systems, and other unapproved scope remain excluded.
+There is no Milestone 7. WP04 is implemented and owner-authorized as the next `main`/Pages browser-playtest boundary, but it is not qualitatively accepted while its five-person gate remains pending. WP05 is not started or implicitly authorized by WP04. Procedural cities, direct character control, multiplayer, permanent statistical progression, large content expansion, controller support, localization, achievements, live-service systems, and other unapproved scope remain excluded.

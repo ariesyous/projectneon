@@ -2,15 +2,15 @@
 
 ## Catalog status
 
-This catalog reflects the implemented **Milestones 0–6 plus WP01–WP03**. WP01 contributes the reusable visual language without gameplay authority. WP02 adds the authoritative three-lap/three-block lifecycle, exact-once lap decisions, all-crew production access, cadence bands, state-clarity presentation, and summary fields. WP03 migrates the production card interaction to the focused next-block District Plan while preserving the four-card catalogue and isolated Milestone 5 compatibility. WP03's technical/runtime/visual/platform gate has passed; its owner-run unbriefed first-use gate remains pending.
+This catalog reflects the implemented **Milestones 0–6 plus WP01–WP04**. WP01 contributes the reusable visual language, WP02 the district lifecycle/access, WP03 the focused District Plan, and WP04 exact build/reward/shop consequence without adding catalogue breadth. WP04's technical/runtime/visual/platform gate has passed locally; its owner-run five-person gate remains pending.
 
 Milestone 5 was merged through PR #4 and published from `main` commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`; it remains the last fully accepted baseline. Milestone 6 was committed on `codex/milestone-6-vertical-slice` as `9c1cdaa` plus `ca3fe18`, and the owner authorized its tentative [GitHub Pages playtest](https://ariesyous.github.io/projectneon/) publication on 2026-07-22.
 
-The working tree separately carries the owner's tracked 17-file Godot-AI 3.0.5 update and the owner's `project.godot` deletions of `window/stretch/aspect="keep"` and `textures/default_filters/use_nearest_mipmap_filter=false`. Godot-AI remains enabled development tooling, not Neon Loop content or run authority. Milestone 6 adds only the specification-authorized `SaveService` and `AppState` Autoloads; it does not claim the owner-carried changes as milestone content.
+The working tree separately carries the owner's Godot-AI 3.1.5 update across 57 dirty addon paths, reward-modal simplification, combo-visibility correction, and `project.godot` deletions. They remain preserved owner work, not WP04 content or run authority.
 
 ## WP00-approved availability and classification
 
-WP00 changed documentation only. WP01 migrated presentation, WP02 migrated lifecycle/profile behavior, and WP03 migrated card scheduling/interaction without adding a crew, card, equipment item, enemy, boss, save version, stream, schema version, or permanent power system.
+WP00 changed documentation only. WP01 migrated presentation, WP02 lifecycle/profile behavior, WP03 card scheduling/interaction, and WP04 consequence/balance feedback without adding a crew, card, equipment item, enemy, boss, save version, stream, schema version, or permanent power system.
 
 | Approved target | Current implementation boundary | Owning package |
 | --- | --- | --- |
@@ -208,12 +208,14 @@ Each spawn entry costs one budget. Entries and eligible IDs are validated/dedupl
 
 Standard reward candidates are quality-filtered, empty/duplicate stable IDs are excluded, remaining IDs are sorted, and the isolated `rewards` stream selects the result. Current Heat reward multipliers then use deterministic integer rounding. Eligible reward moments also offer three equipment definitions selected without replacement by the isolated `equipment` stream after stable-ID sorting. Milestone 5 adds a separate supplemental card opportunity after the core reward contract only for eligible baseline non-elite standard encounters; card choices consume only the isolated `cards` stream and do not replace or mutate standard/equipment rewards.
 
+WP04 specifies that Heat multipliers apply to standard-reward coins only through latched 1/10,000 quantization and non-negative half-up rounding; Scrap remains raw. Equipment offers carry a monotonic token plus encounter and inventory revision. Every item and synergy also carries a validated role label and combat promise; these fields are presentation metadata and do not affect stable ordering or selection.
+
 ### Run lifecycle and technical record
 
 - `RunDirector` implements `INITIALIZING`, `INTRO`, `PATROLLING`, `ENCOUNTER_ACTIVE`, `REWARD_SELECTION`, `SHOP`, `EXTRACTION_AVAILABLE`, `EXTRACTING`, `BOSS_INTRO`, `BOSS_ACTIVE`, `VICTORY`, `DEFEAT`, `RUN_SUMMARY`, and `PAUSED`.
 - Night Pressure and the run timer advance only during eligible active simulation. Modal choices, pause, introduction, extraction/boss transitions, terminal states, and summary add zero.
 - The two extraction thresholds and boss threshold latch permanently for the run. A queued boss begins at the next safe boundary and wins a same-update crossing unless extraction was already confirmed.
-- Exactly two Subway and two shop cooling uses are available per run; cooling changes Heat only and cannot alter Night Pressure or latched progression.
+- Exactly two Subway and two shop cooling uses are available per run; cooling changes Heat only and cannot alter Night Pressure or latched progression. A shop visit has a monotonic revision/source and exact global/per-visit stock preview; Convenience Store permits one of the unchanged global purchases.
 - `RunRandomStreams` exposes exactly `encounters`, `spawns`, `rewards`, `equipment`, `cards`, `enemy_variants`, and `cosmetic`. Equipment choices/effect chances consume `equipment`; opening card draws and card reward choices consume `cards`. Candidate sets are filtered and sorted by stable ID before any card draw, and all other streams remain isolated.
 - Technical verification passed 75/75 tests and 1,100 assertions with no failures or skips, preserved all 46 Milestone 1–2 tests, and completed clean local Windows/Web smoke checks. No build was published or deployed.
 
@@ -401,14 +403,14 @@ The Milestone 4 catalogue contains exactly nine typed, validated `EquipmentDefin
 | Stable content ID / name | Tags | Authored Milestone 4 tuning |
 | --- | --- | --- |
 | `spiked_bat` / Spiked Bat | `MELEE`, `BLEED`, `KNOCKBACK` | +25% heavy-hit damage; 25% heavy-hit chance to apply 1 Bleed stack for 4.0s; +15% knockback distance |
-| `shock_gloves` / Shock Gloves | `TECH`, `SHOCK`, `FAST` | 25% chance on any hit to apply Shock for 3.0s; +8% attack speed |
+| `shock_gloves` / Shock Gloves | `TECH`, `SHOCK`, `FAST` | 25% chance on any hit to apply Shock for 3.0s; +8% complete attack cadence; Shock makes Environment hits deal +25% |
 | `reinforced_jacket` / Reinforced Jacket | `DEFENCE`, `STREET` | +20% maximum health while preserving current-health ratio; -20% knockback received |
 | `hacker_deck` / Hacker Deck | `TECH`, `INTERVENTION` | -10% intervention cooldown; +1.5s Shock duration |
 | `steel_toe_boots` / Steel-Toe Boots | `KNOCKBACK`, `MOBILITY` | +10% movement speed; +15% environmental collision damage |
-| `serrated_wraps` / Serrated Wraps | `BLEED`, `FAST` | +1 maximum Bleed stack; +15% damage against bleeding enemies |
+| `serrated_wraps` / Serrated Wraps | `BLEED`, `FAST` | 35% chance on any hit to apply 1 Bleed stack for 4.0s; +1 maximum stack; +15% damage against bleeding enemies |
 | `magnetic_flail` / Magnetic Flail | `TECH`, `KNOCKBACK` | +20% environmental knockback; +10% environmental collision damage |
 | `voltaic_blade` / Voltaic Blade | `TECH`, `BLEED` | Every hit applies 1 Bleed stack for 4.0s; +20% damage against Shocked enemies |
-| `chain_sneakers` / Chain Sneakers | `FAST`, `KNOCKBACK` | +6% movement speed; +6% attack speed; +10% knockback follow-up damage |
+| `chain_sneakers` / Chain Sneakers | `FAST`, `KNOCKBACK` | +6% movement speed; +6% complete attack cadence; +10% knockback distance |
 
 There are exactly three active generic ordered equipment slots plus exactly three ordered backpack storage slots. Any distinct item may occupy any position, but only active items contribute tags, modifiers, triggered effects, new triggered status applications, and synergy progress. Stored items remain owned and are excluded from active aggregation; statuses already applied to actors remain actor-owned and expire or clear normally. Duplicate items/IDs are rejected across all six positions.
 
@@ -421,7 +423,7 @@ Ordinary clicks on active or stored items inspect only. In `INTRO`, `PATROLLING`
 | Stable status ID | Authored values | Behavior |
 | --- | --- | --- |
 | `bleed` | 4.0s base duration, 3 base maximum stacks, 1.0s tick, 2 damage per stack per tick | Reapplication adds stacks up to the derived maximum and refreshes duration; red actor marker/count; clears on actor/run cleanup |
-| `shock` | 3.0s base duration, 1 maximum stack, no damage tick | Reapplication refreshes duration; cyan actor marker; Hacker Deck/Tech 2 extend the applied duration; clears on actor/run cleanup |
+| `shock` | 3.0s base duration, 1 maximum stack, no damage tick, +25% Environment damage taken | Reapplication refreshes duration; ordinary attacks/collisions receive no inherent bonus; Hacker Deck/Tech 2 extend the meaningful Environment-vulnerability window; clears on actor/run cleanup |
 | `wet` | 4.0s base duration, 1 maximum stack, no damage tick | Applied to surviving Hydrant targets; mechanics-neutral future-compatibility state; changes no damage, Heat, Pressure, reward, or stream; clears on actor/run cleanup |
 
 ### Synergies
@@ -442,7 +444,7 @@ The native 1280 x 720 HUD shows all three active slots and all three slots in on
 
 - Nine cumulative suites passed **106/106 tests and 1,306 assertions with no failures or skips**, preserving all 75 Milestone 1–3 tests and adding 31 Milestone 4 tests/206 assertions.
 - Normal reward selection, acquisition, replacement, removal, threshold activation/deactivation, all 15 required primary two-item pairs, the three bridge decisions, preview accuracy, exactly-once input, Heat/Pressure isolation, and clean restart were exercised in the configured run.
-- Representative live builds were Bat/Boots/Chain (movement, knockback, environmental collision), Bat/Wraps/Blade (six-stack Bleed and conditional damage), and Gloves/Hacker/Blade (6.0s Shock, 6.0s Hydrant cooldown, Shock interaction).
+- WP04's disjoint matrix is Bat/Boots/Chain on Jax (control/Environment), Gloves/Hacker/Flail on Zoey (six-second Shock/intervention cadence), and Jacket/Wraps/Blade on Rex (864-health survival/six-stack Bleed). All nine items appear once and no universal core is shared.
 - Extraction, defeat, and boss-threshold flows remained valid with equipment active. Hydrant, coins, Help, sound unlock, fullscreen delivery path, `F1`, and `F2` remained functional.
 - Fresh release Windows/Web exports succeeded; Windows passed a headless startup smoke, and locally served Web accepted sound unlock and a one-click equipment reward with no console warnings/errors. The embedded runner itself supports only windowed mode. This work was later included in the cumulative M4–M4.2 baseline published from `1b3d5a5118ad31d864266ec2aefd44e652ffafe9`.
 
@@ -475,6 +477,15 @@ The native 1280 x 720 HUD shows all three active slots and all three slots in on
 Owner playtesting favors a fuller Diablo II-style character inventory in which the automatic fight remains visible while the character sheet is open. M4.2 now supplies the small baseline: one unambiguous backpack, three generic equipped cells, non-destructive cross-area drag staging, and click/tap/keyboard fallback. The current full-six-position answer is **Skip Gear / Keep Current Build**: the new item is skipped and the paired ordinary reward still resolves. No sale or salvage occurs.
 
 Historical out-of-scope itemization notes considered sell/salvage, auto-salvage, rarity, uniques, affixes, sets, a larger character sheet, category slots, item-instance rolls, and broader economy values. None are planned or authorized by WP00 or the bounded WP01–WP07 roadmap. The implemented non-destructive drag/snap-back plus click/tap/keyboard confirmation contracts remain current requirements until an owning package deliberately migrates their presentation.
+
+### WP04 consequence content record
+
+- No content entry was added or removed. All nine equipment IDs, three synergy IDs, three rewards, four cards, three crew, and finite cooling values remain stable.
+- `role_label`/`combat_promise` are validated presentation fields on the existing item/synergy Resources.
+- New/changed functional data is limited to Shock's +0.25 intervention-damage-taken bonus, `serrated_wraps_bleed` (35% on hit, one stack, 4.0s), Chain Sneakers `knockback_distance` +0.10, and complete crew use of existing `attack_speed`.
+- Standard reward coins now use the existing Heat multiplier; no reward definition or Scrap value changed.
+- Shop content remains one cooling product at 60 coins/-18 Heat with two global stock and one Convenience Store visit allowance.
+- The disjoint build matrix and exact decisions are recorded in `docs/product/WP04_CONSEQUENCE_AUDIT.md`; technical evidence is in `docs/product/WP04_ACCEPTANCE_EVIDENCE.md`.
 
 ### Implemented WP03 focused District Plan
 
@@ -554,7 +565,7 @@ Milestone 6 preserves stream ownership: encounter definition selection uses `enc
 
 Before the first draw, `RunContentAccessSnapshot` captures selected crew, sorted allowed equipment/card IDs, save version, and development-access flag. Same-seed restart reuses it. Reproduction is limited to the same supported build/content revision, schema 1, access snapshot, seed, gameplay decisions/effect resolutions, and authoritative timing; cross-version or bitwise physics replay is not promised.
 
-## Cadence, summary, and scope record after WP03
+## Cadence, summary, and scope record after WP04
 
 The measurement-only `wp02_cadence` bands are ambient 10–20, strategic complete-block 45–90, and major lap-decision 120–180 eligible active seconds. Composed instrumentation records coin-cluster presentation as ambient, each meaningful block completion as strategic, and each lap decision/boss commitment as major. The tracker rejects coin-labelled strategic events and never schedules or manufactures opportunities. The non-boss 3.0-second arrival beat and 12.0-second staged-actor interval remain authored pacing inputs; observed fight/block/lap distributions and the 8–12-minute boss-run target still require representative human sessions rather than an automated claim. The historical `milestone_6_cadence` resource and its 30–60 strategic record remain M6 evidence only.
 
@@ -562,6 +573,6 @@ WP02 strategic event IDs are keyed to accepted district block completion and maj
 
 The complete `RunSummaryRecord` includes result (`VICTORY`, `EXTRACTED`, or `DEFEATED`), duration, seed, schema, maximum Heat, final Night Pressure, completed laps/blocks, boss commitment, final stable lap/block IDs, accepted decision trail, encounters, enemies/elites defeated, boss result (`DEFEATED`, `CREW DEFEATED`, or `NOT REACHED`), coins, manual clusters, maximum streak, scrap, highest combo, equipment build, active synergies, Restart Run, and Return to Main Menu. Unresolved clusters settle at base value before publication. Completed-run persistence happens only after this snapshot and cannot change it.
 
-WP02 adds lifecycle definitions and WP03 restructures the existing four-card interaction; neither adds breadth content. WP04–WP07 may change only their owned systems after separate authorization. The roadmap does not pre-authorize procedural route generation, additional district/card/crew/enemy/boss/equipment content, multiplayer, controller support, localization, achievements, daily systems/leaderboards, advanced meta-progression/permanent stat trees, mid-run saving/replay, a card economy, or equipment selling/salvage/rarity/uniques/affixes/sets.
+WP02 adds lifecycle definitions, WP03 restructures the four-card interaction, and WP04 repairs consequence within the same item/shop catalogue. WP05–WP07 may change only their owned systems after separate authorization. The roadmap does not pre-authorize procedural route generation, additional district/card/crew/enemy/boss/equipment content, multiplayer, controller support, localization, achievements, daily systems/leaderboards, advanced meta-progression/permanent stat trees, mid-run saving/replay, a card economy, or equipment selling/salvage/rarity/uniques/affixes/sets.
 
 Godot 4.7.2 passed **264/264 cumulative tests and 3,646 assertions with no failures or skips across 25 suites**. The authored fixed route now uses a 21.0-second represented approach while preserving its stable ID and five nodes; fixed seed `6062026` reaches lap decisions at 121.267/292.683 eligible seconds and a boss result at 599.883 seconds. The configured `/GameRun` smoke covered the complete WP02 lifecycle; twelve native/safe-area/Web-scale captures were inspected; Windows and Web release exports completed; the exported Windows runtime exited cleanly; and local production Web at native and 2560×1440 entered PLAN through real pointer input with no warning/error console entry. The preserved `E` extraction shortcut is covered with its exact decision token. The cumulative harness's pre-existing 48 ObjectDB/four-resource shutdown diagnostic remains recorded and was not suppressed. Representative five-person comprehension, broader timing distributions, consequence/variety/replay results, and final owner acceptance remain pending.

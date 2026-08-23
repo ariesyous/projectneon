@@ -50,6 +50,8 @@ class AcquisitionIntentCapture:
 	var revision: int = -1
 
 	func on_acquisition(
+		_encounter_instance_id: int,
+		_choice_token: int,
 		new_choice_index: int,
 		new_destination: StringName,
 		new_equipment_slot: int,
@@ -71,7 +73,7 @@ class DeclineIntentCapture:
 
 	var count: int = 0
 
-	func on_decline() -> void:
+	func on_decline(_encounter_instance_id: int, _choice_token: int) -> void:
 		count += 1
 
 
@@ -189,17 +191,21 @@ func test_choice_overview_and_exact_destination_preview_are_visible() -> void:
 	hud.present_build_snapshot(system.get_snapshot())
 	var choices: Array[EquipmentDefinition] = [system.get_catalogue_item(&"voltaic_blade")]
 	hud.present_equipment_reward(44, choices, _previews_for(system, choices))
+	_expect_false(
+		hud.reward_choice_details_01.text.contains("CAN ACTIVATE"),
+		"visible preview: unselected card stays concise"
+	)
+	hud.reward_choice_01.pressed.emit()
 	_expect_contains(
 		hud.reward_choice_details_01.text,
 		"CAN ACTIVATE: BLEED 2",
-		"visible preview: overview shows possible immediate activation"
+		"visible preview: selected overview shows possible immediate activation"
 	)
 	_expect_contains(
 		hud.reward_choice_details_01.text,
 		"CAN OPEN: TECH 1/2",
-		"visible preview: overview shows alternative path progress"
+		"visible preview: selected overview shows alternative path progress"
 	)
-	hud.reward_choice_01.pressed.emit()
 	hud.reward_target_02.pressed.emit()
 	_expect_contains(
 		hud.reward_choice_details_01.text,
@@ -216,6 +222,58 @@ func test_choice_overview_and_exact_destination_preview_are_visible() -> void:
 		hud.reward_choice_details_01.text,
 		"STORE: INACTIVE UNTIL EQUIPPED",
 		"visible preview: stored destination is explicitly inactive"
+	)
+
+
+func test_reward_modal_uses_one_unobstructed_decision_layer() -> void:
+	var system: SynergySystem = _new_system()
+	var hud: GameHUD = _new_hud()
+	hud.present_build_snapshot(system.get_snapshot())
+	var choices: Array[EquipmentDefinition] = [
+		system.get_catalogue_item(&"magnetic_flail"),
+		system.get_catalogue_item(&"shock_gloves"),
+		system.get_catalogue_item(&"voltaic_blade"),
+	]
+	hud.present_equipment_reward(45, choices, _previews_for(system, choices))
+	_expect_false(
+		hud.equipment_reward_panel.has_node("StatComparison"),
+		"clarity: redundant build-preview overlay is absent"
+	)
+	_expect_equal(
+		(hud.equipment_reward_panel.get_node("Title") as Label).text,
+		"CHOOSE GEAR",
+		"clarity: modal names only the current decision"
+	)
+	_expect_contains(
+		hud.reward_instruction_label.text,
+		"CHOOSE OR DRAG ONE ITEM",
+		"clarity: first step is concise"
+	)
+	_expect_false(hud.reward_target_01.visible, "clarity: destinations wait for a gear choice")
+	_expect_false(hud.reward_store_01.visible, "clarity: backpack waits for a gear choice")
+	_expect_false(hud.reward_confirm_button.visible, "clarity: confirm waits for a staged flow")
+	for button: EquipmentDragSlot in [
+		hud.reward_choice_01, hud.reward_choice_02, hud.reward_choice_03,
+	]:
+		_expect_equal(button.tooltip_text, "", "clarity: reward card has no blocking hover duplicate")
+	_expect_false(
+		hud.reward_choice_details_01.text.contains("CHOOSE ACTIVE SLOT FOR EXACT RESULT"),
+		"clarity: cards do not repeat the next-step instruction"
+	)
+	hud.reward_choice_01.pressed.emit()
+	_expect_true(hud.reward_target_01.visible, "clarity: active destinations appear after selection")
+	_expect_true(hud.reward_store_01.visible, "clarity: backpack appears after selection")
+	_expect_true(hud.reward_confirm_button.visible, "clarity: review controls appear after selection")
+	_expect_contains(
+		hud.reward_instruction_label.text,
+		"CHOOSE ACTIVE OR BACKPACK SLOT",
+		"clarity: destination becomes the single next step"
+	)
+	hud.reward_target_01.pressed.emit()
+	_expect_contains(
+		hud.reward_instruction_label.text,
+		"REVIEW THE RESULT",
+		"clarity: staged choice advances to review"
 	)
 
 

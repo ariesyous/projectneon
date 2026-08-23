@@ -14,10 +14,12 @@ signal lap_extract_requested(decision_token: int)
 signal lap_push_requested(decision_token: int)
 signal subway_reroute_requested()
 signal backup_activation_requested()
-signal shop_cooling_requested()
+signal shop_cooling_requested(expected_visit_revision: int, expected_source_id: StringName)
 signal restart_same_seed_requested()
 signal restart_new_seed_requested()
 signal equipment_acquisition_requested(
+	encounter_instance_id: int,
+	choice_token: int,
 	choice_index: int,
 	destination: StringName,
 	equipment_slot: int,
@@ -25,7 +27,15 @@ signal equipment_acquisition_requested(
 	replace_confirmed: bool,
 	expected_revision: int
 )
-signal equipment_reward_decline_requested()
+signal equipment_reward_decline_requested(encounter_instance_id: int, choice_token: int)
+signal inventory_preview_requested(
+	action: StringName,
+	source_area: StringName,
+	source_slot: int,
+	target_slot: int,
+	equipment_id: StringName,
+	expected_revision: int
+)
 signal inventory_swap_requested(
 	equipment_slot: int,
 	backpack_slot: int,
@@ -247,7 +257,7 @@ const ICON_CONFIRM: Texture2D = preload("res://assets/ui/icons/wp01/confirm.svg"
 
 var phase_banner: NeonPhaseBanner = null
 var action_toast: NeonToast = null
-var reward_comparison: NeonStatComparison = null
+var build_callout: NeonBuildCallout = null
 var shop_decision_panel: Panel = null
 var shop_cooling_choice: NeonChoiceCard = null
 var shop_leave_choice: NeonChoiceCard = null
@@ -292,17 +302,21 @@ var _reward_choice_details: Array[Label] = []
 var _reward_choices: Array[EquipmentDefinition] = []
 var _reward_previews_by_choice: Array[Dictionary] = []
 var _reward_encounter_id: int = -1
+var _reward_choice_token: int = -1
+var _standard_reward_preview: Dictionary = {}
 var _selected_reward_choice: int = -1
 var _selected_reward_destination: StringName = &""
 var _selected_reward_slot: int = -1
 var _selected_reward_backpack_slot: int = -1
 var _selected_reward_outgoing_backpack_slot: int = -1
 var _equipment_choice_in_flight: bool = false
+var _reward_drag_active: bool = false
 var _selected_inventory_area: StringName = &""
 var _selected_inventory_slot: int = -1
 var _selected_inventory_id: StringName = &""
 var _pending_inventory_action: StringName = &""
 var _pending_inventory_target: int = -1
+var _pending_inventory_preview: Dictionary = {}
 var _inventory_action_in_flight: bool = false
 var _inventory_management_enabled: bool = false
 var _district_card_snapshot: Dictionary = {}
@@ -336,6 +350,8 @@ var _district_plan_lap_id: StringName = &""
 var _district_plan_block_id: StringName = &""
 var _crew_display_name: String = "JAX"
 var _backup_snapshot: Dictionary = {}
+var _shop_snapshot: Dictionary = {}
+var _last_shop_purchase_result: Dictionary = {}
 var _route_journey_text: String = (
 	"HIDEOUT>PATROL>FIGHT\nGEAR>EXIT/BOSS\nN0 00% L0 > PATROL"
 )
@@ -527,6 +543,11 @@ func _install_wp01_components() -> void:
 	action_toast.z_index = 70
 	root_control.add_child(action_toast)
 
+	build_callout = NeonBuildCallout.new()
+	build_callout.name = "BuildCallout"
+	build_callout.z_index = 69
+	root_control.add_child(build_callout)
+
 	_health_icon = _new_icon("HealthIcon", ICON_HEALTH)
 	crew_panel.add_child(_health_icon)
 	_heat_icon = _new_icon("HeatIcon", ICON_HEAT)
@@ -535,10 +556,6 @@ func _install_wp01_components() -> void:
 	run_status_panel.add_child(_pressure_icon)
 	_coins_icon = _new_icon("CoinsIcon", ICON_COINS)
 	resources_panel.add_child(_coins_icon)
-
-	reward_comparison = NeonStatComparison.new()
-	reward_comparison.name = "StatComparison"
-	equipment_reward_panel.add_child(reward_comparison)
 
 	focus_placeholder_button = NeonInterventionButton.new()
 	focus_placeholder_button.name = "FocusAction"
@@ -724,6 +741,8 @@ func _apply_wp01_visual_language() -> void:
 	auto_help_label.theme_type_variation = &"BodyLabel"
 	action_toast.position = Vector2(420.0, 118.0)
 	action_toast.size = Vector2(440.0, 56.0)
+	build_callout.position = Vector2(420.0, 182.0)
+	build_callout.size = Vector2(440.0, 68.0)
 
 
 func _layout_compact_run_status() -> void:
@@ -820,7 +839,6 @@ func _layout_environment_action() -> void:
 
 func _layout_focused_modals() -> void:
 	_set_rect(equipment_reward_panel, Rect2(60.0, 50.0, 1160.0, 620.0))
-	_set_rect(reward_comparison, Rect2(20.0, 414.0, 710.0, 112.0))
 	_set_rect(district_card_panel, Rect2(60.0, 50.0, 1160.0, 620.0))
 	_set_rect(build_details_panel, Rect2(120.0, 60.0, 1040.0, 620.0))
 	_set_rect(shop_decision_panel, Rect2(120.0, 90.0, 1040.0, 540.0))
@@ -1030,6 +1048,20 @@ func present_flow_snapshot(snapshot: Dictionary) -> void:
 	var encounter: Dictionary = snapshot.get("encounter", {})
 	var rewards: Dictionary = snapshot.get("rewards", {})
 	var cooling: Dictionary = snapshot.get("cooling", {})
+	_shop_snapshot = cooling.duplicate(true)
+	if not bool(_shop_snapshot.get("shop_visit_active", false)):
+		_last_shop_purchase_result.clear()
+	elif not _last_shop_purchase_result.is_empty():
+		var result_revision: int = int(_last_shop_purchase_result.get(
+			"resulting_visit_revision",
+			_last_shop_purchase_result.get("visit_revision", -1)
+		))
+		if (
+			result_revision != int(_shop_snapshot.get("shop_visit_revision", -1))
+			or StringName(_last_shop_purchase_result.get("source_id", &""))
+			!= StringName(_shop_snapshot.get("shop_visit_source_id", &""))
+		):
+			_last_shop_purchase_result.clear()
 	_district_loop_snapshot = run.get("district_loop", {}).duplicate(true)
 	_last_run_snapshot = {
 		"coins": int(rewards.get("coin_total", 0)),
@@ -1076,6 +1108,8 @@ func present_flow_snapshot(snapshot: Dictionary) -> void:
 		]
 
 	var state: int = int(run.get("state", RunDirector.RunState.INITIALIZING))
+	if state not in [RunDirector.RunState.ENCOUNTER_ACTIVE, RunDirector.RunState.BOSS_ACTIVE]:
+		clear_build_callout()
 	var reward_modal_context: bool = (
 		state == RunDirector.RunState.REWARD_SELECTION
 		or (
@@ -1320,31 +1354,127 @@ func _refresh_wp01_focused_shells(
 
 	if shop_decision_panel.visible:
 		shop_decision_panel.move_to_front()
-		var current_heat: int = int(run.get("heat", 0))
-		var heat_reduction: int = maxi(int(cooling.get("shop_heat_reduction", 0)), 0)
-		var current_coins: int = maxi(int(rewards.get("coin_total", 0)), 0)
+		var preview: Dictionary = cooling.get("shop_purchase_preview", {})
+		var current_heat: int = int(preview.get("heat_before", run.get("heat", 0)))
+		var next_heat: int = int(preview.get(
+			"heat_after",
+			maxi(current_heat - int(cooling.get("shop_heat_reduction", 0)), 0)
+		))
+		var heat_reduction: int = maxi(current_heat - next_heat, 0)
+		var current_coins: int = maxi(int(preview.get("coins_before", rewards.get("coin_total", 0))), 0)
+		var next_coins: int = maxi(int(preview.get("coins_after", current_coins)), 0)
 		var coin_cost: int = maxi(int(cooling.get("shop_coin_cost", 0)), 0)
-		var stock: int = maxi(int(cooling.get("shop_purchases_remaining", 0)), 0)
-		var can_buy: bool = stock > 0 and current_coins >= coin_cost
+		var stock: int = maxi(int(preview.get("global_stock_before", cooling.get("shop_purchases_remaining", 0))), 0)
+		var stock_after: int = maxi(int(preview.get("global_stock_after", stock)), 0)
+		var visit_stock: int = int(preview.get(
+			"visit_stock_before",
+			cooling.get("shop_visit_purchases_remaining", -1)
+		))
+		var visit_stock_after: int = int(preview.get("visit_stock_after", visit_stock))
+		var can_buy: bool = bool(preview.get(
+			"can_purchase",
+			stock > 0 and current_coins >= coin_cost and current_heat > 0
+		))
+		var source_id: StringName = StringName(preview.get(
+			"source_id",
+			cooling.get("shop_visit_source_id", &"shop_cooling")
+		))
+		var completed_purchase: bool = (
+			bool(_last_shop_purchase_result.get("accepted", false))
+			and StringName(_last_shop_purchase_result.get("source_id", &"")) == source_id
+		)
+		var comparison_preview: Dictionary = (
+			_last_shop_purchase_result
+			if completed_purchase
+			else preview
+		)
+		(shop_decision_panel.get_node("Title") as Label).text = "SHOP  /  %s" % (
+			"CONVENIENCE STORE"
+			if source_id == &"convenience_store"
+			else "STREET COOLING"
+		)
+		(shop_decision_panel.get_node("Instruction") as Label).text = (
+			"Purchase applied exactly. Review the result, then leave to continue."
+			if completed_purchase
+			else (
+				"One purchase remains in this visit; buy exact finite cooling or leave unchanged."
+				if visit_stock == 1
+				else "Global stock is finite; buy cooling or leave immediately with no purchase."
+			)
+		)
 		shop_cooling_choice.disabled = not can_buy
 		shop_cooling_choice.text = (
-			"COOL THE DISTRICT\n%d COINS  /  HEAT %d -> %d  /  STOCK %d"
-			% [coin_cost, current_heat, maxi(current_heat - heat_reduction, 0), stock]
+			"PURCHASE COMPLETE\n%d COINS -> %d  /  HEAT %d -> %d\nTIER %d -> %d  /  STOCK %d -> %d"
+			% [
+				int(comparison_preview.get("coins_before", 0)),
+				int(comparison_preview.get("coins_after", 0)),
+				int(comparison_preview.get("heat_before", 0)),
+				int(comparison_preview.get("heat_after", 0)),
+				int(comparison_preview.get("heat_tier_before", 0)),
+				int(comparison_preview.get("heat_tier_after", 0)),
+				int(comparison_preview.get("global_stock_before", 0)),
+				int(comparison_preview.get("global_stock_after", 0)),
+			]
+			if completed_purchase
+			else
+			"COOL DISTRICT  -%d HEAT\n%d COINS  /  %d -> %d  /  HEAT %d -> %d\nTIER %d -> %d  /  STOCK %d -> %d%s"
+			% [
+				heat_reduction,
+				coin_cost,
+				current_coins,
+				next_coins,
+				current_heat,
+				next_heat,
+				int(preview.get("heat_tier_before", run.get("heat_tier", 0))),
+				int(preview.get("heat_tier_after", run.get("heat_tier", 0))),
+				stock,
+				stock_after,
+				(
+					"  /  VISIT %d -> %d" % [visit_stock, visit_stock_after]
+					if visit_stock >= 0
+					else ""
+				),
+			]
 		)
+		var reason: StringName = StringName(preview.get("reason", &"ok"))
 		shop_cooling_choice.set_visual_state(
 			NeonChoiceCard.VisualState.DEFAULT if can_buy else NeonChoiceCard.VisualState.DISABLED,
-			"AVAILABLE" if can_buy else "UNAVAILABLE  /  NEED COINS OR STOCK"
+			(
+				"PURCHASE COMPLETE  /  LEAVE SHOP"
+				if completed_purchase
+				else ("AVAILABLE" if can_buy else _shop_rejection_label(reason, current_coins, coin_cost))
+			)
 		)
+		var live_coins: int = maxi(int(rewards.get("coin_total", current_coins)), 0)
+		var live_stock: int = maxi(int(cooling.get("shop_purchases_remaining", stock)), 0)
+		shop_leave_choice.text = "LEAVE SHOP\nBUY NOTHING  /  KEEP %d COINS\nGLOBAL STOCK %d REMAINS" % [
+			live_coins,
+			live_stock,
+		]
 		shop_leave_choice.set_visual_state(NeonChoiceCard.VisualState.DEFAULT, "SAFE DECLINE")
+		var comparison_heading: String = (
+			"PURCHASE COMPLETE"
+			if completed_purchase
+			else "NEXT-FIGHT CONSEQUENCE"
+		)
 		shop_comparison.present(
-			"PURCHASE PREVIEW",
-			"HEAT %d" % current_heat,
-			"HEAT %d" % maxi(current_heat - heat_reduction, 0),
-			"COINS %d -> %d  /  NIGHT PRESSURE UNCHANGED" % [
-				current_coins,
-				maxi(current_coins - coin_cost, 0),
+			comparison_heading,
+			"HEAT %d  /  TIER %d" % [
+				int(comparison_preview.get("heat_before", current_heat)),
+				int(comparison_preview.get("heat_tier_before", run.get("heat_tier", 0))),
 			],
-			true
+			"HEAT %d  /  TIER %d" % [
+				int(comparison_preview.get("heat_after", next_heat)),
+				int(comparison_preview.get("heat_tier_after", run.get("heat_tier", 0))),
+			],
+			"REWARD QUALITY %d -> %d  /  COIN x%.2f -> x%.2f  /  NIGHT PRESSURE %.1f UNCHANGED" % [
+				int(comparison_preview.get("reward_quality_before", 0)),
+				int(comparison_preview.get("reward_quality_after", 0)),
+				float(comparison_preview.get("reward_multiplier_before", 1.0)),
+				float(comparison_preview.get("reward_multiplier_after", 1.0)),
+				float(comparison_preview.get("night_pressure", run.get("night_pressure", 0.0))),
+			],
+			can_buy or completed_purchase
 		)
 
 	if extraction_panel.visible:
@@ -1425,21 +1555,29 @@ func present_build_snapshot(snapshot: Dictionary) -> void:
 func present_equipment_reward(
 	encounter_instance_id: int,
 	choices: Array[EquipmentDefinition],
-	previews_by_choice: Array[Dictionary]
+	previews_by_choice: Array[Dictionary],
+	choice_token: int = -1,
+	standard_reward_preview: Dictionary = {}
 ) -> void:
 	dismiss_district_card_panel()
 	_reward_encounter_id = encounter_instance_id
+	_reward_choice_token = choice_token
 	_reward_choices = choices.duplicate()
 	_reward_previews_by_choice = previews_by_choice.duplicate(true)
+	_standard_reward_preview = standard_reward_preview.duplicate(true)
 	_equipment_choice_in_flight = false
 	_selected_reward_choice = -1
 	_selected_reward_destination = &""
 	_selected_reward_slot = _first_empty_build_slot()
 	_selected_reward_backpack_slot = -1
 	_selected_reward_outgoing_backpack_slot = -1
+	_reward_drag_active = false
 	_clear_inventory_selection()
 	build_details_panel.visible = false
 	help_panel.visible = false
+	if action_toast != null:
+		action_toast.hide()
+	clear_build_callout()
 	equipment_reward_panel.visible = true
 	equipment_reward_panel.move_to_front()
 	_refresh_equipment_reward_presentation()
@@ -1450,14 +1588,17 @@ func dismiss_equipment_reward() -> void:
 		return
 	equipment_reward_panel.visible = false
 	_reward_encounter_id = -1
+	_reward_choice_token = -1
 	_reward_choices.clear()
 	_reward_previews_by_choice.clear()
+	_standard_reward_preview.clear()
 	_equipment_choice_in_flight = false
 	_selected_reward_choice = -1
 	_selected_reward_destination = &""
 	_selected_reward_slot = -1
 	_selected_reward_backpack_slot = -1
 	_selected_reward_outgoing_backpack_slot = -1
+	_reward_drag_active = false
 	for button: EquipmentDragSlot in _reward_choice_buttons:
 		button.disabled = false
 
@@ -1716,6 +1857,12 @@ func present_inventory_action_result(succeeded: bool) -> void:
 	_refresh_build_presentation()
 
 
+func present_inventory_transaction_preview(preview: Dictionary) -> void:
+	_pending_inventory_preview = preview.duplicate(true)
+	if is_node_ready():
+		_refresh_inventory_action_presentation()
+
+
 func present_equipment_action_result(succeeded: bool) -> void:
 	_equipment_choice_in_flight = false
 	if succeeded:
@@ -1725,6 +1872,57 @@ func present_equipment_action_result(succeeded: bool) -> void:
 		for button: EquipmentDragSlot in _reward_choice_buttons:
 			button.disabled = false
 		_refresh_equipment_reward_presentation()
+
+
+func present_shop_purchase_result(result: Dictionary) -> void:
+	_last_shop_purchase_result = result.duplicate(true)
+	if not is_node_ready():
+		return
+	if bool(result.get("accepted", false)):
+		(shop_decision_panel.get_node("Instruction") as Label).text = (
+			"Purchase applied exactly. Review the result, then leave to continue."
+		)
+		shop_cooling_choice.disabled = true
+		shop_cooling_choice.text = (
+			"PURCHASE COMPLETE\n%d COINS -> %d  /  HEAT %d -> %d\nTIER %d -> %d  /  STOCK %d -> %d"
+			% [
+				int(result.get("coins_before", 0)), int(result.get("coins_after", 0)),
+				int(result.get("heat_before", 0)), int(result.get("heat_after", 0)),
+				int(result.get("heat_tier_before", 0)), int(result.get("heat_tier_after", 0)),
+				int(result.get("global_stock_before", 0)), int(result.get("global_stock_after", 0)),
+			]
+		)
+		shop_cooling_choice.set_visual_state(
+			NeonChoiceCard.VisualState.DISABLED,
+			"PURCHASE COMPLETE  /  LEAVE SHOP"
+		)
+		shop_leave_choice.text = "LEAVE SHOP\nPURCHASE COMPLETE  /  KEEP %d COINS\nGLOBAL STOCK %d REMAINS" % [
+			int(result.get("coins_after", 0)),
+			int(result.get("global_stock_after", 0)),
+		]
+		shop_comparison.present(
+			"PURCHASE COMPLETE",
+			"HEAT %d  /  TIER %d" % [
+				int(result.get("heat_before", 0)), int(result.get("heat_tier_before", 0)),
+			],
+			"HEAT %d  /  TIER %d" % [
+				int(result.get("heat_after", 0)), int(result.get("heat_tier_after", 0)),
+			],
+			"REWARD QUALITY %d -> %d  /  COIN x%.2f -> x%.2f  /  NIGHT PRESSURE %.1f UNCHANGED" % [
+				int(result.get("reward_quality_before", 0)),
+				int(result.get("reward_quality_after", 0)),
+				float(result.get("reward_multiplier_before", 1.0)),
+				float(result.get("reward_multiplier_after", 1.0)),
+				float(result.get("night_pressure", 0.0)),
+			],
+			true
+		)
+		action_toast.hide()
+	else:
+		action_toast.show_message(
+			"SHOP UNCHANGED  /  %s" % String(result.get("reason", &"request_rejected")).replace("_", " ").to_upper(),
+			NeonToast.Tone.WARNING
+		)
 
 
 func present_run_summary(summary: RunSummaryRecord) -> void:
@@ -1765,6 +1963,23 @@ func present_action_feedback(message: String) -> void:
 	_hydrant_feedback = message
 	hydrant_feedback_label.text = message
 	action_toast.show_message(message, NeonToast.Tone.INFO)
+
+
+func present_build_callout(
+	icon: Texture2D,
+	heading: String,
+	detail: String,
+	event_key: StringName,
+	at_msec: int = -1
+) -> bool:
+	if build_callout == null:
+		return false
+	return build_callout.present(icon, heading, detail, event_key, at_msec)
+
+
+func clear_build_callout() -> void:
+	if build_callout != null:
+		build_callout.clear()
 
 
 ## Presents an authoritative Hydrant snapshot. State values use the local
@@ -2011,7 +2226,10 @@ func _on_subway_reroute_pressed() -> void:
 
 
 func _on_shop_cooling_pressed() -> void:
-	shop_cooling_requested.emit()
+	shop_cooling_requested.emit(
+		int(_shop_snapshot.get("shop_visit_revision", -1)),
+		StringName(_shop_snapshot.get("shop_visit_source_id", &""))
+	)
 
 
 func _on_extraction_pressed() -> void:
@@ -2386,11 +2604,14 @@ func _stage_inventory_destination(target_area: StringName, target_slot: int) -> 
 		and target_id == &""
 	):
 		_pending_inventory_action = &"move_to_backpack"
+	_request_inventory_preview()
 	_refresh_inventory_action_presentation()
 
 
 func _on_equipment_drag_started(payload: EquipmentDragPayload) -> void:
 	if payload.origin == EquipmentDragPayload.Origin.REWARD:
+		_reward_drag_active = true
+		_refresh_equipment_reward_presentation()
 		reward_instruction_label.text = (
 			"DRAGGING %s • HIGHLIGHTED ACTIVE/BACKPACK SLOTS ARE VALID • RELEASE TO STAGE"
 			% payload.display_name.to_upper()
@@ -2405,13 +2626,18 @@ func _on_equipment_drag_ended(
 	payload: EquipmentDragPayload,
 	successful: bool
 ) -> void:
+	if payload.origin == EquipmentDragPayload.Origin.REWARD:
+		_reward_drag_active = false
+		if equipment_reward_panel.visible:
+			_refresh_equipment_reward_presentation()
+		if not successful and equipment_reward_panel.visible:
+			reward_instruction_label.text = (
+				"INVALID / OUTSIDE DROP • GEAR RETURNED • INVENTORY UNCHANGED"
+			)
+		return
 	if successful:
 		return
-	if payload.origin == EquipmentDragPayload.Origin.REWARD and equipment_reward_panel.visible:
-		reward_instruction_label.text = (
-			"INVALID / OUTSIDE DROP • GEAR RETURNED • INVENTORY UNCHANGED"
-		)
-	elif payload.origin == EquipmentDragPayload.Origin.INVENTORY and build_details_panel.visible:
+	if payload.origin == EquipmentDragPayload.Origin.INVENTORY and build_details_panel.visible:
 		inventory_action_prompt.text = (
 			"INVALID / OUTSIDE DROP • ITEM RETURNED • INVENTORY UNCHANGED"
 		)
@@ -2457,6 +2683,7 @@ func _on_reward_drag_drop(
 		or _equipment_choice_in_flight
 		or not equipment_reward_panel.visible
 		or payload.encounter_id != _reward_encounter_id
+		or (payload.choice_token >= 0 and payload.choice_token != _reward_choice_token)
 		or payload.inventory_revision != int(_build_snapshot.get("inventory_revision", -1))
 		or payload.choice_index < 0
 		or payload.choice_index >= _reward_choices.size()
@@ -2480,6 +2707,7 @@ func _on_inventory_discard_pressed() -> void:
 		return
 	_pending_inventory_action = &"discard"
 	_pending_inventory_target = -1
+	_request_inventory_preview()
 	_refresh_inventory_action_presentation()
 
 
@@ -2526,8 +2754,23 @@ func _on_inventory_confirm_pressed() -> void:
 func _clear_inventory_pending_action() -> void:
 	_pending_inventory_action = &""
 	_pending_inventory_target = -1
+	_pending_inventory_preview.clear()
 	if is_node_ready():
 		_refresh_inventory_action_presentation()
+
+
+func _request_inventory_preview() -> void:
+	_pending_inventory_preview.clear()
+	if _pending_inventory_action == &"" or _selected_inventory_id == &"":
+		return
+	inventory_preview_requested.emit(
+		_pending_inventory_action,
+		_selected_inventory_area,
+		_selected_inventory_slot,
+		_pending_inventory_target,
+		_selected_inventory_id,
+		int(_build_snapshot.get("inventory_revision", -1))
+	)
 
 
 func _on_reward_target_pressed(slot_index: int) -> void:
@@ -2603,6 +2846,8 @@ func _on_reward_confirm_pressed() -> void:
 	if _selected_reward_destination == SynergySystem.AREA_EQUIPPED:
 		backpack_slot = _selected_reward_outgoing_backpack_slot
 	equipment_acquisition_requested.emit(
+		_reward_encounter_id,
+		_reward_choice_token,
 		_selected_reward_choice,
 		_selected_reward_destination,
 		_selected_reward_slot,
@@ -2616,7 +2861,7 @@ func _on_reward_keep_current_pressed() -> void:
 	if _equipment_choice_in_flight or _reward_encounter_id < 0:
 		return
 	_equipment_choice_in_flight = true
-	equipment_reward_decline_requested.emit()
+	equipment_reward_decline_requested.emit(_reward_encounter_id, _reward_choice_token)
 
 
 func _clear_reward_selection() -> void:
@@ -3431,6 +3676,22 @@ func _humanize_card_result(reason: String) -> String:
 	return normalized.replace("_", " ").to_upper()
 
 
+func _shop_rejection_label(reason: StringName, coins: int, cost: int) -> String:
+	match reason:
+		&"sold_out":
+			return "SOLD OUT  /  NO MORE THIS RUN"
+		&"visit_limit_reached":
+			return "PURCHASE USED  /  LEAVE SHOP"
+		&"heat_already_zero":
+			return "HEAT ALREADY 0  /  NO BENEFIT"
+		&"insufficient_coins":
+			return "NEED %d MORE COINS" % maxi(cost - coins, 0)
+		&"stale_visit", &"wrong_shop_source", &"wrong_source", &"malformed_request", &"malformed_context":
+			return "SHOP CHANGED  /  REVIEW AGAIN"
+		_:
+			return "UNAVAILABLE  /  %s" % String(reason).replace("_", " ").to_upper()
+
+
 func _refresh_run_actions(
 	state: int,
 	encounter_name: String,
@@ -3758,6 +4019,7 @@ func _refresh_equipment_reward_presentation() -> void:
 			slot_index + 1,
 			str(slot.get("display_name", "EMPTY")).to_upper(),
 		]
+		_reward_target_buttons[slot_index].visible = has_choice or _reward_drag_active
 		_reward_target_buttons[slot_index].disabled = (
 			not has_rewards or _equipment_choice_in_flight
 		)
@@ -3779,6 +4041,7 @@ func _refresh_equipment_reward_presentation() -> void:
 			slot_index + 1,
 			str(backpack_slot.get("display_name", "EMPTY")).to_upper(),
 		]
+		_reward_store_buttons[slot_index].visible = has_choice or _reward_drag_active
 		_reward_store_buttons[slot_index].disabled = (
 			not has_rewards or _equipment_choice_in_flight
 		)
@@ -3799,15 +4062,35 @@ func _refresh_equipment_reward_presentation() -> void:
 		var item: EquipmentDefinition = _reward_choices[choice_index]
 		var preview: Dictionary = {}
 		var choice_text: String = ""
-		if _selected_reward_destination == SynergySystem.AREA_EQUIPPED:
-			preview = _preview_for_choice(choice_index, _selected_reward_slot)
+		if (
+			choice_index == _selected_reward_choice
+			and _selected_reward_destination == SynergySystem.AREA_EQUIPPED
+		):
+			preview = _preview_for_choice(
+				choice_index,
+				_selected_reward_slot,
+				_selected_reward_outgoing_backpack_slot
+			)
 			choice_text = _format_equipment_choice(item, preview)
-		else:
+		elif (
+			choice_index == _selected_reward_choice
+			and _selected_reward_destination == SynergySystem.AREA_BACKPACK
+		):
+			preview = _storage_preview_for_choice(
+				choice_index,
+				_selected_reward_backpack_slot
+			)
+			choice_text = _format_equipment_choice(item, preview)
+			if not choice_text.contains("STORE: INACTIVE UNTIL EQUIPPED"):
+				choice_text += "\nSTORE: INACTIVE UNTIL EQUIPPED"
+		elif choice_index == _selected_reward_choice:
 			choice_text = _format_equipment_choice_overview(
 				item,
 				choice_index,
 				_selected_reward_destination == SynergySystem.AREA_BACKPACK
 			)
+		else:
+			choice_text = _format_equipment_choice(item, {"valid": true})
 		button.text = ""
 		_reward_choice_details[choice_index].text = "%s%s" % [
 			"> SELECTED\n" if choice_index == _selected_reward_choice else "",
@@ -3815,13 +4098,15 @@ func _refresh_equipment_reward_presentation() -> void:
 		]
 		button.icon = null
 		_reward_choice_icons[choice_index].texture = item.icon
-		button.tooltip_text = item.description
 		button.set_visual_state(
 			NeonChoiceCard.VisualState.SELECTED
 			if choice_index == _selected_reward_choice
 			else NeonChoiceCard.VisualState.DEFAULT,
 			"SELECTED" if choice_index == _selected_reward_choice else ""
 		)
+		# The card already contains the authored item details. A second hover
+		# layer obscures the modal instead of adding useful information.
+		button.tooltip_text = ""
 		button.configure_drag_source(
 			EquipmentDragPayload.new(
 				EquipmentDragPayload.Origin.REWARD,
@@ -3832,7 +4117,8 @@ func _refresh_equipment_reward_presentation() -> void:
 				item.display_name,
 				int(_build_snapshot.get("inventory_revision", -1)),
 				_reward_encounter_id,
-				item.icon
+				item.icon,
+				_reward_choice_token
 			),
 			not _equipment_choice_in_flight
 		)
@@ -3882,84 +4168,32 @@ func _refresh_equipment_reward_presentation() -> void:
 		]
 
 	if not has_choice:
-		reward_instruction_label.text = (
-			"DRAG GEAR TO A SLOT • OR CLICK GEAR + DESTINATION • REVIEW • CONFIRM"
-		)
+		reward_instruction_label.text = "1. CHOOSE OR DRAG ONE ITEM • OR SKIP"
 	elif _selected_reward_destination == &"":
-		reward_instruction_label.text = (
-			"GEAR SELECTED • DRAG IT OR CLICK AN ACTIVE/BACKPACK DESTINATION"
-		)
+		reward_instruction_label.text = "2. CHOOSE ACTIVE OR BACKPACK SLOT"
 	else:
-		reward_instruction_label.text = (
-			"DESTINATION STAGED • REVIEW CONSEQUENCES BELOW • CONFIRM TO APPLY"
-		)
+		reward_instruction_label.text = "3. REVIEW THE RESULT • CONFIRM"
 	reward_confirmation_label.text = _reward_confirmation_text()
+	_set_rect(
+		reward_confirmation_label,
+		Rect2(
+			20.0,
+			544.0 if full_backpack_choice_required else 506.0,
+			740.0,
+			62.0 if full_backpack_choice_required else 100.0
+		)
+	)
+	var inventory_full: bool = int(_build_snapshot.get("owned_count", 0)) >= (
+		SynergySystem.SLOT_COUNT + SynergySystem.BACKPACK_SLOT_COUNT
+	)
+	reward_confirmation_label.visible = has_choice or inventory_full
+	reward_confirm_button.visible = has_choice
+	reward_cancel_button.visible = has_choice
 	reward_confirm_button.disabled = (
 		_equipment_choice_in_flight or not _reward_selection_is_complete()
 	)
 	reward_cancel_button.disabled = _equipment_choice_in_flight or not has_choice
 	reward_keep_current_button.disabled = _equipment_choice_in_flight
-	_refresh_reward_comparison()
-
-
-func _refresh_reward_comparison() -> void:
-	if _selected_reward_choice < 0 or _selected_reward_choice >= _reward_choices.size():
-		reward_comparison.present(
-			"BUILD PREVIEW",
-			"CURRENT BUILD",
-			"SELECT GEAR",
-			"Choose a reward, then an active or backpack destination for exact consequences.",
-			false
-		)
-		return
-	var item: EquipmentDefinition = _reward_choices[_selected_reward_choice]
-	if _selected_reward_destination == &"":
-		reward_comparison.present(
-			"BUILD PREVIEW",
-			"CURRENT BUILD",
-			item.display_name.to_upper(),
-			"Choose an active or backpack destination to calculate the exact result.",
-			false
-		)
-		return
-	if _selected_reward_destination == SynergySystem.AREA_BACKPACK:
-		var stored: Dictionary = _inventory_slot(
-			SynergySystem.AREA_BACKPACK,
-			_selected_reward_backpack_slot
-		)
-		reward_comparison.present(
-			"BACKPACK PREVIEW",
-			str(stored.get("display_name", "EMPTY")).to_upper(),
-			item.display_name.to_upper(),
-			"Stored gear remains inactive until equipped. Confirm is required.",
-			true
-		)
-		return
-	var active: Dictionary = _inventory_slot(
-		SynergySystem.AREA_EQUIPPED,
-		_selected_reward_slot
-	)
-	var preview: Dictionary = _preview_for_choice(
-		_selected_reward_choice,
-		_selected_reward_slot
-	)
-	var changes: PackedStringArray = PackedStringArray()
-	var activations: Array = preview.get("immediate_activations", [])
-	var deactivations: Array = preview.get("deactivations", [])
-	if not activations.is_empty():
-		changes.append("ACTIVATES %s" % _join_synergy_ids(activations))
-	if not deactivations.is_empty():
-		changes.append("DEACTIVATES %s" % _join_synergy_ids(deactivations))
-	if changes.is_empty():
-		changes.append("NO IMMEDIATE SYNERGY THRESHOLD CHANGE")
-	changes.append("CONFIRM REQUIRED  /  BACKPACK CONSEQUENCES REMAIN EXPLICIT")
-	reward_comparison.present(
-		"ACTIVE BUILD PREVIEW",
-		str(active.get("display_name", "EMPTY")).to_upper(),
-		item.display_name.to_upper(),
-		"  /  ".join(changes),
-		bool(preview.get("valid", false))
-	)
 
 
 func _present_inventory_slot_button(
@@ -4040,6 +4274,7 @@ func _clear_inventory_selection() -> void:
 	_selected_inventory_id = &""
 	_pending_inventory_action = &""
 	_pending_inventory_target = -1
+	_pending_inventory_preview.clear()
 	_inventory_action_in_flight = false
 
 
@@ -4104,12 +4339,12 @@ func _refresh_inventory_action_presentation() -> void:
 		)
 		return
 	if _pending_inventory_action == &"discard":
-		inventory_action_prompt.text = (
+		inventory_action_prompt.text = _with_inventory_preview(
 			"DISCARD %s?\nPERMANENT • CONFIRM REQUIRED." % selected_name
 		)
 		return
 	if _pending_inventory_action == &"move_to_backpack":
-		inventory_action_prompt.text = (
+		inventory_action_prompt.text = _with_inventory_preview(
 			"BACKPACK %d: %s\nNO ITEM WILL BE LOST." % [
 				_pending_inventory_target + 1,
 				selected_name,
@@ -4127,18 +4362,50 @@ func _refresh_inventory_action_presentation() -> void:
 	)
 	var target_id: StringName = StringName(target.get("id", &""))
 	if target_id != &"":
-		inventory_action_prompt.text = "SWAP %s\nWITH %s • KEEP BOTH." % [
-			selected_name,
-			str(target.get("display_name", "ITEM")).to_upper(),
-		]
+		inventory_action_prompt.text = _with_inventory_preview(
+			"SWAP %s\nWITH %s • KEEP BOTH." % [
+				selected_name,
+				str(target.get("display_name", "ITEM")).to_upper(),
+			]
+		)
 		return
-	inventory_action_prompt.text = (
+	inventory_action_prompt.text = _with_inventory_preview(
 		"ACTIVE %d: %s\nBACKPACK %d BECOMES EMPTY." % [
 			_pending_inventory_target + 1,
 			selected_name,
 			_selected_inventory_slot + 1,
 		]
 	)
+
+
+func _with_inventory_preview(base_text: String) -> String:
+	if not bool(_pending_inventory_preview.get("valid", false)):
+		return base_text
+	_present_inventory_preview_details()
+	return base_text
+
+
+func _present_inventory_preview_details() -> void:
+	var parts: PackedStringArray = PackedStringArray(["TRANSACTION PREVIEW"])
+	var activations: Array = _pending_inventory_preview.get("immediate_activations", [])
+	var deactivations: Array = _pending_inventory_preview.get("deactivations", [])
+	var edges: PackedStringArray = PackedStringArray()
+	if not activations.is_empty():
+		edges.append("ACTIVATE %s" % _join_synergy_ids(activations))
+	if not deactivations.is_empty():
+		edges.append("LOSE %s" % _join_synergy_ids(deactivations))
+	if not edges.is_empty():
+		parts.append("  /  ".join(edges))
+	var changes: Array = _pending_inventory_preview.get("exact_changes", [])
+	for index: int in range(mini(changes.size(), 4)):
+		parts.append(_format_exact_change(changes[index] as Dictionary))
+	var post_state: String = _format_post_inventory_state(_pending_inventory_preview)
+	if not post_state.is_empty():
+		parts.append(post_state)
+	var next_fight: String = str(_pending_inventory_preview.get("next_fight_consequence", ""))
+	if not next_fight.is_empty():
+		parts.append("NEXT FIGHT: %s" % next_fight)
+	equipment_details_label.text = "\n".join(parts)
 
 
 func _first_empty_backpack_slot() -> int:
@@ -4205,70 +4472,133 @@ func _reward_replaces_stored_item() -> bool:
 
 
 func _reward_confirmation_text() -> String:
+	var reward_line: String = _standard_reward_line()
 	if _selected_reward_choice < 0 or _selected_reward_choice >= _reward_choices.size():
 		if int(_build_snapshot.get("owned_count", 0)) >= (
 			SynergySystem.SLOT_COUNT + SynergySystem.BACKPACK_SLOT_COUNT
 		):
-			return (
-				"INVENTORY FULL: 3 EQUIPPED + 3 STORED. REPLACE AN ITEM OR SKIP GEAR; "
-				+ "YOUR RUN REWARD IS STILL GRANTED."
-			)
-		return "SELECT AN ITEM. NOTHING CHANGES UNTIL YOU CONFIRM."
+			return "INVENTORY FULL: REPLACE ONE EXACT ITEM OR SKIP GEAR.\n%s" % reward_line
+		return "SELECT AN ITEM. NOTHING CHANGES UNTIL CONFIRM.\n%s" % reward_line
 	var item: EquipmentDefinition = _reward_choices[_selected_reward_choice]
 	if _selected_reward_destination == &"":
-		return (
-			"%s SELECTED. CHOOSE AN ACTIVE SLOT OR BACKPACK SLOT. NOTHING HAS CHANGED."
-			% item.display_name.to_upper()
-		)
+		return "%s SELECTED. CHOOSE ACTIVE OR BACKPACK; NOTHING CHANGED.\n%s" % [
+			item.display_name.to_upper(),
+			reward_line,
+		]
+	var transaction: String = ""
+	var preview: Dictionary = {}
 	if _selected_reward_destination == SynergySystem.AREA_BACKPACK:
 		var stored: Dictionary = _inventory_slot(
 			SynergySystem.AREA_BACKPACK,
 			_selected_reward_backpack_slot
 		)
 		var stored_id: StringName = StringName(stored.get("id", &""))
-		return "CONFIRM: STORE %s IN BACKPACK SLOT %d. %s" % [
+		transaction = "STORE %s -> BACKPACK SLOT %d • %s" % [
 			item.display_name.to_upper(),
 			_selected_reward_backpack_slot + 1,
 			(
-				"%s WILL BE DISCARDED." % str(stored.get("display_name", "")).to_upper()
+				"DISCARD %s" % str(stored.get("display_name", "")).to_upper()
 				if stored_id != &""
-				else "NO ITEM WILL BE LOST."
+				else "NO ITEM LOST"
 			),
 		]
-	var active: Dictionary = _inventory_slot(
-		SynergySystem.AREA_EQUIPPED,
-		_selected_reward_slot
-	)
-	var active_id: StringName = StringName(active.get("id", &""))
-	if active_id == &"":
-		return "CONFIRM: EQUIP %s IN ACTIVE SLOT %d. NO ITEM WILL BE LOST." % [
-			item.display_name.to_upper(),
-			_selected_reward_slot + 1,
-		]
-	if _selected_reward_outgoing_backpack_slot < 0:
-		return "BACKPACK FULL: CHOOSE A STORED ITEM TO DISCARD, OR SKIP GEAR."
-	var displaced: Dictionary = _inventory_slot(
-		SynergySystem.AREA_BACKPACK,
-		_selected_reward_outgoing_backpack_slot
-	)
-	var displaced_id: StringName = StringName(displaced.get("id", &""))
-	return "CONFIRM: EQUIP %s IN ACTIVE %d. %s TO BACKPACK SLOT %d. %s" % [
-		item.display_name.to_upper(),
-		_selected_reward_slot + 1,
-		str(active.get("display_name", "")).to_upper(),
-		_selected_reward_outgoing_backpack_slot + 1,
-		(
-			"%s WILL BE DISCARDED." % str(displaced.get("display_name", "")).to_upper()
-			if displaced_id != &""
-			else "NO ITEM WILL BE LOST."
-		),
+		preview = _storage_preview_for_choice(
+			_selected_reward_choice,
+			_selected_reward_backpack_slot
+		)
+	else:
+		var active: Dictionary = _inventory_slot(
+			SynergySystem.AREA_EQUIPPED,
+			_selected_reward_slot
+		)
+		var active_id: StringName = StringName(active.get("id", &""))
+		if active_id == &"":
+			transaction = "EQUIP %s -> ACTIVE %d • NO ITEM LOST" % [
+				item.display_name.to_upper(),
+				_selected_reward_slot + 1,
+			]
+		else:
+			if _selected_reward_outgoing_backpack_slot < 0:
+				return "BACKPACK FULL: CHOOSE THE EXACT STORED ITEM TO DISCARD, OR SKIP.\n%s" % reward_line
+			var displaced: Dictionary = _inventory_slot(
+				SynergySystem.AREA_BACKPACK,
+				_selected_reward_outgoing_backpack_slot
+			)
+			var displaced_id: StringName = StringName(displaced.get("id", &""))
+			transaction = "EQUIP %s -> ACTIVE %d • %s -> PACK %d • %s" % [
+				item.display_name.to_upper(),
+				_selected_reward_slot + 1,
+				str(active.get("display_name", "")).to_upper(),
+				_selected_reward_outgoing_backpack_slot + 1,
+				(
+					"DISCARD %s" % str(displaced.get("display_name", "")).to_upper()
+					if displaced_id != &""
+					else "NO ITEM LOST"
+				),
+			]
+		preview = _preview_for_choice(
+			_selected_reward_choice,
+			_selected_reward_slot,
+			_selected_reward_outgoing_backpack_slot
+		)
+	var lines: PackedStringArray = PackedStringArray([transaction])
+	var post_state: String = _format_post_inventory_state(preview)
+	if not post_state.is_empty() and not _reward_needs_full_backpack_choice():
+		lines.append(post_state)
+	lines.append(reward_line)
+	return "\n".join(lines)
+
+
+func _standard_reward_line() -> String:
+	if _standard_reward_preview.is_empty():
+		return "RUN REWARD IS KEPT ON CONFIRM OR SKIP GEAR"
+	return "REWARD: %s • +%d COINS • +%d SCRAP • SKIP KEEPS IT" % [
+		str(_standard_reward_preview.get("display_name", "REWARD")).to_upper(),
+		int(_standard_reward_preview.get("awarded_coins", _standard_reward_preview.get("coins", 0))),
+		int(_standard_reward_preview.get("awarded_scrap", _standard_reward_preview.get("scrap", 0))),
 	]
 
 
-func _preview_for_choice(choice_index: int, slot_index: int) -> Dictionary:
+func _reward_synergy_edge_line(preview: Dictionary) -> String:
+	var parts: PackedStringArray = PackedStringArray()
+	var activations: Array = preview.get("immediate_activations", [])
+	var deactivations: Array = preview.get("deactivations", [])
+	if not activations.is_empty():
+		parts.append("ACTIVATE %s" % _join_synergy_ids(activations))
+	if not deactivations.is_empty():
+		parts.append("LOSE %s" % _join_synergy_ids(deactivations))
+	return "  /  ".join(parts)
+
+
+func _preview_for_choice(
+	choice_index: int,
+	slot_index: int,
+	outgoing_backpack_slot: int = -1
+) -> Dictionary:
 	if choice_index < 0 or choice_index >= _reward_previews_by_choice.size():
 		return {"valid": false}
+	if outgoing_backpack_slot >= 0:
+		var matrix: Array = _reward_previews_by_choice[choice_index].get(
+			"by_slot_and_backpack",
+			[]
+		)
+		if slot_index >= 0 and slot_index < matrix.size():
+			var by_backpack: Array = matrix[slot_index] as Array
+			if outgoing_backpack_slot < by_backpack.size():
+				return by_backpack[outgoing_backpack_slot] as Dictionary
 	var by_slot: Array = _reward_previews_by_choice[choice_index].get("by_slot", [])
+	if slot_index < 0 or slot_index >= by_slot.size():
+		return {"valid": false}
+	return by_slot[slot_index] as Dictionary
+
+
+func _storage_preview_for_choice(choice_index: int, slot_index: int) -> Dictionary:
+	if choice_index < 0 or choice_index >= _reward_previews_by_choice.size():
+		return {"valid": false}
+	var by_slot: Array = _reward_previews_by_choice[choice_index].get(
+		"by_backpack_slot",
+		[]
+	)
 	if slot_index < 0 or slot_index >= by_slot.size():
 		return {"valid": false}
 	return by_slot[slot_index] as Dictionary
@@ -4328,17 +4658,25 @@ func _format_equipment_choice_overview(
 		lines.append("CAN OPEN: %s" % " • ".join(alternative_parts))
 	if stored_destination:
 		lines.append("STORE: INACTIVE UNTIL EQUIPPED")
-	else:
-		lines.append("CHOOSE ACTIVE SLOT FOR EXACT RESULT")
 	return "\n".join(lines)
 
 
 func _format_equipment_choice(item: EquipmentDefinition, preview: Dictionary) -> String:
 	var lines: PackedStringArray = PackedStringArray()
 	lines.append(item.display_name.to_upper())
+	if not item.role_label.strip_edges().is_empty():
+		lines.append(item.role_label.to_upper())
+	var promise_prefix: String = (
+		"NEXT: "
+		if not (preview.get("exact_changes", []) as Array).is_empty()
+		else "PROMISE: "
+	)
+	if not item.combat_promise.strip_edges().is_empty():
+		lines.append_array(_wrap_compact(
+			promise_prefix + item.combat_promise.to_upper(),
+			31
+		))
 	lines.append("[%s]" % _join_string_names(item.sorted_tags()))
-	for effect_text: String in item.major_effects:
-		lines.append_array(_wrap_compact("• %s" % effect_text, 44))
 	var replaced_name: String = str(preview.get("replaces_name", ""))
 	if not replaced_name.is_empty():
 		lines.append("REPLACE: %s" % replaced_name.to_upper())
@@ -4351,6 +4689,10 @@ func _format_equipment_choice(item: EquipmentDefinition, preview: Dictionary) ->
 		immediate_parts.append("-%s" % _join_synergy_ids(deactivations))
 	if not immediate_parts.is_empty():
 		lines.append("NOW: %s" % " • ".join(immediate_parts))
+	var exact_changes: Array = preview.get("exact_changes", [])
+	var prioritized_changes: Array[Dictionary] = _prioritize_exact_changes(exact_changes)
+	for change_index: int in range(mini(prioritized_changes.size(), 2)):
+		lines.append(_format_exact_change(prioritized_changes[change_index]))
 	var alternative: Array = preview.get("alternative_progress", [])
 	if not alternative.is_empty():
 		var alternative_parts: PackedStringArray = PackedStringArray()
@@ -4362,6 +4704,8 @@ func _format_equipment_choice(item: EquipmentDefinition, preview: Dictionary) ->
 				int(entry.get("threshold", 0)),
 			])
 		lines.append("OTHER PATH: %s" % " • ".join(alternative_parts))
+	if bool(preview.get("stored_inactive", false)):
+		lines.append("STORE: INACTIVE UNTIL EQUIPPED")
 	if not bool(preview.get("valid", false)):
 		lines.append("SELECT TO REVIEW BUILD PATHS")
 	return "\n".join(lines)
@@ -4377,6 +4721,62 @@ func _equipment_slot_tooltip(slot: Dictionary) -> String:
 		lines.append("• %s" % str(effect_text))
 	lines.append("Click to inspect or drag between columns. Dropping never discards an item.")
 	return "\n".join(lines)
+
+
+func _format_exact_change(change: Dictionary) -> String:
+	return "%s %s -> %s" % [
+		str(change.get("label", "VALUE")).to_upper(),
+		BuildConsequenceEvaluator.format_value(change, &"before"),
+		BuildConsequenceEvaluator.format_value(change, &"after"),
+	]
+
+
+func _prioritize_exact_changes(values: Array) -> Array[Dictionary]:
+	var gains: Array[Dictionary] = []
+	var tradeoffs: Array[Dictionary] = []
+	for value: Variant in values:
+		var change: Dictionary = value as Dictionary
+		var before: float = float(change.get("before", 0.0))
+		var after: float = float(change.get("after", 0.0))
+		var higher_is_better: bool = bool(change.get("higher_is_better", true))
+		var improvement: bool = (
+			after > before if higher_is_better else after < before
+		)
+		(gains if improvement else tradeoffs).append(change)
+	var result: Array[Dictionary] = []
+	if not gains.is_empty():
+		result.append(gains.pop_front())
+	if not tradeoffs.is_empty():
+		result.append(tradeoffs.pop_front())
+	result.append_array(gains)
+	result.append_array(tradeoffs)
+	return result
+
+
+func _format_post_inventory_state(preview: Dictionary) -> String:
+	var active_names: PackedStringArray = _compact_inventory_names(
+		preview.get("slots_after", [])
+	)
+	var backpack_names: PackedStringArray = _compact_inventory_names(
+		preview.get("backpack_slots_after", [])
+	)
+	if active_names.is_empty() and backpack_names.is_empty():
+		return ""
+	return "AFTER ACTIVE: %s  /  BACKPACK: %s" % [
+		" | ".join(active_names),
+		" | ".join(backpack_names),
+	]
+
+
+func _compact_inventory_names(values: Variant) -> PackedStringArray:
+	var result: PackedStringArray = PackedStringArray()
+	if not (values is Array):
+		return result
+	for value: Variant in values as Array:
+		var slot: Dictionary = value as Dictionary
+		var name: String = str(slot.get("display_name", "EMPTY")).to_upper()
+		result.append(name.substr(0, mini(name.length(), 10)))
+	return result
 
 
 func _first_empty_build_slot() -> int:

@@ -60,6 +60,8 @@ class AcquisitionIntentCapture:
 	var revision: int = -1
 
 	func on_acquisition(
+		_encounter_instance_id: int,
+		_choice_token: int,
 		new_choice_index: int,
 		new_destination: StringName,
 		new_equipment_slot: int,
@@ -231,6 +233,8 @@ func test_pointer_threshold_fallback_starts_native_drag_without_mutation() -> vo
 		payload,
 		"pointer fallback: threshold begins the native viewport drag"
 	)
+	_expect_true(hud.reward_target_01.visible, "pointer fallback: drag reveals active targets")
+	_expect_true(hud.reward_store_01.visible, "pointer fallback: drag reveals backpack targets")
 	_expect_equal(drag_starts.size(), 1, "pointer fallback: drag start emits exactly once")
 	source._gui_input(drag_motion)
 	_expect_equal(drag_starts.size(), 1, "pointer fallback: later motion does not emit twice")
@@ -411,7 +415,7 @@ func test_reward_drag_to_active_stages_preview_and_applies_only_after_confirm() 
 	_expect_equal(hud.get_selected_reward_destination(), SynergySystem.AREA_EQUIPPED, "reward drag: active destination")
 	_expect_equal(hud.get_selected_reward_slot(), 2, "reward drag: third active slot")
 	_expect_equal(capture.count, 0, "reward drag: drop does not mutate")
-	_expect_contains(hud.reward_instruction_label.text, "DESTINATION STAGED", "reward drag: staged state is explicit")
+	_expect_contains(hud.reward_instruction_label.text, "REVIEW THE RESULT", "reward drag: staged state is explicit")
 	hud.reward_confirm_button.pressed.emit()
 	hud.reward_confirm_button.pressed.emit()
 	_expect_equal(capture.count, 1, "reward drag: Confirm forwards exactly once")

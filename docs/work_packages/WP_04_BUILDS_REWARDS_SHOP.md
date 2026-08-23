@@ -1,6 +1,6 @@
 # WP04 — Builds, Rewards, and Shop
 
-Status: proposed; requires completed WP02 and WP03
+Status: implemented, technically evidenced, and owner-authorized for `main`/Pages browser playtest — 2026-08-22; five-person consequence/variety gate pending
 Branch suggestion: `codex/wp-04-build-consequence`
 
 ## Outcome
@@ -35,6 +35,21 @@ Make equipment, synergy, reward, and shop decisions visibly consequential in the
 - Full inventory, replacement, swap, storage, discard, skip, affordability, and stale-token paths remain lossless and exact.
 - Equipment/reward streams, restart, summaries, and cumulative tests remain deterministic and clean.
 - Shop state is visually and interactively unmistakable.
+
+Technical/runtime/visual/platform portion: **Passed.** Evidence: [WP04 acceptance evidence](../product/WP04_ACCEPTANCE_EVIDENCE.md), [consequence audit](../product/WP04_CONSEQUENCE_AUDIT.md), and [authority map](../product/WP04_CURRENT_TO_TARGET_AUTHORITY_MAP.md). The owner-run qualitative checkpoint remains pending under [the fixed procedure](../product/WP04_UNBRIEFED_CONSEQUENCE_VARIETY_CHECK.md).
+
+## Implemented result
+
+- Preserved the exact nine-item/three-synergy catalogue, three active slots, three-slot backpack, finite shop, all stable IDs, and schema 1.
+- Repaired dormant/misleading existing behavior only: Shock +25% Environment vulnerability, complete build-speed cadence, Serrated 35% on-hit Bleed, and Chain +10% knockback distance.
+- Applied the existing Heat multiplier to coins only; Scrap remains raw.
+- Added monotonic equipment tokens and shop revisions/sources plus immutable exact transaction snapshots.
+- Extended the owner-carried single staged reward layer with exact destination/outgoing/post-state/synergy/value/payout/next-fight copy; it does not restore the removed comparison overlay.
+- Added exact finite-stock/affordability/purchase/decline/exit shop presentation and rate-limited combat build acknowledgement.
+- Locked three disjoint builds using all nine items once and no shared core.
+- Passed **15/15 focused tests/247 assertions**, **226/226 affected tests/3,175 assertions**, and **291/291 cumulative tests/4,192 assertions across 30 suites**, plus configured runtime, input parity, four inspected captures, Windows/Web exports, exported Windows runtime, and local production-Web checks.
+
+No rarity, affix, set, selling, salvage, new economy/content, permanent power, save/schema change, or WP05 mechanic is included. The owner separately authorized only this exact evidenced boundary for `main`/Pages publication on 2026-08-22.
 
 ## Recommended parts
 

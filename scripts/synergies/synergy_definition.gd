@@ -8,6 +8,8 @@ extends Resource
 @export var id: StringName
 
 @export var display_name: String = "Synergy"
+@export var role_label: String = ""
+@export_multiline var combat_promise: String = ""
 @export var badge: Texture2D
 @export var required_tag: StringName
 @export_range(1, 99, 1) var threshold: int = 2
@@ -22,6 +24,14 @@ func validation_errors() -> PackedStringArray:
 		errors.append("synergy id is empty")
 	if display_name.strip_edges().is_empty():
 		errors.append("synergy '%s' has no display name" % id)
+	if role_label.strip_edges().is_empty():
+		errors.append("synergy '%s' has no role label" % id)
+	elif role_label.length() > 40 or "\n" in role_label:
+		errors.append("synergy '%s' role label must be one concise line" % id)
+	if combat_promise.strip_edges().is_empty():
+		errors.append("synergy '%s' has no combat promise" % id)
+	elif combat_promise.length() > 160 or "\n" in combat_promise:
+		errors.append("synergy '%s' combat promise must be one concise line" % id)
 	if required_tag == &"":
 		errors.append("synergy '%s' has no required tag" % id)
 	if threshold <= 0:

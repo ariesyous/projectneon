@@ -172,7 +172,9 @@ func claim_equipment_reward_to_inventory(
 	equipment_slot: int,
 	backpack_slot: int,
 	replace_confirmed: bool,
-	expected_revision: int
+	expected_revision: int,
+	expected_encounter_instance_id: int = -1,
+	expected_choice_token: int = -1
 ) -> bool:
 	if (
 		_run_director.current_state != RunDirector.RunState.REWARD_SELECTION
@@ -185,7 +187,9 @@ func claim_equipment_reward_to_inventory(
 			equipment_slot,
 			backpack_slot,
 			replace_confirmed,
-			expected_revision
+			expected_revision,
+			expected_encounter_instance_id,
+			expected_choice_token
 		)
 	):
 		action_feedback.emit("EQUIPMENT CHOICE REJECTED")
@@ -193,12 +197,19 @@ func claim_equipment_reward_to_inventory(
 	return _finish_core_reward_selection()
 
 
-func decline_equipment_reward() -> bool:
+func decline_equipment_reward(
+	expected_encounter_instance_id: int = -1,
+	expected_choice_token: int = -1
+) -> bool:
 	if (
 		_run_director.current_state != RunDirector.RunState.REWARD_SELECTION
 		or _pending_reward_encounter_id < 0
 		or _card_reward_phase_active
-		or not _reward_director.decline_equipment_reward(_pending_reward_encounter_id)
+		or not _reward_director.decline_equipment_reward(
+			_pending_reward_encounter_id,
+			expected_encounter_instance_id,
+			expected_choice_token
+		)
 	):
 		action_feedback.emit("EQUIPMENT REWARD STILL WAITING")
 		return false
@@ -496,9 +507,20 @@ func reject_outside_card_drop(_card_id: StringName) -> Dictionary:
 
 
 func leave_shop() -> bool:
+	var shop_snapshot: Dictionary = _cooling_controller.get_snapshot()
+	var source_id: StringName = StringName(
+		shop_snapshot.get("shop_visit_source_id", &"shop")
+	)
+	var purchases_used: int = int(shop_snapshot.get("shop_visit_purchases_used", 0))
+	var stock_remaining: int = int(shop_snapshot.get("shop_purchases_remaining", 0))
 	if not _run_director.leave_shop():
 		return false
 	_cooling_controller.end_shop_visit()
+	action_feedback.emit("LEFT %s • BOUGHT %d • GLOBAL STOCK %d REMAINS" % [
+		String(source_id).replace("_", " ").to_upper(),
+		purchases_used,
+		stock_remaining,
+	])
 	_continue_patrol_if_active()
 	return true
 
@@ -527,8 +549,24 @@ func request_subway_reroute() -> bool:
 	return _cooling_controller.request_subway_reroute()
 
 
-func request_shop_cooling() -> bool:
-	return _cooling_controller.request_shop_cooling()
+func request_shop_cooling(
+	expected_visit_revision: int = -1,
+	expected_source_id: StringName = &""
+) -> bool:
+	return _cooling_controller.request_shop_cooling(
+		expected_visit_revision,
+		expected_source_id
+	)
+
+
+func request_shop_cooling_result(
+	expected_visit_revision: int = -1,
+	expected_source_id: StringName = &""
+) -> Dictionary:
+	return _cooling_controller.request_shop_cooling_result(
+		expected_visit_revision,
+		expected_source_id
+	)
 
 
 func restart_same_seed() -> int:
@@ -939,7 +977,8 @@ func _on_encounter_completed(
 	var reward: StandardRewardDefinition = _reward_director.prepare_standard_reward(
 		encounter_instance_id,
 		maximum_quality_tier,
-		allowed_reward_ids
+		allowed_reward_ids,
+		_run_director.get_reward_multiplier()
 	)
 	if reward != null:
 		reward_ready.emit(encounter_instance_id, reward)

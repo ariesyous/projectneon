@@ -35,6 +35,8 @@ class IntentCapture:
 	var backpack_slot: int = -1
 
 	func on_acquisition(
+		_encounter_instance_id: int,
+		_choice_token: int,
 		choice: int,
 		new_destination: StringName,
 		slot: int,
@@ -257,7 +259,7 @@ func test_shock_duration_and_voltaic_shock_interaction_change_environmental_dama
 	_expect_approx(enemy.status_controller.get_remaining(&"shock"), 4.5, "Shock: Tech adds 1.5 seconds")
 	var starting_health: int = enemy.health_component.current_health
 	director.request_environmental_hit(&"test", enemy, Vector2(220.0, enemy.global_position.y), 18, 1.0, 0.1)
-	_expect_equal(starting_health - enemy.health_component.current_health, 22, "Shock: Voltaic +20% interaction damage")
+	_expect_equal(starting_health - enemy.health_component.current_health, 26, "Shock: inherent +25% plus Voltaic +20% interaction damage")
 
 
 func test_knockback_build_changes_environmental_damage_and_force() -> void:

@@ -19,14 +19,16 @@ var current_phase: int = Phase.IDLE
 var phase_remaining: float = 0.0
 var active_edge_count: int = 0
 var _definition: AttackDefinition = null
+var _phase_speed_multiplier: float = 1.0
 
 
-func start_attack(definition: AttackDefinition) -> bool:
+func start_attack(definition: AttackDefinition, phase_speed_multiplier: float = 1.0) -> bool:
 	if definition == null or current_phase != Phase.IDLE:
 		return false
 	_definition = definition
+	_phase_speed_multiplier = maxf(phase_speed_multiplier, 0.05)
 	active_edge_count = 0
-	_set_phase(Phase.WINDUP, maxf(definition.windup_time, 0.0))
+	_set_phase(Phase.WINDUP, _scaled_phase_duration(definition.windup_time))
 	_advance_through_zero_length_phases()
 	return true
 
@@ -53,6 +55,7 @@ func cancel() -> void:
 	current_phase = Phase.IDLE
 	phase_remaining = 0.0
 	_definition = null
+	_phase_speed_multiplier = 1.0
 	phase_changed.emit(previous_phase, current_phase)
 
 
@@ -69,16 +72,17 @@ func _advance_phase() -> void:
 		return
 	match current_phase:
 		Phase.WINDUP:
-			_set_phase(Phase.ACTIVE, maxf(_definition.active_time, 0.001))
+			_set_phase(Phase.ACTIVE, maxf(_scaled_phase_duration(_definition.active_time), 0.001))
 			active_edge_count += 1
 			active_started.emit()
 		Phase.ACTIVE:
-			_set_phase(Phase.RECOVERY, maxf(_definition.recovery_time, 0.0))
+			_set_phase(Phase.RECOVERY, _scaled_phase_duration(_definition.recovery_time))
 		Phase.RECOVERY:
 			var previous_phase: int = current_phase
 			current_phase = Phase.IDLE
 			phase_remaining = 0.0
 			_definition = null
+			_phase_speed_multiplier = 1.0
 			phase_changed.emit(previous_phase, current_phase)
 			attack_finished.emit()
 
@@ -95,3 +99,7 @@ func _set_phase(new_phase: int, duration: float) -> void:
 	current_phase = new_phase
 	phase_remaining = duration
 	phase_changed.emit(previous_phase, current_phase)
+
+
+func _scaled_phase_duration(authored_duration: float) -> float:
+	return maxf(authored_duration, 0.0) / _phase_speed_multiplier

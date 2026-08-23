@@ -460,6 +460,7 @@ func preview_equipment(
 		return {"valid": false, "reason": &"invalid_slot"}
 
 	var proposed_slots: Array[EquipmentDefinition] = _slots.duplicate()
+	var proposed_backpack: Array[EquipmentDefinition] = _backpack.duplicate()
 	var previous_item: EquipmentDefinition = proposed_slots[target_slot]
 	var backpack_target: int = outgoing_backpack_slot
 	var displaced_backpack_item: EquipmentDefinition = null
@@ -468,6 +469,7 @@ func preview_equipment(
 			backpack_target = first_empty_backpack_slot()
 		if backpack_target >= 0 and backpack_target < BACKPACK_SLOT_COUNT:
 			displaced_backpack_item = _backpack[backpack_target]
+			proposed_backpack[backpack_target] = previous_item
 	proposed_slots[target_slot] = item
 	var proposed: Dictionary = _aggregate(proposed_slots)
 	var proposed_tags: Dictionary = proposed.get("tag_counts", {})
@@ -520,7 +522,182 @@ func preview_equipment(
 		"alternative_progress": alternative_progress,
 		"progress": progress,
 		"tag_counts_after": proposed_tags,
+		"flat_modifiers_before": _flat_modifiers.duplicate(),
+		"flat_modifiers_after": (proposed.get("flat_modifiers", {}) as Dictionary).duplicate(),
+		"percent_modifiers_before": _percent_modifiers.duplicate(),
+		"percent_modifiers_after": (proposed.get("percent_modifiers", {}) as Dictionary).duplicate(),
+		"triggered_effects_before": _effect_snapshots(_triggered_effects),
+		"triggered_effects_after": _effect_snapshots(proposed.get("triggered_effects", [])),
+		"active_synergies_before": _active_synergy_snapshots(_active_synergy_by_id),
+		"active_synergies_after": _active_synergy_snapshots(proposed_active),
+		"slots_after": _slot_snapshots(proposed_slots),
+		"backpack_slots_after": _slot_snapshots(proposed_backpack),
+		"role_label": item.role_label,
+		"combat_promise": item.combat_promise,
 	}
+
+
+## Previews storing a reward without activating it. The stored item remains
+## owned, but active tags, modifiers, effects, and synergies are unchanged.
+func preview_stored_equipment(
+	item: EquipmentDefinition,
+	backpack_slot: int
+) -> Dictionary:
+	if not is_catalogue_item(item) or owns_equipment(item.id):
+		return {"valid": false, "reason": &"invalid_or_duplicate"}
+	if backpack_slot < 0 or backpack_slot >= BACKPACK_SLOT_COUNT:
+		return {"valid": false, "reason": &"invalid_backpack_slot"}
+	var proposed_backpack: Array[EquipmentDefinition] = _backpack.duplicate()
+	var displaced: EquipmentDefinition = proposed_backpack[backpack_slot]
+	proposed_backpack[backpack_slot] = item
+	return {
+		"valid": true,
+		"equipment_id": item.id,
+		"display_name": item.display_name,
+		"destination": AREA_BACKPACK,
+		"backpack_slot": backpack_slot,
+		"leaves_behind_id": displaced.id if displaced != null else &"",
+		"leaves_behind_name": displaced.display_name if displaced != null else "",
+		"immediate_activations": [],
+		"deactivations": [],
+		"alternative_progress": [],
+		"flat_modifiers_before": _flat_modifiers.duplicate(),
+		"flat_modifiers_after": _flat_modifiers.duplicate(),
+		"percent_modifiers_before": _percent_modifiers.duplicate(),
+		"percent_modifiers_after": _percent_modifiers.duplicate(),
+		"triggered_effects_before": _effect_snapshots(_triggered_effects),
+		"triggered_effects_after": _effect_snapshots(_triggered_effects),
+		"active_synergies_before": _active_synergy_snapshots(_active_synergy_by_id),
+		"active_synergies_after": _active_synergy_snapshots(_active_synergy_by_id),
+		"slots_after": _slot_snapshots(_slots),
+		"backpack_slots_after": _slot_snapshots(proposed_backpack),
+		"role_label": item.role_label,
+		"combat_promise": item.combat_promise,
+		"stored_inactive": true,
+	}
+
+
+## Produces an exact non-mutating preview for an already-owned inventory
+## transaction. Presentation requests this snapshot before Confirm; the
+## existing revisioned mutation methods remain the only authority.
+func preview_inventory_transaction(
+	action: StringName,
+	source_area: StringName,
+	source_slot: int,
+	target_slot: int,
+	expected_item_id: StringName,
+	expected_revision: int
+) -> Dictionary:
+	if not _revision_matches(expected_revision) or expected_item_id == &"":
+		return {"valid": false, "reason": &"stale_or_malformed"}
+	var proposed_slots: Array[EquipmentDefinition] = _slots.duplicate()
+	var proposed_backpack: Array[EquipmentDefinition] = _backpack.duplicate()
+	var source: EquipmentDefinition = null
+	if source_area == AREA_EQUIPPED and source_slot >= 0 and source_slot < SLOT_COUNT:
+		source = proposed_slots[source_slot]
+	elif source_area == AREA_BACKPACK and source_slot >= 0 and source_slot < BACKPACK_SLOT_COUNT:
+		source = proposed_backpack[source_slot]
+	if source == null or source.id != expected_item_id:
+		return {"valid": false, "reason": &"wrong_source"}
+
+	match action:
+		&"discard":
+			if source_area == AREA_EQUIPPED:
+				proposed_slots[source_slot] = null
+			else:
+				proposed_backpack[source_slot] = null
+		&"move_to_backpack":
+			if (
+				source_area != AREA_EQUIPPED
+				or target_slot < 0
+				or target_slot >= BACKPACK_SLOT_COUNT
+			):
+				return {"valid": false, "reason": &"invalid_destination"}
+			proposed_slots[source_slot] = null
+			proposed_backpack[target_slot] = source
+		&"swap":
+			if source_area == AREA_EQUIPPED:
+				if target_slot < 0 or target_slot >= BACKPACK_SLOT_COUNT:
+					return {"valid": false, "reason": &"invalid_destination"}
+				var stored: EquipmentDefinition = proposed_backpack[target_slot]
+				proposed_slots[source_slot] = stored
+				proposed_backpack[target_slot] = source
+			else:
+				if target_slot < 0 or target_slot >= SLOT_COUNT:
+					return {"valid": false, "reason": &"invalid_destination"}
+				var active: EquipmentDefinition = proposed_slots[target_slot]
+				proposed_slots[target_slot] = source
+				proposed_backpack[source_slot] = active
+		_:
+			return {"valid": false, "reason": &"invalid_action"}
+
+	var proposed: Dictionary = _aggregate(proposed_slots)
+	var proposed_active: Dictionary = proposed.get("active", {})
+	return {
+		"valid": true,
+		"action": action,
+		"source_area": source_area,
+		"source_slot": source_slot,
+		"target_slot": target_slot,
+		"equipment_id": source.id,
+		"display_name": source.display_name,
+		"inventory_revision": _inventory_revision,
+		"immediate_activations": _synergy_edge_ids(
+			_active_synergy_by_id,
+			proposed_active
+		),
+		"deactivations": _synergy_edge_ids(
+			proposed_active,
+			_active_synergy_by_id
+		),
+		"flat_modifiers_before": _flat_modifiers.duplicate(),
+		"flat_modifiers_after": (proposed.get("flat_modifiers", {}) as Dictionary).duplicate(),
+		"percent_modifiers_before": _percent_modifiers.duplicate(),
+		"percent_modifiers_after": (proposed.get("percent_modifiers", {}) as Dictionary).duplicate(),
+		"triggered_effects_before": _effect_snapshots(_triggered_effects),
+		"triggered_effects_after": _effect_snapshots(proposed.get("triggered_effects", [])),
+		"active_synergies_before": _active_synergy_snapshots(_active_synergy_by_id),
+		"active_synergies_after": _active_synergy_snapshots(proposed_active),
+		"slots_after": _slot_snapshots(proposed_slots),
+		"backpack_slots_after": _slot_snapshots(proposed_backpack),
+		"role_label": source.role_label,
+		"combat_promise": source.combat_promise,
+	}
+
+
+func get_triggered_effect_source(effect_id: StringName) -> Dictionary:
+	if effect_id == &"":
+		return {}
+	for item: EquipmentDefinition in get_equipped_items_stable():
+		for effect: TriggeredEffectDefinition in item.triggered_effects:
+			if effect != null and effect.id == effect_id:
+				return {
+					"id": item.id,
+					"display_name": item.display_name,
+					"icon": item.icon,
+					"role_label": item.role_label,
+					"combat_promise": item.combat_promise,
+				}
+	for synergy: SynergyDefinition in get_active_synergies():
+		for effect: TriggeredEffectDefinition in synergy.triggered_effects:
+			if effect != null and effect.id == effect_id:
+				return {
+					"id": synergy.id,
+					"display_name": synergy.display_name,
+					"icon": synergy.badge,
+					"role_label": String(synergy.required_tag),
+					"combat_promise": synergy.combat_promise,
+				}
+	return {}
+
+
+func get_synergy_definition(synergy_id: StringName) -> SynergyDefinition:
+	if synergy_catalogue == null:
+		return null
+	for synergy: SynergyDefinition in synergy_catalogue.get_sorted_synergies():
+		if synergy != null and synergy.id == synergy_id:
+			return synergy
+	return null
 
 
 func get_snapshot() -> Dictionary:
@@ -604,6 +781,8 @@ func _slot_snapshots(items: Array[EquipmentDefinition]) -> Array[Dictionary]:
 			"slot_index": slot_index,
 			"id": item.id if item != null else &"",
 			"display_name": item.display_name if item != null else "EMPTY",
+			"role_label": item.role_label if item != null else "",
+			"combat_promise": item.combat_promise if item != null else "",
 			"tags": (
 				item.sorted_tags()
 				if item != null
@@ -745,7 +924,64 @@ func _progress_snapshot(
 		"active": active.has(synergy.id),
 		"major_effects": synergy.major_effects,
 		"badge": synergy.badge,
+		"role_label": synergy.role_label,
+		"combat_promise": synergy.combat_promise,
 	}
+
+
+func _effect_snapshots(values: Variant) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	if not (values is Array):
+		return result
+	for value: Variant in values as Array:
+		var effect: TriggeredEffectDefinition = value as TriggeredEffectDefinition
+		if effect == null:
+			continue
+		result.append({
+			"id": effect.id,
+			"trigger": effect.trigger,
+			"status_id": effect.status_id,
+			"chance_basis_points": effect.chance_basis_points,
+			"stacks": effect.stacks,
+			"duration_seconds": effect.duration_seconds,
+		})
+	result.sort_custom(func(left: Dictionary, right: Dictionary) -> bool:
+		return String(left.get("id", &"")) < String(right.get("id", &""))
+	)
+	return result
+
+
+func _active_synergy_snapshots(active: Dictionary) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	var values: Array[SynergyDefinition] = []
+	for value: Variant in active.values():
+		var synergy: SynergyDefinition = value as SynergyDefinition
+		if synergy != null:
+			values.append(synergy)
+	values.sort_custom(_synergy_before)
+	for synergy: SynergyDefinition in values:
+		result.append({
+			"id": synergy.id,
+			"display_name": synergy.display_name,
+			"tag": synergy.required_tag,
+			"threshold": synergy.threshold,
+			"badge": synergy.badge,
+			"major_effects": synergy.major_effects,
+			"role_label": synergy.role_label,
+			"combat_promise": synergy.combat_promise,
+		})
+	return result
+
+
+## Returns stable IDs that exist in `after` but not `before`.
+func _synergy_edge_ids(before: Dictionary, after: Dictionary) -> Array[StringName]:
+	var result: Array[StringName] = []
+	for key: Variant in after.keys():
+		var synergy_id: StringName = StringName(key)
+		if not before.has(synergy_id):
+			result.append(synergy_id)
+	result.sort_custom(_string_name_before)
+	return result
 
 
 func _equipment_before(left: EquipmentDefinition, right: EquipmentDefinition) -> bool:
@@ -769,3 +1005,7 @@ func _modifier_before(
 
 func _effect_before(left: TriggeredEffectDefinition, right: TriggeredEffectDefinition) -> bool:
 	return String(left.id) < String(right.id)
+
+
+func _string_name_before(left: StringName, right: StringName) -> bool:
+	return String(left) < String(right)

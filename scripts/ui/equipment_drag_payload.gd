@@ -20,6 +20,7 @@ var display_name: String = ""
 var inventory_revision: int = -1
 var encounter_id: int = -1
 var icon: Texture2D
+var choice_token: int = -1
 
 
 func _init(
@@ -31,7 +32,8 @@ func _init(
 	new_display_name: String = "",
 	new_inventory_revision: int = -1,
 	new_encounter_id: int = -1,
-	new_icon: Texture2D = null
+	new_icon: Texture2D = null,
+	new_choice_token: int = -1
 ) -> void:
 	origin = new_origin
 	source_area = new_source_area
@@ -42,6 +44,7 @@ func _init(
 	inventory_revision = new_inventory_revision
 	encounter_id = new_encounter_id
 	icon = new_icon
+	choice_token = new_choice_token
 
 
 func is_valid() -> bool:
