@@ -4,6 +4,12 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 
 ## [Unreleased]
 
+### 2026-08-26 — WP05 Final Acceptance and WP06 Authorization
+
+- Recorded the owner's explicit statement that **all WP05 gates pass**, closing the remaining fresh-log, production visual/containment, input, Windows/Web, and five-person intent/variety gates without inventing unsupplied participant, device, timing, or failure details.
+- Final WP05 evidence remains **18/18 focused tests/381 assertions**, **64/64 affected tests/911 assertions**, **319/319 cumulative tests/4,734 assertions across 34 suites**, and a repeatable/cosmetic-isolated 60-row production matrix.
+- Authorized the WP05 merge/push and the start of WP06 World, Combat, and Presentation Polish. WP07 remains gated; WP02/WP03/WP04 qualitative records remain unchanged.
+
 ### 2026-08-22 — WP05 Part A Interventions and Encounter Variety
 
 - Audited Hydrant, Backup, Subway, targeting/interruption, all existing enemy intents, encounters, lap modifiers, HUD, pause/eligible-time, terminal/restart, caps, and deterministic authority from published WP04 `782f7fe18fa434d47020f1d4bc837c9c05790dad`.

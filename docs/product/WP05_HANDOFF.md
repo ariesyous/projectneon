@@ -6,13 +6,13 @@ Pickup branch: `codex/wp05-interventions-handoff`
 
 Baseline before WP05: `782f7fe18fa434d47020f1d4bc837c9c05790dad`
 
-Status: implementation/focused/matrix evidence present; final verification and human gate remain
+Status: **closed — all WP05 gates passed by owner record on 2026-08-26**
 
 ## Resume here
 
-Check out `codex/wp05-interventions-handoff` and use its tip commit. Read, in order, `GameSpecifications.md`, `AGENTS.md`, `ARCHITECTURE.md`, `IMPLEMENTATION_PLAN.md`, this handoff, `WP05_ACCEPTANCE_EVIDENCE.md`, and `WP05_OWNER_SELECTION.md`.
+This file preserves the implementation handoff that preceded final acceptance. Read `WP05_ACCEPTANCE_EVIDENCE.md` for the closing decision and use the finalized `main` tip as the WP06 baseline.
 
-The owner replied **“Approved”** on 2026-08-23 to the exact Environment / Focus / Backup recommendation. Do not reopen mechanic selection unless the owner requests a change. This branch is not publication approval, does not start WP06, and does not satisfy any pending five-person gate.
+The owner replied **“Approved”** on 2026-08-23 to the exact Environment / Focus / Backup recommendation. On 2026-08-26 the owner then reported **“All the gates pass”** and authorized WP05 finalization, merge/push, and WP06. Do not reopen mechanic selection unless the owner requests a change.
 
 ## Implemented boundary
 
@@ -34,14 +34,12 @@ The owner replied **“Approved”** on 2026-08-23 to the exact Environment / Fo
 - The cumulative runner reproduced the inherited post-success **48 ObjectDB / four-resource** aggregate diagnostic.
 - Configured headless boot and the focused run had no task parser/runtime error. Restricted-sandbox log/root-certificate messages are not a clean-log pass.
 
-## Required next work
+## Closure and successor
 
-1. Launch configured `/GameRun`, exercise Hydrant and Power Box contexts, Focus strong/hold/cutoff/race paths, both Backup charges, pause/resume, terminal, restart, and menu; inspect a fresh normal-user log.
-2. Capture representative 1280×720 production evidence and inspect 2560×1440 containment. The existing `wp05_part_a_*` images are prototype evidence, not production captures.
-3. Export Windows and Web release builds, run exported Windows, then test local production Web with real pointer input and an empty browser warning/error console.
-4. Finish any lower-priority prose reconciliation in `CHANGELOG.md` and detailed catalogue/architecture historical sections; preserve historical M0–M6 numbers and label prospective WP05 facts correctly.
-5. Run `WP05_UNBRIEFED_INTENT_VARIETY_CHECK.md` with five unbriefed participants. Do not infer a pass from automation. WP02/WP03/WP04 qualitative gates remain pending too.
-6. Obtain separate owner authorization before any push, PR, merge, Pages publication/deployment, or WP06 work.
+- The owner attested that every remaining fresh-log, visual/containment, input, Windows/Web, and five-person gate passed. Raw observation/platform details were not supplied here and are not invented.
+- WP05 is authorized for merge/push. A Pages deployment is claimed only after its workflow result is observed.
+- WP06 World, Combat, and Presentation Polish is authorized to begin from finalized `main` under `docs/work_packages/WP_06_WORLD_COMBAT_POLISH.md`.
+- WP07 remains unauthorized until WP06 reaches its acceptance gate and the owner explicitly proceeds.
 
 ## Commands
 
@@ -54,7 +52,7 @@ The owner replied **“Approved”** on 2026-08-23 to the exact Environment / Fo
 
 ## Preservation and Git boundary
 
-- The pre-existing Godot-AI 3.1.5 update remains exactly **57 dirty addon paths: 51 modified + 6 untracked**, with the original tracked diff of **4,791 insertions / 814 deletions**. It is intentionally excluded from the WP05 commit and must remain unstaged/unattributed.
-- `project.godot` is not part of WP05 and remains untouched.
-- No WP05 push, PR, publication, deployment, external message, or WP06 change is included.
+- The WP05 start snapshot had **57 dirty addon paths: 51 modified + 6 untracked**, with **4,791 insertions / 814 deletions**. At finalization on 2026-08-26, the owner's live tooling work had advanced to **66 addon paths: 53 modified + 13 untracked**. Both snapshots are provenance facts; all addon changes remain excluded from WP05.
+- `project.godot` is not part of WP05. Its current Autoload-order-only owner diff remains dirty and excluded.
+- The owner authorized the WP05 merge/push and WP06 transition on 2026-08-26. The owner-carried addon remains outside WP05 history.
 - Before continuing, run `git status --short` and verify no unexpected staged path and the same addon preservation boundary.

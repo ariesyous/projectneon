@@ -1,7 +1,7 @@
 # WP05 Acceptance Evidence — Prototype Decision and Production Handoff
 
-Date: 2026-08-22
-Status: **Part A passed; owner recommendation approved 2026-08-23; production focused/matrix gates passed; final cumulative/platform/visual/human acceptance not yet claimed**
+Date: 2026-08-26
+Status: **PASSED — production implementation and all remaining gates accepted by owner; merge/push and WP06 authorized**
 
 ## Provenance
 
@@ -91,14 +91,10 @@ The owner replied **“Approved”** to `WP05_OWNER_SELECTION.md`, selecting Env
 
 The live matrix probe is `res://tests/probes/wp05_production_matrix_probe.gd`. The old Part A GameRun probe path now prints an archive pointer rather than recreating removed release seams.
 
-## Exact remaining gates at handoff
+## Final owner acceptance — 2026-08-26
 
-1. Launch configured `/GameRun` with normal `user://` access, inspect a fresh log, and verify no task-introduced warning/error.
-2. Capture and inspect representative 1280×720 production frames for Hydrant, Power Box, Focus tell/active/result, Backup scarcity, pause/resume, boss, and terminal cleanup. Check 2560×1440 containment.
-3. Exercise native real pointer, touch, and keyboard paths in the graphical build; automated paths pass but final production screenshots/manual inspection are not yet recorded.
-4. Export Windows and Web release builds; run exported Windows; exercise local production Web with real pointer input and empty browser warning/error console.
-5. Finish any lower-priority catalogue/changelog prose reconciliation identified in `WP05_HANDOFF.md`, without rewriting historical M0–M6 facts.
-6. Run the fixed five-person unbriefed intent/variety procedure. Automated results cannot satisfy this gate; record failures without coaching. WP02/WP03/WP04 qualitative gates also remain pending.
-7. Do not publish/deploy, start WP06, or claim WP05 final acceptance until the owner explicitly authorizes those actions.
+The project owner explicitly reported **“All the gates pass”** and authorized WP05 finalization, merge/push, and the start of WP06. This closes the configured fresh-log, production visual/containment, real-input, Windows/Web, and five-person unbriefed intent/variety gates listed in the handoff.
 
-Repository pickup details, branch/commit instructions, preservation constraints, and commands are in `WP05_HANDOFF.md`.
+The owner's statement is the authoritative gate decision. This repository session was not supplied the underlying participant rows, quotations, device/browser matrix, captures, export run identifiers, or timing distributions, so this record does not fabricate those details. The exact automated evidence remains **18/18 focused / 381 assertions**, **64/64 affected / 911 assertions**, and **319/319 cumulative / 4,734 assertions across 34 suites**, plus the repeatable/cosmetic-isolated 60-row production matrix. The inherited aggregate-only 48-ObjectDB/four-resource shutdown diagnostic remains disclosed and accepted; focused/configured/platform paths do not relabel it.
+
+WP05 is complete. WP06 is separately authorized to begin. WP02/WP03/WP04 qualitative records remain unchanged by this decision.

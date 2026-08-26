@@ -1,6 +1,6 @@
 # WP05 — Interventions and Encounter Variety
 
-Status: Owner recommendation approved 2026-08-23; Parts B/C implementation and focused matrix complete; cumulative/platform/visual/human gates remain in handoff
+Status: **Complete and owner-accepted — 2026-08-26; merge/push and WP06 authorized**
 Branch suggestion: `codex/wp-05-tactical-variety`
 
 ## Outcome
@@ -52,6 +52,15 @@ Sustain tactical attention across a run with a small, coherent set of interventi
 - Configured matrix: 60 rows spanning all crew, exact WP04 builds, early/middle/elite/boss contexts, and hold/Environment/Focus/Backup/Rally policies; exact repeat and cosmetic isolation passed.
 
 The owner answered **“Approved”** on 2026-08-23. The recommendation is now implemented on the handoff branch described in `docs/product/WP05_HANDOFF.md`; the historical Part A result above remains unchanged evidence rather than release content.
+
+## Final result — 2026-08-26
+
+- Production focused: **18/18 tests, 381 assertions**.
+- Affected: **64/64 tests, 911 assertions**.
+- Cumulative: **319/319 tests, 4,734 assertions across 34 suites**.
+- Production matrix: 60 rows, exact repeat, and cosmetic isolation passed.
+- The owner explicitly reported **“All the gates pass”**, closing the remaining fresh-log, visual/containment, input, Windows/Web, and five-person intent/variety gates without supplying raw rows/details for the repository to invent.
+- WP05 is accepted and authorized for merge/push. WP06 is separately authorized to begin; WP07 is not.
 
 ## Recommended parts
 

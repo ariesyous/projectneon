@@ -1,6 +1,6 @@
 # WP05 Unbriefed Intent and Variety Check
 
-Status: **fixed procedure; pending selected production implementation and genuine owner-run participants**
+Status: **PASSED — owner-recorded on 2026-08-26**
 
 This procedure cannot be executed against Part A development prototypes as a WP05 acceptance pass. It exists now so production tuning cannot rewrite the test after seeing participant outcomes.
 
@@ -40,3 +40,9 @@ For each participant record without coaching:
 - Important validity, target, timing, charge/cooldown, activation, rejection, expiry, and result information is understood without relying on colour alone.
 
 Record every failure and exact wording. Automated probes, implementers, screenshots, and coached demonstrations cannot satisfy this gate. Only the owner may enter the final result.
+
+## Owner result — 2026-08-26
+
+After the selected production implementation and its technical/platform checks, the project owner explicitly reported: **“All the gates pass”** and authorized WP05 finalization, merge/push, and transition to WP06.
+
+This is the authoritative owner decision that every threshold above passed. No participant rows, quotations, device matrix, timing distribution, or failure notes were supplied to this repository session, so none are invented here. Those raw observations remain owner-held unless later added verbatim. Coding-agent and automated evidence did not substitute for this decision.

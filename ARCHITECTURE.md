@@ -2,15 +2,15 @@
 
 ## Status
 
-This document describes the implementation through **Milestones 0–6 plus WP01–WP04 and the owner-approved WP05 handoff**. WP01 adds the reusable visual language without gameplay authority. WP02 migrates the core run authority to an explicit three-lap/three-block lifecycle, exact-once lap decisions, all-crew production access, cadence bands, state-clarity presentation, and lifecycle summary fields. WP03 replaces the production Milestone 5 hand/five-slot interaction with a focused next-block District Plan. WP04 preserves the bounded catalogue and economy while making build, reward, inventory, and shop consequences exact and visibly expressed. WP05 adds the selected Environment / Focus / Backup authority locally; WP04 remains the published boundary and WP05's final gates are recorded in `docs/product/WP05_HANDOFF.md`.
+This document describes the implementation through **Milestones 0–6 plus owner-accepted WP01–WP05**. WP01 adds the reusable visual language without gameplay authority. WP02 migrates the core run authority to an explicit three-lap/three-block lifecycle, exact-once lap decisions, all-crew production access, cadence bands, state-clarity presentation, and lifecycle summary fields. WP03 replaces the production Milestone 5 hand/five-slot interaction with a focused next-block District Plan. WP04 preserves the bounded catalogue and economy while making build, reward, inventory, and shop consequences exact and visibly expressed. WP05 adds the selected Environment / Focus / Backup authority and passed all owner gates on 2026-08-26. WP06 is the authorized next package.
 
 Milestone 5 was merged through PR #4 and remains the last fully accepted baseline at `da934897cbdee44cb4d1a44b25e91b458558bfbc`. Milestone 6 was fast-forwarded to `main` through `a147f93`; Pages run 29960250903 successfully exported and deployed its tentative playtest build. WP04 commit `782f7fe18fa434d47020f1d4bc837c9c05790dad` is the current published browser-playtest boundary at [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/); owner-supplied Pages run 32607599862 succeeded. Its five-person consequence/variety gate remains pending.
 
-WP04 was implemented on the WP03/documentation baseline `48ffb58fdcdcb1bd4d74bd011c2115c91a5f42a5`, owner-authorized, and subsequently published from `782f7fe18fa434d47020f1d4bc837c9c05790dad`. Publication does not satisfy its pending five-person consequence/variety gate. WP05 Part A began under a later explicit task; its recommendation was owner-approved on 2026-08-23 and is now implemented only on the local handoff branch.
+WP04 was implemented on the WP03/documentation baseline `48ffb58fdcdcb1bd4d74bd011c2115c91a5f42a5`, owner-authorized, and subsequently published from `782f7fe18fa434d47020f1d4bc837c9c05790dad`. Publication does not satisfy its pending five-person consequence/variety gate. WP05 Part A began under a later explicit task; its recommendation was approved on 2026-08-23, implemented, and owner-accepted with all remaining gates on 2026-08-26.
 
 On 2026-08-21 the owner separately authorized the technically evidenced WP02 boundary for a `main` and GitHub Pages browser-playtest release. On 2026-08-22 the owner separately authorized the evidenced WP03 boundary for the next `main` and Pages browser-playtest release. Publication does not close the still-pending WP02 comprehension or WP03 first-use qualitative gates.
 
-The working tree also carries owner changes that are not WP04 authorship: the tracked/enabled Godot-AI 3.1.5 update spans 57 dirty addon paths (51 tracked plus six untracked), the owner reward-modal simplification and combo-visibility corrections remain preserved, and `project.godot` retains the owner's deletions of `window/stretch/aspect="keep"` and `textures/default_filters/use_nearest_mipmap_filter=false`. The deleted display keys are not silently restored.
+The working tree also carries owner changes that are not WP04/WP05 authorship. The WP04 start snapshot contained 57 Godot-AI 3.1.5 paths (51 tracked plus six untracked); by the 2026-08-26 WP05 finalization audit it had advanced to 66 paths (53 modified plus 13 untracked), and `project.godot` carried an Autoload-order-only diff. Owner reward-modal/combo corrections and the earlier display-key deletions remain preserved. None is silently restored or attributed to WP05.
 
 The rationale for the revised downstream boundaries is recorded in `docs/decisions/0001-run-engagement-escalation-and-randomness.md`. The owner-approved WP00 product/architecture rebaseline is recorded in `docs/decisions/0002-wp00-product-rebaseline.md` and `GameSpecifications.md` section 0.
 
@@ -54,7 +54,7 @@ SELECT CREW
 
 `NeonUiTokens` creates the shared `Theme` contract for typography (16/18/20/26/34), 4–32-pixel spacing, surfaces/borders, semantic state colors, visible focus, disabled controls, 48-pixel touch minimums, and bounded motion. `NeonChoiceCard`, `NeonStatComparison`, `NeonCountdownStatus`, `NeonInterventionButton`, `NeonToast`, `NeonTooltip`, and `NeonPhaseBanner` are presentation-only composed controls.
 
-`GameHUD` continues to subscribe to authoritative snapshots and emit typed intents. It presents phase/next-event/countdown first, keeps the combat center clear, exposes compact inspectable crew/build state, and opens focused decision layers for District Plan, equipment, shop, and Extract/Push. WP03's District Plan automatically owns attention at each PLAN boundary, presents up to two large next-block locations, and forwards the exact stable card/offer/lifecycle/lap/block context through native click/tap/keyboard activation. `VerticalSliceOverlay` applies the same hierarchy to crew selection, pause/settings, tutorials, and summary; legacy tutorial banners are suppressed while PLAN itself teaches the decision. The Focus control remains disabled because no WP05 Focus authority exists. The visual gallery is an evidence fixture, never part of `/GameRun`.
+`GameHUD` continues to subscribe to authoritative snapshots and emit typed intents. It presents phase/next-event/countdown first, keeps the combat center clear, exposes compact inspectable crew/build state, and opens focused decision layers for District Plan, equipment, shop, and Extract/Push. WP03's District Plan automatically owns attention at each PLAN boundary, presents up to two large next-block locations, and forwards the exact stable card/offer/lifecycle/lap/block context through native click/tap/keyboard activation. `VerticalSliceOverlay` applies the same hierarchy to crew selection, pause/settings, tutorials, and summary; legacy tutorial banners are suppressed while PLAN itself teaches the decision. WP05 supplies live Environment, Focus, and Backup snapshots in combat; Subway remains strategic travel. The visual gallery is an evidence fixture, never part of `/GameRun`.
 
 No WP01 control calculates Heat, Night Pressure, health, reward results, cooldowns, routes, legality, or summary values. Safe-area adjustments remain presentation geometry only. Random schema version 1 and all seven stream states are untouched.
 
@@ -64,7 +64,7 @@ Fresh production access is all three crew, eight existing equipment entries, and
 
 ### Implementation sequencing
 
-WP01 presentation, WP02 lifecycle/crew-profile migration, WP03 card/route interaction, and WP04 consequence/balance migration are implemented. WP05 Part A owns the archived comparison; the owner-approved Part B/C handoff implements Environment / Focus / Backup but still awaits final verification/human gates. WP06 owns art/presentation polish without authority changes for convenience. WP07 owns integration and final owner acceptance.
+WP01 presentation, WP02 lifecycle/crew-profile migration, WP03 card/route interaction, WP04 consequence/balance migration, and WP05 Environment / Focus / Backup are implemented. WP05 Part A remains archived comparison evidence and every WP05 gate is owner-accepted. WP06 is authorized and owns art/presentation polish without authority changes for convenience. WP07 owns integration and final owner acceptance after WP06.
 
 ## Architectural principles
 
@@ -103,6 +103,8 @@ GameRun
 |- CombatDirector
 |- RewardDirector
 |- FireHydrantController
+|- EnvironmentController
+|- FocusController
 |- CallBackupController
 |- ComboTracker
 |- RunCadenceTracker
@@ -143,6 +145,7 @@ Canonical scene locations:
 - `res://scenes/effects/combat_feedback.tscn`
 - `res://scenes/interactables/coin_cluster.tscn`
 - `res://scenes/interactables/fire_hydrant.tscn`
+- `res://scenes/interactables/power_box.tscn`
 - `res://scenes/ui/vertical_slice_overlay.tscn`
 
 Their composition/presentation scripts live at:
@@ -179,6 +182,8 @@ Their composition/presentation scripts live at:
 - `res://scripts/interactables/coin_cluster.gd`
 - `res://scripts/interactables/fire_hydrant.gd`
 - `res://scripts/interventions/fire_hydrant_controller.gd`
+- `res://scripts/interventions/environment_controller.gd`
+- `res://scripts/interventions/focus_controller.gd`
 - `res://scripts/interventions/call_backup_controller.gd`
 - `res://scripts/ui/display_controller.gd`
 - `res://scripts/app/application_settings_controller.gd`
@@ -481,7 +486,7 @@ Presentation may observe authoritative state, but authoritative gameplay code mu
 
 Milestone 6 adds exactly the two Autoload roles allowed by `GameSpecifications.md`: `SaveService` for versioned persistent JSON and `AppState` for the loaded profile/settings/content-access policy. They are non-gameplay application services. The active run is never managed as a singleton, `RunDirector` remains the only run-state/Heat/Night Pressure/outcome authority, and `RunRandomStreams` remains owned by its scene-scoped `RunDirector`.
 
-The existing `_mcp_game_helper` entry and current 57-path Godot-AI 3.1.5 working-tree update belong to owner-carried development tooling. Historical Milestone 6 documentation retains its earlier 3.0.5/17-file snapshot. WP04 neither removes nor converts the plugin into gameplay authority.
+The existing `_mcp_game_helper` entry and live Godot-AI working-tree update belong to owner-carried development tooling. Historical snapshots remain 3.0.5/17 files for M6, 3.1.5/57 paths at WP04 start, and 66 dirty addon paths at WP05 finalization. WP04/WP05 neither removes nor converts the plugin into gameplay authority.
 
 ## WP05 selected intervention boundary
 
@@ -494,7 +499,7 @@ The existing `_mcp_game_helper` entry and current 57-path Godot-AI 3.1.5 working
 
 ## Deferred architecture
 
-WP04 is the published runtime/browser-playtest boundary. WP05's owner-approved implementation remains local and unaccepted/unpublished until its handoff gates close; WP06–WP07 remain separate, unauthorized work. The following remain intentionally absent and unauthorized unless a later explicit owner decision changes the specification:
+WP05 is the finalized source boundary; WP04 remains the last confirmed Pages deployment until a WP05 workflow result is observed. WP06 is authorized as the next separate package; WP07 remains unauthorized. The following remain intentionally absent and unauthorized unless a later explicit owner decision changes the specification:
 
 - Procedural route generation, additional districts/cards, a card currency/shop/economy, or broader production shop content
 - Additional crew, enemy, elite, boss, intervention, equipment, synergy, or status content beyond the specified vertical-slice catalogues

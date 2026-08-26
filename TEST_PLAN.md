@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Testing is milestone- and work-package-scoped. Milestones 0–6 retain their historical gates. WP00 defines the approved product contract; WP01 verifies presentation, WP02 lifecycle/access/state clarity, WP03 the focused next-block District Plan, WP04 exact build/reward/shop consequence, and WP05 the owner-selected Environment / Focus / Backup implementation plus bounded encounter variety. Part A remains archived comparison evidence; final WP05 cumulative/platform/visual/human acceptance is tracked in `docs/product/WP05_HANDOFF.md`. WP06–WP07 remain prospective.
+Testing is milestone- and work-package-scoped. Milestones 0–6 retain their historical gates. WP00 defines the approved product contract; WP01 verifies presentation, WP02 lifecycle/access/state clarity, WP03 the focused next-block District Plan, WP04 exact build/reward/shop consequence, and WP05 the owner-selected Environment / Focus / Backup implementation plus bounded encounter variety. Part A remains archived comparison evidence; WP05 passed every technical and owner gate on 2026-08-26. WP06 is authorized but unstarted; WP07 remains prospective.
 
 ## Error policy
 
@@ -140,7 +140,7 @@ The aggregate alone retains the exact inherited 48-ObjectDB/four-resource shutdo
 
 ## WP05 Part A — Interventions and Encounter Variety
 
-Status: **Part A passed; owner selected Environment / Focus / Backup; production focused/affected/matrix gates pass; cumulative/platform/visual/human acceptance remains pending**.
+Status: **PASSED — owner accepted all WP05 gates on 2026-08-26; merge/push and WP06 authorized**.
 
 Canonical Part A commands use Godot `4.7.2.stable.official.ed1daf0bf`:
 
@@ -170,8 +170,8 @@ Executed result:
 - [x] Default `/GameRun` creates no prototype and release builds reject the debug enable method. Disabling restores Hydrant/disabled Focus/Backup and hides Rally.
 - [x] Owner approved Environment / Focus / Backup on 2026-08-23.
 - [x] Production focused **18/18 / 381** and affected **64/64 / 911** pass; the 60-row production matrix repeats exactly and is isolated from 50 cosmetic draws.
-- [ ] Complete normal-access cumulative, graphical production captures, Windows/Web export/runtime/browser, larger-view containment, clean-log, and human evidence listed in `docs/product/WP05_HANDOFF.md`.
-- [ ] Owner later executes `docs/product/WP05_UNBRIEFED_INTENT_VARIETY_CHECK.md`; automation cannot satisfy it.
+- [x] Normal-access cumulative passed **319/319 / 4,734** across 34 suites; affected passed **64/64 / 911** and focused passed **18/18 / 381**.
+- [x] On 2026-08-26 the owner explicitly reported all remaining graphical, Windows/Web, larger-view, clean-log, and unbriefed human gates passed. No raw rows/details were supplied to this repository task and none are invented.
 
 The cumulative runner retains the inherited post-success 48-ObjectDB/four-resource shutdown signature. Focused and configured boots do not reproduce it. The first sandboxed baseline run also produced user-directory/certificate-access diagnostics; normal-access rerun removed both, proving they were sandbox-only rather than project regressions.
 
