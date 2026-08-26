@@ -38,6 +38,7 @@ The owner replied **“Approved”** on 2026-08-23 to the exact Environment / Fo
 
 - The owner attested that every remaining fresh-log, visual/containment, input, Windows/Web, and five-person gate passed. Raw observation/platform details were not supplied here and are not invented.
 - WP05 is authorized for merge/push. A Pages deployment is claimed only after its workflow result is observed.
+- WP05 was subsequently fast-forwarded to `main` at `37ebc9d`; Pages run 32931503114 completed successfully.
 - WP06 World, Combat, and Presentation Polish is authorized to begin from finalized `main` under `docs/work_packages/WP_06_WORLD_COMBAT_POLISH.md`.
 - WP07 remains unauthorized until WP06 reaches its acceptance gate and the owner explicitly proceeds.
 

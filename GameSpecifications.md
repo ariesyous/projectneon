@@ -7,7 +7,7 @@
 **Target platform:** Windows PC
 **Target display:** 16:9 desktop display
 **Internal design resolution:** 640 × 360
-**Current source boundary:** WP05 Environment / Focus / Backup is implemented, technically evidenced, and owner-accepted as of 2026-08-26; the owner authorized merge/push and WP06. WP04 commit `782f7fe18fa434d47020f1d4bc837c9c05790dad` remains the last confirmed GitHub Pages deployment until a later workflow result is observed. WP02/WP03/WP04 qualitative records remain pending and unchanged. WP06 is authorized but unstarted; WP07 is unstarted and unauthorized.
+**Current published boundary:** WP05 Environment / Focus / Backup is implemented, technically evidenced, owner-accepted, merged, and published from commit `37ebc9d872f2fd4972e5ac5cc621148c00f0d649`; [Pages run 32931503114](https://github.com/ariesyous/projectneon/actions/runs/32931503114) succeeded on 2026-08-26. WP02/WP03/WP04 qualitative records remain pending and unchanged. WP06 is authorized but unstarted; WP07 is unstarted and unauthorized.
 
 ---
 
@@ -2761,4 +2761,4 @@ WP00 is the documentation/decision gate and changes no runtime. WP01–WP05 are 
 6. **WP06 — World, Combat, and Presentation Polish:** owner-authorized to begin from finalized WP05; replace release-visible debug communication with authored city-block depth and accessible feedback without changing authority for convenience.
 7. **WP07 — Integration, Balance, and Release:** validate the approved cadence, clarity, consequence, variety, replay desire, compatibility, platforms, and owner-led final acceptance.
 
-There is no Milestone 7. WP05 is the finalized source boundary and WP04 remains the last confirmed Pages deployment until a WP05 workflow result is observed. WP06 is authorized to begin; WP07 remains unauthorized. Procedural cities, direct character control, multiplayer, permanent statistical progression, large content expansion, controller support, localization, achievements, live-service systems, and other unapproved scope remain excluded.
+There is no Milestone 7. WP05 is the finalized and published boundary at `37ebc9d` / Pages run 32931503114. WP06 is authorized to begin; WP07 remains unauthorized. Procedural cities, direct character control, multiplayer, permanent statistical progression, large content expansion, controller support, localization, achievements, live-service systems, and other unapproved scope remain excluded.

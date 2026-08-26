@@ -9,6 +9,7 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 - Recorded the owner's explicit statement that **all WP05 gates pass**, closing the remaining fresh-log, production visual/containment, input, Windows/Web, and five-person intent/variety gates without inventing unsupplied participant, device, timing, or failure details.
 - Final WP05 evidence remains **18/18 focused tests/381 assertions**, **64/64 affected tests/911 assertions**, **319/319 cumulative tests/4,734 assertions across 34 suites**, and a repeatable/cosmetic-isolated 60-row production matrix.
 - Authorized the WP05 merge/push and the start of WP06 World, Combat, and Presentation Polish. WP07 remains gated; WP02/WP03/WP04 qualitative records remain unchanged.
+- Fast-forwarded and pushed `main` through `37ebc9d`; GitHub Pages run 32931503114 exported and deployed the WP05 Web build successfully.
 
 ### 2026-08-22 — WP05 Part A Interventions and Encounter Variety
 

@@ -98,3 +98,10 @@ The project owner explicitly reported **“All the gates pass”** and authorize
 The owner's statement is the authoritative gate decision. This repository session was not supplied the underlying participant rows, quotations, device/browser matrix, captures, export run identifiers, or timing distributions, so this record does not fabricate those details. The exact automated evidence remains **18/18 focused / 381 assertions**, **64/64 affected / 911 assertions**, and **319/319 cumulative / 4,734 assertions across 34 suites**, plus the repeatable/cosmetic-isolated 60-row production matrix. The inherited aggregate-only 48-ObjectDB/four-resource shutdown diagnostic remains disclosed and accepted; focused/configured/platform paths do not relabel it.
 
 WP05 is complete. WP06 is separately authorized to begin. WP02/WP03/WP04 qualitative records remain unchanged by this decision.
+
+## Merge and publication provenance
+
+- Finalized implementation commit: `041aff7940a163ce73f70036655f40a36321096f`.
+- Owner-acceptance documentation commit: `37ebc9d872f2fd4972e5ac5cc621148c00f0d649`.
+- The feature branch and `main` were pushed at `37ebc9d` on 2026-08-26.
+- [GitHub Pages run 32931503114](https://github.com/ariesyous/projectneon/actions/runs/32931503114) exported and deployed the Web build successfully.

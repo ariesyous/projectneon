@@ -2,9 +2,9 @@
 
 ## Catalog status
 
-This catalog reflects the implementation through **Milestones 0–6 plus owner-accepted WP01–WP05**, while retaining Part A prototypes only as labelled historical evidence. WP05 adds the selected Environment / Focus / Backup behavior without broad catalogue expansion. WP04 remains the last confirmed Pages deployment until a WP05 workflow result is observed.
+This catalog reflects the implementation through **Milestones 0–6 plus owner-accepted WP01–WP05**, while retaining Part A prototypes only as labelled historical evidence. WP05 adds the selected Environment / Focus / Backup behavior without broad catalogue expansion and is published from `37ebc9d`; Pages run 32931503114 succeeded.
 
-Milestone 5 was merged through PR #4 and published from `main` commit `da934897cbdee44cb4d1a44b25e91b458558bfbc`; it remains the last fully accepted baseline. Milestone 6 was committed on `codex/milestone-6-vertical-slice` as `9c1cdaa` plus `ca3fe18`. WP04 commit `782f7fe18fa434d47020f1d4bc837c9c05790dad` is the current [GitHub Pages browser-playtest](https://ariesyous.github.io/projectneon/) production boundary; owner-supplied Pages run 32607599862 succeeded without satisfying the pending qualitative gate.
+Milestone 5 was merged through PR #4 and published from `da934897cbdee44cb4d1a44b25e91b458558bfbc`; Milestone 6 used `9c1cdaa` plus `ca3fe18`. WP05 commit `37ebc9d872f2fd4972e5ac5cc621148c00f0d649` is the current [GitHub Pages browser-playtest](https://ariesyous.github.io/projectneon/) boundary; Pages run 32931503114 succeeded. Pending WP02/WP03/WP04 qualitative records remain unchanged.
 
 The working tree separately carries the owner's Godot-AI 3.1.5 update across 57 dirty addon paths, reward-modal simplification, combo-visibility correction, and `project.godot` deletions. They remain preserved owner work, not WP04 content or run authority.
 

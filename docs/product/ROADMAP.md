@@ -18,7 +18,7 @@ This roadmap is intentionally organized by player outcome rather than subsystem 
 | 02 | The run visibly repeats Plan → Fight → Reward → Push/Extract | WP00; WP01 tokens may proceed in parallel | **Implemented and technically evidenced — 2026-08-21; five-person gate pending** | Playable loop slice, deterministic lifecycle tests, runtime/platform/visual evidence |
 | 03 | District planning is understandable on first use | WP01, WP02 | **Implemented and technically evidenced — 2026-08-22; first-use gate pending** | Focused authority/card/UI tests, configured runtime/platform evidence, owner first-use record |
 | 04 | Equipment, rewards, and the shop create obvious build consequences | WP02, WP03 | **Implemented, evidenced, and published for browser playtest — 2026-08-22; five-person gate pending** | Consequence audit, three disjoint builds, exact decision captures/runtime/platform evidence |
-| 05 | Encounters remain varied through a small, coherent intervention system | WP02; coordinate with WP04 | **Complete and owner-accepted — 2026-08-26** | Research record, production 60-row matrix, focused/affected/cumulative/platform/visual evidence, owner human check |
+| 05 | Encounters remain varied through a small, coherent intervention system | WP02; coordinate with WP04 | **Complete, owner-accepted, and published — 2026-08-26** | `37ebc9d`, Pages run 32931503114, production matrix, full gate evidence |
 | 06 | The world and combat feel authored, legible, and satisfying | WP01, WP03, WP04, WP05 | **Authorized; not started** | Art-direction approval, final art/presentation captures, Windows/Web smoke |
 | 07 | The rebaseline is balanced, integrated, documented, and release-ready | WP00–WP06 | Planned | Full gate, owner playtest record, release candidate |
 

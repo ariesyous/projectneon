@@ -30,7 +30,7 @@
 
 **WP04 — Builds, Rewards, and Shop: implemented, technically evidenced, published from `782f7fe18fa434d47020f1d4bc837c9c05790dad`, and current browser-playtest boundary; owner five-person consequence/variety gate remains pending**
 
-**WP05 — Interventions and Encounter Variety: complete and owner-accepted on 2026-08-26; merge/push and WP06 authorized**
+**WP05 — Interventions and Encounter Variety: complete, owner-accepted, merged, and published from `37ebc9d`; Pages run 32931503114 passed on 2026-08-26**
 
 **WP06 — World, Combat, and Presentation Polish: owner-authorized; not started**
 
@@ -505,6 +505,6 @@ Working-tree provenance remains separate from gameplay authorship. The historica
 
 ## Scope gate
 
-WP05 is the finalized source boundary on top of the preserved Milestone 6 content baseline and WP01–WP04 migrations; WP04 remains the last confirmed Pages deployment until a WP05 workflow result is observed. WP06 is authorized but not started. The Milestone 5 card planner remains an isolated compatibility surface, not the release flow. Procedural generation, additional districts/cards/crew/enemies/bosses, multiplayer, controller support, localization, achievements, daily scheduling/leaderboards/rewards, advanced meta-progression, permanent stat trees, mid-run saving/replay, broader equipment/card economies, and every undocumented system remain out of scope. Run-seed and named-stream infrastructure remains schema version 1 unless a later owning package proves and records an incompatible semantics change.
+WP05 is the finalized and published boundary at `37ebc9d` / Pages run 32931503114 on top of the preserved Milestone 6 content baseline and WP01–WP04 migrations. WP06 is authorized but not started. The Milestone 5 card planner remains an isolated compatibility surface, not the release flow. Procedural generation, additional districts/cards/crew/enemies/bosses, multiplayer, controller support, localization, achievements, daily scheduling/leaderboards/rewards, advanced meta-progression, permanent stat trees, mid-run saving/replay, broader equipment/card economies, and every undocumented system remain out of scope. Run-seed and named-stream infrastructure remains schema version 1 unless a later owning package proves and records an incompatible semantics change.
 
-The owner-authorized 2026-07-22 Milestone 6 and 2026-08-21 WP02 Pages publications remain historical playtest records. WP03 was published from `a6ef571942afb319b3e2c0cdd9c9cffcc1f1bc93`; WP04 is published from `782f7fe18fa434d47020f1d4bc837c9c05790dad` with owner-supplied Pages run 32607599862. Publication closes no pending WP02/WP03/WP04 human gate. WP05 was owner-accepted and authorized for merge/push on 2026-08-26; a Pages deployment is recorded only after its workflow result is observed.
+The owner-authorized Milestone 6, WP02, WP03, and WP04 publications remain historical playtest records. WP05 was owner-accepted, merged, pushed, and deployed from `37ebc9d`; Pages run 32931503114 succeeded on 2026-08-26. Publication closes no pending WP02/WP03/WP04 human gate. WP06 is authorized; WP07 remains gated.
