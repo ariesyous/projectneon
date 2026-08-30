@@ -1,6 +1,6 @@
 # WP06 Acceptance Evidence — World, Combat, and Presentation Polish
 
-Status: **implemented, technically verified, visually inspected, and owner-accepted for publication on 2026-08-30**
+Status: **implemented, technically verified, visually inspected, owner-accepted, and published on 2026-08-30**
 
 ## Accepted outcome
 
@@ -45,7 +45,8 @@ Together they cover Jax, Zoey, Rex, District Plan, Hydrant, Power Box, Focus, Ba
 ## Platform and publication record
 
 - The local Web export command reached the export gate but this host has no 4.7.2 export templates installed; Godot reported only the missing official template files and no project configuration or parser error. Downloading the 1.28 GB template pack solely to duplicate the Pages builder was not required for publication.
-- The repository Pages workflow installs official Godot 4.7 editor/templates, exports the production Web preset, and deploys only after a successful export. Its result is recorded here after the publication run completes.
+- Implementation commit `224ed5cd863a48d66340ce0c62f3013bb422910b` was fast-forwarded to `main`. [Pages run 33295086207](https://github.com/ariesyous/projectneon/actions/runs/33295086207) installed the official Godot editor/templates, exported the production Web preset, uploaded the Pages artifact, and deployed successfully in 45 seconds.
+- The live build at [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/) loaded title `Neon Loop` and a visible canvas, accepted real crew/start input plus an Arcade District Plan selection/confirmation, rendered the authored street with release debug markers absent, and retained an empty warning/error console.
 - A fresh WP06-local Windows export/runtime was not re-executed on this host because the same template installation is absent. The last accepted WP05 Windows export/runtime remains the compatibility baseline; this limitation is disclosed rather than converted into a claimed pass.
 
 ## Owner decision

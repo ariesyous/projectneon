@@ -4,7 +4,7 @@
 
 This document describes the implementation through **Milestones 0–6 plus owner-accepted WP01–WP06**. WP01 adds the reusable visual language without gameplay authority. WP02 migrates the core run authority to an explicit three-lap/three-block lifecycle, exact-once lap decisions, all-crew production access, cadence bands, state-clarity presentation, and lifecycle summary fields. WP03 replaces the production Milestone 5 hand/five-slot interaction with a focused next-block District Plan. WP04 preserves the bounded catalogue and economy while making build, reward, inventory, and shop consequences exact and visibly expressed. WP05 adds the selected Environment / Focus / Backup authority. WP06 replaces release-visible debug communication with deterministic authored city-block, silhouette, telegraph, feedback, audio-mix, and phase-transition presentation without changing gameplay authority.
 
-Milestone 5 was merged through PR #4 at `da934897cbdee44cb4d1a44b25e91b458558bfbc`. Milestone 6 was fast-forwarded through `a147f93`; Pages run 29960250903 deployed its tentative playtest build. WP05 commit `37ebc9d872f2fd4972e5ac5cc621148c00f0d649` and Pages run 32931503114 are the preceding published boundary. WP06 was owner-accepted for publication on 2026-08-30; exact commit/Pages provenance is recorded after deployment. WP02/WP03/WP04 qualitative records remain pending.
+Milestone 5 was merged through PR #4 at `da934897cbdee44cb4d1a44b25e91b458558bfbc`. Milestone 6 was fast-forwarded through `a147f93`; Pages run 29960250903 deployed its tentative playtest build. WP06 commit `224ed5cd863a48d66340ce0c62f3013bb422910b` is the current published browser-playtest boundary at [ariesyous.github.io/projectneon](https://ariesyous.github.io/projectneon/); Pages run 33295086207 succeeded. WP02/WP03/WP04 qualitative records remain pending.
 
 WP04 was implemented on the WP03/documentation baseline `48ffb58fdcdcb1bd4d74bd011c2115c91a5f42a5`, owner-authorized, and subsequently published from `782f7fe18fa434d47020f1d4bc837c9c05790dad`. Publication does not satisfy its pending five-person consequence/variety gate. WP05 Part A began under a later explicit task; its recommendation was approved on 2026-08-23, implemented, and owner-accepted with all remaining gates on 2026-08-26.
 
@@ -499,7 +499,7 @@ The existing `_mcp_game_helper` entry and live Godot-AI working-tree update belo
 
 ## Deferred architecture
 
-WP06 is owner-accepted for publication as the current release boundary on 2026-08-30; exact commit/Pages provenance follows deployment. WP07 remains unauthorized. The following remain intentionally absent and unauthorized unless a later explicit owner decision changes the specification:
+WP06 is the finalized published boundary at `224ed5c` / Pages run 33295086207. WP07 remains unauthorized. The following remain intentionally absent and unauthorized unless a later explicit owner decision changes the specification:
 
 - Procedural route generation, additional districts/cards, a card currency/shop/economy, or broader production shop content
 - Additional crew, enemy, elite, boss, intervention, equipment, synergy, or status content beyond the specified vertical-slice catalogues

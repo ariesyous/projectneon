@@ -29,7 +29,7 @@ Status: **PASSED for the executed focused, cumulative, configured-runtime, and v
 - [x] Release composition hides lane/route labels and debug shapes by default while retaining development toggle behavior.
 - [x] Five profile mappings, three lap atmospheres, nine silhouette IDs, distinct delivery/Focus/target/Environment shapes, accessibility reductions, bounded transients, stable audio IDs/buses, and absence of unseeded presentation randomness are automated.
 - [x] Owner accepted the presentation and authorized commit/push/Pages publication.
-- [ ] Record successful Pages Web export/deployment after the workflow completes.
+- [x] Pages run 33295086207 completed the official Web export/deployment successfully from `224ed5c`; live crew/start plus District Plan pointer input, authored street rendering, and an empty warning/error console passed.
 - [ ] Fresh local WP06 Windows export/runtime remains unclaimed because official 4.7.2 export templates are not installed on this host; prior WP05 platform evidence remains the compatibility baseline.
 
 Milestone 1 through Milestone 5 technical suites are recorded as executed. Milestone 6 passed its 56-test cumulative addition and tentative Pages playtest publication. WP01 and WP02 subsequently passed their recorded technical, configured-runtime, visual, Windows release-export/runtime, and local Web release/browser matrices. WP02's five-person unbriefed comprehension gate remains **Owner-recorded / Pending execution**; no automated or implementation-team result substitutes for it. The Milestone 1 Human Validation Gate result remains separately labelled as an owner-recorded qualitative decision and is neither repeated nor reopened.

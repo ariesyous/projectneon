@@ -4,7 +4,7 @@
 
 This catalog reflects the implementation through **Milestones 0–6 plus owner-accepted WP01–WP06**, while retaining Part A prototypes only as labelled historical evidence. WP05 adds the selected Environment / Focus / Backup behavior without broad catalogue expansion. WP06 adds presentation variants only—no new gameplay content ID or catalogue breadth—and was owner-accepted for publication on 2026-08-30.
 
-Milestone 5 was merged through PR #4 and published from `da934897cbdee44cb4d1a44b25e91b458558bfbc`; Milestone 6 used `9c1cdaa` plus `ca3fe18`. WP05 commit `37ebc9d872f2fd4972e5ac5cc621148c00f0d649` and Pages run 32931503114 are the preceding browser-playtest boundary. WP06 exact commit/Pages provenance is recorded after its authorized publication completes. Pending WP02/WP03/WP04 qualitative records remain unchanged.
+Milestone 5 was merged through PR #4 and published from `da934897cbdee44cb4d1a44b25e91b458558bfbc`; Milestone 6 used `9c1cdaa` plus `ca3fe18`. WP06 commit `224ed5cd863a48d66340ce0c62f3013bb422910b` is the current [GitHub Pages browser-playtest](https://ariesyous.github.io/projectneon/) boundary; Pages run 33295086207 succeeded. Pending WP02/WP03/WP04 qualitative records remain unchanged.
 
 The working tree separately carries the owner's Godot-AI 3.1.5 update across 57 dirty addon paths, reward-modal simplification, combo-visibility correction, and `project.godot` deletions. They remain preserved owner work, not WP04 content or run authority.
 

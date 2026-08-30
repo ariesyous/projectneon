@@ -82,7 +82,7 @@ Replace debug-like stage communication with an authored city-block presentation,
 
 Exit gate: release presentation contains no unexplained lane dots/debug markers, important combat relationships remain readable, and changed Windows/Web paths are clean.
 
-WP06 implementation/owner gate: **Passed for the accepted publication boundary — 2026-08-30.** The Electric Rain Service Block direction is implemented with deterministic context/lap presentation, nine actor silhouettes, distinct accessible threat/action shapes, bounded feedback, existing-cue audio mixing, and input-pass-through phase transitions. Godot 4.7.2 passed 15/15 focused tests/281 assertions and the unchanged 319/319 cumulative tests/4,734 assertions, a clean configured runtime smoke, and five inspected configured captures. See [WP06 acceptance evidence](WP06_ACCEPTANCE_EVIDENCE.md). The absent local export-template limitation is disclosed there; Pages is the authoritative Web export/deployment gate.
+WP06 implementation/owner gate: **Passed and published — 2026-08-30.** The Electric Rain Service Block direction is implemented with deterministic context/lap presentation, nine actor silhouettes, distinct accessible threat/action shapes, bounded feedback, existing-cue audio mixing, and input-pass-through phase transitions. Godot 4.7.2 passed 15/15 focused tests/281 assertions and the unchanged 319/319 cumulative tests/4,734 assertions, a clean configured runtime smoke, and five inspected configured captures. Commit `224ed5c` was published successfully by Pages run 33295086207, and the live pointer/console smoke passed. See [WP06 acceptance evidence](WP06_ACCEPTANCE_EVIDENCE.md).
 
 ### [WP07 — Integration, Balance, and Release](../work_packages/WP_07_INTEGRATION_BALANCE_RELEASE.md)
 

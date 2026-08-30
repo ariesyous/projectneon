@@ -22,7 +22,7 @@ Approved direction:
 - Permanent combat vocabulary is Environment, Focus, and Backup. Fire Hydrant is an Environment action, Call Backup is Backup, Subway Reroute becomes strategic travel vocabulary, and Rally remains an unpromised WP05 prototype candidate.
 - Qualitative gates use five unbriefed participants with the approved 4/5 clarity/consequence/variety/replay thresholds; timing targets are fight 20–45 seconds, block 45–90, lap 120–180, boss run 8–12 minutes, and ambient coins 10–20.
 
-The implementation is the Milestone 6 codebase migrated through owner-accepted WP01–WP06. WP05 Environment / Focus / Backup was merged/published from `37ebc9d872f2fd4972e5ac5cc621148c00f0d649`; Pages run 32931503114 succeeded on 2026-08-26. WP06 World, Combat, and Presentation Polish passed its focused/cumulative/configured/visual gates and the owner accepted it for publication on 2026-08-30; record exact commit/Pages provenance only after deployment completes. Never describe an unevidenced target or old prototype as accepted/published production content. Preserve historical M0–M6 verification, landed package contracts, and the isolated Milestone 5 compatibility boundary. There is no Milestone 7; WP07 remains unstarted/unauthorized.
+The implementation is the Milestone 6 codebase migrated through owner-accepted WP01–WP06. WP06 World, Combat, and Presentation Polish passed its focused/cumulative/configured/visual gates and was published from `224ed5cd863a48d66340ce0c62f3013bb422910b`; Pages run 33295086207 succeeded on 2026-08-30. Never describe an unevidenced target or old prototype as accepted/published production content. Preserve historical M0–M6 verification, landed package contracts, and the isolated Milestone 5 compatibility boundary. There is no Milestone 7; WP07 remains unstarted/unauthorized.
 
 ## Required reading order
 
@@ -72,7 +72,7 @@ WP06 replaces release-visible debug arena communication with the owner-approved 
 
 ## Current scope boundary
 
-WP06 World, Combat, and Presentation Polish is the owner-accepted release boundary authorized for publication on 2026-08-30; exact commit/Pages provenance is added after deployment. Pending WP02/WP03/WP04 qualitative records remain unchanged. WP07 remains unauthorized.
+WP06 World, Combat, and Presentation Polish is the finalized `main`/GitHub Pages boundary at `224ed5c` / run 33295086207. Pending WP02/WP03/WP04 qualitative records remain unchanged. WP07 remains unauthorized.
 
 Procedural route generation; additional districts or broad card/crew/enemy/elite/boss content; multiplayer; controller support; localization; achievements; daily-run scheduling/rewards/leaderboards; permanent statistical progression or stat trees; mid-run saving/replays; equipment selling, salvage, rarity, uniques, affixes, or sets; a card currency/shop/economy; direct character control; and every other undocumented expansion remain out of scope. Future breadth content is a permitted progression category, not pre-authorized content.
 

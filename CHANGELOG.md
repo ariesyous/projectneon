@@ -14,6 +14,7 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 - Passed **15/15 WP06 focused tests/281 assertions** and **319/319 cumulative tests/4,734 assertions**, plus a clean configured 180-frame `/GameRun` smoke and five inspected final 1280×720 captures with zero authority changes.
 - Recorded that this host lacks the 1.28 GB official 4.7.2 export-template pack; local WP06 Windows export/runtime is not claimed, and the configured Pages workflow remains the authoritative Web export/deployment gate.
 - The owner stated WP06 is good to go and should be published. WP07 remains unauthorized. The Godot-AI addon and `project.godot` owner-carried changes remain excluded.
+- Published implementation commit `224ed5cd863a48d66340ce0c62f3013bb422910b` to `main`. Pages run 33295086207 completed the official Web export/deployment in 45 seconds; the live build passed crew/start and District Plan pointer input, authored-street/debug-exclusion inspection, and an empty warning/error console.
 
 ### 2026-08-26 — WP05 Final Acceptance and WP06 Authorization
 
