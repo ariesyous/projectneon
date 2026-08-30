@@ -11,6 +11,7 @@ const READY_COLOR: Color = Color("72f0d0")
 const INVALID_COLOR: Color = Color("ffbf69")
 const COOLDOWN_COLOR: Color = Color("a987ff")
 const ELECTRIC_COLOR: Color = Color("ffe46b")
+const PRESENTATION_REDRAW_STEP: float = 1.0 / 30.0
 
 @export var definition: PowerBoxDefinition
 
@@ -28,6 +29,7 @@ var _external_preview_visible: bool = false
 var _activation_remaining: float = 0.0
 var _rejection_remaining: float = 0.0
 var _presentation_clock: float = 0.0
+var _redraw_accumulator: float = 0.0
 
 
 func _ready() -> void:
@@ -40,10 +42,13 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	_presentation_clock += maxf(delta, 0.0)
-	_activation_remaining = maxf(_activation_remaining - maxf(delta, 0.0), 0.0)
-	_rejection_remaining = maxf(_rejection_remaining - maxf(delta, 0.0), 0.0)
-	if _context_active:
+	var safe_delta: float = maxf(delta, 0.0)
+	_presentation_clock += safe_delta
+	_activation_remaining = maxf(_activation_remaining - safe_delta, 0.0)
+	_rejection_remaining = maxf(_rejection_remaining - safe_delta, 0.0)
+	_redraw_accumulator += safe_delta
+	if _context_active and _redraw_accumulator >= PRESENTATION_REDRAW_STEP:
+		_redraw_accumulator = fmod(_redraw_accumulator, PRESENTATION_REDRAW_STEP)
 		queue_redraw()
 
 
@@ -71,6 +76,7 @@ func present_snapshot(snapshot: Dictionary) -> void:
 
 func set_external_preview_visible(is_visible: bool) -> void:
 	_external_preview_visible = is_visible and _context_active
+	_refresh_labels()
 	queue_redraw()
 
 
@@ -108,8 +114,17 @@ func _draw() -> void:
 		return
 	var state_color: Color = _state_color()
 	if is_preview_visible():
-		draw_circle(Vector2.ZERO, definition.range_radius, Color(state_color, 0.12), true)
-		draw_arc(Vector2.ZERO, definition.range_radius, 0.0, TAU, 64, Color(state_color, 0.95), 2.5)
+		var footprint: PackedVector2Array = PackedVector2Array()
+		for corner: int in range(8):
+			var angle: float = -PI * 0.125 + TAU * float(corner) / 8.0
+			footprint.append(Vector2.RIGHT.rotated(angle) * definition.range_radius)
+		draw_colored_polygon(footprint, Color(state_color, 0.10))
+		var outline: PackedVector2Array = footprint.duplicate()
+		outline.append(footprint[0])
+		draw_polyline(outline, Color(state_color, 0.95), 2.5, false)
+		for circuit_angle: float in [0.0, PI * 0.5, PI, PI * 1.5]:
+			var direction: Vector2 = Vector2.RIGHT.rotated(circuit_angle)
+			draw_line(direction * 8.0, direction * (definition.range_radius - 8.0), Color(state_color, 0.42), 1.0)
 		draw_circle(Vector2.ZERO, 5.0, Color(state_color, 0.42), true)
 	var rejection_offset: float = (
 		2.0 if _rejection_remaining > 0.0 and int(_presentation_clock * 30.0) % 2 == 0 else 0.0
@@ -144,11 +159,16 @@ func _refresh_labels() -> void:
 	if not _context_active:
 		_state_label.text = ""
 		_interaction_label.text = ""
+		_state_label.visible = false
+		_interaction_label.visible = false
 		return
+	var detail_visible: bool = _hovered or _external_preview_visible
+	_state_label.visible = detail_visible or _can_activate
+	_interaction_label.visible = detail_visible or _can_activate
 	_state_label.add_theme_color_override("font_color", _state_color())
 	if _can_activate:
-		_state_label.text = "READY x%d" % _target_count
-		_interaction_label.text = "CLICK / TAP"
+		_state_label.text = "1 BREAKER / x%d" % _target_count
+		_interaction_label.text = "CLICK / TAP / INTERRUPT"
 	elif _validity_reason == &"cooldown":
 		_state_label.text = "COOL %.1fs" % _cooldown_remaining
 		_interaction_label.text = "RECHARGING"
@@ -174,6 +194,7 @@ func _on_mouse_entered() -> void:
 	_hovered = true
 	Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND)
 	preview_visibility_changed.emit(true)
+	_refresh_labels()
 	queue_redraw()
 
 
@@ -181,6 +202,7 @@ func _on_mouse_exited() -> void:
 	_hovered = false
 	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
 	preview_visibility_changed.emit(false)
+	_refresh_labels()
 	queue_redraw()
 
 

@@ -39,6 +39,7 @@ var app_state_override: NeonAppState
 @onready var tutorial_controller: TutorialPromptController = $TutorialPromptController
 @onready var screen_shake_controller: ScreenShakeController = $ScreenShakeController
 @onready var audio_controller: AudioPresentationController = $AudioPresentationController
+@onready var phase_transition_presenter: PhaseTransitionPresenter = $PhaseTransitionPresenter
 @onready var downtown_loop: DowntownLoop = $DowntownLoop
 @onready var game_hud: GameHUD = $GameHUD
 @onready var vertical_slice_overlay: VerticalSliceOverlay = $VerticalSliceOverlay
@@ -364,8 +365,11 @@ func _input(event: InputEvent) -> void:
 
 func _show_main_menu() -> void:
 	game_hud.visible = false
+	phase_transition_presenter.clear()
+	downtown_loop.reset_world_presentation()
 	vertical_slice_overlay.present_settings(_current_settings_dictionary())
 	vertical_slice_overlay.show_main_menu(_build_crew_menu_entries(), _profile_status_text())
+	audio_controller.set_presentation_phase(&"menu")
 	audio_controller.set_boss_music_active(false)
 	screen_shake_controller.reset_presentation()
 	vertical_slice_overlay.hide_boss()
@@ -484,6 +488,8 @@ func _crew_definition_by_id(crew_id: StringName) -> ActorDefinition:
 func _prepare_presentation_for_run() -> void:
 	game_hud.visible = true
 	_clear_combat_telegraphs()
+	phase_transition_presenter.clear()
+	downtown_loop.reset_world_presentation()
 	vertical_slice_overlay.prepare_for_run()
 	vertical_slice_overlay.hide_boss()
 	vertical_slice_overlay.hide_tutorial()
@@ -651,6 +657,18 @@ func _on_run_started(seed: int, _schema_version: int) -> void:
 
 func _on_run_state_changed(previous_state: int, new_state: int) -> void:
 	_set_combat_telegraphs_suspended(new_state == RunDirector.RunState.PAUSED)
+	if new_state == RunDirector.RunState.INITIALIZING:
+		phase_transition_presenter.clear()
+		audio_controller.set_presentation_phase(&"menu")
+	else:
+		phase_transition_presenter.present_state(
+			new_state,
+			run_director.get_district_loop_snapshot(),
+			run_director.is_card_planning_pause_active()
+		)
+		audio_controller.set_presentation_phase(
+			StringName(phase_transition_presenter.get_snapshot().get("phase_id", &"fight"))
+		)
 	_refresh_combo_presentation_for_state(new_state)
 	if new_state not in [RunDirector.RunState.ENCOUNTER_ACTIVE, RunDirector.RunState.BOSS_ACTIVE]:
 		game_hud.clear_build_callout()
@@ -950,6 +968,7 @@ func _on_flow_status_changed(snapshot: Dictionary) -> void:
 		snapshot.get("patrol", {})
 	)
 	downtown_loop.present_route_snapshot(snapshot.get("patrol", {}))
+	downtown_loop.present_world_snapshot(snapshot)
 	debug_overlay.present_run_flow(snapshot)
 	_refresh_hydrant_presentation()
 	_refresh_combat_presentation()
@@ -1395,7 +1414,8 @@ func _on_actor_registered(actor: ActorController) -> void:
 
 
 func _on_actor_died(actor: ActorController) -> void:
-	combat_feedback.show_death(actor.global_position + Vector2(0.0, -25.0))
+	var role_id: StringName = &"boss" if actor.is_boss() else (&"elite" if actor.is_elite() else &"basic")
+	combat_feedback.show_death(actor.global_position + Vector2(0.0, -25.0), role_id)
 	_refresh_combat_presentation()
 
 
@@ -1484,11 +1504,17 @@ func _on_attack_telegraphed(
 	if marker_radius > 0.0:
 		var telegraph: CombatTelegraph = CombatTelegraph.new()
 		$DowntownLoop/EffectsContainer.add_child(telegraph)
+		var target_position: Vector2 = Vector2.INF
+		if attacker.current_target != null and is_instance_valid(attacker.current_target):
+			target_position = attacker.current_target.global_position
 		telegraph.present(
 			world_position,
 			marker_radius,
 			visible_duration,
-			attack.intent_label if not attack.intent_label.is_empty() else attack.display_name
+			attack.intent_label if not attack.intent_label.is_empty() else attack.display_name,
+			attack.delivery_kind,
+			target_position,
+			attack.charge_distance
 		)
 	if attacker.is_boss():
 		_refresh_boss_presentation()
@@ -1568,6 +1594,12 @@ func _on_hit_landed(
 	if attacker != null and attacker.team == ActorController.Team.CREW and damage > 0:
 		combo_tracker.record_crew_hit()
 	var heavy_hit: bool = hit_stop_duration >= 0.06
+	var impact_direction: Vector2 = (
+		target.global_position - attacker.global_position
+		if attacker != null and target != null
+		else Vector2.RIGHT
+	)
+	var feedback_category: StringName = &"boss" if target != null and target.is_boss() else (&"heavy" if heavy_hit else &"light")
 	if target != null and target.is_boss():
 		screen_shake_controller.request_boss_hit()
 	elif heavy_hit:
@@ -1580,17 +1612,21 @@ func _on_hit_landed(
 	combat_feedback.show_hit(
 		world_position + Vector2(0.0, -28.0),
 		float(damage),
-		heavy_hit
+		heavy_hit,
+		feedback_category,
+		impact_direction
 	)
 
 
 func _on_equipment_status_applied(
-	_target: ActorController,
+	target: ActorController,
 	status_id: StringName,
 	stacks: int,
 	duration_seconds: float,
 	source_effect_id: StringName
 ) -> void:
+	if target != null and is_instance_valid(target):
+		combat_feedback.show_status(target.global_position + Vector2(0.0, -39.0), status_id)
 	var source: Dictionary = synergy_system.get_triggered_effect_source(source_effect_id)
 	if source.is_empty():
 		return
@@ -1626,10 +1662,17 @@ func _on_environmental_hit_landed(
 		audio_controller.play_cue(&"sfx_knockback")
 	if source_id == EnvironmentController.ACTION_POWER_BOX:
 		audio_controller.play_cue(&"sfx_environment_collision")
+		var electric_direction: Vector2 = (
+			_target.global_position - power_box.global_position
+			if _target != null and is_instance_valid(_target)
+			else Vector2.RIGHT
+		)
 		combat_feedback.show_hit(
 			world_position + Vector2(0.0, -28.0),
 			float(damage),
-			false
+			false,
+			&"electric",
+			electric_direction
 		)
 	else:
 		combat_feedback.show_hydrant_impact(
@@ -1652,6 +1695,18 @@ func _on_environmental_collision_landed(
 	combo_tracker.record_environmental_hit()
 	screen_shake_controller.request_environmental_hit()
 	audio_controller.play_cue(&"sfx_environment_collision")
+	var collision_direction: Vector2 = (
+		_target.global_position - _source_actor.global_position
+		if _target != null and _source_actor != null
+		else Vector2.RIGHT
+	)
+	combat_feedback.show_hit(
+		_world_position + Vector2(0.0, -28.0),
+		float(damage),
+		true,
+		&"heavy",
+		collision_direction
+	)
 	var synergy: SynergyDefinition = synergy_system.get_synergy_definition(&"knockback_2")
 	if synergy != null and synergy_system.is_synergy_active(synergy.id):
 		game_hud.present_build_callout(

@@ -1,6 +1,6 @@
 # WP06 — World, Combat, and Presentation Polish
 
-Status: **owner-authorized to begin on 2026-08-26; WP05 entry gate passed**
+Status: **implemented and owner-accepted for publication on 2026-08-30**
 Branch suggestion: `codex/wp-06-world-combat-polish`
 
 ## Outcome

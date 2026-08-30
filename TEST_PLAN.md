@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Testing is milestone- and work-package-scoped. Milestones 0–6 retain their historical gates. WP00 defines the approved product contract; WP01 verifies presentation, WP02 lifecycle/access/state clarity, WP03 the focused next-block District Plan, WP04 exact build/reward/shop consequence, and WP05 the owner-selected Environment / Focus / Backup implementation plus bounded encounter variety. Part A remains archived comparison evidence; WP05 passed every technical and owner gate on 2026-08-26. WP06 is authorized but unstarted; WP07 remains prospective.
+Testing is milestone- and work-package-scoped. Milestones 0–6 retain their historical gates. WP00 defines the approved product contract; WP01 verifies presentation, WP02 lifecycle/access/state clarity, WP03 the focused next-block District Plan, WP04 exact build/reward/shop consequence, WP05 the owner-selected Environment / Focus / Backup implementation plus bounded encounter variety, and WP06 authored world/combat presentation without gameplay-authority drift. WP05 passed every technical and owner gate on 2026-08-26. WP06 passed its recorded focused/cumulative/configured/visual gates and was owner-accepted for publication on 2026-08-30. WP07 remains prospective and unauthorized.
 
 ## Error policy
 
@@ -17,6 +17,20 @@ Testing is milestone- and work-package-scoped. Milestones 0–6 retain their his
 - **Planned** means the test is a downstream acceptance contract only; an unchecked planned item is not evidence that its system exists or works.
 - **Pending execution** means implementation and its test case exist, but no final pass result is recorded until that exact matrix is run against the finished working tree.
 - **Owner-recorded** means only the project owner may enter the result.
+
+## WP06 final verification — World, Combat, and Presentation Polish
+
+Status: **PASSED for the executed focused, cumulative, configured-runtime, and visual gates; owner accepted publication on 2026-08-30.** Exact platform/publication limitations and provenance are recorded in `docs/product/WP06_ACCEPTANCE_EVIDENCE.md`.
+
+- [x] `tests/run_wp06_focused.gd`: **15/15 tests, 281 assertions, 0 failed, 0 skipped**.
+- [x] `tests/run_wp05_cumulative.gd`: **319/319 tests, 4,734 assertions, 0 failed, 0 skipped** with normal `user://` access.
+- [x] Configured main scene: 180 headless frames, exit 0, no project warning/error.
+- [x] Final configured visual fixture: five 1280×720 captures, authority changes 0, all inspected.
+- [x] Release composition hides lane/route labels and debug shapes by default while retaining development toggle behavior.
+- [x] Five profile mappings, three lap atmospheres, nine silhouette IDs, distinct delivery/Focus/target/Environment shapes, accessibility reductions, bounded transients, stable audio IDs/buses, and absence of unseeded presentation randomness are automated.
+- [x] Owner accepted the presentation and authorized commit/push/Pages publication.
+- [ ] Record successful Pages Web export/deployment after the workflow completes.
+- [ ] Fresh local WP06 Windows export/runtime remains unclaimed because official 4.7.2 export templates are not installed on this host; prior WP05 platform evidence remains the compatibility baseline.
 
 Milestone 1 through Milestone 5 technical suites are recorded as executed. Milestone 6 passed its 56-test cumulative addition and tentative Pages playtest publication. WP01 and WP02 subsequently passed their recorded technical, configured-runtime, visual, Windows release-export/runtime, and local Web release/browser matrices. WP02's five-person unbriefed comprehension gate remains **Owner-recorded / Pending execution**; no automated or implementation-team result substitutes for it. The Milestone 1 Human Validation Gate result remains separately labelled as an owner-recorded qualitative decision and is neither repeated nor reopened.
 

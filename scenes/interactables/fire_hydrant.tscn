@@ -19,6 +19,7 @@ shape = SubResource("CircleShape2D_interaction")
 
 [node name="StateLabel" type="Label" parent="."]
 unique_name_in_owner = true
+visible = false
 offset_left = -31.0
 offset_top = -43.0
 offset_right = 32.0
@@ -33,6 +34,7 @@ horizontal_alignment = 1
 
 [node name="InteractionLabel" type="Label" parent="."]
 unique_name_in_owner = true
+visible = false
 offset_left = -35.0
 offset_top = 20.0
 offset_right = 36.0

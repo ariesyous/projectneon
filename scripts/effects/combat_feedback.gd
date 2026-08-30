@@ -49,14 +49,23 @@ func _ready() -> void:
 
 
 ## Spawns one spark and one damage number, and plays exactly one hit sound.
-func show_hit(world_position: Vector2, damage: float, heavy: bool = false) -> void:
+func show_hit(
+	world_position: Vector2,
+	damage: float,
+	heavy: bool = false,
+	category: StringName = &"",
+	direction: Vector2 = Vector2.RIGHT
+) -> void:
+	var style_id: StringName = category if category != &"" else (&"heavy" if heavy else &"light")
 	_spawn_spark(
 		world_position,
 		HEAVY_HIT_COLOR if heavy else LIGHT_HIT_COLOR,
 		CORE_COLOR,
 		14.0 if heavy else 10.0,
 		0.19 if heavy else 0.14,
-		heavy
+		heavy,
+		style_id,
+		direction
 	)
 	if _damage_numbers_enabled:
 		_spawn_damage_number(world_position, damage, heavy)
@@ -64,13 +73,21 @@ func show_hit(world_position: Vector2, damage: float, heavy: bool = false) -> vo
 
 
 ## Spawns the death burst and plays exactly one death sound.
-func show_death(world_position: Vector2) -> void:
-	_spawn_spark(world_position, DEATH_COLOR, CORE_COLOR, 20.0, 0.32, true)
+func show_death(world_position: Vector2, role_id: StringName = &"basic") -> void:
+	var style_id: StringName = &"death"
+	var radius: float = 20.0
+	if role_id == &"boss":
+		style_id = &"boss_death"
+		radius = 28.0
+	elif role_id == &"elite":
+		style_id = &"elite_death"
+		radius = 24.0
+	_spawn_spark(world_position, DEATH_COLOR, CORE_COLOR, radius, 0.36, true, style_id)
 	play_death()
 
 
 func show_spawn(world_position: Vector2) -> void:
-	_spawn_spark(world_position, SPAWN_COLOR, Color(0.78, 0.98, 1.0, 1.0), 13.0, 0.24, false)
+	_spawn_spark(world_position, SPAWN_COLOR, Color(0.78, 0.98, 1.0, 1.0), 13.0, 0.24, false, &"spawn")
 
 
 ## Presents one authoritative Hydrant hit. Gameplay owns the damage and target;
@@ -86,7 +103,9 @@ func show_hydrant_impact(
 		WATER_CORE_COLOR,
 		18.0,
 		maxf(impact_duration, 0.01),
-		true
+		true,
+		&"water",
+		Vector2.LEFT
 	)
 	if _damage_numbers_enabled:
 		_spawn_damage_number(world_position, damage, true)
@@ -95,6 +114,28 @@ func show_hydrant_impact(
 	hydrant_impact_audio.stream = _hydrant_impact_stream
 	hydrant_impact_audio.pitch_scale = 1.0
 	hydrant_impact_audio.play()
+
+
+func show_status(world_position: Vector2, status_id: StringName) -> void:
+	var style_id: StringName = &"status_bleed"
+	var primary: Color = Color("ff415f")
+	match status_id:
+		&"shock":
+			style_id = &"status_shock"
+			primary = Color("43e6e8")
+		&"wet":
+			style_id = &"water"
+			primary = WATER_COLOR
+	_spawn_spark(world_position, primary, CORE_COLOR, 11.0, 0.30, false, style_id)
+
+
+func get_live_transient_count() -> int:
+	_prune_expired_transients()
+	return _live_transients.size()
+
+
+func get_transient_cap() -> int:
+	return MAX_LIVE_TRANSIENTS
 
 
 func set_damage_numbers_enabled(is_enabled: bool) -> void:
@@ -169,10 +210,12 @@ func _spawn_spark(
 	secondary_color: Color,
 	radius: float,
 	lifetime: float,
-	heavy: bool
+	heavy: bool,
+	style_id: StringName = &"",
+	direction: Vector2 = Vector2.RIGHT
 ) -> void:
 	var spark: CombatHitSpark = HIT_SPARK_SCENE.instantiate() as CombatHitSpark
-	spark.configure(primary_color, secondary_color, radius, lifetime, heavy)
+	spark.configure(primary_color, secondary_color, radius, lifetime, heavy, style_id, direction)
 	spark.position = to_local(world_position)
 	_register_transient(spark)
 	add_child(spark)

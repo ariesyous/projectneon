@@ -2,9 +2,9 @@
 
 ## Catalog status
 
-This catalog reflects the implementation through **Milestones 0–6 plus owner-accepted WP01–WP05**, while retaining Part A prototypes only as labelled historical evidence. WP05 adds the selected Environment / Focus / Backup behavior without broad catalogue expansion and is published from `37ebc9d`; Pages run 32931503114 succeeded.
+This catalog reflects the implementation through **Milestones 0–6 plus owner-accepted WP01–WP06**, while retaining Part A prototypes only as labelled historical evidence. WP05 adds the selected Environment / Focus / Backup behavior without broad catalogue expansion. WP06 adds presentation variants only—no new gameplay content ID or catalogue breadth—and was owner-accepted for publication on 2026-08-30.
 
-Milestone 5 was merged through PR #4 and published from `da934897cbdee44cb4d1a44b25e91b458558bfbc`; Milestone 6 used `9c1cdaa` plus `ca3fe18`. WP05 commit `37ebc9d872f2fd4972e5ac5cc621148c00f0d649` is the current [GitHub Pages browser-playtest](https://ariesyous.github.io/projectneon/) boundary; Pages run 32931503114 succeeded. Pending WP02/WP03/WP04 qualitative records remain unchanged.
+Milestone 5 was merged through PR #4 and published from `da934897cbdee44cb4d1a44b25e91b458558bfbc`; Milestone 6 used `9c1cdaa` plus `ca3fe18`. WP05 commit `37ebc9d872f2fd4972e5ac5cc621148c00f0d649` and Pages run 32931503114 are the preceding browser-playtest boundary. WP06 exact commit/Pages provenance is recorded after its authorized publication completes. Pending WP02/WP03/WP04 qualitative records remain unchanged.
 
 The working tree separately carries the owner's Godot-AI 3.1.5 update across 57 dirty addon paths, reward-modal simplification, combo-visibility correction, and `project.godot` deletions. They remain preserved owner work, not WP04 content or run authority.
 
@@ -30,11 +30,11 @@ The approved breadth/cosmetic/challenge boundary adds no permanent stats and pre
 
 | ID / name | Type | Current state |
 | --- | --- | --- |
-| Downtown Loop | Fixed district stage | Placeholder nighttime street made from development shapes and labels |
-| Back Lane | Debug lane guide / combat lane | Visible development marker at Y 194; used by Combat Lab movement |
-| Middle Lane | Debug lane guide / combat lane | Visible development marker at Y 226; used by Combat Lab movement |
-| Front Lane | Debug lane guide / combat lane | Visible development marker at Y 258; used by Combat Lab movement |
-| Route nodes | Authored patrol route presentation | Five-node loop driven by authoritative four-second segments |
+| Downtown Loop | Fixed district stage | WP06 Electric Rain Service Block with deterministic Alley/Arcade/Convenience/Subway/Viper presentation profiles and three lap atmospheres |
+| Back Lane | Internal combat lane / development guide | Logical Y 194 authority unchanged; release drawing hidden, development toggle retained |
+| Middle Lane | Internal combat lane / development guide | Logical Y 226 authority unchanged; release drawing hidden, development toggle retained |
+| Front Lane | Internal combat lane / development guide | Logical Y 258 authority unchanged; release drawing hidden, development toggle retained |
+| Route nodes | Authored patrol authority / development presentation | Five-node fixed loop unchanged; release route dots/placeholder labels hidden, development toggle retained |
 | Spawn points | Authored encounter markers | Deterministic Jax/enemy placement within the shared combat-safe region |
 | Interactables container | Stage container | Hosts the functional Fire Hydrant presentation/input scene; gameplay authority remains run-scoped |
 | Crew container | Stage container | Hosts the selected Jax/Zoey/Rex actor plus temporary Backup Runners |
@@ -51,7 +51,7 @@ The approved breadth/cosmetic/challenge boundary adds no permanent stats and pre
 | Crew status | Compact health/state plus full authored name disclosure |
 | Equipment and synergies | Three-slot compact build identity with focused inspect/backpack/synergy disclosure |
 | District Plan | Mandatory focused next-block choice with large authored cards, exact prediction, one confirm, compact next state, and resolved history; no release hand/five-slot clutter |
-| Interventions | Environment/Hydrant and Backup use shared icon-plus-label controls; absent Focus is visibly disabled; Subway remains strategic travel |
+| Interventions | Contextual Hydrant/Power Box Environment, Focus, and finite Backup use distinct icon-plus-label/shape contracts; Subway remains strategic travel |
 | Focused decisions | Equipment reward, finite shop, current Extract/Push, pause/settings, and summary own attention while active |
 
 Run state, route progress, Heat/tier, Night Pressure, elapsed time, extraction/cooling actions, selected-crew health/state/target, coins/streak, all three current intervention states, combo, boss health/phase/named warnings, equipment/backpack/synergy state, equipment/card reward flows, contextual tutorials, settings, summary, fullscreen state, and guidance remain authoritative snapshot values. WP01's native 1280×720 layer uses 16-pixel minimum captions, visible focus, 48-pixel control targets, bounded ellipsis/tooltips, safe-area geometry, and text/shape cues in addition to color. `VerticalSliceOverlay` shares the same tokens for crew menu, pause/settings, boss/tutorial/combo, and complete summary. No HUD, overlay, component, icon, or visual fixture owns authoritative gameplay state.
@@ -604,6 +604,6 @@ WP02 strategic event IDs are keyed to accepted district block completion and maj
 
 The complete `RunSummaryRecord` includes result (`VICTORY`, `EXTRACTED`, or `DEFEATED`), duration, seed, schema, maximum Heat, final Night Pressure, completed laps/blocks, boss commitment, final stable lap/block IDs, accepted decision trail, encounters, enemies/elites defeated, boss result (`DEFEATED`, `CREW DEFEATED`, or `NOT REACHED`), coins, manual clusters, maximum streak, scrap, highest combo, equipment build, active synergies, Restart Run, and Return to Main Menu. Unresolved clusters settle at base value before publication. Completed-run persistence happens only after this snapshot and cannot change it.
 
-WP02 adds lifecycle definitions, WP03 restructures the four-card interaction, WP04 repairs consequence within the same item/shop catalogue, and WP05 adds only the selected bounded intervention set. WP06 is authorized for presentation polish; WP07 remains gated. The roadmap does not pre-authorize procedural route generation, additional district/card/crew/enemy/boss/equipment content, multiplayer, controller support, localization, achievements, daily systems/leaderboards, advanced meta-progression/permanent stat trees, mid-run saving/replay, a card economy, or equipment selling/salvage/rarity/uniques/affixes/sets.
+WP02 adds lifecycle definitions, WP03 restructures the four-card interaction, WP04 repairs consequence within the same item/shop catalogue, WP05 adds only the selected bounded intervention set, and WP06 changes presentation only. WP07 remains gated and unauthorized. The roadmap does not pre-authorize procedural route generation, additional district/card/crew/enemy/boss/equipment content, multiplayer, controller support, localization, achievements, daily systems/leaderboards, advanced meta-progression/permanent stat trees, mid-run saving/replay, a card economy, or equipment selling/salvage/rarity/uniques/affixes/sets.
 
 Godot 4.7.2 passed **264/264 cumulative tests and 3,646 assertions with no failures or skips across 25 suites**. The authored fixed route now uses a 21.0-second represented approach while preserving its stable ID and five nodes; fixed seed `6062026` reaches lap decisions at 121.267/292.683 eligible seconds and a boss result at 599.883 seconds. The configured `/GameRun` smoke covered the complete WP02 lifecycle; twelve native/safe-area/Web-scale captures were inspected; Windows and Web release exports completed; the exported Windows runtime exited cleanly; and local production Web at native and 2560×1440 entered PLAN through real pointer input with no warning/error console entry. The preserved `E` extraction shortcut is covered with its exact decision token. The cumulative harness's pre-existing 48 ObjectDB/four-resource shutdown diagnostic remains recorded and was not suppressed. Representative five-person comprehension, broader timing distributions, consequence/variety/replay results, and final owner acceptance remain pending.

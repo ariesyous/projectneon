@@ -1,6 +1,6 @@
 # Rebaseline Roadmap
 
-Status: owner-approved through WP06 entry; WP01–WP05 implemented; WP05 accepted 2026-08-26; WP06 authorized to begin
+Status: WP01–WP06 implemented; WP06 owner-accepted for publication 2026-08-30; WP07 unauthorized
 Prepared: 2026-08-20
 
 ## Roadmap outcome
@@ -19,8 +19,8 @@ This roadmap is intentionally organized by player outcome rather than subsystem 
 | 03 | District planning is understandable on first use | WP01, WP02 | **Implemented and technically evidenced — 2026-08-22; first-use gate pending** | Focused authority/card/UI tests, configured runtime/platform evidence, owner first-use record |
 | 04 | Equipment, rewards, and the shop create obvious build consequences | WP02, WP03 | **Implemented, evidenced, and published for browser playtest — 2026-08-22; five-person gate pending** | Consequence audit, three disjoint builds, exact decision captures/runtime/platform evidence |
 | 05 | Encounters remain varied through a small, coherent intervention system | WP02; coordinate with WP04 | **Complete, owner-accepted, and published — 2026-08-26** | `37ebc9d`, Pages run 32931503114, production matrix, full gate evidence |
-| 06 | The world and combat feel authored, legible, and satisfying | WP01, WP03, WP04, WP05 | **Authorized; not started** | Art-direction approval, final art/presentation captures, Windows/Web smoke |
-| 07 | The rebaseline is balanced, integrated, documented, and release-ready | WP00–WP06 | Planned | Full gate, owner playtest record, release candidate |
+| 06 | The world and combat feel authored, legible, and satisfying | WP01, WP03, WP04, WP05 | **Implemented and owner-accepted for publication — 2026-08-30** | Approved direction, focused/cumulative/configured gates, inspected final captures, publication evidence |
+| 07 | The rebaseline is balanced, integrated, documented, and release-ready | WP00–WP06 | Unauthorized; not started | Full gate, owner playtest record, release candidate |
 
 ## Phase A — Decide the game
 
@@ -82,6 +82,8 @@ Replace debug-like stage communication with an authored city-block presentation,
 
 Exit gate: release presentation contains no unexplained lane dots/debug markers, important combat relationships remain readable, and changed Windows/Web paths are clean.
 
+WP06 implementation/owner gate: **Passed for the accepted publication boundary — 2026-08-30.** The Electric Rain Service Block direction is implemented with deterministic context/lap presentation, nine actor silhouettes, distinct accessible threat/action shapes, bounded feedback, existing-cue audio mixing, and input-pass-through phase transitions. Godot 4.7.2 passed 15/15 focused tests/281 assertions and the unchanged 319/319 cumulative tests/4,734 assertions, a clean configured runtime smoke, and five inspected configured captures. See [WP06 acceptance evidence](WP06_ACCEPTANCE_EVIDENCE.md). The absent local export-template limitation is disclosed there; Pages is the authoritative Web export/deployment gate.
+
 ### [WP07 — Integration, Balance, and Release](../work_packages/WP_07_INTEGRATION_BALANCE_RELEASE.md)
 
 Tune cadence and consequence, complete cumulative QA, update documentation, and run owner-led acceptance on the finished experience.
@@ -97,7 +99,7 @@ Exit gate: all automated and platform checks pass, the manual matrix is complete
 - Keep debug tooling available in development while removing debug affordances from release presentation.
 - Each package includes automated coverage, fresh Godot/runtime inspection, changed-input exercise, documentation updates, visual evidence when relevant, and proportionate Windows/Web checks.
 - No package may silently expand into procedural maps, direct-control combat, multiplayer, permanent stats, or unrelated platform features.
-- Roadmap approval is not implementation authorization. WP01–WP05 began only under separate explicit tasks. On 2026-08-26 the owner separately accepted WP05, authorized its merge/push, and authorized WP06. WP07 remains gated.
+- Roadmap approval is not implementation authorization. WP01–WP06 began only under separate explicit tasks. On 2026-08-30 the owner separately accepted WP06 and authorized commit/push/Pages publication. WP07 remains gated and unauthorized.
 
 ## Playtest checkpoints
 

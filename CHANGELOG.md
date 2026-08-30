@@ -4,6 +4,17 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 
 ## [Unreleased]
 
+### 2026-08-30 — WP06 World, Combat, and Presentation Polish
+
+- Replaced release-visible lane/route placeholder communication with the approved Electric Rain Service Block while retaining fixed combat geometry and development debug tooling.
+- Added five deterministic existing-context stage profiles, three presentation-only lap atmospheres, authored architecture/entrances/materials/reflections, and no new gameplay content or procedural map authority.
+- Gave all nine actor variants distinct code-drawn silhouettes and separated melee/projectile/charge/area/summon, Focus, target, and Environment shape contracts.
+- Added bounded contact/status/boss feedback, phase-aware existing-cue audio mixing, and input-pass-through transitions for PLAN, FIGHT, REWARD, SHOP, PUSH/EXTRACT, BOSS, and RESULT.
+- Preserved accessibility reductions, the 48-transient cap, exact stable audio IDs/buses, schema-1 named-stream isolation, gameplay authority, and cleanup.
+- Passed **15/15 WP06 focused tests/281 assertions** and **319/319 cumulative tests/4,734 assertions**, plus a clean configured 180-frame `/GameRun` smoke and five inspected final 1280×720 captures with zero authority changes.
+- Recorded that this host lacks the 1.28 GB official 4.7.2 export-template pack; local WP06 Windows export/runtime is not claimed, and the configured Pages workflow remains the authoritative Web export/deployment gate.
+- The owner stated WP06 is good to go and should be published. WP07 remains unauthorized. The Godot-AI addon and `project.godot` owner-carried changes remain excluded.
+
 ### 2026-08-26 — WP05 Final Acceptance and WP06 Authorization
 
 - Recorded the owner's explicit statement that **all WP05 gates pass**, closing the remaining fresh-log, production visual/containment, input, Windows/Web, and five-person intent/variety gates without inventing unsupplied participant, device, timing, or failure details.

@@ -1,13 +1,13 @@
 # Neon Loop — Game Specifications
 
-**Document status:** WP00-approved product rebaseline; WP01–WP05 implementation status recorded; Milestones 0–6 retained as implemented history
+**Document status:** WP00-approved product rebaseline; WP01–WP06 implementation status recorded; Milestones 0–6 retained as implemented history
 **Working title:** Neon Loop
 **Engine:** Godot 4.x
 **Primary language:** Typed GDScript
 **Target platform:** Windows PC
 **Target display:** 16:9 desktop display
 **Internal design resolution:** 640 × 360
-**Current published boundary:** WP05 Environment / Focus / Backup is implemented, technically evidenced, owner-accepted, merged, and published from commit `37ebc9d872f2fd4972e5ac5cc621148c00f0d649`; [Pages run 32931503114](https://github.com/ariesyous/projectneon/actions/runs/32931503114) succeeded on 2026-08-26. WP02/WP03/WP04 qualitative records remain pending and unchanged. WP06 is authorized but unstarted; WP07 is unstarted and unauthorized.
+**Current release boundary:** WP06 World, Combat, and Presentation Polish is implemented, technically verified, visually inspected, and owner-accepted for publication on 2026-08-30. Its exact commit and Pages run are recorded after deployment completes. The preceding published gameplay boundary is WP05 commit `37ebc9d872f2fd4972e5ac5cc621148c00f0d649`; [Pages run 32931503114](https://github.com/ariesyous/projectneon/actions/runs/32931503114) succeeded on 2026-08-26. WP02/WP03/WP04 qualitative records remain pending and unchanged. WP07 is unstarted and unauthorized.
 
 ---
 
@@ -117,6 +117,8 @@ The isolated WP03 release snapshot has passed **5/5 focused tests/130 assertions
 WP04 locally passes **15/15 focused tests with 247 assertions**, **226/226 affected tests with 3,175 assertions**, and **291/291 cumulative tests with 4,192 assertions across 30 suites**, plus configured `/GameRun`, native mouse/touch/keyboard routing, four inspected 1280×720 captures, Windows/Web release exports, exported-Windows runtime, and local production-Web real-pointer reward/shop/exit plus 2560×1440 containment with an empty warning/error console. The aggregate runner retains the pre-existing 48-ObjectDB/four-resource shutdown diagnostic; the other gates do not reproduce it. The owner-run five-person WP04 consequence/variety gate remains pending. On 2026-08-22 the owner separately authorized this exact evidenced boundary for a `main` and GitHub Pages browser-playtest release; publication does not close the gate or authorize WP05.
 
 WP05 Part A completed the separately authorized research, authority audit, development-gated Environment/Focus/Rally/Backup comparison, exact strong/weak/invalid/hold/counter cases, deterministic 60-row encounter matrix, and owner-selection packet. At that checkpoint, prototype Resources used `wp05_proto_`, default `/GameRun` created no prototype, and Part A passed 13/13 focused tests with 180 assertions plus 304/304 cumulative tests with 4,373 assertions. The owner approved Environment / Focus / Backup on 2026-08-23. Production adds Power Box and Focus authorities, hardens Backup caller context, and removes Rally/Hanging Sign and Part A GameRun debug seams from release composition. It passes 18/18 focused tests/381 assertions, 64/64 affected tests/911 assertions, 319/319 cumulative tests/4,734 assertions across 34 suites, and the repeatable/cosmetic-isolated 60-row production matrix. On 2026-08-26 the owner explicitly reported all remaining gates passed and authorized finalization, merge/push, and WP06. Raw participant/platform details were not supplied to this record and are not invented.
+
+WP06 implements the approved Electric Rain Service Block presentation without changing gameplay authority. Release-visible route/lane placeholders are hidden; five deterministic existing-context stage profiles and three lap atmospheres provide authored city-block depth; all nine actors receive distinct silhouettes; attack deliveries, Focus, target selection, and Environment footprints use separate accessible shapes; hit/status/boss/phase/audio feedback is presentation-only and bounded. Godot 4.7.2 passed **15/15 focused tests with 281 assertions** and the unchanged **319/319 cumulative tests with 4,734 assertions**, plus a clean configured 180-frame `/GameRun` smoke and five inspected final captures with zero authority changes. The owner accepted this result and authorized publication on 2026-08-30. WP07 remains unauthorized.
 
 ---
 
@@ -2751,14 +2753,14 @@ The project succeeds when a player can watch the crew fight, make a small number
 
 ## 51. WP00-Approved Work-Package Roadmap
 
-WP00 is the documentation/decision gate and changes no runtime. WP01–WP05 are implemented within their bounded scopes. WP02 comprehension, WP03 first-use, and WP04 consequence/variety records remain pending and unchanged; WP05 is owner-accepted. Later work proceeds only after the explicit authorization and gates named in `docs/product/ROADMAP.md`:
+WP00 is the documentation/decision gate and changes no runtime. WP01–WP06 are implemented within their bounded scopes. WP02 comprehension, WP03 first-use, and WP04 consequence/variety records remain pending and unchanged; WP05 and WP06 are owner-accepted. Later work proceeds only after the explicit authorization and gates named in `docs/product/ROADMAP.md`:
 
 1. **WP01 — Interface and Visual Language:** minimal combat HUD, focused decision shells, icon-plus-label language, accessibility and containment.
 2. **WP02 — Core Run Loop and State Clarity:** authoritative three-lap lifecycle, phase/next-event presentation, all-crew defaults, explicit Extract/Push and boss commitment.
 3. **WP03 — District Planning and Cards:** migrate the release interaction to the focused next-block District Plan while preserving deterministic/token authority.
 4. **WP04 — Builds, Rewards, and Shop:** make existing choices materially and visibly change the next fight; preserve lossless inventory and bounded economy scope.
 5. **WP05 — Interventions and Encounter Variety:** complete and owner-accepted; the selected Environment/Focus/Backup production set and bounded encounter matrix passed their gates.
-6. **WP06 — World, Combat, and Presentation Polish:** owner-authorized to begin from finalized WP05; replace release-visible debug communication with authored city-block depth and accessible feedback without changing authority for convenience.
-7. **WP07 — Integration, Balance, and Release:** validate the approved cadence, clarity, consequence, variety, replay desire, compatibility, platforms, and owner-led final acceptance.
+6. **WP06 — World, Combat, and Presentation Polish:** implemented, technically verified, visually inspected, and owner-accepted for publication on 2026-08-30; release-visible debug communication is replaced by authored city-block depth and accessible feedback without changing gameplay authority.
+7. **WP07 — Integration, Balance, and Release:** unauthorized; when separately approved, validate the approved cadence, clarity, consequence, variety, replay desire, compatibility, platforms, and owner-led final acceptance.
 
-There is no Milestone 7. WP05 is the finalized and published boundary at `37ebc9d` / Pages run 32931503114. WP06 is authorized to begin; WP07 remains unauthorized. Procedural cities, direct character control, multiplayer, permanent statistical progression, large content expansion, controller support, localization, achievements, live-service systems, and other unapproved scope remain excluded.
+There is no Milestone 7. WP06 is owner-accepted for publication on 2026-08-30; its exact commit/Pages provenance is recorded after deployment. WP07 remains unauthorized. Procedural cities, direct character control, multiplayer, permanent statistical progression, large content expansion, controller support, localization, achievements, live-service systems, and other unapproved scope remain excluded.

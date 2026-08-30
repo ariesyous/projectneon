@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <defs>
+    <linearGradient id="road" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#152238"/>
+      <stop offset="1" stop-color="#070b14"/>
+    </linearGradient>
+    <linearGradient id="lap" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2ee7e1"/>
+      <stop offset="0.5" stop-color="#9b73ff"/>
+      <stop offset="1" stop-color="#ff4f75"/>
+    </linearGradient>
+    <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <style>
+      .title { font: 700 42px 'Segoe UI', Arial, sans-serif; fill: #f3f6ff; letter-spacing: 2px; }
+      .sub { font: 600 18px 'Segoe UI', Arial, sans-serif; fill: #5fe6e1; letter-spacing: 1px; }
+      .head { font: 700 20px 'Segoe UI', Arial, sans-serif; fill: #f3f6ff; letter-spacing: 1px; }
+      .body { font: 500 15px 'Segoe UI', Arial, sans-serif; fill: #c7d0e3; }
+      .small { font: 600 12px 'Segoe UI', Arial, sans-serif; fill: #a9b4ca; letter-spacing: .4px; }
+      .micro { font: 600 9px 'Segoe UI', Arial, sans-serif; fill: #8795ad; }
+      .panel { fill: #111827; stroke: #34445d; stroke-width: 2; rx: 12; }
+      .divider { stroke: #34445d; stroke-width: 2; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1000" fill="#090d18"/>
+  <rect x="20" y="20" width="1560" height="960" rx="18" fill="#0d1424" stroke="#51627c" stroke-width="2"/>
+  <text x="54" y="72" class="title">NEON LOOP / WP06 / ELECTRIC RAIN SERVICE BLOCK</text>
+  <text x="56" y="105" class="sub">AUTHORED FIXED BLOCK • QUIET WORLD, LOUD INTENT • ORIGINAL PROJECT LANGUAGE</text>
+  <line x1="54" y1="126" x2="1546" y2="126" class="divider"/>
+
+  <!-- Palette and value ladder -->
+  <rect x="50" y="150" width="510" height="238" class="panel"/>
+  <text x="72" y="181" class="head">PALETTE + VALUE HIERARCHY</text>
+  <g transform="translate(72 201)">
+    <g><rect width="62" height="46" rx="6" fill="#050712"/><text x="0" y="65" class="micro">VOID  #050712</text></g>
+    <g transform="translate(92 0)"><rect width="62" height="46" rx="6" fill="#0b1025"/><text x="0" y="65" class="micro">FAR  #0B1025</text></g>
+    <g transform="translate(184 0)"><rect width="62" height="46" rx="6" fill="#141b32"/><text x="0" y="65" class="micro">BRICK  #141B32</text></g>
+    <g transform="translate(276 0)"><rect width="62" height="46" rx="6" fill="#243650"/><text x="0" y="65" class="micro">WET  #243650</text></g>
+    <g transform="translate(368 0)"><rect width="62" height="46" rx="6" fill="#f3f6ff"/><text x="0" y="65" class="micro">CORE  #F3F6FF</text></g>
+    <g transform="translate(0 94)"><rect width="62" height="46" rx="6" fill="#43e6e8"/><text x="0" y="65" class="micro">CREW  #43E6E8</text></g>
+    <g transform="translate(92 94)"><rect width="62" height="46" rx="6" fill="#ff5c82"/><text x="0" y="65" class="micro">ENEMY #FF5C82</text></g>
+    <g transform="translate(184 94)"><rect width="62" height="46" rx="6" fill="#b8f35d"/><text x="0" y="65" class="micro">ELITE #B8F35D</text></g>
+    <g transform="translate(276 94)"><rect width="62" height="46" rx="6" fill="#ffc45c"/><text x="0" y="65" class="micro">TELL  #FFC45C</text></g>
+    <g transform="translate(368 94)"><rect width="62" height="46" rx="6" fill="#c75bff"/><text x="0" y="65" class="micro">BOSS  #C75BFF</text></g>
+  </g>
+  <text x="72" y="370" class="small">WORLD 08–28%  →  ACTORS 45–75%  →  TELLS 70–95%  →  CONTACT CORE 100%</text>
+
+  <!-- Block anatomy -->
+  <rect x="580" y="150" width="970" height="238" class="panel"/>
+  <text x="602" y="181" class="head">FIXED CITY-BLOCK ANATOMY — LANES IMPLIED, NEVER DRAWN</text>
+  <g transform="translate(602 198)">
+    <rect width="926" height="86" fill="#0b1025"/>
+    <rect x="20" y="18" width="156" height="68" fill="#141b32"/>
+    <rect x="193" y="7" width="168" height="79" fill="#10172b"/>
+    <rect x="380" y="23" width="190" height="63" fill="#151d35"/>
+    <rect x="590" y="11" width="170" height="75" fill="#10172b"/>
+    <rect x="780" y="27" width="126" height="59" fill="#141b32"/>
+    <rect x="48" y="42" width="92" height="19" fill="#ff5c82" opacity=".25"/>
+    <rect x="225" y="31" width="105" height="12" fill="#43e6e8" opacity=".22"/>
+    <rect x="624" y="34" width="92" height="15" fill="#ffc45c" opacity=".22"/>
+    <rect y="86" width="926" height="32" fill="#1a253c"/>
+    <rect y="114" width="926" height="6" fill="#53617a"/>
+    <rect y="120" width="926" height="65" fill="url(#road)"/>
+    <path d="M40 126 L230 126 L190 182 L10 182Z" fill="#43e6e8" opacity=".07"/>
+    <path d="M650 126 L790 126 L850 182 L690 182Z" fill="#ff5c82" opacity=".06"/>
+    <text x="12" y="105" class="micro">SIDEWALK / BACK DEPTH</text>
+    <text x="345" y="149" class="small" fill="#f3f6ff">CLEAR COMBAT BAND</text>
+    <text x="12" y="177" class="micro">WET ROAD / FRONT DEPTH</text>
+    <path d="M155 101 v-32 h22 v32" fill="none" stroke="#ffc45c" stroke-width="5"/>
+    <circle cx="166" cy="64" r="7" fill="#ffc45c"/>
+    <rect x="745" y="69" width="24" height="32" rx="3" fill="#182235" stroke="#ffc45c" stroke-width="2"/>
+    <path d="M757 74 l-7 12 h7 l-4 11 13-16 h-7 l4-7z" fill="#ffc45c"/>
+  </g>
+
+  <!-- Silhouettes -->
+  <rect x="50" y="410" width="780" height="250" class="panel"/>
+  <text x="72" y="441" class="head">SILHOUETTES + SCALE — COLLISIONS UNCHANGED</text>
+  <g transform="translate(84 472)">
+    <g transform="translate(0 0)"><circle cx="42" cy="22" r="14" fill="#43e6e8"/><path d="M20 44 L64 44 L76 108 L8 108Z" fill="#43e6e8"/><path d="M12 55 L-4 91" stroke="#f3f6ff" stroke-width="11"/><path d="M70 53 L90 82" stroke="#f3f6ff" stroke-width="11"/><text x="15" y="139" class="micro">JAX / TRIANGLE</text></g>
+    <g transform="translate(116 0)"><circle cx="42" cy="22" r="12" fill="#9b73ff"/><path d="M29 42 L56 42 L66 108 L18 108Z" fill="#9b73ff"/><path d="M57 49 L94 65" stroke="#43e6e8" stroke-width="8"/><path d="M22 52 L-2 81" stroke="#43e6e8" stroke-width="8"/><text x="7" y="139" class="micro">ZOEY / DIAGONAL</text></g>
+    <g transform="translate(232 0)"><circle cx="42" cy="21" r="15" fill="#ffc45c"/><rect x="9" y="41" width="66" height="69" rx="8" fill="#ffc45c"/><path d="M12 55 L-13 91" stroke="#f3f6ff" stroke-width="13"/><path d="M73 55 L99 91" stroke="#f3f6ff" stroke-width="13"/><text x="9" y="139" class="micro">REX / RECTANGLE</text></g>
+    <g transform="translate(350 0)"><circle cx="42" cy="23" r="13" fill="#ff5c82"/><path d="M25 43 L62 43 L70 108 L16 108Z" fill="#ff5c82"/><text x="14" y="139" class="micro">BASIC / WEDGE</text></g>
+    <g transform="translate(445 0)"><circle cx="42" cy="24" r="12" fill="#ff5c82"/><rect x="26" y="43" width="32" height="65" fill="#ff5c82"/><circle cx="79" cy="53" r="8" fill="#b8f35d"/><text x="2" y="139" class="micro">THROWER / PROP</text></g>
+    <g transform="translate(545 -5)"><circle cx="42" cy="24" r="16" fill="#b8f35d"/><path d="M4 46 L80 46 L68 116 L16 116Z" fill="#35442e" stroke="#b8f35d" stroke-width="5"/><text x="7" y="144" class="micro">ELITE / WIDE RIM</text></g>
+    <g transform="translate(640 -18)"><circle cx="42" cy="24" r="18" fill="#c75bff"/><path d="M10 45 L74 38 L91 132 L-2 132Z" fill="#27143d" stroke="#c75bff" stroke-width="5"/><path d="M73 53 L98 82" stroke="#b8f35d" stroke-width="11"/><text x="4" y="157" class="micro">BOSS / ASYM.</text></g>
+  </g>
+
+  <!-- Telegraphs -->
+  <rect x="850" y="410" width="700" height="250" class="panel"/>
+  <text x="872" y="441" class="head">TELEGRAPH GRAMMAR — SHAPE + MOTION + LABEL</text>
+  <g transform="translate(880 474)">
+    <path d="M0 20 H180 L210 55 L180 90 H0Z" fill="#ffc45c" opacity=".13" stroke="#ffc45c" stroke-width="3"/>
+    <path d="M25 36 l18 19 -18 19 M69 36 l18 19 -18 19 M113 36 l18 19 -18 19" fill="none" stroke="#ffc45c" stroke-width="6"/>
+    <text x="29" y="118" class="micro">CHARGE / CHEVRONS</text>
+    <g transform="translate(250 0)"><circle cx="58" cy="55" r="48" fill="#ff415f" opacity=".1" stroke="#ff5c82" stroke-width="8" stroke-dasharray="18 10"/><circle cx="58" cy="55" r="26" fill="none" stroke="#f3f6ff" stroke-width="2"/><text x="18" y="118" class="micro">AREA / SEGMENTS</text></g>
+    <g transform="translate(410 0)"><path d="M0 24 v-20 h20 M96 24 v-20 h-20 M0 86 v20 h20 M96 86 v20 h-20" fill="none" stroke="#43e6e8" stroke-width="6"/><circle cx="48" cy="55" r="9" fill="none" stroke="#f3f6ff" stroke-width="3"/><text x="7" y="130" class="micro">FOCUS / BRACKETS</text></g>
+    <g transform="translate(555 4)"><rect x="18" y="3" width="58" height="94" rx="6" fill="#182235" stroke="#ffc45c" stroke-width="4"/><path d="M50 14 l-16 33 h14 l-10 35 31-45 h-16 l11-23z" fill="#ffc45c"/><text x="8" y="127" class="micro">ENV / OBJECT</text></g>
+  </g>
+
+  <!-- Hierarchy and atmosphere -->
+  <rect x="50" y="682" width="760" height="268" class="panel"/>
+  <text x="72" y="714" class="head">FEEDBACK HIERARCHY — ONE EVENT OWNS ATTENTION</text>
+  <g transform="translate(74 739)">
+    <circle cx="15" cy="13" r="12" fill="#ffc45c"/><text x="39" y="18" class="body">1  ANTICIPATION / pose + footprint + named tell</text>
+    <circle cx="15" cy="55" r="12" fill="#f3f6ff"/><text x="39" y="60" class="body">2  HIT / directional core + short spark + scaled shake</text>
+    <circle cx="15" cy="97" r="12" fill="#43e6e8"/><text x="39" y="102" class="body">3  STATUS / icon-outline + rate-limited callout</text>
+    <circle cx="15" cy="139" r="12" fill="#ffd166"/><text x="39" y="144" class="body">4  DEFEAT / silhouette collapse → contained reward burst</text>
+    <circle cx="15" cy="181" r="12" fill="#c75bff"/><text x="39" y="186" class="body">5  MAJOR / stage dip + boss strip + authored audio layer</text>
+  </g>
+  <text x="535" y="755" class="small">ACCESSIBILITY CONTRACT</text>
+  <text x="535" y="785" class="body">SHAKE 0 → geometry still moves</text>
+  <text x="535" y="815" class="body">FLASH 100% REDUCTION → outline persists</text>
+  <text x="535" y="845" class="body">NUMBERS OFF → hit weight still tiered</text>
+  <text x="535" y="875" class="body">AUDIO OFF → shape + label remain</text>
+  <text x="535" y="905" class="body">NO COLOR-ONLY VALIDITY OR DANGER</text>
+
+  <rect x="830" y="682" width="720" height="268" class="panel"/>
+  <text x="852" y="714" class="head">BOUNDED ATMOSPHERE + SHIPPING BOUNDARY</text>
+  <rect x="852" y="740" width="210" height="48" rx="8" fill="#12383c" stroke="#43e6e8" stroke-width="2"/>
+  <text x="878" y="771" class="small">LAP 1 · OPEN / CYAN</text>
+  <rect x="1074" y="740" width="210" height="48" rx="8" fill="#252142" stroke="#9b73ff" stroke-width="2"/>
+  <text x="1100" y="771" class="small">LAP 2 · RAIN / VIOLET</text>
+  <rect x="1296" y="740" width="228" height="48" rx="8" fill="#351a25" stroke="#ff5c82" stroke-width="2"/>
+  <text x="1321" y="771" class="small">LAP 3 · LOCKDOWN / RED</text>
+  <rect x="852" y="806" width="672" height="10" rx="5" fill="url(#lap)"/>
+  <text x="852" y="844" class="body">REFERENCE ONLY: generated mockups + descriptive inspirations; no pixels ship.</text>
+  <text x="852" y="876" class="body">SHIP CANDIDATE: project-authored code/SVG/raster with recorded provenance.</text>
+  <text x="852" y="908" class="body">PERF: static stage redraws on state change; capped transients; no full-screen shader.</text>
+  <text x="852" y="936" class="small">UI STAYS NATIVE 1280×720 • WORLD STAYS LOGICAL 640×360 • RANDOM SCHEMA 1 UNTOUCHED</text>
+</svg>

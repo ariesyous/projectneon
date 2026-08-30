@@ -32,7 +32,7 @@
 
 **WP05 — Interventions and Encounter Variety: complete, owner-accepted, merged, and published from `37ebc9d`; Pages run 32931503114 passed on 2026-08-26**
 
-**WP06 — World, Combat, and Presentation Polish: owner-authorized; not started**
+**WP06 — World, Combat, and Presentation Polish: implemented, technically verified, visually inspected, and owner-accepted for publication on 2026-08-30**
 
 The Combat Lab foundation and Fire Hydrant intervention are preserved inside a complete run lifecycle with the verified Milestone 4 equipment/synergy layer, Milestone 4.1 usability/readability correction, bounded Milestone 4.2 drag/backpack-clarity implementation, and the separately verified Milestone 5 District Cards implementation. Technical Milestone 1 acceptance remains the unchanged owner record. Milestone 6 passed its cumulative automated gate, configured headless `/GameRun` boot, and GitHub Pages Web export/deployment. Representative manual paths, real-input browser/device checks, Windows export/runtime, visual evidence, cadence acceptance, and final owner qualitative validation remain under the playtest guide.
 
@@ -50,8 +50,8 @@ WP00 preserves all Milestone 0–6 implementation and verification records while
 | WP03 | Focused District Plan | **Implemented and technically evidenced; owner first-use gate pending** |
 | WP04 | Builds, rewards, and shop consequence | **Implemented and technically evidenced locally; human gate pending** |
 | WP05 | Interventions and encounter variety | **Complete and owner-accepted — 2026-08-26** |
-| WP06 | World, combat, and presentation polish | **Authorized; not started** |
-| WP07 | Integration, balance, and release acceptance | Planned; not started |
+| WP06 | World, combat, and presentation polish | **Implemented and owner-accepted for publication — 2026-08-30** |
+| WP07 | Integration, balance, and release acceptance | Unauthorized; not started |
 
 The current local gameplay/content authority is Milestone 6 migrated through WP01 presentation, WP02 lifecycle/profile access, WP03 focused District Plan, and WP04 build/reward/shop consequence. The M5 hand/five-slot planner remains only an isolated compatibility authority. A target statement is not evidence that its owning later work package exists. Each later package requires its own explicit task, branch discipline, tests, runtime verification, documentation, and owner gate where specified.
 
@@ -144,6 +144,24 @@ The cumulative runner retains the exact inherited post-success 48-ObjectDB/four-
 - [x] Owner explicitly reported all remaining cumulative/platform/visual/clean-log/five-person gates passed on 2026-08-26 and authorized merge/push plus WP06; raw rows/details were not supplied and are not invented.
 
 WP05 adds no save/schema/stream, Autoload, economy, progression, broad content, publication, deployment, or WP06 work. WP04 remains the published boundary.
+
+## WP06 implementation — World, Combat, and Presentation Polish
+
+**Status: Implemented, technically verified, visually inspected, and owner-accepted for publication on 2026-08-30.** Evidence: `docs/product/WP06_ACCEPTANCE_EVIDENCE.md`; direction: `docs/art/wp06/WP06_ART_DIRECTION.md`.
+
+- [x] Approved the Electric Rain Service Block direction and preserved fixed 640×360 world geometry, native 1280×720 UI, camera, combat bounds, logical lanes, and existing authorities.
+- [x] Hid release-visible route/lane placeholder drawing by default while retaining development `F2` tooling.
+- [x] Added deterministic Alley, Arcade, Convenience Store, Subway Entrance, and Viper profiles plus three presentation-only lap atmospheres from existing snapshots.
+- [x] Added distinct silhouettes for Jax, Zoey, Rex, Street Punk, Bat Thug, Bottle Thrower, Viper Enforcer, The Viper, and Backup Runner without changing actor origins/hitboxes/timing.
+- [x] Separated melee, projectile, charge, area, summon, Focus, target, and Environment shape contracts with text/non-color reinforcement.
+- [x] Added bounded impact/status/major-event feedback, phase-aware existing-cue audio mixing, and input-pass-through transitions for PLAN/FIGHT/REWARD/SHOP/PUSH-EXTRACT/BOSS/RESULT.
+- [x] Preserved shake-off, full hit-flash reduction, damage-numbers-off, muted-audio, focus-pause, deterministic/no-unseeded-randomness, 48-transient, and complete cleanup contracts.
+- [x] Passed **15/15 WP06 focused tests/281 assertions** and the unchanged **319/319 cumulative tests/4,734 assertions**, plus a clean configured 180-frame `/GameRun` smoke.
+- [x] Rendered and inspected five final 1280×720 configured captures covering District Plan, all three crew, Hydrant, Power Box, Focus, Backup, basics, elite charge, boss area, and changed world/HUD hierarchy with zero authority mutation.
+- [x] Owner stated WP06 is good to go and should be published on 2026-08-30.
+- [ ] Record exact implementation commit and successful Pages run after publication completes.
+
+The local host lacks the official 4.7.2 export-template package, so a fresh WP06-local Windows export/runtime is explicitly not claimed. The Pages workflow installs official Godot Web templates and is the authoritative publication export. This disclosed platform limitation does not change the owner's publication authorization. WP06 adds no content ID, gameplay balance, save/schema/stream, Autoload, economy, progression, or compatibility-boundary change. WP07 remains unauthorized.
 
 ## Milestone 0 implementation
 
@@ -505,6 +523,6 @@ Working-tree provenance remains separate from gameplay authorship. The historica
 
 ## Scope gate
 
-WP05 is the finalized and published boundary at `37ebc9d` / Pages run 32931503114 on top of the preserved Milestone 6 content baseline and WP01–WP04 migrations. WP06 is authorized but not started. The Milestone 5 card planner remains an isolated compatibility surface, not the release flow. Procedural generation, additional districts/cards/crew/enemies/bosses, multiplayer, controller support, localization, achievements, daily scheduling/leaderboards/rewards, advanced meta-progression, permanent stat trees, mid-run saving/replay, broader equipment/card economies, and every undocumented system remain out of scope. Run-seed and named-stream infrastructure remains schema version 1 unless a later owning package proves and records an incompatible semantics change.
+WP06 is the owner-accepted release boundary authorized for publication on 2026-08-30 on top of the preserved Milestone 6 content baseline and WP01–WP05 migrations. The Milestone 5 card planner remains an isolated compatibility surface, not the release flow. Procedural generation, additional districts/cards/crew/enemies/bosses, multiplayer, controller support, localization, achievements, daily scheduling/leaderboards/rewards, advanced meta-progression, permanent stat trees, mid-run saving/replay, broader equipment/card economies, and every undocumented system remain out of scope. Run-seed and named-stream infrastructure remains schema version 1 unless a later owning package proves and records an incompatible semantics change.
 
-The owner-authorized Milestone 6, WP02, WP03, and WP04 publications remain historical playtest records. WP05 was owner-accepted, merged, pushed, and deployed from `37ebc9d`; Pages run 32931503114 succeeded on 2026-08-26. Publication closes no pending WP02/WP03/WP04 human gate. WP06 is authorized; WP07 remains gated.
+The owner-authorized Milestone 6, WP02, WP03, and WP04 publications remain historical playtest records. WP05 was owner-accepted, merged, pushed, and deployed from `37ebc9d`; Pages run 32931503114 succeeded on 2026-08-26. WP06 was owner-accepted for publication on 2026-08-30; exact commit/Pages provenance follows deployment. Publication closes no pending WP02/WP03/WP04 human gate. WP07 remains gated and unauthorized.

@@ -4,6 +4,7 @@ extends Node
 
 signal cue_played(cue_id: StringName)
 signal music_mode_changed(boss_active: bool)
+signal phase_mix_changed(phase_id: StringName, district_db: float, boss_db: float)
 
 const DEFAULT_CATALOGUE: AudioCueCatalogue = preload(
 	"res://data/audio/milestone_6_audio_catalogue.tres"
@@ -19,6 +20,7 @@ var _boss_player: AudioStreamPlayer = null
 var _next_voice_index: int = 0
 var _boss_active: bool = false
 var _initialized: bool = false
+var _presentation_phase: StringName = &"menu"
 
 
 func _ready() -> void:
@@ -73,6 +75,7 @@ func start_district_music() -> bool:
 	_district_player.stream = _streams.get(AudioCueCatalogue.DISTRICT_MUSIC_ID)
 	if is_inside_tree() and _has_audio_output() and not _district_player.playing:
 		_district_player.play()
+	_apply_phase_mix()
 	return true
 
 
@@ -86,7 +89,26 @@ func set_boss_music_active(active: bool) -> void:
 			_boss_player.play()
 	else:
 		_boss_player.stop()
+	_apply_phase_mix()
 	music_mode_changed.emit(_boss_active)
+
+
+func set_presentation_phase(phase_id: StringName) -> void:
+	if _presentation_phase == phase_id:
+		return
+	_presentation_phase = phase_id
+	if initialize_audio():
+		_apply_phase_mix()
+
+
+func get_mix_snapshot() -> Dictionary:
+	return {
+		"phase_id": _presentation_phase,
+		"boss_active": _boss_active,
+		"district_volume_db": _district_player.volume_db if _district_player != null else 0.0,
+		"boss_volume_db": _boss_player.volume_db if _boss_player != null else 0.0,
+		"semantic_cue_ids_unchanged": true,
+	}
 
 
 func play_cue(cue_id: StringName) -> bool:
@@ -148,3 +170,35 @@ func _create_players() -> void:
 		player.bus = AudioBusContract.BUS_SOUND_EFFECTS
 		add_child(player)
 		_sound_effect_players.append(player)
+	_apply_phase_mix()
+
+
+func _apply_phase_mix() -> void:
+	if _district_player == null or _boss_player == null:
+		return
+	var district_db: float = 0.0
+	var boss_db: float = 0.0
+	match _presentation_phase:
+		&"menu":
+			district_db = -5.0
+			boss_db = -80.0
+		&"intro", &"plan", &"district_plan":
+			district_db = -3.0
+			boss_db = -80.0
+		&"reward", &"shop", &"decision":
+			district_db = -6.0
+			boss_db = -80.0
+		&"extract", &"result", &"victory", &"defeat":
+			district_db = -8.0
+			boss_db = -80.0
+		&"boss_intro", &"boss":
+			district_db = -7.0
+			boss_db = 0.0
+		_:
+			district_db = 0.0
+			boss_db = -80.0
+	if not _boss_active:
+		boss_db = -80.0
+	_district_player.volume_db = district_db
+	_boss_player.volume_db = boss_db
+	phase_mix_changed.emit(_presentation_phase, district_db, boss_db)

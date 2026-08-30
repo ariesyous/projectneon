@@ -17,6 +17,7 @@ const NO_TARGET_COLOR: Color = Color("ffbf69")
 const COOLDOWN_COLOR: Color = Color("a987ff")
 const WATER_COLOR: Color = Color("74efff")
 const WATER_CORE_COLOR: Color = Color("e5fdff")
+const PRESENTATION_REDRAW_STEP: float = 1.0 / 30.0
 
 @export var tuning: FireHydrantTuning
 
@@ -33,6 +34,7 @@ var _water_remaining: float = 0.0
 var _rejection_remaining: float = 0.0
 var _presentation_clock: float = 0.0
 var _context_active: bool = true
+var _redraw_accumulator: float = 0.0
 
 
 func _ready() -> void:
@@ -44,16 +46,19 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	_presentation_clock += maxf(delta, 0.0)
-	_water_remaining = maxf(0.0, _water_remaining - maxf(delta, 0.0))
-	_rejection_remaining = maxf(0.0, _rejection_remaining - maxf(delta, 0.0))
+	var safe_delta: float = maxf(delta, 0.0)
+	_presentation_clock += safe_delta
+	_water_remaining = maxf(0.0, _water_remaining - safe_delta)
+	_rejection_remaining = maxf(0.0, _rejection_remaining - safe_delta)
+	_redraw_accumulator += safe_delta
 	if (
 		_state == STATE_READY
 		or _hovered
 		or _external_preview_visible
 		or _water_remaining > 0.0
 		or _rejection_remaining > 0.0
-	):
+	) and _redraw_accumulator >= PRESENTATION_REDRAW_STEP:
+		_redraw_accumulator = fmod(_redraw_accumulator, PRESENTATION_REDRAW_STEP)
 		queue_redraw()
 
 
@@ -88,6 +93,7 @@ func set_external_preview_visible(preview_is_visible: bool) -> void:
 	if _external_preview_visible == preview_is_visible:
 		return
 	_external_preview_visible = preview_is_visible
+	_refresh_labels()
 	queue_redraw()
 
 
@@ -238,11 +244,14 @@ func _draw_water_burst() -> void:
 func _refresh_labels() -> void:
 	if _state_label == null or _interaction_label == null:
 		return
+	var detail_visible: bool = _hovered or _external_preview_visible
+	_state_label.visible = detail_visible or _state == STATE_READY
+	_interaction_label.visible = detail_visible
 	_state_label.add_theme_color_override("font_color", _get_state_color())
 	match _state:
 		STATE_READY:
-			_state_label.text = "READY x%d" % _valid_enemy_count
-			_interaction_label.text = "CLICK / TAP"
+			_state_label.text = "1 HYDRANT / x%d" % _valid_enemy_count
+			_interaction_label.text = "CLICK / TAP / BLAST"
 		STATE_NO_TARGET:
 			_state_label.text = "NO TARGET"
 			_interaction_label.text = "ENEMY IN RANGE"
@@ -268,6 +277,7 @@ func _on_mouse_entered() -> void:
 	_hovered = true
 	Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND)
 	preview_visibility_changed.emit(true)
+	_refresh_labels()
 	queue_redraw()
 
 
@@ -275,6 +285,7 @@ func _on_mouse_exited() -> void:
 	_hovered = false
 	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
 	preview_visibility_changed.emit(false)
+	_refresh_labels()
 	queue_redraw()
 
 
