@@ -235,10 +235,10 @@ func test_restart_and_menu_cleanup_clear_every_focused_ledger() -> void:
 
 func test_authored_cards_map_to_predictable_next_block_language() -> void:
 	var expected: Dictionary[StringName, Dictionary] = {
-		&"arcade": {"kind": &"fight", "type": "FIGHT + REWARD", "heat": 10, "special": "standard fight"},
-		&"convenience_store": {"kind": &"shop", "type": "SHOP + RECOVERY", "heat": -10, "special": "one purchase"},
+		&"arcade": {"kind": &"fight", "type": "FIGHT + REWARD", "heat": 10, "special": "better reward"},
+		&"convenience_store": {"kind": &"shop", "type": "SHOP + COOLING", "heat": -10, "special": "one purchase"},
 		&"gang_hideout": {"kind": &"elite", "type": "ELITE + GEAR", "heat": 20, "special": "gear choice"},
-		&"subway_entrance": {"kind": &"utility", "type": "TRANSIT + COOLING", "heat": -15, "special": "replaces one baseline fight"},
+		&"subway_entrance": {"kind": &"utility", "type": "TRANSIT + COOLING", "heat": -15, "special": "skip one fight"},
 	}
 	for card_id: StringName in ALL_CARD_IDS:
 		var card: DistrictCardDefinition = CARD_CATALOGUE.get_by_id(card_id)

@@ -36,11 +36,10 @@ SELECT CREW
 
 - A block is one focused fight, shop, or authored utility/event outcome.
 - The third block may carry the lap's elite, hazard, or modifier; it does not silently add a fourth block.
-- Lap-one extraction targets roughly 2–4 eligible minutes; lap-two extraction targets roughly 5–8; a boss run targets 8–12.
+- Current short-run timing follows the owner-approved 2026-09-18 revision in section 0.9. The original WP00 targets were 2–4/5–8 eligible minutes for extraction and 8–12 for a boss run; those remain historical targets.
 - Extract/Push appears after laps one and two. Pushing after lap two is the explicit final-lap/boss commitment; routine extraction does not reopen after lap three begins.
-- Ordinary fights target 20–45 eligible seconds, complete blocks 45–90, and lap decisions 120–180.
-- Optional coin opportunities retain the 10–20 eligible-second ambient target and full passive base reward.
-- The former generic 30–60-second strategic-decision target is superseded by the 45–90-second complete-block target. Coin clicks must never be relabelled as strategic decisions.
+- The current short-run bands are defined in section 0.9; the original 20–45-second fights, 45–90-second blocks, 120–180-second laps, and 10–20-second ambient cadence remain historical WP00/WP02 evidence.
+- Optional coin opportunities preserve the full passive base reward. Coin clicks must never be relabelled as strategic decisions.
 - Heat remains tactical and partially coolable. Night Pressure remains irreversible. WP02 maps both onto the approved lap structure: configured Pressure thresholds still latch and scale but cannot bypass the two lap decisions or block-nine boss boundary.
 
 ### 0.3 Approved District Plan
@@ -86,7 +85,7 @@ Qualitative checkpoints use five unbriefed participants and record failures with
 - **Consequence:** for one District Plan choice, one equipment/shop choice, and one Push decision per observed session, at least 4/5 predict the primary change before confirmation and identify its next applicable expression. Every shipped major choice must pass Preview, Magnitude, Expression, and Recall.
 - **Variety:** across at least five representative sessions spanning all three crew and fixed seeds, at least 4/5 name three distinct meaningful decisions and explain one strong intervention use plus one reason to hold or choose another action. Every permanent intervention has documented strong, weak, invalid, and counter/tradeoff cases. At least three viable builds differ in behavior and presentation, with no universal starter/build in the approved matrix.
 - **Replay desire:** before prompting, at least 4/5 start another run or explicitly want one; at least 3/5 name a concrete different next-run crew, build, plan, intervention, or Push/Extract intention.
-- **Timing:** representative evidence reports full distributions and outliers against the 20–45-second fight, 45–90-second block, 120–180-second lap, 2–4/5–8-minute extraction, 8–12-minute boss-run, and 10–20-second ambient targets. Averages alone do not pass.
+- **Timing:** representative evidence reports full distributions and outliers against the current short-run targets in section 0.9, distinguishing early outcomes, fresh/unlocked access, crew, and decision policy. Averages alone do not pass. Original WP00 timing evidence remains historical.
 - **Technical:** UI remains non-authoritative; icon plus label/shape reinforces important state; Heat/Night Pressure separation, safe-boundary precedence, exact-once tokens, deterministic stable ordering, named-stream isolation, restart/cleanup, and approved input parity remain verified.
 
 ### 0.7 Superseded Milestone 6 prospective rules
@@ -119,6 +118,21 @@ WP04 locally passes **15/15 focused tests with 247 assertions**, **226/226 affec
 WP05 Part A completed the separately authorized research, authority audit, development-gated Environment/Focus/Rally/Backup comparison, exact strong/weak/invalid/hold/counter cases, deterministic 60-row encounter matrix, and owner-selection packet. At that checkpoint, prototype Resources used `wp05_proto_`, default `/GameRun` created no prototype, and Part A passed 13/13 focused tests with 180 assertions plus 304/304 cumulative tests with 4,373 assertions. The owner approved Environment / Focus / Backup on 2026-08-23. Production adds Power Box and Focus authorities, hardens Backup caller context, and removes Rally/Hanging Sign and Part A GameRun debug seams from release composition. It passes 18/18 focused tests/381 assertions, 64/64 affected tests/911 assertions, 319/319 cumulative tests/4,734 assertions across 34 suites, and the repeatable/cosmetic-isolated 60-row production matrix. On 2026-08-26 the owner explicitly reported all remaining gates passed and authorized finalization, merge/push, and WP06. Raw participant/platform details were not supplied to this record and are not invented.
 
 WP06 implements the approved Electric Rain Service Block presentation without changing gameplay authority. Release-visible route/lane placeholders are hidden; five deterministic existing-context stage profiles and three lap atmospheres provide authored city-block depth; all nine actors receive distinct silhouettes; attack deliveries, Focus, target selection, and Environment footprints use separate accessible shapes; hit/status/boss/phase/audio feedback is presentation-only and bounded. Godot 4.7.2 passed **15/15 focused tests with 281 assertions** and the unchanged **319/319 cumulative tests with 4,734 assertions**, plus a clean configured 180-frame `/GameRun` smoke and five inspected final captures with zero authority changes. The owner accepted this result, and commit `224ed5c` was published by successful Pages run 33295086207 on 2026-08-30. WP07 remains unauthorized.
+
+---
+
+### 0.9 Owner-approved shorter runs — 2026-09-18
+
+After the project-state audit and initial cleanup/clarity repair, the owner explicitly chose **substantially shorter runs while keeping the current card rules**, instead of retaining the 8–12-minute goal by changing the block/card mix. This revision supersedes earlier prospective timing targets in this document. Historical Milestone 0–6 and WP01–WP06 evidence is unchanged; no old result is retroactively relabelled or treated as proof of the revised pacing.
+
+- Keep the exact three laps of three blocks, both Extract/Push decisions, block-nine boss commitment, finite one-copy accessible lap deck, four card effects, crew access, equipment, finite interventions, and progression rules.
+- Configure the live game with a **4.0-second approach**, **1.0-second first-enemy delay**, and **4.0-second non-boss spawn interval**. Attack animations, windups, movement, hit-stop, cooldowns, health, damage, rosters, budgets, concurrency caps, rewards, Heat deltas, and Pressure rates retain their existing definitions. Shorter eligible time naturally produces less passive Night Pressure; it still cannot bypass the lap/block lifecycle.
+- Initial tuning goal: roughly **90–240 eligible seconds (1.5–4 minutes) for a boss attempt**, with earlier extraction/defeat intentionally shorter. Modal decision time adds to wall-clock session length. Ordinary fights generally aim for **10–35 seconds**, with elite/boss fights roughly **20–60 seconds**. These are evaluation targets, not delays that pad a fast run or guarantees for every policy/seed.
+- Current cadence measurement bands are **1–8 seconds ambient**, **3–60 seconds per completed block**, and **20–90 seconds per lap decision**. Utility/shop blocks may resolve after their short approach; they must not be stretched to the old fight/block bands. First extraction should usually arrive within about a minute, with the existing elite-heavy paths allowed to take longer; report the actual distribution.
+- `data/pacing/short_run_*.tres` supplies the configured route, three existing non-boss encounter variants, and cadence definition. Stable route/encounter IDs and all non-timing content remain the same. Original route, encounter, and WP02 cadence Resources remain available to historical/isolated fixtures.
+- Preserve full passive coins, exact-once transactions, deterministic named streams/schema 1, safe boundaries, pause behavior, and the repaired encounter-to-decision cleanup. No global time multiplier is used. Same-seed reproduction continues to require the same content revision, policy, and authoritative timing.
+
+This is an authorized local playability/pacing repair. It does not authorize publication, catalogue expansion, a new economy, permanent power, or a claim that WP07/participant acceptance has passed. Current measurements and limits are recorded in `docs/reviews/SHORT_RUN_PACING_2026-09-18.md`.
 
 ---
 
@@ -213,10 +227,10 @@ The game may contain automatic action, but the player should not feel passive.
 
 During an active run, interaction should occur at the approved nested cadences:
 
-- **Ambient optional interactions:** approximately every 10–20 seconds
-- **Ordinary fights:** approximately 20–45 seconds
-- **Complete plan/block/reward cycles:** approximately 45–90 seconds
-- **Lap-level risk decisions:** approximately every 2–3 minutes
+- **Ambient optional interactions:** approximately every 1–8 eligible seconds
+- **Ordinary fights:** approximately 10–35 eligible seconds
+- **Complete plan/block/reward cycles:** approximately 3–60 eligible seconds, depending on block type
+- **Lap-level risk decisions:** approximately every 20–90 eligible seconds
 
 Ambient interactions must be quick, optional, and safe to ignore. Coin clusters are the initial example. Strategic and risk decisions may pause or redirect the run and must not be diluted into constant clicking.
 
@@ -317,7 +331,7 @@ The vertical slice must prove the following question:
 
 > Is it fun to shape an auto-brawl, watch it unfold, and intervene at important moments?
 
-The vertical slice should support a complete run lasting approximately **8–12 minutes**.
+The current short-run revision targets approximately **1.5–4 eligible minutes** for a boss attempt; see section 0.9 for policy/outcome limits. The original 8–12-minute vertical-slice target remains part of the historical milestone record.
 
 A complete run can end in one of three ways:
 
@@ -352,10 +366,10 @@ The vertical slice must contain:
 
 ### 7.1 Session Length
 
-- Typical run: 8–12 minutes
-- Lap-one extraction: approximately 2–4 minutes
-- Lap-two extraction: approximately 5–8 minutes
-- Boss victory: approximately 10 minutes
+- Boss attempt: approximately 1.5–4 eligible minutes
+- Lap-one extraction: commonly within about one eligible minute; elite-heavy paths may take longer
+- Lap-two extraction: approximately 45–180 eligible seconds, depending on block choices and combat
+- Modal reading/decision time adds to the observed wall-clock session
 - Restart time after defeat: less than 10 seconds
 
 ### 7.2 Interaction Density
@@ -363,13 +377,13 @@ The vertical slice must contain:
 The player should have:
 
 - Continuous visual action
-- One ambient optional interaction approximately every 10–20 seconds
-- One complete focused block decision/payoff approximately every 45–90 seconds
-- One lap-level risk decision approximately every 2–3 minutes
+- One ambient optional interaction approximately every 1–8 eligible seconds
+- One complete focused block decision/payoff approximately every 3–60 eligible seconds, depending on block type
+- One lap-level risk decision approximately every 20–90 eligible seconds
 
 These categories are not interchangeable. Ambient interactions support engagement without carrying the consequence or interruption of a block or lap decision.
 
-Cadence is measured during eligible active play. Time spent paused, in modal reward or shop choices, or in non-interactive introductions does not count toward the 10–20 second ambient target.
+Cadence is measured during eligible active play. Time spent paused, in modal reward or shop choices, or in non-interactive introductions does not count toward the current ambient target.
 
 ### 7.3 Ambient Interaction: Coin Clusters
 
@@ -2255,7 +2269,7 @@ Every milestone must include a short manual verification checklist.
 
 Visual features require screenshots or recorded evidence during development.
 
-Manual cadence checks must distinguish eligible active play from pauses, modal choices, and introductions. They should verify that ambient opportunities occur approximately every 10–20 active seconds without manufacturing extra strategic prompts, that complete blocks resolve approximately 45–90 active seconds apart, that lap decisions occur approximately every 120–180 active seconds, and that representative fights and boss runs meet their separately recorded 20–45-second and 8–12-minute distributions. Averages alone do not pass.
+Manual cadence checks must distinguish eligible active play from pauses, modal choices, and introductions. Current checks use section 0.9's short-run bands, report complete distributions/outliers, and separate fight, utility, and shop blocks. No extra prompts or waiting may be manufactured to satisfy a target. Historical checks retain the bands of the build they actually tested. Averages alone do not pass.
 
 The Milestone 1 Human Validation Gate in section 44 is a separate owner-recorded qualitative gate. Automated tests, coding agents, and implementation-team observations cannot satisfy it.
 
@@ -2695,7 +2709,7 @@ After each milestone, answer these questions through playtesting:
 ### Interaction
 
 - Does the player have enough to do?
-- Do ambient optional opportunities occur every 10–20 eligible active seconds without becoming mandatory busywork?
+- Do ambient opportunities meet the current section 0.9 band without becoming mandatory busywork?
 - Does ignoring coin clusters preserve the full base reward while manual collection remains modestly satisfying?
 - Are strategic and major risk decisions still distinct from ambient clicks?
 - Are interventions meaningful rather than cosmetic?

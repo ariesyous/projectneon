@@ -304,6 +304,8 @@ var _audio_unlock_completed: bool = false
 var _pending_safe_area: Rect2i = Rect2i()
 var _pending_window_size: Vector2i = Vector2i.ZERO
 var _scrap_total: int = 0
+var _decision_scrim: ColorRect
+var _decision_surfaces: Array[Control] = []
 var _last_run_snapshot: Dictionary = {}
 var _last_flow_state: int = -1
 var _build_snapshot: Dictionary = {}
@@ -537,6 +539,7 @@ func _ready() -> void:
 	district_card_skip_button.pressed.connect(_on_district_card_skip_pressed)
 	_apply_wp01_visual_language()
 	NeonUiTokens.apply_accessibility_defaults(root_control)
+	_install_decision_scrim()
 	help_panel.visible = true
 	summary_panel.visible = false
 	boss_trigger_panel.visible = false
@@ -551,6 +554,31 @@ func _ready() -> void:
 	_refresh_fullscreen_presentation()
 	_refresh_district_card_compact_presentation()
 	_refresh_safe_area_layout()
+
+
+func _install_decision_scrim() -> void:
+	_decision_scrim = ColorRect.new()
+	_decision_scrim.name = "DecisionBackdrop"
+	_decision_scrim.color = Color(0.025, 0.035, 0.065, 0.94)
+	_decision_scrim.z_index = 29
+	_decision_scrim.mouse_filter = Control.MOUSE_FILTER_STOP
+	root_control.add_child(_decision_scrim)
+	_decision_scrim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_decision_surfaces = [equipment_reward_panel, district_card_panel, shop_decision_panel, extraction_panel]
+	for surface: Control in _decision_surfaces:
+		surface.visibility_changed.connect(_refresh_decision_scrim)
+	_refresh_decision_scrim()
+
+
+func _refresh_decision_scrim() -> void:
+	var any_visible: bool = false
+	_decision_scrim.move_to_front()
+	for surface: Control in _decision_surfaces:
+		if surface.visible:
+			any_visible = true
+			# GUI hit testing follows sibling order, independently of draw z-index.
+			surface.move_to_front()
+	_decision_scrim.visible = any_visible
 
 
 func _install_wp01_components() -> void:
@@ -1175,10 +1203,7 @@ func present_flow_snapshot(snapshot: Dictionary) -> void:
 	night_pressure_meter.value = pressure
 	if bool(_district_loop_snapshot.get("enabled", false)):
 		var current_lap: Dictionary = _district_loop_snapshot.get("current_lap", {})
-		night_pressure_label.text = "NIGHT %.1f  /  LOCKED  /  x%.2f" % [
-			pressure,
-			float(current_lap.get("pressure_gain_multiplier", 1.0)),
-		]
+		night_pressure_label.text = "NIGHT %.1f / NO COOLING" % pressure
 		night_pressure_label.tooltip_text = (
 			"NIGHT PRESSURE IS IRREVERSIBLE  /  CURRENT LAP GAIN x%.2f"
 			% float(current_lap.get("pressure_gain_multiplier", 1.0))
@@ -1480,12 +1505,12 @@ func _refresh_wp01_focused_shells(
 			else "STREET COOLING"
 		)
 		(shop_decision_panel.get_node("Instruction") as Label).text = (
-			"Purchase applied exactly. Review the result, then leave to continue."
+			"District cooled. Review the result, then continue."
 			if completed_purchase
 			else (
-				"One purchase remains in this visit; buy exact finite cooling or leave unchanged."
+				"Spend coins to lower Heat, or keep them for a later visit."
 				if visit_stock == 1
-				else "Global stock is finite; buy cooling or leave immediately with no purchase."
+				else "Cooling stock is shared across the run. Buy cooling or continue."
 			)
 		)
 		shop_cooling_choice.disabled = not can_buy
@@ -1605,7 +1630,7 @@ func _refresh_wp01_focused_shells(
 				]
 			)
 			extraction_preview.present(
-				"AUTHORITATIVE CONSEQUENCE",
+				"YOUR NEXT STEP",
 				"EXTRACT  /  %d LAPS SECURED" % completed_lap,
 				"PUSH  /  LAP %d  /  %s" % [next_lap, str(push_preview.get("modifier_label", "HIGHER RISK"))],
 				"Night Pressure is unchanged and irreversible. %s" % str(push_preview.get("risk_label", "HIGHER RISK")),
@@ -3309,7 +3334,7 @@ func _refresh_focused_district_plan_presentation() -> void:
 	]
 	district_card_counts.text = _district_card_counts_text()
 	district_card_instruction.text = (
-		"SELECT ONE LOCATION • PREDICT ITS BLOCK, HEAT, AND PAYOFF • CONFIRM ONCE"
+		"Choose where to go next. Review the block, Heat, and payoff, then confirm."
 	)
 	_refresh_district_card_choice_presentation()
 	for button: DistrictCardDragSlot in _district_route_slot_buttons:
@@ -3320,20 +3345,20 @@ func _refresh_focused_district_plan_presentation() -> void:
 	district_card_skip_button.visible = false
 	district_card_close_button.visible = false
 	district_card_confirm_button.visible = true
-	district_card_confirm_button.text = "CONFIRM NEXT BLOCK"
+	district_card_confirm_button.text = "CONFIRM BLOCK"
 	district_card_confirm_button.disabled = (
 		_district_selected_card_id == &"" or _district_card_action_in_flight
 	)
 	district_card_cancel_button.visible = true
-	district_card_cancel_button.text = "CLEAR SELECTION"
+	district_card_cancel_button.text = "CLEAR"
 	district_card_cancel_button.disabled = (
 		_district_selected_card_id == &"" or _district_card_action_in_flight
 	)
 	if _district_card_action_in_flight:
-		district_card_feedback.text = "CONFIRMING THE EXACT OFFER AND BLOCK REVISION..."
+		district_card_feedback.text = "Preparing your next block..."
 	elif _district_selected_card_id == &"":
 		district_card_feedback.text = (
-			"WHAT YOU CONFIRM BECOMES THE IMMEDIATELY NEXT BLOCK. NIGHT PRESSURE NEVER COOLS."
+			"Choose a location to preview the next block. Cooling lowers Heat; Night Pressure keeps rising."
 		)
 	else:
 		var selected: DistrictCardDefinition = _selected_district_card()
@@ -3626,22 +3651,12 @@ func _district_card_overview(card: DistrictCardDefinition) -> String:
 	if card == null:
 		return "EMPTY HAND SLOT"
 	if _focused_district_plan:
-		var focused_lines: PackedStringArray = PackedStringArray()
-		focused_lines.append_array(_limited_card_lines(card.display_name.to_upper(), 28, 2))
-		focused_lines.append("LOCATION • %s" % card.display_name.to_upper())
-		focused_lines.append("BLOCK • %s" % CardSystem.focused_block_type(card))
-		focused_lines.append("HEAT • %s" % _signed_integer(card.heat_delta))
-		focused_lines.append_array(_limited_card_lines(
-			"SPECIAL • %s" % CardSystem.focused_special_rule(card),
-			28,
-			3
-		))
-		focused_lines.append_array(_limited_card_lines(
-			"REWARD / RISK • %s" % card.progression_implications.to_upper(),
-			28,
-			3
-		))
-		return "\n".join(focused_lines)
+		return "%s\n%s\n\nHeat %s\n\n%s" % [
+			card.display_name.to_upper(),
+			CardSystem.focused_block_type(card),
+			_signed_integer(card.heat_delta),
+			CardSystem.focused_special_rule(card),
+		]
 	var lines: PackedStringArray = PackedStringArray()
 	lines.append_array(_limited_card_lines(card.display_name.to_upper(), 22, 2))
 	lines.append("%s | %s HEAT" % [card.cost_label(), _signed_integer(card.heat_delta)])

@@ -712,6 +712,12 @@ func _on_run_state_changed(previous_state: int, new_state: int) -> void:
 	_end_card_planning_for_unsafe_state(new_state)
 	var simulation_active: bool = RunDirector.is_eligible_active_state(new_state)
 	_combat_director.set_simulation_enabled(simulation_active)
+	if new_state not in [
+		RunDirector.RunState.ENCOUNTER_ACTIVE,
+		RunDirector.RunState.BOSS_ACTIVE,
+		RunDirector.RunState.PAUSED,
+	]:
+		_combat_director.clear_projectiles()
 	_reward_director.set_simulation_enabled(simulation_active)
 	_fire_hydrant_controller.set_simulation_enabled(simulation_active)
 	var combat_state: bool = new_state in [
@@ -1003,6 +1009,10 @@ func _on_encounter_completed(
 ) -> void:
 	if not _run_director.notify_encounter_completed(encounter_instance_id, definition):
 		return
+	if _card_system != null and _card_system.is_focused_district_plan_enabled():
+		# Finish the block's base coin payout before its mandatory decision layers
+		# stop the eligible clock. Use the existing exact-once settlement authority.
+		_reward_director.settle_pending_coin_clusters_as_base()
 	var context: EncounterRewardContext = _active_encounter_context
 	if context == null or context.encounter_instance_id != encounter_instance_id:
 		context = EncounterRewardContext.new()

@@ -4,6 +4,25 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 
 ## [Unreleased]
 
+### 2026-09-18 — Shorter runs, existing card rules
+
+- Recorded the owner's choice to shorten runs substantially rather than revise the card/block mix; current timing is authoritative in `GameSpecifications.md` section 0.9.
+- Configured 4-second approaches, a 1-second first-enemy delay, and 4-second non-boss spawn intervals through separate short-run Resources with unchanged stable content IDs and non-timing payloads.
+- Preserved the original route/encounter/WP02 cadence Resources and their isolated historical tests; no actor stats, attack speed, rewards, Heat deltas, Pressure rates, cooldowns, cards, profile access, schema, or global time scale were changed.
+- Added a bounded full-run pacing probe with focused PLAN handling, paired historical comparison, all-crew/access coverage, build/intervention policy, and both extraction paths. Preserved raw distributions and policy details in `docs/reviews/evidence/short_runs/`.
+- Added configured pacing/pause regression coverage and bounded the obsolete historical long-form runner against frozen modal clocks.
+- Local results and limits: `docs/reviews/SHORT_RUN_PACING_2026-09-18.md`. Publication and qualitative acceptance remain separate.
+- The owner subsequently authorized committing and pushing this exact repair/pacing boundary for a GitHub Pages playtest release. Pending visual/platform and participant limitations remain disclosed; deployment success is recorded separately after the workflow completes.
+
+### 2026-09-18 — Playability repair pass
+
+- Reproduced and repaired orphaned projectiles after a final kill and warning markers frozen by the next District Plan; live attacks retain ordinary pause/resume behavior.
+- Bound production telegraphs to their actual attack phase so interruptions, deaths, and attack execution remove obsolete warnings.
+- Settled the final focused-plan fight's pending base coin awards once before reward selection, removing frozen collection countdowns without losing rewards.
+- Added an opaque decision surface and an input-blocking backdrop, shortened PLAN consequences and confirmation labels, named the shop's existing cooling effect, clarified Night Pressure's cooling restriction, and repaired selected-crew contrast.
+- Added direct composed regression tests for final-kill → reward → PLAN, ordinary pause/resume, interruption, and actual action-label pixel fit.
+- This initial cleanup boundary changed no gameplay tuning. The owner subsequently chose the short-run pacing continuation recorded above. No progression, catalogue expansion, publication, or human acceptance is claimed.
+
 ### 2026-08-30 — WP06 World, Combat, and Presentation Polish
 
 - Replaced release-visible lane/route placeholder communication with the approved Electric Rain Service Block while retaining fixed combat geometry and development debug tooling.

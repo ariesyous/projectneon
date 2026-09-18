@@ -77,7 +77,7 @@ func test_authoritative_phase_matrix_answers_phase_next_and_action() -> void:
 	assert_true(hud.shop_decision_panel.visible, "shop: focused shell is unmistakable")
 	assert_contains(hud.shop_cooling_choice.text, "STOCK", "shop: finite stock is explicit")
 	assert_contains(hud.shop_leave_choice.text, "LEAVE", "shop: current action is explicit")
-	assert_contains(hud.night_pressure_label.text, "LOCKED", "risk: persistent Night Pressure copy fits compact HUD")
+	assert_contains(hud.night_pressure_label.text, "NO COOLING", "risk: persistent Night Pressure names the cooling restriction")
 	assert_contains(hud.night_pressure_label.tooltip_text, "IRREVERSIBLE", "risk: full permanence language remains available")
 
 
@@ -165,6 +165,9 @@ func test_preserved_e_shortcut_confirms_with_exact_wp02_token() -> void:
 
 func test_configured_flow_enters_first_stable_block_and_records_wp02_cadence() -> void:
 	var fixture: GameFixture = _new_game()
+	# Preserve this historical WP02 measurement contract explicitly. The current
+	# configured short-run profile has its own composed pacing regression tests.
+	fixture.game.cadence_tracker.definition = load("res://data/run/wp02_cadence.tres") as RunCadenceDefinition
 	fixture.game.vertical_slice_overlay.jax_button.pressed.emit()
 	fixture.game.vertical_slice_overlay.start_button.pressed.emit()
 	fixture.game.run_director.complete_intro()

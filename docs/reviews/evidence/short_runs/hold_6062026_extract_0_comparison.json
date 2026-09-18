@@ -1,0 +1,3880 @@
+[
+	{
+		"access": "fresh",
+		"boss_start": 289.333,
+		"cadence": {
+			"categories": {
+				"ambient": {
+					"average_gap": 24.7333333333422,
+					"count": 10,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 27.7166666666664,
+							"event_id": "coin_cluster_presented:1",
+							"gap_seconds": 27.7166666666664,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 39.2333333333324,
+							"event_id": "coin_cluster_presented:2",
+							"gap_seconds": 11.516666666666,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 50.7833333333317,
+							"event_id": "coin_cluster_presented:3",
+							"gap_seconds": 11.5499999999993,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 118.349999999995,
+							"event_id": "coin_cluster_presented:4",
+							"gap_seconds": 67.5666666666628,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 131.866666666664,
+							"event_id": "coin_cluster_presented:5",
+							"gap_seconds": 13.5166666666692,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 142.250000000005,
+							"event_id": "coin_cluster_presented:6",
+							"gap_seconds": 10.3833333333416,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 209.966666666726,
+							"event_id": "coin_cluster_presented:7",
+							"gap_seconds": 67.7166666667206,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 223.35000000007,
+							"event_id": "coin_cluster_presented:8",
+							"gap_seconds": 13.383333333344,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 235.533333333413,
+							"event_id": "coin_cluster_presented:9",
+							"gap_seconds": 12.183333333343,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 247.333333333422,
+							"event_id": "coin_cluster_presented:10",
+							"gap_seconds": 11.8000000000094,
+							"validation": "too_late"
+						}
+					],
+					"last_gap": 11.8000000000094,
+					"last_timestamp": 247.333333333422,
+					"target_maximum_seconds": 8.0,
+					"target_minimum_seconds": 1.0,
+					"violation_count": 10
+				},
+				"major": {
+					"average_gap": 96.4444444444663,
+					"count": 3,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 92.7833333333294,
+							"event_id": "extraction:0",
+							"gap_seconds": 92.7833333333294,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 184.250000000039,
+							"event_id": "extraction:1",
+							"gap_seconds": 91.4666666667094,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 289.333333333399,
+							"event_id": "boss_commitment",
+							"gap_seconds": 105.08333333336,
+							"validation": "too_late"
+						}
+					],
+					"last_gap": 105.08333333336,
+					"last_timestamp": 289.333333333399,
+					"target_maximum_seconds": 90.0,
+					"target_minimum_seconds": 20.0,
+					"violation_count": 3
+				},
+				"strategic": {
+					"average_gap": 32.1481481481554,
+					"count": 9,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 50.7833333333317,
+							"event_id": "district_block:district_lap_01::block_01:1:1",
+							"gap_seconds": 50.7833333333317,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 71.7833333333305,
+							"event_id": "district_block:district_lap_01::block_02:1:2",
+							"gap_seconds": 20.9999999999988,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 92.7833333333294,
+							"event_id": "district_block:district_lap_01::block_03:1:3",
+							"gap_seconds": 20.9999999999988,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 142.250000000005,
+							"event_id": "district_block:district_lap_02::block_01:2:1",
+							"gap_seconds": 49.466666666676,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 163.250000000022,
+							"event_id": "district_block:district_lap_02::block_02:2:2",
+							"gap_seconds": 21.0000000000167,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 184.250000000039,
+							"event_id": "district_block:district_lap_02::block_03:2:3",
+							"gap_seconds": 21.0000000000167,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 247.333333333422,
+							"event_id": "district_block:district_lap_03::block_01:3:1",
+							"gap_seconds": 63.0833333333835,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 268.333333333418,
+							"event_id": "district_block:district_lap_03::block_02:3:2",
+							"gap_seconds": 20.9999999999957,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 289.333333333399,
+							"event_id": "district_block:district_lap_03::block_03:3:3",
+							"gap_seconds": 20.9999999999809,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 20.9999999999809,
+					"last_timestamp": 289.333333333399,
+					"target_maximum_seconds": 60.0,
+					"target_minimum_seconds": 3.0,
+					"violation_count": 1
+				}
+			},
+			"coin_cluster_presentations": 10,
+			"coin_collections_count_as_strategic": false,
+			"definition_id": "short_run_cadence",
+			"latest_eligible_elapsed_seconds": 289.333333333399,
+			"measurement_only": true
+		},
+		"cards": [
+			"arcade",
+			"convenience_store",
+			"subway_entrance",
+			"arcade",
+			"convenience_store",
+			"subway_entrance",
+			"arcade",
+			"convenience_store",
+			"subway_entrance"
+		],
+		"completed": true,
+		"crew": "jax",
+		"district": {
+			"accepted_decisions": [
+				{
+					"boss_commitment": false,
+					"completed_blocks": 3,
+					"completed_lap_id": "district_lap_01",
+					"completed_lap_index": 1,
+					"decision": "push",
+					"decision_revision": 11,
+					"decision_token": 1,
+					"push_preview": {
+						"boss_commitment": false,
+						"final_lap_commitment": false,
+						"from_lap_id": "district_lap_01",
+						"from_lap_index": 1,
+						"lap_id": "district_lap_02",
+						"lap_index": 2,
+						"modifier_id": "rising_pressure",
+						"modifier_label": "RISING PRESSURE",
+						"next_decision_after_blocks": 3,
+						"next_threat": "VIPER ENFORCER",
+						"pressure_gain_multiplier": 1.14999997615814,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 1,
+						"risk_label": "HIGHER ENEMY PRESSURE"
+					}
+				},
+				{
+					"boss_commitment": true,
+					"completed_blocks": 6,
+					"completed_lap_id": "district_lap_02",
+					"completed_lap_index": 2,
+					"decision": "push",
+					"decision_revision": 21,
+					"decision_token": 2,
+					"push_preview": {
+						"boss_commitment": true,
+						"final_lap_commitment": true,
+						"from_lap_id": "district_lap_02",
+						"from_lap_index": 2,
+						"lap_id": "district_lap_03",
+						"lap_index": 3,
+						"modifier_id": "boss_commitment",
+						"modifier_label": "BOSS COMMITMENT",
+						"next_decision_after_blocks": 0,
+						"next_threat": "THE VIPER",
+						"pressure_gain_multiplier": 1.29999995231628,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 2,
+						"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+					}
+				}
+			],
+			"block_id": "district_lap_03::block_03",
+			"block_index": 3,
+			"blocks_per_lap": 3,
+			"boss_committed": true,
+			"completed_blocks": 9,
+			"completed_laps": 3,
+			"current_block_kind": "",
+			"current_lap": {
+				"boss_commitment": true,
+				"lap_id": "district_lap_03",
+				"lap_index": 3,
+				"modifier_id": "boss_commitment",
+				"modifier_label": "BOSS COMMITMENT",
+				"next_threat": "THE VIPER",
+				"pressure_gain_multiplier": 1.29999995231628,
+				"reward_quality_tier_bonus": 2,
+				"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+			},
+			"current_route_occurrence_id": "",
+			"decision_revision": -1,
+			"decision_token": -1,
+			"enabled": true,
+			"lap_count": 3,
+			"lap_id": "district_lap_03",
+			"lap_index": 3,
+			"lifecycle_revision": 32,
+			"phase": 10,
+			"phase_name": "RESULT",
+			"push_preview": {}
+		},
+		"duration": 315.217,
+		"extract_lap": 0,
+		"failed_intent": false,
+		"fight_durations": [
+			29.783,
+			28.467,
+			42.083
+		],
+		"first_lap": 92.783,
+		"first_lap_no_enemy": 83.017,
+		"lap_decisions": [
+			92.783,
+			184.25
+		],
+		"longest_no_enemy_gap": 66.0,
+		"no_enemy_seconds": 262.183,
+		"outcome": "DEFEATED",
+		"pacing": "historical",
+		"policy": "starter_hold",
+		"seed": 6062026,
+		"travel": 189.0
+	},
+	{
+		"access": "fresh",
+		"boss_start": 292.917,
+		"cadence": {
+			"categories": {
+				"ambient": {
+					"average_gap": 25.0916666666759,
+					"count": 10,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 27.0999999999997,
+							"event_id": "coin_cluster_presented:1",
+							"gap_seconds": 27.0999999999997,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 38.6499999999991,
+							"event_id": "coin_cluster_presented:2",
+							"gap_seconds": 11.5499999999993,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 50.2499999999984,
+							"event_id": "coin_cluster_presented:3",
+							"gap_seconds": 11.5999999999993,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 119.099999999995,
+							"event_id": "coin_cluster_presented:4",
+							"gap_seconds": 68.8499999999961,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 133.566666666665,
+							"event_id": "coin_cluster_presented:5",
+							"gap_seconds": 14.4666666666706,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 143.033333333339,
+							"event_id": "coin_cluster_presented:6",
+							"gap_seconds": 9.4666666666742,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 211.800000000061,
+							"event_id": "coin_cluster_presented:7",
+							"gap_seconds": 68.7666666667214,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 226.400000000072,
+							"event_id": "coin_cluster_presented:8",
+							"gap_seconds": 14.6000000000116,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 238.916666666749,
+							"event_id": "coin_cluster_presented:9",
+							"gap_seconds": 12.5166666666766,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 250.916666666758,
+							"event_id": "coin_cluster_presented:10",
+							"gap_seconds": 12.0000000000096,
+							"validation": "too_late"
+						}
+					],
+					"last_gap": 12.0000000000096,
+					"last_timestamp": 250.916666666758,
+					"target_maximum_seconds": 8.0,
+					"target_minimum_seconds": 1.0,
+					"violation_count": 10
+				},
+				"major": {
+					"average_gap": 97.6388888889096,
+					"count": 3,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 92.249999999996,
+							"event_id": "extraction:0",
+							"gap_seconds": 92.249999999996,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 185.033333333373,
+							"event_id": "extraction:1",
+							"gap_seconds": 92.7833333333767,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 292.916666666729,
+							"event_id": "boss_commitment",
+							"gap_seconds": 107.883333333356,
+							"validation": "too_late"
+						}
+					],
+					"last_gap": 107.883333333356,
+					"last_timestamp": 292.916666666729,
+					"target_maximum_seconds": 90.0,
+					"target_minimum_seconds": 20.0,
+					"violation_count": 3
+				},
+				"strategic": {
+					"average_gap": 32.5462962963032,
+					"count": 9,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 50.2499999999984,
+							"event_id": "district_block:district_lap_01::block_01:1:1",
+							"gap_seconds": 50.2499999999984,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 71.2499999999972,
+							"event_id": "district_block:district_lap_01::block_02:1:2",
+							"gap_seconds": 20.9999999999988,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 92.249999999996,
+							"event_id": "district_block:district_lap_01::block_03:1:3",
+							"gap_seconds": 20.9999999999988,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 143.033333333339,
+							"event_id": "district_block:district_lap_02::block_01:2:1",
+							"gap_seconds": 50.7833333333433,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 164.033333333356,
+							"event_id": "district_block:district_lap_02::block_02:2:2",
+							"gap_seconds": 21.0000000000167,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 185.033333333373,
+							"event_id": "district_block:district_lap_02::block_03:2:3",
+							"gap_seconds": 21.0000000000167,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 250.916666666758,
+							"event_id": "district_block:district_lap_03::block_01:3:1",
+							"gap_seconds": 65.8833333333858,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 271.916666666748,
+							"event_id": "district_block:district_lap_03::block_02:3:2",
+							"gap_seconds": 20.9999999999895,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 292.916666666729,
+							"event_id": "district_block:district_lap_03::block_03:3:3",
+							"gap_seconds": 20.9999999999809,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 20.9999999999809,
+					"last_timestamp": 292.916666666729,
+					"target_maximum_seconds": 60.0,
+					"target_minimum_seconds": 3.0,
+					"violation_count": 1
+				}
+			},
+			"coin_cluster_presentations": 10,
+			"coin_collections_count_as_strategic": false,
+			"definition_id": "short_run_cadence",
+			"latest_eligible_elapsed_seconds": 292.916666666729,
+			"measurement_only": true
+		},
+		"cards": [
+			"arcade",
+			"convenience_store",
+			"subway_entrance",
+			"arcade",
+			"convenience_store",
+			"subway_entrance",
+			"arcade",
+			"convenience_store",
+			"subway_entrance"
+		],
+		"completed": true,
+		"crew": "zoey",
+		"district": {
+			"accepted_decisions": [
+				{
+					"boss_commitment": false,
+					"completed_blocks": 3,
+					"completed_lap_id": "district_lap_01",
+					"completed_lap_index": 1,
+					"decision": "push",
+					"decision_revision": 11,
+					"decision_token": 1,
+					"push_preview": {
+						"boss_commitment": false,
+						"final_lap_commitment": false,
+						"from_lap_id": "district_lap_01",
+						"from_lap_index": 1,
+						"lap_id": "district_lap_02",
+						"lap_index": 2,
+						"modifier_id": "rising_pressure",
+						"modifier_label": "RISING PRESSURE",
+						"next_decision_after_blocks": 3,
+						"next_threat": "VIPER ENFORCER",
+						"pressure_gain_multiplier": 1.14999997615814,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 1,
+						"risk_label": "HIGHER ENEMY PRESSURE"
+					}
+				},
+				{
+					"boss_commitment": true,
+					"completed_blocks": 6,
+					"completed_lap_id": "district_lap_02",
+					"completed_lap_index": 2,
+					"decision": "push",
+					"decision_revision": 21,
+					"decision_token": 2,
+					"push_preview": {
+						"boss_commitment": true,
+						"final_lap_commitment": true,
+						"from_lap_id": "district_lap_02",
+						"from_lap_index": 2,
+						"lap_id": "district_lap_03",
+						"lap_index": 3,
+						"modifier_id": "boss_commitment",
+						"modifier_label": "BOSS COMMITMENT",
+						"next_decision_after_blocks": 0,
+						"next_threat": "THE VIPER",
+						"pressure_gain_multiplier": 1.29999995231628,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 2,
+						"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+					}
+				}
+			],
+			"block_id": "district_lap_03::block_03",
+			"block_index": 3,
+			"blocks_per_lap": 3,
+			"boss_committed": true,
+			"completed_blocks": 9,
+			"completed_laps": 3,
+			"current_block_kind": "",
+			"current_lap": {
+				"boss_commitment": true,
+				"lap_id": "district_lap_03",
+				"lap_index": 3,
+				"modifier_id": "boss_commitment",
+				"modifier_label": "BOSS COMMITMENT",
+				"next_threat": "THE VIPER",
+				"pressure_gain_multiplier": 1.29999995231628,
+				"reward_quality_tier_bonus": 2,
+				"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+			},
+			"current_route_occurrence_id": "",
+			"decision_revision": -1,
+			"decision_token": -1,
+			"enabled": true,
+			"lap_count": 3,
+			"lap_id": "district_lap_03",
+			"lap_index": 3,
+			"lifecycle_revision": 32,
+			"phase": 10,
+			"phase_name": "RESULT",
+			"push_preview": {}
+		},
+		"duration": 313.867,
+		"extract_lap": 0,
+		"failed_intent": false,
+		"fight_durations": [
+			29.25,
+			29.783,
+			44.883
+		],
+		"first_lap": 92.25,
+		"first_lap_no_enemy": 84.217,
+		"lap_decisions": [
+			92.25,
+			185.033
+		],
+		"longest_no_enemy_gap": 66.0,
+		"no_enemy_seconds": 253.95,
+		"outcome": "DEFEATED",
+		"pacing": "historical",
+		"policy": "starter_hold",
+		"seed": 6062026,
+		"travel": 189.0
+	},
+	{
+		"access": "fresh",
+		"boss_start": 293.017,
+		"cadence": {
+			"categories": {
+				"ambient": {
+					"average_gap": 25.1016666666759,
+					"count": 10,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 27.1166666666664,
+							"event_id": "coin_cluster_presented:1",
+							"gap_seconds": 27.1166666666664,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 38.6666666666658,
+							"event_id": "coin_cluster_presented:2",
+							"gap_seconds": 11.5499999999993,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 50.1833333333318,
+							"event_id": "coin_cluster_presented:3",
+							"gap_seconds": 11.516666666666,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 119.983333333328,
+							"event_id": "coin_cluster_presented:4",
+							"gap_seconds": 69.799999999996,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 137.166666666668,
+							"event_id": "coin_cluster_presented:5",
+							"gap_seconds": 17.1833333333402,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 142.283333333339,
+							"event_id": "coin_cluster_presented:6",
+							"gap_seconds": 5.11666666667074,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 211.900000000061,
+							"event_id": "coin_cluster_presented:7",
+							"gap_seconds": 69.6166666667221,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 227.016666666739,
+							"event_id": "coin_cluster_presented:8",
+							"gap_seconds": 15.1166666666787,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 241.350000000084,
+							"event_id": "coin_cluster_presented:9",
+							"gap_seconds": 14.3333333333447,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 251.016666666759,
+							"event_id": "coin_cluster_presented:10",
+							"gap_seconds": 9.66666666667436,
+							"validation": "too_late"
+						}
+					],
+					"last_gap": 9.66666666667436,
+					"last_timestamp": 251.016666666759,
+					"target_maximum_seconds": 8.0,
+					"target_minimum_seconds": 1.0,
+					"violation_count": 9
+				},
+				"major": {
+					"average_gap": 97.672222222243,
+					"count": 3,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 92.1833333333294,
+							"event_id": "extraction:0",
+							"gap_seconds": 92.1833333333294,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 184.283333333372,
+							"event_id": "extraction:1",
+							"gap_seconds": 92.1000000000427,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 293.016666666729,
+							"event_id": "boss_commitment",
+							"gap_seconds": 108.733333333357,
+							"validation": "too_late"
+						}
+					],
+					"last_gap": 108.733333333357,
+					"last_timestamp": 293.016666666729,
+					"target_maximum_seconds": 90.0,
+					"target_minimum_seconds": 20.0,
+					"violation_count": 3
+				},
+				"strategic": {
+					"average_gap": 32.5574074074143,
+					"count": 9,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 50.1833333333318,
+							"event_id": "district_block:district_lap_01::block_01:1:1",
+							"gap_seconds": 50.1833333333318,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 71.1833333333306,
+							"event_id": "district_block:district_lap_01::block_02:1:2",
+							"gap_seconds": 20.9999999999988,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 92.1833333333294,
+							"event_id": "district_block:district_lap_01::block_03:1:3",
+							"gap_seconds": 20.9999999999988,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 142.283333333339,
+							"event_id": "district_block:district_lap_02::block_01:2:1",
+							"gap_seconds": 50.1000000000093,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 163.283333333355,
+							"event_id": "district_block:district_lap_02::block_02:2:2",
+							"gap_seconds": 21.0000000000167,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 184.283333333372,
+							"event_id": "district_block:district_lap_02::block_03:2:3",
+							"gap_seconds": 21.0000000000167,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 251.016666666759,
+							"event_id": "district_block:district_lap_03::block_01:3:1",
+							"gap_seconds": 66.7333333333864,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 272.016666666748,
+							"event_id": "district_block:district_lap_03::block_02:3:2",
+							"gap_seconds": 20.9999999999894,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 293.016666666729,
+							"event_id": "district_block:district_lap_03::block_03:3:3",
+							"gap_seconds": 20.9999999999809,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 20.9999999999809,
+					"last_timestamp": 293.016666666729,
+					"target_maximum_seconds": 60.0,
+					"target_minimum_seconds": 3.0,
+					"violation_count": 1
+				}
+			},
+			"coin_cluster_presentations": 10,
+			"coin_collections_count_as_strategic": false,
+			"definition_id": "short_run_cadence",
+			"latest_eligible_elapsed_seconds": 293.016666666729,
+			"measurement_only": true
+		},
+		"cards": [
+			"arcade",
+			"convenience_store",
+			"subway_entrance",
+			"arcade",
+			"convenience_store",
+			"subway_entrance",
+			"arcade",
+			"convenience_store",
+			"subway_entrance"
+		],
+		"completed": true,
+		"crew": "rex",
+		"district": {
+			"accepted_decisions": [
+				{
+					"boss_commitment": false,
+					"completed_blocks": 3,
+					"completed_lap_id": "district_lap_01",
+					"completed_lap_index": 1,
+					"decision": "push",
+					"decision_revision": 11,
+					"decision_token": 1,
+					"push_preview": {
+						"boss_commitment": false,
+						"final_lap_commitment": false,
+						"from_lap_id": "district_lap_01",
+						"from_lap_index": 1,
+						"lap_id": "district_lap_02",
+						"lap_index": 2,
+						"modifier_id": "rising_pressure",
+						"modifier_label": "RISING PRESSURE",
+						"next_decision_after_blocks": 3,
+						"next_threat": "VIPER ENFORCER",
+						"pressure_gain_multiplier": 1.14999997615814,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 1,
+						"risk_label": "HIGHER ENEMY PRESSURE"
+					}
+				},
+				{
+					"boss_commitment": true,
+					"completed_blocks": 6,
+					"completed_lap_id": "district_lap_02",
+					"completed_lap_index": 2,
+					"decision": "push",
+					"decision_revision": 21,
+					"decision_token": 2,
+					"push_preview": {
+						"boss_commitment": true,
+						"final_lap_commitment": true,
+						"from_lap_id": "district_lap_02",
+						"from_lap_index": 2,
+						"lap_id": "district_lap_03",
+						"lap_index": 3,
+						"modifier_id": "boss_commitment",
+						"modifier_label": "BOSS COMMITMENT",
+						"next_decision_after_blocks": 0,
+						"next_threat": "THE VIPER",
+						"pressure_gain_multiplier": 1.29999995231628,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 2,
+						"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+					}
+				}
+			],
+			"block_id": "district_lap_03::block_03",
+			"block_index": 3,
+			"blocks_per_lap": 3,
+			"boss_committed": true,
+			"completed_blocks": 9,
+			"completed_laps": 3,
+			"current_block_kind": "",
+			"current_lap": {
+				"boss_commitment": true,
+				"lap_id": "district_lap_03",
+				"lap_index": 3,
+				"modifier_id": "boss_commitment",
+				"modifier_label": "BOSS COMMITMENT",
+				"next_threat": "THE VIPER",
+				"pressure_gain_multiplier": 1.29999995231628,
+				"reward_quality_tier_bonus": 2,
+				"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+			},
+			"current_route_occurrence_id": "",
+			"decision_revision": -1,
+			"decision_token": -1,
+			"enabled": true,
+			"lap_count": 3,
+			"lap_id": "district_lap_03",
+			"lap_index": 3,
+			"lifecycle_revision": 32,
+			"phase": 10,
+			"phase_name": "RESULT",
+			"push_preview": {}
+		},
+		"duration": 329.583,
+		"extract_lap": 0,
+		"failed_intent": false,
+		"fight_durations": [
+			29.183,
+			29.1,
+			45.733
+		],
+		"first_lap": 92.183,
+		"first_lap_no_enemy": 84.183,
+		"lap_decisions": [
+			92.183,
+			184.283
+		],
+		"longest_no_enemy_gap": 66.0,
+		"no_enemy_seconds": 243.9,
+		"outcome": "DEFEATED",
+		"pacing": "historical",
+		"policy": "starter_hold",
+		"seed": 6062026,
+		"travel": 189.0
+	},
+	{
+		"access": "full",
+		"boss_start": -1.0,
+		"cadence": {
+			"categories": {
+				"ambient": {
+					"average_gap": 15.2314285714241,
+					"count": 35,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 27.7166666666664,
+							"event_id": "coin_cluster_presented:1",
+							"gap_seconds": 27.7166666666664,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 39.2333333333324,
+							"event_id": "coin_cluster_presented:2",
+							"gap_seconds": 11.516666666666,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 50.7833333333317,
+							"event_id": "coin_cluster_presented:3",
+							"gap_seconds": 11.5499999999993,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 90.7333333333295,
+							"event_id": "coin_cluster_presented:4",
+							"gap_seconds": 39.9499999999977,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 92.249999999996,
+							"event_id": "coin_cluster_presented:5",
+							"gap_seconds": 1.51666666666658,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 100.099999999996,
+							"event_id": "coin_cluster_presented:6",
+							"gap_seconds": 7.84999999999955,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 112.449999999995,
+							"event_id": "coin_cluster_presented:7",
+							"gap_seconds": 12.3499999999993,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 125.866666666661,
+							"event_id": "coin_cluster_presented:8",
+							"gap_seconds": 13.4166666666659,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 136.016666666667,
+							"event_id": "coin_cluster_presented:9",
+							"gap_seconds": 10.1500000000062,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 182.350000000037,
+							"event_id": "coin_cluster_presented:10",
+							"gap_seconds": 46.3333333333702,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 194.68333333338,
+							"event_id": "coin_cluster_presented:11",
+							"gap_seconds": 12.3333333333431,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 206.48333333339,
+							"event_id": "coin_cluster_presented:12",
+							"gap_seconds": 11.8000000000094,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 218.716666666733,
+							"event_id": "coin_cluster_presented:13",
+							"gap_seconds": 12.2333333333431,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 230.533333333409,
+							"event_id": "coin_cluster_presented:14",
+							"gap_seconds": 11.8166666666761,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 242.716666666752,
+							"event_id": "coin_cluster_presented:15",
+							"gap_seconds": 12.183333333343,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 284.183333333404,
+							"event_id": "coin_cluster_presented:16",
+							"gap_seconds": 41.4666666666516,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 285.433333333402,
+							"event_id": "coin_cluster_presented:17",
+							"gap_seconds": 1.24999999999886,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 291.933333333396,
+							"event_id": "coin_cluster_presented:18",
+							"gap_seconds": 6.49999999999409,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 304.916666666718,
+							"event_id": "coin_cluster_presented:19",
+							"gap_seconds": 12.9833333333215,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 315.933333333375,
+							"event_id": "coin_cluster_presented:20",
+							"gap_seconds": 11.0166666666566,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 328.05000000003,
+							"event_id": "coin_cluster_presented:21",
+							"gap_seconds": 12.1166666666556,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 342.650000000017,
+							"event_id": "coin_cluster_presented:22",
+							"gap_seconds": 14.5999999999867,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 354.03333333334,
+							"event_id": "coin_cluster_presented:23",
+							"gap_seconds": 11.383333333323,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 366.199999999996,
+							"event_id": "coin_cluster_presented:24",
+							"gap_seconds": 12.1666666666556,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 377.416666666652,
+							"event_id": "coin_cluster_presented:25",
+							"gap_seconds": 11.2166666666565,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 424.916666666609,
+							"event_id": "coin_cluster_presented:26",
+							"gap_seconds": 47.4999999999568,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 436.583333333265,
+							"event_id": "coin_cluster_presented:27",
+							"gap_seconds": 11.6666666666561,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 450.349999999919,
+							"event_id": "coin_cluster_presented:28",
+							"gap_seconds": 13.7666666666541,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 462.483333333241,
+							"event_id": "coin_cluster_presented:29",
+							"gap_seconds": 12.1333333333223,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 474.433333333231,
+							"event_id": "coin_cluster_presented:30",
+							"gap_seconds": 11.9499999999891,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 485.116666666554,
+							"event_id": "coin_cluster_presented:31",
+							"gap_seconds": 10.6833333333236,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 496.899999999877,
+							"event_id": "coin_cluster_presented:32",
+							"gap_seconds": 11.7833333333226,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 509.133333333199,
+							"event_id": "coin_cluster_presented:33",
+							"gap_seconds": 12.2333333333222,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 520.616666666522,
+							"event_id": "coin_cluster_presented:34",
+							"gap_seconds": 11.4833333333229,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 533.099999999844,
+							"event_id": "coin_cluster_presented:35",
+							"gap_seconds": 12.483333333322,
+							"validation": "too_late"
+						}
+					],
+					"last_gap": 12.483333333322,
+					"last_timestamp": 533.099999999844,
+					"target_maximum_seconds": 8.0,
+					"target_minimum_seconds": 1.0,
+					"violation_count": 31
+				},
+				"major": {
+					"average_gap": 199.208333333316,
+					"count": 2,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 157.016666666684,
+							"event_id": "extraction:0",
+							"gap_seconds": 157.016666666684,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 398.416666666633,
+							"event_id": "extraction:1",
+							"gap_seconds": 241.399999999949,
+							"validation": "too_late"
+						}
+					],
+					"last_gap": 241.399999999949,
+					"last_timestamp": 398.416666666633,
+					"target_maximum_seconds": 90.0,
+					"target_minimum_seconds": 20.0,
+					"violation_count": 2
+				},
+				"strategic": {
+					"average_gap": 76.1571428571205,
+					"count": 7,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 50.7833333333317,
+							"event_id": "district_block:district_lap_01::block_01:1:1",
+							"gap_seconds": 50.7833333333317,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 136.016666666667,
+							"event_id": "district_block:district_lap_01::block_02:1:2",
+							"gap_seconds": 85.2333333333353,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 157.016666666684,
+							"event_id": "district_block:district_lap_01::block_03:1:3",
+							"gap_seconds": 21.0000000000167,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 242.716666666752,
+							"event_id": "district_block:district_lap_02::block_01:2:1",
+							"gap_seconds": 85.7000000000682,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 377.416666666652,
+							"event_id": "district_block:district_lap_02::block_02:2:2",
+							"gap_seconds": 134.6999999999,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 398.416666666633,
+							"event_id": "district_block:district_lap_02::block_03:2:3",
+							"gap_seconds": 20.9999999999809,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 533.099999999844,
+							"event_id": "district_block:district_lap_03::block_01:3:1",
+							"gap_seconds": 134.683333333211,
+							"validation": "too_late"
+						}
+					],
+					"last_gap": 134.683333333211,
+					"last_timestamp": 533.099999999844,
+					"target_maximum_seconds": 60.0,
+					"target_minimum_seconds": 3.0,
+					"violation_count": 4
+				}
+			},
+			"coin_cluster_presentations": 35,
+			"coin_collections_count_as_strategic": false,
+			"definition_id": "short_run_cadence",
+			"latest_eligible_elapsed_seconds": 533.099999999844,
+			"measurement_only": true
+		},
+		"cards": [
+			"arcade",
+			"gang_hideout",
+			"convenience_store",
+			"arcade",
+			"gang_hideout",
+			"convenience_store",
+			"arcade",
+			"gang_hideout"
+		],
+		"completed": true,
+		"crew": "jax",
+		"district": {
+			"accepted_decisions": [
+				{
+					"boss_commitment": false,
+					"completed_blocks": 3,
+					"completed_lap_id": "district_lap_01",
+					"completed_lap_index": 1,
+					"decision": "push",
+					"decision_revision": 13,
+					"decision_token": 1,
+					"push_preview": {
+						"boss_commitment": false,
+						"final_lap_commitment": false,
+						"from_lap_id": "district_lap_01",
+						"from_lap_index": 1,
+						"lap_id": "district_lap_02",
+						"lap_index": 2,
+						"modifier_id": "rising_pressure",
+						"modifier_label": "RISING PRESSURE",
+						"next_decision_after_blocks": 3,
+						"next_threat": "VIPER ENFORCER",
+						"pressure_gain_multiplier": 1.14999997615814,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 1,
+						"risk_label": "HIGHER ENEMY PRESSURE"
+					}
+				},
+				{
+					"boss_commitment": true,
+					"completed_blocks": 6,
+					"completed_lap_id": "district_lap_02",
+					"completed_lap_index": 2,
+					"decision": "push",
+					"decision_revision": 25,
+					"decision_token": 2,
+					"push_preview": {
+						"boss_commitment": true,
+						"final_lap_commitment": true,
+						"from_lap_id": "district_lap_02",
+						"from_lap_index": 2,
+						"lap_id": "district_lap_03",
+						"lap_index": 3,
+						"modifier_id": "boss_commitment",
+						"modifier_label": "BOSS COMMITMENT",
+						"next_decision_after_blocks": 0,
+						"next_threat": "THE VIPER",
+						"pressure_gain_multiplier": 1.29999995231628,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 2,
+						"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+					}
+				}
+			],
+			"block_id": "district_lap_03::block_02",
+			"block_index": 2,
+			"blocks_per_lap": 3,
+			"boss_committed": true,
+			"completed_blocks": 7,
+			"completed_laps": 2,
+			"current_block_kind": "fight",
+			"current_lap": {
+				"boss_commitment": true,
+				"lap_id": "district_lap_03",
+				"lap_index": 3,
+				"modifier_id": "boss_commitment",
+				"modifier_label": "BOSS COMMITMENT",
+				"next_threat": "THE VIPER",
+				"pressure_gain_multiplier": 1.29999995231628,
+				"reward_quality_tier_bonus": 2,
+				"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+			},
+			"current_route_occurrence_id": "downtown_loop_route::occurrence::7",
+			"decision_revision": -1,
+			"decision_token": -1,
+			"enabled": true,
+			"lap_count": 3,
+			"lap_id": "district_lap_03",
+			"lap_index": 3,
+			"lifecycle_revision": 33,
+			"phase": 10,
+			"phase_name": "RESULT",
+			"push_preview": {}
+		},
+		"duration": 567.433,
+		"extract_lap": 0,
+		"failed_intent": false,
+		"fight_durations": [
+			29.783,
+			64.233,
+			64.7,
+			113.7,
+			113.683
+		],
+		"first_lap": 157.017,
+		"first_lap_no_enemy": 122.417,
+		"lap_decisions": [
+			157.017,
+			398.417
+		],
+		"longest_no_enemy_gap": 45.0,
+		"no_enemy_seconds": 445.167,
+		"outcome": "DEFEATED",
+		"pacing": "historical",
+		"policy": "starter_hold",
+		"seed": 6062026,
+		"travel": 168.0
+	},
+	{
+		"access": "full",
+		"boss_start": -1.0,
+		"cadence": {
+			"categories": {
+				"ambient": {
+					"average_gap": 16.252222222228,
+					"count": 15,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 27.0999999999997,
+							"event_id": "coin_cluster_presented:1",
+							"gap_seconds": 27.0999999999997,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 38.6499999999991,
+							"event_id": "coin_cluster_presented:2",
+							"gap_seconds": 11.5499999999993,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 50.2499999999984,
+							"event_id": "coin_cluster_presented:3",
+							"gap_seconds": 11.5999999999993,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 100.399999999996,
+							"event_id": "coin_cluster_presented:4",
+							"gap_seconds": 50.1499999999972,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 102.816666666662,
+							"event_id": "coin_cluster_presented:5",
+							"gap_seconds": 2.41666666666653,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 105.183333333329,
+							"event_id": "coin_cluster_presented:6",
+							"gap_seconds": 2.36666666666653,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 113.049999999995,
+							"event_id": "coin_cluster_presented:7",
+							"gap_seconds": 7.86666666666622,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 127.599999999994,
+							"event_id": "coin_cluster_presented:8",
+							"gap_seconds": 14.5499999999992,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 136.016666666667,
+							"event_id": "coin_cluster_presented:9",
+							"gap_seconds": 8.41666666667301,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 184.466666666706,
+							"event_id": "coin_cluster_presented:10",
+							"gap_seconds": 48.4500000000386,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 195.816666666715,
+							"event_id": "coin_cluster_presented:11",
+							"gap_seconds": 11.350000000009,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 207.766666666724,
+							"event_id": "coin_cluster_presented:12",
+							"gap_seconds": 11.9500000000095,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 219.7833333334,
+							"event_id": "coin_cluster_presented:13",
+							"gap_seconds": 12.0166666666762,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 231.78333333341,
+							"event_id": "coin_cluster_presented:14",
+							"gap_seconds": 12.0000000000096,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 243.783333333419,
+							"event_id": "coin_cluster_presented:15",
+							"gap_seconds": 12.0000000000096,
+							"validation": "too_late"
+						}
+					],
+					"last_gap": 12.0000000000096,
+					"last_timestamp": 243.783333333419,
+					"target_maximum_seconds": 8.0,
+					"target_minimum_seconds": 1.0,
+					"violation_count": 12
+				},
+				"major": {
+					"average_gap": 157.016666666684,
+					"count": 1,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 157.016666666684,
+							"event_id": "extraction:0",
+							"gap_seconds": 157.016666666684,
+							"validation": "too_late"
+						}
+					],
+					"last_gap": 157.016666666684,
+					"last_timestamp": 157.016666666684,
+					"target_maximum_seconds": 90.0,
+					"target_minimum_seconds": 20.0,
+					"violation_count": 1
+				},
+				"strategic": {
+					"average_gap": 60.9458333333549,
+					"count": 4,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 50.2499999999984,
+							"event_id": "district_block:district_lap_01::block_01:1:1",
+							"gap_seconds": 50.2499999999984,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 136.016666666667,
+							"event_id": "district_block:district_lap_01::block_02:1:2",
+							"gap_seconds": 85.7666666666686,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 157.016666666684,
+							"event_id": "district_block:district_lap_01::block_03:1:3",
+							"gap_seconds": 21.0000000000167,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 243.783333333419,
+							"event_id": "district_block:district_lap_02::block_01:2:1",
+							"gap_seconds": 86.7666666667357,
+							"validation": "too_late"
+						}
+					],
+					"last_gap": 86.7666666667357,
+					"last_timestamp": 243.783333333419,
+					"target_maximum_seconds": 60.0,
+					"target_minimum_seconds": 3.0,
+					"violation_count": 2
+				}
+			},
+			"coin_cluster_presentations": 15,
+			"coin_collections_count_as_strategic": false,
+			"definition_id": "short_run_cadence",
+			"latest_eligible_elapsed_seconds": 243.783333333419,
+			"measurement_only": true
+		},
+		"cards": [
+			"arcade",
+			"gang_hideout",
+			"convenience_store",
+			"arcade",
+			"gang_hideout"
+		],
+		"completed": true,
+		"crew": "zoey",
+		"district": {
+			"accepted_decisions": [
+				{
+					"boss_commitment": false,
+					"completed_blocks": 3,
+					"completed_lap_id": "district_lap_01",
+					"completed_lap_index": 1,
+					"decision": "push",
+					"decision_revision": 13,
+					"decision_token": 1,
+					"push_preview": {
+						"boss_commitment": false,
+						"final_lap_commitment": false,
+						"from_lap_id": "district_lap_01",
+						"from_lap_index": 1,
+						"lap_id": "district_lap_02",
+						"lap_index": 2,
+						"modifier_id": "rising_pressure",
+						"modifier_label": "RISING PRESSURE",
+						"next_decision_after_blocks": 3,
+						"next_threat": "VIPER ENFORCER",
+						"pressure_gain_multiplier": 1.14999997615814,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 1,
+						"risk_label": "HIGHER ENEMY PRESSURE"
+					}
+				}
+			],
+			"block_id": "district_lap_02::block_02",
+			"block_index": 2,
+			"blocks_per_lap": 3,
+			"boss_committed": false,
+			"completed_blocks": 4,
+			"completed_laps": 1,
+			"current_block_kind": "fight",
+			"current_lap": {
+				"boss_commitment": false,
+				"lap_id": "district_lap_02",
+				"lap_index": 2,
+				"modifier_id": "rising_pressure",
+				"modifier_label": "RISING PRESSURE",
+				"next_threat": "VIPER ENFORCER",
+				"pressure_gain_multiplier": 1.14999997615814,
+				"reward_quality_tier_bonus": 1,
+				"risk_label": "HIGHER ENEMY PRESSURE"
+			},
+			"current_route_occurrence_id": "downtown_loop_route::occurrence::4",
+			"decision_revision": -1,
+			"decision_token": -1,
+			"enabled": true,
+			"lap_count": 3,
+			"lap_id": "district_lap_02",
+			"lap_index": 2,
+			"lifecycle_revision": 21,
+			"phase": 10,
+			"phase_name": "RESULT",
+			"push_preview": {}
+		},
+		"duration": 280.15,
+		"extract_lap": 0,
+		"failed_intent": false,
+		"fight_durations": [
+			29.25,
+			64.767,
+			65.767
+		],
+		"first_lap": 157.017,
+		"first_lap_no_enemy": 108.083,
+		"lap_decisions": [
+			157.017
+		],
+		"longest_no_enemy_gap": 45.0,
+		"no_enemy_seconds": 201.467,
+		"outcome": "DEFEATED",
+		"pacing": "historical",
+		"policy": "starter_hold",
+		"seed": 6062026,
+		"travel": 105.0
+	},
+	{
+		"access": "full",
+		"boss_start": -1.0,
+		"cadence": {
+			"categories": {
+				"ambient": {
+					"average_gap": 15.3480952380907,
+					"count": 35,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 27.1166666666664,
+							"event_id": "coin_cluster_presented:1",
+							"gap_seconds": 27.1166666666664,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 38.6666666666658,
+							"event_id": "coin_cluster_presented:2",
+							"gap_seconds": 11.5499999999993,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 50.1833333333318,
+							"event_id": "coin_cluster_presented:3",
+							"gap_seconds": 11.516666666666,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 91.2666666666628,
+							"event_id": "coin_cluster_presented:4",
+							"gap_seconds": 41.083333333331,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 93.3166666666627,
+							"event_id": "coin_cluster_presented:5",
+							"gap_seconds": 2.04999999999988,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 100.166666666662,
+							"event_id": "coin_cluster_presented:6",
+							"gap_seconds": 6.84999999999961,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 112.283333333328,
+							"event_id": "coin_cluster_presented:7",
+							"gap_seconds": 12.116666666666,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 128.783333333328,
+							"event_id": "coin_cluster_presented:8",
+							"gap_seconds": 16.4999999999997,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 136.250000000001,
+							"event_id": "coin_cluster_presented:9",
+							"gap_seconds": 7.46666666667261,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 183.350000000038,
+							"event_id": "coin_cluster_presented:10",
+							"gap_seconds": 47.1000000000375,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 195.583333333381,
+							"event_id": "coin_cluster_presented:11",
+							"gap_seconds": 12.2333333333431,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 207.450000000057,
+							"event_id": "coin_cluster_presented:12",
+							"gap_seconds": 11.8666666666761,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 220.883333333401,
+							"event_id": "coin_cluster_presented:13",
+							"gap_seconds": 13.433333333344,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 231.48333333341,
+							"event_id": "coin_cluster_presented:14",
+							"gap_seconds": 10.6000000000084,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 244.88333333342,
+							"event_id": "coin_cluster_presented:15",
+							"gap_seconds": 13.4000000000107,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 288.816666666733,
+							"event_id": "coin_cluster_presented:16",
+							"gap_seconds": 43.9333333333123,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 290.966666666731,
+							"event_id": "coin_cluster_presented:17",
+							"gap_seconds": 2.14999999999804,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 294.833333333394,
+							"event_id": "coin_cluster_presented:18",
+							"gap_seconds": 3.86666666666315,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 306.933333333383,
+							"event_id": "coin_cluster_presented:19",
+							"gap_seconds": 12.099999999989,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 318.783333333372,
+							"event_id": "coin_cluster_presented:20",
+							"gap_seconds": 11.8499999999892,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 330.983333333361,
+							"event_id": "coin_cluster_presented:21",
+							"gap_seconds": 12.1999999999889,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 349.183333333344,
+							"event_id": "coin_cluster_presented:22",
+							"gap_seconds": 18.1999999999834,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 361.999999999999,
+							"event_id": "coin_cluster_presented:23",
+							"gap_seconds": 12.816666666655,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 373.549999999989,
+							"event_id": "coin_cluster_presented:24",
+							"gap_seconds": 11.5499999999895,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 380.516666666649,
+							"event_id": "coin_cluster_presented:25",
+							"gap_seconds": 6.96666666666033,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 429.166666666605,
+							"event_id": "coin_cluster_presented:26",
+							"gap_seconds": 48.6499999999558,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 439.616666666596,
+							"event_id": "coin_cluster_presented:27",
+							"gap_seconds": 10.4499999999905,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 457.816666666579,
+							"event_id": "coin_cluster_presented:28",
+							"gap_seconds": 18.1999999999834,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 472.783333333232,
+							"event_id": "coin_cluster_presented:29",
+							"gap_seconds": 14.9666666666531,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 482.183333333223,
+							"event_id": "coin_cluster_presented:30",
+							"gap_seconds": 9.39999999999145,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 489.149999999884,
+							"event_id": "coin_cluster_presented:31",
+							"gap_seconds": 6.96666666666033,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 501.149999999873,
+							"event_id": "coin_cluster_presented:32",
+							"gap_seconds": 11.9999999999891,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 513.149999999862,
+							"event_id": "coin_cluster_presented:33",
+							"gap_seconds": 11.9999999999891,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 525.216666666518,
+							"event_id": "coin_cluster_presented:34",
+							"gap_seconds": 12.0666666666557,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 537.183333333173,
+							"event_id": "coin_cluster_presented:35",
+							"gap_seconds": 11.9666666666558,
+							"validation": "too_late"
+						}
+					],
+					"last_gap": 11.9666666666558,
+					"last_timestamp": 537.183333333173,
+					"target_maximum_seconds": 8.0,
+					"target_minimum_seconds": 1.0,
+					"violation_count": 28
+				},
+				"major": {
+					"average_gap": 200.758333333315,
+					"count": 2,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 157.250000000017,
+							"event_id": "extraction:0",
+							"gap_seconds": 157.250000000017,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 401.51666666663,
+							"event_id": "extraction:1",
+							"gap_seconds": 244.266666666613,
+							"validation": "too_late"
+						}
+					],
+					"last_gap": 244.266666666613,
+					"last_timestamp": 401.51666666663,
+					"target_maximum_seconds": 90.0,
+					"target_minimum_seconds": 20.0,
+					"violation_count": 2
+				},
+				"strategic": {
+					"average_gap": 76.7404761904534,
+					"count": 7,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 50.1833333333318,
+							"event_id": "district_block:district_lap_01::block_01:1:1",
+							"gap_seconds": 50.1833333333318,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 136.250000000001,
+							"event_id": "district_block:district_lap_01::block_02:1:2",
+							"gap_seconds": 86.0666666666688,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 157.250000000017,
+							"event_id": "district_block:district_lap_01::block_03:1:3",
+							"gap_seconds": 21.0000000000167,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 244.88333333342,
+							"event_id": "district_block:district_lap_02::block_01:2:1",
+							"gap_seconds": 87.6333333334031,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 380.516666666649,
+							"event_id": "district_block:district_lap_02::block_02:2:2",
+							"gap_seconds": 135.633333333229,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 401.51666666663,
+							"event_id": "district_block:district_lap_02::block_03:2:3",
+							"gap_seconds": 20.9999999999809,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 537.183333333173,
+							"event_id": "district_block:district_lap_03::block_01:3:1",
+							"gap_seconds": 135.666666666543,
+							"validation": "too_late"
+						}
+					],
+					"last_gap": 135.666666666543,
+					"last_timestamp": 537.183333333173,
+					"target_maximum_seconds": 60.0,
+					"target_minimum_seconds": 3.0,
+					"violation_count": 4
+				}
+			},
+			"coin_cluster_presentations": 35,
+			"coin_collections_count_as_strategic": false,
+			"definition_id": "short_run_cadence",
+			"latest_eligible_elapsed_seconds": 537.183333333173,
+			"measurement_only": true
+		},
+		"cards": [
+			"arcade",
+			"gang_hideout",
+			"convenience_store",
+			"arcade",
+			"gang_hideout",
+			"convenience_store",
+			"arcade",
+			"gang_hideout"
+		],
+		"completed": true,
+		"crew": "rex",
+		"district": {
+			"accepted_decisions": [
+				{
+					"boss_commitment": false,
+					"completed_blocks": 3,
+					"completed_lap_id": "district_lap_01",
+					"completed_lap_index": 1,
+					"decision": "push",
+					"decision_revision": 13,
+					"decision_token": 1,
+					"push_preview": {
+						"boss_commitment": false,
+						"final_lap_commitment": false,
+						"from_lap_id": "district_lap_01",
+						"from_lap_index": 1,
+						"lap_id": "district_lap_02",
+						"lap_index": 2,
+						"modifier_id": "rising_pressure",
+						"modifier_label": "RISING PRESSURE",
+						"next_decision_after_blocks": 3,
+						"next_threat": "VIPER ENFORCER",
+						"pressure_gain_multiplier": 1.14999997615814,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 1,
+						"risk_label": "HIGHER ENEMY PRESSURE"
+					}
+				},
+				{
+					"boss_commitment": true,
+					"completed_blocks": 6,
+					"completed_lap_id": "district_lap_02",
+					"completed_lap_index": 2,
+					"decision": "push",
+					"decision_revision": 25,
+					"decision_token": 2,
+					"push_preview": {
+						"boss_commitment": true,
+						"final_lap_commitment": true,
+						"from_lap_id": "district_lap_02",
+						"from_lap_index": 2,
+						"lap_id": "district_lap_03",
+						"lap_index": 3,
+						"modifier_id": "boss_commitment",
+						"modifier_label": "BOSS COMMITMENT",
+						"next_decision_after_blocks": 0,
+						"next_threat": "THE VIPER",
+						"pressure_gain_multiplier": 1.29999995231628,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 2,
+						"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+					}
+				}
+			],
+			"block_id": "district_lap_03::block_02",
+			"block_index": 2,
+			"blocks_per_lap": 3,
+			"boss_committed": true,
+			"completed_blocks": 7,
+			"completed_laps": 2,
+			"current_block_kind": "fight",
+			"current_lap": {
+				"boss_commitment": true,
+				"lap_id": "district_lap_03",
+				"lap_index": 3,
+				"modifier_id": "boss_commitment",
+				"modifier_label": "BOSS COMMITMENT",
+				"next_threat": "THE VIPER",
+				"pressure_gain_multiplier": 1.29999995231628,
+				"reward_quality_tier_bonus": 2,
+				"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+			},
+			"current_route_occurrence_id": "downtown_loop_route::occurrence::7",
+			"decision_revision": -1,
+			"decision_token": -1,
+			"enabled": true,
+			"lap_count": 3,
+			"lap_id": "district_lap_03",
+			"lap_index": 3,
+			"lifecycle_revision": 33,
+			"phase": 10,
+			"phase_name": "RESULT",
+			"push_preview": {}
+		},
+		"duration": 561.85,
+		"extract_lap": 0,
+		"failed_intent": false,
+		"fight_durations": [
+			29.183,
+			65.067,
+			66.633,
+			114.633,
+			114.667
+		],
+		"first_lap": 157.25,
+		"first_lap_no_enemy": 117.3,
+		"lap_decisions": [
+			157.25,
+			401.517
+		],
+		"longest_no_enemy_gap": 45.0,
+		"no_enemy_seconds": 392.683,
+		"outcome": "DEFEATED",
+		"pacing": "historical",
+		"policy": "starter_hold",
+		"seed": 6062026,
+		"travel": 168.0
+	},
+	{
+		"access": "fresh",
+		"boss_start": 70.433,
+		"cadence": {
+			"categories": {
+				"ambient": {
+					"average_gap": 6.93333333333308,
+					"count": 9,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 8.71666666666668,
+							"event_id": "coin_cluster_presented:1",
+							"gap_seconds": 8.71666666666668,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 12.2666666666669,
+							"event_id": "coin_cluster_presented:2",
+							"gap_seconds": 3.55000000000018,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 15.816666666667,
+							"event_id": "coin_cluster_presented:3",
+							"gap_seconds": 3.55000000000018,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 30.2833333333329,
+							"event_id": "coin_cluster_presented:4",
+							"gap_seconds": 14.4666666666659,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 35.9666666666659,
+							"event_id": "coin_cluster_presented:5",
+							"gap_seconds": 5.68333333333301,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 38.2333333333324,
+							"event_id": "coin_cluster_presented:6",
+							"gap_seconds": 2.26666666666654,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 52.7833333333316,
+							"event_id": "coin_cluster_presented:7",
+							"gap_seconds": 14.5499999999992,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 58.399999999998,
+							"event_id": "coin_cluster_presented:8",
+							"gap_seconds": 5.61666666666635,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 62.3999999999977,
+							"event_id": "coin_cluster_presented:9",
+							"gap_seconds": 3.99999999999977,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 3.99999999999977,
+					"last_timestamp": 62.3999999999977,
+					"target_maximum_seconds": 8.0,
+					"target_minimum_seconds": 1.0,
+					"violation_count": 3
+				},
+				"major": {
+					"average_gap": 23.4777777777769,
+					"count": 3,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 23.8499999999999,
+							"event_id": "extraction:0",
+							"gap_seconds": 23.8499999999999,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 46.2666666666653,
+							"event_id": "extraction:1",
+							"gap_seconds": 22.4166666666654,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 70.4333333333306,
+							"event_id": "boss_commitment",
+							"gap_seconds": 24.1666666666653,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 24.1666666666653,
+					"last_timestamp": 70.4333333333306,
+					"target_maximum_seconds": 90.0,
+					"target_minimum_seconds": 20.0,
+					"violation_count": 0
+				},
+				"strategic": {
+					"average_gap": 7.82592592592562,
+					"count": 9,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 15.816666666667,
+							"event_id": "district_block:district_lap_01::block_01:1:1",
+							"gap_seconds": 15.816666666667,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 19.8333333333335,
+							"event_id": "district_block:district_lap_01::block_02:1:2",
+							"gap_seconds": 4.01666666666646,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 23.8499999999999,
+							"event_id": "district_block:district_lap_01::block_03:1:3",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 38.2333333333324,
+							"event_id": "district_block:district_lap_02::block_01:2:1",
+							"gap_seconds": 14.3833333333325,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 42.2499999999989,
+							"event_id": "district_block:district_lap_02::block_02:2:2",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 46.2666666666653,
+							"event_id": "district_block:district_lap_02::block_03:2:3",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 62.3999999999977,
+							"event_id": "district_block:district_lap_03::block_01:3:1",
+							"gap_seconds": 16.1333333333324,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 66.4166666666642,
+							"event_id": "district_block:district_lap_03::block_02:3:2",
+							"gap_seconds": 4.01666666666645,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 70.4333333333306,
+							"event_id": "district_block:district_lap_03::block_03:3:3",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 4.01666666666644,
+					"last_timestamp": 70.4333333333306,
+					"target_maximum_seconds": 60.0,
+					"target_minimum_seconds": 3.0,
+					"violation_count": 0
+				}
+			},
+			"coin_cluster_presentations": 9,
+			"coin_collections_count_as_strategic": false,
+			"definition_id": "short_run_cadence",
+			"latest_eligible_elapsed_seconds": 70.4333333333306,
+			"measurement_only": true
+		},
+		"cards": [
+			"arcade",
+			"convenience_store",
+			"subway_entrance",
+			"arcade",
+			"convenience_store",
+			"subway_entrance",
+			"arcade",
+			"convenience_store",
+			"subway_entrance"
+		],
+		"completed": true,
+		"crew": "jax",
+		"district": {
+			"accepted_decisions": [
+				{
+					"boss_commitment": false,
+					"completed_blocks": 3,
+					"completed_lap_id": "district_lap_01",
+					"completed_lap_index": 1,
+					"decision": "push",
+					"decision_revision": 11,
+					"decision_token": 1,
+					"push_preview": {
+						"boss_commitment": false,
+						"final_lap_commitment": false,
+						"from_lap_id": "district_lap_01",
+						"from_lap_index": 1,
+						"lap_id": "district_lap_02",
+						"lap_index": 2,
+						"modifier_id": "rising_pressure",
+						"modifier_label": "RISING PRESSURE",
+						"next_decision_after_blocks": 3,
+						"next_threat": "VIPER ENFORCER",
+						"pressure_gain_multiplier": 1.14999997615814,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 1,
+						"risk_label": "HIGHER ENEMY PRESSURE"
+					}
+				},
+				{
+					"boss_commitment": true,
+					"completed_blocks": 6,
+					"completed_lap_id": "district_lap_02",
+					"completed_lap_index": 2,
+					"decision": "push",
+					"decision_revision": 21,
+					"decision_token": 2,
+					"push_preview": {
+						"boss_commitment": true,
+						"final_lap_commitment": true,
+						"from_lap_id": "district_lap_02",
+						"from_lap_index": 2,
+						"lap_id": "district_lap_03",
+						"lap_index": 3,
+						"modifier_id": "boss_commitment",
+						"modifier_label": "BOSS COMMITMENT",
+						"next_decision_after_blocks": 0,
+						"next_threat": "THE VIPER",
+						"pressure_gain_multiplier": 1.29999995231628,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 2,
+						"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+					}
+				}
+			],
+			"block_id": "district_lap_03::block_03",
+			"block_index": 3,
+			"blocks_per_lap": 3,
+			"boss_committed": true,
+			"completed_blocks": 9,
+			"completed_laps": 3,
+			"current_block_kind": "",
+			"current_lap": {
+				"boss_commitment": true,
+				"lap_id": "district_lap_03",
+				"lap_index": 3,
+				"modifier_id": "boss_commitment",
+				"modifier_label": "BOSS COMMITMENT",
+				"next_threat": "THE VIPER",
+				"pressure_gain_multiplier": 1.29999995231628,
+				"reward_quality_tier_bonus": 2,
+				"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+			},
+			"current_route_occurrence_id": "",
+			"decision_revision": -1,
+			"decision_token": -1,
+			"enabled": true,
+			"lap_count": 3,
+			"lap_id": "district_lap_03",
+			"lap_index": 3,
+			"lifecycle_revision": 32,
+			"phase": 10,
+			"phase_name": "RESULT",
+			"push_preview": {}
+		},
+		"duration": 99.667,
+		"extract_lap": 0,
+		"failed_intent": false,
+		"fight_durations": [
+			11.8,
+			10.367,
+			12.117
+		],
+		"first_lap": 23.85,
+		"first_lap_no_enemy": 14.083,
+		"lap_decisions": [
+			23.85,
+			46.267
+		],
+		"longest_no_enemy_gap": 13.033,
+		"no_enemy_seconds": 47.017,
+		"outcome": "DEFEATED",
+		"pacing": "short",
+		"policy": "starter_hold",
+		"seed": 6062026,
+		"travel": 36.15
+	},
+	{
+		"access": "fresh",
+		"boss_start": 74.3,
+		"cadence": {
+			"categories": {
+				"ambient": {
+					"average_gap": 7.36296296296269,
+					"count": 9,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 8.09999999999998,
+							"event_id": "coin_cluster_presented:1",
+							"gap_seconds": 8.09999999999998,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 11.6833333333335,
+							"event_id": "coin_cluster_presented:2",
+							"gap_seconds": 3.58333333333351,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 15.2833333333337,
+							"event_id": "coin_cluster_presented:3",
+							"gap_seconds": 3.60000000000018,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 30.6499999999995,
+							"event_id": "coin_cluster_presented:4",
+							"gap_seconds": 15.3666666666659,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 37.2833333333325,
+							"event_id": "coin_cluster_presented:5",
+							"gap_seconds": 6.63333333333296,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 39.5166666666657,
+							"event_id": "coin_cluster_presented:6",
+							"gap_seconds": 2.23333333333321,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 55.2666666666648,
+							"event_id": "coin_cluster_presented:7",
+							"gap_seconds": 15.7499999999991,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 61.4499999999978,
+							"event_id": "coin_cluster_presented:8",
+							"gap_seconds": 6.18333333333298,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 66.2666666666642,
+							"event_id": "coin_cluster_presented:9",
+							"gap_seconds": 4.8166666666664,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 4.8166666666664,
+					"last_timestamp": 66.2666666666642,
+					"target_maximum_seconds": 8.0,
+					"target_minimum_seconds": 1.0,
+					"violation_count": 3
+				},
+				"major": {
+					"average_gap": 24.7666666666657,
+					"count": 3,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 23.3166666666666,
+							"event_id": "extraction:0",
+							"gap_seconds": 23.3166666666666,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 47.5499999999986,
+							"event_id": "extraction:1",
+							"gap_seconds": 24.233333333332,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 74.2999999999971,
+							"event_id": "boss_commitment",
+							"gap_seconds": 26.7499999999985,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 26.7499999999985,
+					"last_timestamp": 74.2999999999971,
+					"target_maximum_seconds": 90.0,
+					"target_minimum_seconds": 20.0,
+					"violation_count": 0
+				},
+				"strategic": {
+					"average_gap": 8.25555555555523,
+					"count": 9,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 15.2833333333337,
+							"event_id": "district_block:district_lap_01::block_01:1:1",
+							"gap_seconds": 15.2833333333337,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 19.3000000000002,
+							"event_id": "district_block:district_lap_01::block_02:1:2",
+							"gap_seconds": 4.01666666666651,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 23.3166666666666,
+							"event_id": "district_block:district_lap_01::block_03:1:3",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 39.5166666666657,
+							"event_id": "district_block:district_lap_02::block_01:2:1",
+							"gap_seconds": 16.1999999999991,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 43.5333333333321,
+							"event_id": "district_block:district_lap_02::block_02:2:2",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 47.5499999999986,
+							"event_id": "district_block:district_lap_02::block_03:2:3",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 66.2666666666642,
+							"event_id": "district_block:district_lap_03::block_01:3:1",
+							"gap_seconds": 18.7166666666656,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 70.2833333333306,
+							"event_id": "district_block:district_lap_03::block_02:3:2",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 74.2999999999971,
+							"event_id": "district_block:district_lap_03::block_03:3:3",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 4.01666666666644,
+					"last_timestamp": 74.2999999999971,
+					"target_maximum_seconds": 60.0,
+					"target_minimum_seconds": 3.0,
+					"violation_count": 0
+				}
+			},
+			"coin_cluster_presentations": 9,
+			"coin_collections_count_as_strategic": false,
+			"definition_id": "short_run_cadence",
+			"latest_eligible_elapsed_seconds": 74.2999999999971,
+			"measurement_only": true
+		},
+		"cards": [
+			"arcade",
+			"convenience_store",
+			"subway_entrance",
+			"arcade",
+			"convenience_store",
+			"subway_entrance",
+			"arcade",
+			"convenience_store",
+			"subway_entrance"
+		],
+		"completed": true,
+		"crew": "zoey",
+		"district": {
+			"accepted_decisions": [
+				{
+					"boss_commitment": false,
+					"completed_blocks": 3,
+					"completed_lap_id": "district_lap_01",
+					"completed_lap_index": 1,
+					"decision": "push",
+					"decision_revision": 11,
+					"decision_token": 1,
+					"push_preview": {
+						"boss_commitment": false,
+						"final_lap_commitment": false,
+						"from_lap_id": "district_lap_01",
+						"from_lap_index": 1,
+						"lap_id": "district_lap_02",
+						"lap_index": 2,
+						"modifier_id": "rising_pressure",
+						"modifier_label": "RISING PRESSURE",
+						"next_decision_after_blocks": 3,
+						"next_threat": "VIPER ENFORCER",
+						"pressure_gain_multiplier": 1.14999997615814,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 1,
+						"risk_label": "HIGHER ENEMY PRESSURE"
+					}
+				},
+				{
+					"boss_commitment": true,
+					"completed_blocks": 6,
+					"completed_lap_id": "district_lap_02",
+					"completed_lap_index": 2,
+					"decision": "push",
+					"decision_revision": 21,
+					"decision_token": 2,
+					"push_preview": {
+						"boss_commitment": true,
+						"final_lap_commitment": true,
+						"from_lap_id": "district_lap_02",
+						"from_lap_index": 2,
+						"lap_id": "district_lap_03",
+						"lap_index": 3,
+						"modifier_id": "boss_commitment",
+						"modifier_label": "BOSS COMMITMENT",
+						"next_decision_after_blocks": 0,
+						"next_threat": "THE VIPER",
+						"pressure_gain_multiplier": 1.29999995231628,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 2,
+						"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+					}
+				}
+			],
+			"block_id": "district_lap_03::block_03",
+			"block_index": 3,
+			"blocks_per_lap": 3,
+			"boss_committed": true,
+			"completed_blocks": 9,
+			"completed_laps": 3,
+			"current_block_kind": "",
+			"current_lap": {
+				"boss_commitment": true,
+				"lap_id": "district_lap_03",
+				"lap_index": 3,
+				"modifier_id": "boss_commitment",
+				"modifier_label": "BOSS COMMITMENT",
+				"next_threat": "THE VIPER",
+				"pressure_gain_multiplier": 1.29999995231628,
+				"reward_quality_tier_bonus": 2,
+				"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+			},
+			"current_route_occurrence_id": "",
+			"decision_revision": -1,
+			"decision_token": -1,
+			"enabled": true,
+			"lap_count": 3,
+			"lap_id": "district_lap_03",
+			"lap_index": 3,
+			"lifecycle_revision": 32,
+			"phase": 10,
+			"phase_name": "RESULT",
+			"push_preview": {}
+		},
+		"duration": 97.383,
+		"extract_lap": 0,
+		"failed_intent": false,
+		"fight_durations": [
+			11.267,
+			12.183,
+			14.7
+		],
+		"first_lap": 23.317,
+		"first_lap_no_enemy": 15.283,
+		"lap_decisions": [
+			23.317,
+			47.55
+		],
+		"longest_no_enemy_gap": 13.033,
+		"no_enemy_seconds": 44.333,
+		"outcome": "DEFEATED",
+		"pacing": "short",
+		"policy": "starter_hold",
+		"seed": 6062026,
+		"travel": 36.15
+	},
+	{
+		"access": "fresh",
+		"boss_start": 79.367,
+		"cadence": {
+			"categories": {
+				"ambient": {
+					"average_gap": 7.92592592592562,
+					"count": 9,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 8.11666666666665,
+							"event_id": "coin_cluster_presented:1",
+							"gap_seconds": 8.11666666666665,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 11.7000000000002,
+							"event_id": "coin_cluster_presented:2",
+							"gap_seconds": 3.58333333333351,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 15.216666666667,
+							"event_id": "coin_cluster_presented:3",
+							"gap_seconds": 3.51666666666684,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 30.4833333333329,
+							"event_id": "coin_cluster_presented:4",
+							"gap_seconds": 15.2666666666659,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 39.2166666666657,
+							"event_id": "coin_cluster_presented:5",
+							"gap_seconds": 8.73333333333284,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 41.2999999999989,
+							"event_id": "coin_cluster_presented:6",
+							"gap_seconds": 2.08333333333321,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 57.8833333333313,
+							"event_id": "coin_cluster_presented:7",
+							"gap_seconds": 16.5833333333324,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 64.3499999999976,
+							"event_id": "coin_cluster_presented:8",
+							"gap_seconds": 6.46666666666631,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 71.3333333333306,
+							"event_id": "coin_cluster_presented:9",
+							"gap_seconds": 6.98333333333294,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 6.98333333333294,
+					"last_timestamp": 71.3333333333306,
+					"target_maximum_seconds": 8.0,
+					"target_minimum_seconds": 1.0,
+					"violation_count": 4
+				},
+				"major": {
+					"average_gap": 26.4555555555545,
+					"count": 3,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 23.25,
+							"event_id": "extraction:0",
+							"gap_seconds": 23.25,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 49.3333333333318,
+							"event_id": "extraction:1",
+							"gap_seconds": 26.0833333333319,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 79.3666666666634,
+							"event_id": "boss_commitment",
+							"gap_seconds": 30.0333333333316,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 30.0333333333316,
+					"last_timestamp": 79.3666666666634,
+					"target_maximum_seconds": 90.0,
+					"target_minimum_seconds": 20.0,
+					"violation_count": 0
+				},
+				"strategic": {
+					"average_gap": 8.81851851851816,
+					"count": 9,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 15.216666666667,
+							"event_id": "district_block:district_lap_01::block_01:1:1",
+							"gap_seconds": 15.216666666667,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 19.2333333333335,
+							"event_id": "district_block:district_lap_01::block_02:1:2",
+							"gap_seconds": 4.01666666666652,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 23.25,
+							"event_id": "district_block:district_lap_01::block_03:1:3",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 41.2999999999989,
+							"event_id": "district_block:district_lap_02::block_01:2:1",
+							"gap_seconds": 18.049999999999,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 45.3166666666654,
+							"event_id": "district_block:district_lap_02::block_02:2:2",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 49.3333333333318,
+							"event_id": "district_block:district_lap_02::block_03:2:3",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 71.3333333333306,
+							"event_id": "district_block:district_lap_03::block_01:3:1",
+							"gap_seconds": 21.9999999999988,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 75.349999999997,
+							"event_id": "district_block:district_lap_03::block_02:3:2",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 79.3666666666634,
+							"event_id": "district_block:district_lap_03::block_03:3:3",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 4.01666666666644,
+					"last_timestamp": 79.3666666666634,
+					"target_maximum_seconds": 60.0,
+					"target_minimum_seconds": 3.0,
+					"violation_count": 0
+				}
+			},
+			"coin_cluster_presentations": 9,
+			"coin_collections_count_as_strategic": false,
+			"definition_id": "short_run_cadence",
+			"latest_eligible_elapsed_seconds": 79.3666666666634,
+			"measurement_only": true
+		},
+		"cards": [
+			"arcade",
+			"convenience_store",
+			"subway_entrance",
+			"arcade",
+			"convenience_store",
+			"subway_entrance",
+			"arcade",
+			"convenience_store",
+			"subway_entrance"
+		],
+		"completed": true,
+		"crew": "rex",
+		"district": {
+			"accepted_decisions": [
+				{
+					"boss_commitment": false,
+					"completed_blocks": 3,
+					"completed_lap_id": "district_lap_01",
+					"completed_lap_index": 1,
+					"decision": "push",
+					"decision_revision": 11,
+					"decision_token": 1,
+					"push_preview": {
+						"boss_commitment": false,
+						"final_lap_commitment": false,
+						"from_lap_id": "district_lap_01",
+						"from_lap_index": 1,
+						"lap_id": "district_lap_02",
+						"lap_index": 2,
+						"modifier_id": "rising_pressure",
+						"modifier_label": "RISING PRESSURE",
+						"next_decision_after_blocks": 3,
+						"next_threat": "VIPER ENFORCER",
+						"pressure_gain_multiplier": 1.14999997615814,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 1,
+						"risk_label": "HIGHER ENEMY PRESSURE"
+					}
+				},
+				{
+					"boss_commitment": true,
+					"completed_blocks": 6,
+					"completed_lap_id": "district_lap_02",
+					"completed_lap_index": 2,
+					"decision": "push",
+					"decision_revision": 21,
+					"decision_token": 2,
+					"push_preview": {
+						"boss_commitment": true,
+						"final_lap_commitment": true,
+						"from_lap_id": "district_lap_02",
+						"from_lap_index": 2,
+						"lap_id": "district_lap_03",
+						"lap_index": 3,
+						"modifier_id": "boss_commitment",
+						"modifier_label": "BOSS COMMITMENT",
+						"next_decision_after_blocks": 0,
+						"next_threat": "THE VIPER",
+						"pressure_gain_multiplier": 1.29999995231628,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 2,
+						"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+					}
+				}
+			],
+			"block_id": "district_lap_03::block_03",
+			"block_index": 3,
+			"blocks_per_lap": 3,
+			"boss_committed": true,
+			"completed_blocks": 9,
+			"completed_laps": 3,
+			"current_block_kind": "",
+			"current_lap": {
+				"boss_commitment": true,
+				"lap_id": "district_lap_03",
+				"lap_index": 3,
+				"modifier_id": "boss_commitment",
+				"modifier_label": "BOSS COMMITMENT",
+				"next_threat": "THE VIPER",
+				"pressure_gain_multiplier": 1.29999995231628,
+				"reward_quality_tier_bonus": 2,
+				"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+			},
+			"current_route_occurrence_id": "",
+			"decision_revision": -1,
+			"decision_token": -1,
+			"enabled": true,
+			"lap_count": 3,
+			"lap_id": "district_lap_03",
+			"lap_index": 3,
+			"lifecycle_revision": 32,
+			"phase": 10,
+			"phase_name": "RESULT",
+			"push_preview": {}
+		},
+		"duration": 121.1,
+		"extract_lap": 0,
+		"failed_intent": false,
+		"fight_durations": [
+			11.2,
+			14.033,
+			17.983
+		],
+		"first_lap": 23.25,
+		"first_lap_no_enemy": 15.25,
+		"lap_decisions": [
+			23.25,
+			49.333
+		],
+		"longest_no_enemy_gap": 13.033,
+		"no_enemy_seconds": 43.567,
+		"outcome": "DEFEATED",
+		"pacing": "short",
+		"policy": "starter_hold",
+		"seed": 6062026,
+		"travel": 36.15
+	},
+	{
+		"access": "full",
+		"boss_start": -1.0,
+		"cadence": {
+			"categories": {
+				"ambient": {
+					"average_gap": 4.92083333333388,
+					"count": 32,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 8.71666666666668,
+							"event_id": "coin_cluster_presented:1",
+							"gap_seconds": 8.71666666666668,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 12.2666666666669,
+							"event_id": "coin_cluster_presented:2",
+							"gap_seconds": 3.55000000000018,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 15.816666666667,
+							"event_id": "coin_cluster_presented:3",
+							"gap_seconds": 3.55000000000018,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 34.8499999999993,
+							"event_id": "coin_cluster_presented:4",
+							"gap_seconds": 19.0333333333323,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 35.5999999999993,
+							"event_id": "coin_cluster_presented:5",
+							"gap_seconds": 0.749999999999957,
+							"validation": "too_soon"
+						},
+						{
+							"eligible_elapsed_seconds": 39.1833333333324,
+							"event_id": "coin_cluster_presented:6",
+							"gap_seconds": 3.58333333333313,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 42.6833333333322,
+							"event_id": "coin_cluster_presented:7",
+							"gap_seconds": 3.4999999999998,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 46.833333333332,
+							"event_id": "coin_cluster_presented:8",
+							"gap_seconds": 4.14999999999976,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 48.2166666666652,
+							"event_id": "coin_cluster_presented:9",
+							"gap_seconds": 1.38333333333325,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 58.5666666666646,
+							"event_id": "coin_cluster_presented:10",
+							"gap_seconds": 10.3499999999994,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 62.933333333331,
+							"event_id": "coin_cluster_presented:11",
+							"gap_seconds": 4.36666666666642,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 66.7333333333308,
+							"event_id": "coin_cluster_presented:12",
+							"gap_seconds": 3.79999999999979,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 70.9666666666639,
+							"event_id": "coin_cluster_presented:13",
+							"gap_seconds": 4.23333333333309,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 74.7833333333304,
+							"event_id": "coin_cluster_presented:14",
+							"gap_seconds": 3.81666666666645,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 96.6833333333291,
+							"event_id": "coin_cluster_presented:15",
+							"gap_seconds": 21.8999999999988,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 97.9166666666624,
+							"event_id": "coin_cluster_presented:16",
+							"gap_seconds": 1.23333333333326,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 99.1999999999957,
+							"event_id": "coin_cluster_presented:17",
+							"gap_seconds": 1.28333333333326,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 100.483333333329,
+							"event_id": "coin_cluster_presented:18",
+							"gap_seconds": 1.28333333333326,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 101.816666666662,
+							"event_id": "coin_cluster_presented:19",
+							"gap_seconds": 1.33333333333326,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 103.049999999995,
+							"event_id": "coin_cluster_presented:20",
+							"gap_seconds": 1.23333333333326,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 105.066666666662,
+							"event_id": "coin_cluster_presented:21",
+							"gap_seconds": 2.01666666666655,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 110.816666666662,
+							"event_id": "coin_cluster_presented:22",
+							"gap_seconds": 5.74999999999967,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 114.949999999995,
+							"event_id": "coin_cluster_presented:23",
+							"gap_seconds": 4.1333333333331,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 125.449999999994,
+							"event_id": "coin_cluster_presented:24",
+							"gap_seconds": 10.4999999999994,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 131.099999999996,
+							"event_id": "coin_cluster_presented:25",
+							"gap_seconds": 5.65000000000231,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 135.083333333333,
+							"event_id": "coin_cluster_presented:26",
+							"gap_seconds": 3.9833333333365,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 138.100000000002,
+							"event_id": "coin_cluster_presented:27",
+							"gap_seconds": 3.01666666666907,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 143.000000000006,
+							"event_id": "coin_cluster_presented:28",
+							"gap_seconds": 4.9000000000039,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 146.116666666675,
+							"event_id": "coin_cluster_presented:29",
+							"gap_seconds": 3.11666666666915,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 149.133333333344,
+							"event_id": "coin_cluster_presented:30",
+							"gap_seconds": 3.01666666666907,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 153.666666666681,
+							"event_id": "coin_cluster_presented:31",
+							"gap_seconds": 4.53333333333694,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 157.466666666684,
+							"event_id": "coin_cluster_presented:32",
+							"gap_seconds": 3.80000000000302,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 3.80000000000302,
+					"last_timestamp": 157.466666666684,
+					"target_maximum_seconds": 8.0,
+					"target_minimum_seconds": 1.0,
+					"violation_count": 6
+				},
+				"major": {
+					"average_gap": 59.4833333333306,
+					"count": 2,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 52.2333333333317,
+							"event_id": "extraction:0",
+							"gap_seconds": 52.2333333333317,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 118.966666666661,
+							"event_id": "extraction:1",
+							"gap_seconds": 66.7333333333295,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 66.7333333333295,
+					"last_timestamp": 118.966666666661,
+					"target_maximum_seconds": 90.0,
+					"target_minimum_seconds": 20.0,
+					"violation_count": 0
+				},
+				"strategic": {
+					"average_gap": 22.4952380952406,
+					"count": 7,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 15.816666666667,
+							"event_id": "district_block:district_lap_01::block_01:1:1",
+							"gap_seconds": 15.816666666667,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 48.2166666666652,
+							"event_id": "district_block:district_lap_01::block_02:1:2",
+							"gap_seconds": 32.3999999999982,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 52.2333333333317,
+							"event_id": "district_block:district_lap_01::block_03:1:3",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 74.7833333333304,
+							"event_id": "district_block:district_lap_02::block_01:2:1",
+							"gap_seconds": 22.5499999999987,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 114.949999999995,
+							"event_id": "district_block:district_lap_02::block_02:2:2",
+							"gap_seconds": 40.1666666666644,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 118.966666666661,
+							"event_id": "district_block:district_lap_02::block_03:2:3",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 157.466666666684,
+							"event_id": "district_block:district_lap_03::block_01:3:1",
+							"gap_seconds": 38.5000000000229,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 38.5000000000229,
+					"last_timestamp": 157.466666666684,
+					"target_maximum_seconds": 60.0,
+					"target_minimum_seconds": 3.0,
+					"violation_count": 0
+				}
+			},
+			"coin_cluster_presentations": 32,
+			"coin_collections_count_as_strategic": false,
+			"definition_id": "short_run_cadence",
+			"latest_eligible_elapsed_seconds": 157.466666666684,
+			"measurement_only": true
+		},
+		"cards": [
+			"arcade",
+			"gang_hideout",
+			"convenience_store",
+			"arcade",
+			"gang_hideout",
+			"convenience_store",
+			"arcade",
+			"gang_hideout"
+		],
+		"completed": true,
+		"crew": "jax",
+		"district": {
+			"accepted_decisions": [
+				{
+					"boss_commitment": false,
+					"completed_blocks": 3,
+					"completed_lap_id": "district_lap_01",
+					"completed_lap_index": 1,
+					"decision": "push",
+					"decision_revision": 13,
+					"decision_token": 1,
+					"push_preview": {
+						"boss_commitment": false,
+						"final_lap_commitment": false,
+						"from_lap_id": "district_lap_01",
+						"from_lap_index": 1,
+						"lap_id": "district_lap_02",
+						"lap_index": 2,
+						"modifier_id": "rising_pressure",
+						"modifier_label": "RISING PRESSURE",
+						"next_decision_after_blocks": 3,
+						"next_threat": "VIPER ENFORCER",
+						"pressure_gain_multiplier": 1.14999997615814,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 1,
+						"risk_label": "HIGHER ENEMY PRESSURE"
+					}
+				},
+				{
+					"boss_commitment": true,
+					"completed_blocks": 6,
+					"completed_lap_id": "district_lap_02",
+					"completed_lap_index": 2,
+					"decision": "push",
+					"decision_revision": 25,
+					"decision_token": 2,
+					"push_preview": {
+						"boss_commitment": true,
+						"final_lap_commitment": true,
+						"from_lap_id": "district_lap_02",
+						"from_lap_index": 2,
+						"lap_id": "district_lap_03",
+						"lap_index": 3,
+						"modifier_id": "boss_commitment",
+						"modifier_label": "BOSS COMMITMENT",
+						"next_decision_after_blocks": 0,
+						"next_threat": "THE VIPER",
+						"pressure_gain_multiplier": 1.29999995231628,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 2,
+						"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+					}
+				}
+			],
+			"block_id": "district_lap_03::block_02",
+			"block_index": 2,
+			"blocks_per_lap": 3,
+			"boss_committed": true,
+			"completed_blocks": 7,
+			"completed_laps": 2,
+			"current_block_kind": "fight",
+			"current_lap": {
+				"boss_commitment": true,
+				"lap_id": "district_lap_03",
+				"lap_index": 3,
+				"modifier_id": "boss_commitment",
+				"modifier_label": "BOSS COMMITMENT",
+				"next_threat": "THE VIPER",
+				"pressure_gain_multiplier": 1.29999995231628,
+				"reward_quality_tier_bonus": 2,
+				"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+			},
+			"current_route_occurrence_id": "downtown_loop_route::occurrence::7",
+			"decision_revision": -1,
+			"decision_token": -1,
+			"enabled": true,
+			"lap_count": 3,
+			"lap_id": "district_lap_03",
+			"lap_index": 3,
+			"lifecycle_revision": 33,
+			"phase": 10,
+			"phase_name": "RESULT",
+			"push_preview": {}
+		},
+		"duration": 167.583,
+		"extract_lap": 0,
+		"failed_intent": false,
+		"fight_durations": [
+			11.8,
+			28.383,
+			18.533,
+			36.15,
+			34.483
+		],
+		"first_lap": 52.233,
+		"first_lap_no_enemy": 15.067,
+		"lap_decisions": [
+			52.233,
+			118.967
+		],
+		"longest_no_enemy_gap": 9.017,
+		"no_enemy_seconds": 67.567,
+		"outcome": "DEFEATED",
+		"pacing": "short",
+		"policy": "starter_hold",
+		"seed": 6062026,
+		"travel": 32.133
+	},
+	{
+		"access": "full",
+		"boss_start": -1.0,
+		"cadence": {
+			"categories": {
+				"ambient": {
+					"average_gap": 6.7952380952378,
+					"count": 14,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 8.09999999999998,
+							"event_id": "coin_cluster_presented:1",
+							"gap_seconds": 8.09999999999998,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 11.6833333333335,
+							"event_id": "coin_cluster_presented:2",
+							"gap_seconds": 3.58333333333351,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 15.2833333333337,
+							"event_id": "coin_cluster_presented:3",
+							"gap_seconds": 3.60000000000018,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 51.316666666665,
+							"event_id": "coin_cluster_presented:4",
+							"gap_seconds": 36.0333333333314,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 54.2333333333315,
+							"event_id": "coin_cluster_presented:5",
+							"gap_seconds": 2.9166666666665,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 56.6666666666647,
+							"event_id": "coin_cluster_presented:6",
+							"gap_seconds": 2.4333333333332,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 59.5666666666646,
+							"event_id": "coin_cluster_presented:7",
+							"gap_seconds": 2.89999999999984,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 64.4166666666643,
+							"event_id": "coin_cluster_presented:8",
+							"gap_seconds": 4.84999999999973,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 67.3166666666641,
+							"event_id": "coin_cluster_presented:9",
+							"gap_seconds": 2.89999999999984,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 78.9999999999968,
+							"event_id": "coin_cluster_presented:10",
+							"gap_seconds": 11.6833333333327,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 83.1666666666632,
+							"event_id": "coin_cluster_presented:11",
+							"gap_seconds": 4.16666666666643,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 87.116666666663,
+							"event_id": "coin_cluster_presented:12",
+							"gap_seconds": 3.94999999999978,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 91.1333333333294,
+							"event_id": "coin_cluster_presented:13",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 95.1333333333292,
+							"event_id": "coin_cluster_presented:14",
+							"gap_seconds": 3.99999999999977,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 3.99999999999977,
+					"last_timestamp": 95.1333333333292,
+					"target_maximum_seconds": 8.0,
+					"target_minimum_seconds": 1.0,
+					"violation_count": 3
+				},
+				"major": {
+					"average_gap": 71.3333333333306,
+					"count": 1,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 71.3333333333306,
+							"event_id": "extraction:0",
+							"gap_seconds": 71.3333333333306,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 71.3333333333306,
+					"last_timestamp": 71.3333333333306,
+					"target_maximum_seconds": 90.0,
+					"target_minimum_seconds": 20.0,
+					"violation_count": 0
+				},
+				"strategic": {
+					"average_gap": 23.7833333333323,
+					"count": 4,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 15.2833333333337,
+							"event_id": "district_block:district_lap_01::block_01:1:1",
+							"gap_seconds": 15.2833333333337,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 67.3166666666641,
+							"event_id": "district_block:district_lap_01::block_02:1:2",
+							"gap_seconds": 52.0333333333305,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 71.3333333333306,
+							"event_id": "district_block:district_lap_01::block_03:1:3",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 95.1333333333292,
+							"event_id": "district_block:district_lap_02::block_01:2:1",
+							"gap_seconds": 23.7999999999986,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 23.7999999999986,
+					"last_timestamp": 95.1333333333292,
+					"target_maximum_seconds": 60.0,
+					"target_minimum_seconds": 3.0,
+					"violation_count": 0
+				}
+			},
+			"coin_cluster_presentations": 14,
+			"coin_collections_count_as_strategic": false,
+			"definition_id": "short_run_cadence",
+			"latest_eligible_elapsed_seconds": 95.1333333333292,
+			"measurement_only": true
+		},
+		"cards": [
+			"arcade",
+			"gang_hideout",
+			"convenience_store",
+			"arcade",
+			"gang_hideout"
+		],
+		"completed": true,
+		"crew": "zoey",
+		"district": {
+			"accepted_decisions": [
+				{
+					"boss_commitment": false,
+					"completed_blocks": 3,
+					"completed_lap_id": "district_lap_01",
+					"completed_lap_index": 1,
+					"decision": "push",
+					"decision_revision": 13,
+					"decision_token": 1,
+					"push_preview": {
+						"boss_commitment": false,
+						"final_lap_commitment": false,
+						"from_lap_id": "district_lap_01",
+						"from_lap_index": 1,
+						"lap_id": "district_lap_02",
+						"lap_index": 2,
+						"modifier_id": "rising_pressure",
+						"modifier_label": "RISING PRESSURE",
+						"next_decision_after_blocks": 3,
+						"next_threat": "VIPER ENFORCER",
+						"pressure_gain_multiplier": 1.14999997615814,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 1,
+						"risk_label": "HIGHER ENEMY PRESSURE"
+					}
+				}
+			],
+			"block_id": "district_lap_02::block_02",
+			"block_index": 2,
+			"blocks_per_lap": 3,
+			"boss_committed": false,
+			"completed_blocks": 4,
+			"completed_laps": 1,
+			"current_block_kind": "fight",
+			"current_lap": {
+				"boss_commitment": false,
+				"lap_id": "district_lap_02",
+				"lap_index": 2,
+				"modifier_id": "rising_pressure",
+				"modifier_label": "RISING PRESSURE",
+				"next_threat": "VIPER ENFORCER",
+				"pressure_gain_multiplier": 1.14999997615814,
+				"reward_quality_tier_bonus": 1,
+				"risk_label": "HIGHER ENEMY PRESSURE"
+			},
+			"current_route_occurrence_id": "downtown_loop_route::occurrence::4",
+			"decision_revision": -1,
+			"decision_token": -1,
+			"enabled": true,
+			"lap_count": 3,
+			"lap_id": "district_lap_02",
+			"lap_index": 2,
+			"lifecycle_revision": 21,
+			"phase": 10,
+			"phase_name": "RESULT",
+			"push_preview": {}
+		},
+		"duration": 100.75,
+		"extract_lap": 0,
+		"failed_intent": false,
+		"fight_durations": [
+			11.267,
+			48.017,
+			19.783
+		],
+		"first_lap": 71.333,
+		"first_lap_no_enemy": 16.267,
+		"lap_decisions": [
+			71.333
+		],
+		"longest_no_enemy_gap": 9.017,
+		"no_enemy_seconds": 31.25,
+		"outcome": "DEFEATED",
+		"pacing": "short",
+		"policy": "starter_hold",
+		"seed": 6062026,
+		"travel": 20.083
+	},
+	{
+		"access": "full",
+		"boss_start": -1.0,
+		"cadence": {
+			"categories": {
+				"ambient": {
+					"average_gap": 6.27000000000068,
+					"count": 25,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 8.11666666666665,
+							"event_id": "coin_cluster_presented:1",
+							"gap_seconds": 8.11666666666665,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 11.7000000000002,
+							"event_id": "coin_cluster_presented:2",
+							"gap_seconds": 3.58333333333351,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 15.216666666667,
+							"event_id": "coin_cluster_presented:3",
+							"gap_seconds": 3.51666666666684,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 37.9666666666658,
+							"event_id": "coin_cluster_presented:4",
+							"gap_seconds": 22.7499999999988,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 40.949999999999,
+							"event_id": "coin_cluster_presented:5",
+							"gap_seconds": 2.98333333333316,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 43.8499999999988,
+							"event_id": "coin_cluster_presented:6",
+							"gap_seconds": 2.89999999999984,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 46.6499999999986,
+							"event_id": "coin_cluster_presented:7",
+							"gap_seconds": 2.79999999999984,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 49.2833333333318,
+							"event_id": "coin_cluster_presented:8",
+							"gap_seconds": 2.63333333333318,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 56.8166666666647,
+							"event_id": "coin_cluster_presented:9",
+							"gap_seconds": 7.53333333333291,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 67.8333333333308,
+							"event_id": "coin_cluster_presented:10",
+							"gap_seconds": 11.016666666666,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 71.9666666666639,
+							"event_id": "coin_cluster_presented:11",
+							"gap_seconds": 4.1333333333331,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 75.9166666666636,
+							"event_id": "coin_cluster_presented:12",
+							"gap_seconds": 3.94999999999978,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 81.4999999999967,
+							"event_id": "coin_cluster_presented:13",
+							"gap_seconds": 5.58333333333302,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 83.9333333333299,
+							"event_id": "coin_cluster_presented:14",
+							"gap_seconds": 2.4333333333332,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 107.283333333329,
+							"event_id": "coin_cluster_presented:15",
+							"gap_seconds": 23.3499999999987,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 109.483333333328,
+							"event_id": "coin_cluster_presented:16",
+							"gap_seconds": 2.19999999999987,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 111.649999999995,
+							"event_id": "coin_cluster_presented:17",
+							"gap_seconds": 2.16666666666654,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 113.833333333328,
+							"event_id": "coin_cluster_presented:18",
+							"gap_seconds": 2.18333333333321,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 115.949999999995,
+							"event_id": "coin_cluster_presented:19",
+							"gap_seconds": 2.11666666666655,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 118.749999999995,
+							"event_id": "coin_cluster_presented:20",
+							"gap_seconds": 2.79999999999984,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 126.099999999994,
+							"event_id": "coin_cluster_presented:21",
+							"gap_seconds": 7.34999999999958,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 128.433333333328,
+							"event_id": "coin_cluster_presented:22",
+							"gap_seconds": 2.33333333333356,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 134.983333333333,
+							"event_id": "coin_cluster_presented:23",
+							"gap_seconds": 6.55000000000521,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 146.100000000008,
+							"event_id": "coin_cluster_presented:24",
+							"gap_seconds": 11.1166666666755,
+							"validation": "too_late"
+						},
+						{
+							"eligible_elapsed_seconds": 156.750000000017,
+							"event_id": "coin_cluster_presented:25",
+							"gap_seconds": 10.6500000000085,
+							"validation": "too_late"
+						}
+					],
+					"last_gap": 10.6500000000085,
+					"last_timestamp": 156.750000000017,
+					"target_maximum_seconds": 8.0,
+					"target_minimum_seconds": 1.0,
+					"violation_count": 6
+				},
+				"major": {
+					"average_gap": 69.5000000000014,
+					"count": 2,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 60.8333333333312,
+							"event_id": "extraction:0",
+							"gap_seconds": 60.8333333333312,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 139.000000000003,
+							"event_id": "extraction:1",
+							"gap_seconds": 78.1666666666716,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 78.1666666666716,
+					"last_timestamp": 139.000000000003,
+					"target_maximum_seconds": 90.0,
+					"target_minimum_seconds": 20.0,
+					"violation_count": 0
+				},
+				"strategic": {
+					"average_gap": 23.1666666666671,
+					"count": 6,
+					"events": [
+						{
+							"eligible_elapsed_seconds": 15.216666666667,
+							"event_id": "district_block:district_lap_01::block_01:1:1",
+							"gap_seconds": 15.216666666667,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 56.8166666666647,
+							"event_id": "district_block:district_lap_01::block_02:1:2",
+							"gap_seconds": 41.5999999999977,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 60.8333333333312,
+							"event_id": "district_block:district_lap_01::block_03:1:3",
+							"gap_seconds": 4.01666666666644,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 83.9333333333299,
+							"event_id": "district_block:district_lap_02::block_01:2:1",
+							"gap_seconds": 23.0999999999987,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 134.983333333333,
+							"event_id": "district_block:district_lap_02::block_02:2:2",
+							"gap_seconds": 51.050000000003,
+							"validation": "within_target"
+						},
+						{
+							"eligible_elapsed_seconds": 139.000000000003,
+							"event_id": "district_block:district_lap_02::block_03:2:3",
+							"gap_seconds": 4.01666666666986,
+							"validation": "within_target"
+						}
+					],
+					"last_gap": 4.01666666666986,
+					"last_timestamp": 139.000000000003,
+					"target_maximum_seconds": 60.0,
+					"target_minimum_seconds": 3.0,
+					"violation_count": 0
+				}
+			},
+			"coin_cluster_presentations": 25,
+			"coin_collections_count_as_strategic": false,
+			"definition_id": "short_run_cadence",
+			"latest_eligible_elapsed_seconds": 156.750000000017,
+			"measurement_only": true
+		},
+		"cards": [
+			"arcade",
+			"gang_hideout",
+			"convenience_store",
+			"arcade",
+			"gang_hideout",
+			"convenience_store",
+			"arcade"
+		],
+		"completed": true,
+		"crew": "rex",
+		"district": {
+			"accepted_decisions": [
+				{
+					"boss_commitment": false,
+					"completed_blocks": 3,
+					"completed_lap_id": "district_lap_01",
+					"completed_lap_index": 1,
+					"decision": "push",
+					"decision_revision": 13,
+					"decision_token": 1,
+					"push_preview": {
+						"boss_commitment": false,
+						"final_lap_commitment": false,
+						"from_lap_id": "district_lap_01",
+						"from_lap_index": 1,
+						"lap_id": "district_lap_02",
+						"lap_index": 2,
+						"modifier_id": "rising_pressure",
+						"modifier_label": "RISING PRESSURE",
+						"next_decision_after_blocks": 3,
+						"next_threat": "VIPER ENFORCER",
+						"pressure_gain_multiplier": 1.14999997615814,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 1,
+						"risk_label": "HIGHER ENEMY PRESSURE"
+					}
+				},
+				{
+					"boss_commitment": true,
+					"completed_blocks": 6,
+					"completed_lap_id": "district_lap_02",
+					"completed_lap_index": 2,
+					"decision": "push",
+					"decision_revision": 25,
+					"decision_token": 2,
+					"push_preview": {
+						"boss_commitment": true,
+						"final_lap_commitment": true,
+						"from_lap_id": "district_lap_02",
+						"from_lap_index": 2,
+						"lap_id": "district_lap_03",
+						"lap_index": 3,
+						"modifier_id": "boss_commitment",
+						"modifier_label": "BOSS COMMITMENT",
+						"next_decision_after_blocks": 0,
+						"next_threat": "THE VIPER",
+						"pressure_gain_multiplier": 1.29999995231628,
+						"push_heat_delta": 6,
+						"reward_quality_tier_bonus": 2,
+						"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+					}
+				}
+			],
+			"block_id": "district_lap_03::block_01",
+			"block_index": 1,
+			"blocks_per_lap": 3,
+			"boss_committed": true,
+			"completed_blocks": 6,
+			"completed_laps": 2,
+			"current_block_kind": "fight",
+			"current_lap": {
+				"boss_commitment": true,
+				"lap_id": "district_lap_03",
+				"lap_index": 3,
+				"modifier_id": "boss_commitment",
+				"modifier_label": "BOSS COMMITMENT",
+				"next_threat": "THE VIPER",
+				"pressure_gain_multiplier": 1.29999995231628,
+				"reward_quality_tier_bonus": 2,
+				"risk_label": "FINAL LAP - NO ROUTINE EXTRACTION"
+			},
+			"current_route_occurrence_id": "downtown_loop_route::occurrence::6",
+			"decision_revision": -1,
+			"decision_token": -1,
+			"enabled": true,
+			"lap_count": 3,
+			"lap_id": "district_lap_03",
+			"lap_index": 3,
+			"lifecycle_revision": 29,
+			"phase": 10,
+			"phase_name": "RESULT",
+			"push_preview": {}
+		},
+		"duration": 160.817,
+		"extract_lap": 0,
+		"failed_intent": false,
+		"fight_durations": [
+			11.2,
+			37.583,
+			19.083,
+			47.033
+		],
+		"first_lap": 60.833,
+		"first_lap_no_enemy": 16.233,
+		"lap_decisions": [
+			60.833,
+			139.0
+		],
+		"longest_no_enemy_gap": 9.017,
+		"no_enemy_seconds": 43.35,
+		"outcome": "DEFEATED",
+		"pacing": "short",
+		"policy": "starter_hold",
+		"seed": 6062026,
+		"travel": 28.117
+	}
+]

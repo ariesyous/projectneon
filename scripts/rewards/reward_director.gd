@@ -820,7 +820,7 @@ func process_until(requested_time_msec: int) -> void:
 
 
 func settle_pending_coin_clusters_as_base() -> int:
-	# A terminal run outcome must not turn the optional click window into a
+	# A completed block or terminal outcome must not turn the optional click window into a
 	# requirement. Resolve every still-visible cluster through the same
 	# authoritative at-most-once path, in the normal deterministic deadline/ID
 	# order, without granting a manual bonus or advancing the streak.

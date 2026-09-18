@@ -5,10 +5,13 @@ extends SceneTree
 ## damage, actor-health, route, or random-stream accelerator is used. Modal
 ## choices are resolved through the same typed flow intents as the HUD.
 ## This is technical evidence only, never human/qualitative validation.
+## Historical WP02 timing gate. Current short-run measurements use
+## tests/probes/short_run_pacing_probe.gd, which resolves the focused PLAN.
 
 const GAME_SCENE: PackedScene = preload("res://scenes/game/game_run.tscn")
 const FIXED_DELTA_SECONDS: float = 1.0 / 60.0
 const MAX_ELIGIBLE_SECONDS: float = 720.0
+const MAX_SIMULATED_STEPS: int = 60 * 900
 const FIXED_SEED: int = 6062026
 const PROFILE_PATH: String = "user://wp02_long_form_probe_profile.json"
 
@@ -46,6 +49,7 @@ func _run_probe() -> void:
 	while (
 		game.run_director.current_state != RunDirector.RunState.RUN_SUMMARY
 		and game.run_director.run_elapsed_seconds < MAX_ELIGIBLE_SECONDS
+		and simulated_steps < MAX_SIMULATED_STEPS
 	):
 		var current_state: int = game.run_director.current_state
 		if current_state != last_state:
@@ -162,6 +166,10 @@ func _run_probe() -> void:
 
 func _resolve_non_active_state(game: GameRun) -> bool:
 	match game.run_director.current_state:
+		RunDirector.RunState.PAUSED:
+			# This historical gate cannot validate the newer focused-plan pacing.
+			# Reject unsupported modals promptly instead of spinning on a frozen clock.
+			return false
 		RunDirector.RunState.REWARD_SELECTION:
 			return _resolve_reward(game)
 		RunDirector.RunState.SHOP:

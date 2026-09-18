@@ -656,7 +656,20 @@ func _on_run_started(seed: int, _schema_version: int) -> void:
 
 
 func _on_run_state_changed(previous_state: int, new_state: int) -> void:
-	_set_combat_telegraphs_suspended(new_state == RunDirector.RunState.PAUSED)
+	var decision_pause: bool = (
+		new_state == RunDirector.RunState.PAUSED
+		and run_director.is_card_planning_pause_active()
+	)
+	if decision_pause or new_state in [
+		RunDirector.RunState.REWARD_SELECTION, RunDirector.RunState.SHOP,
+		RunDirector.RunState.EXTRACTION_AVAILABLE, RunDirector.RunState.EXTRACTING,
+		RunDirector.RunState.BOSS_INTRO, RunDirector.RunState.VICTORY,
+		RunDirector.RunState.DEFEAT, RunDirector.RunState.RUN_SUMMARY,
+		RunDirector.RunState.INITIALIZING,
+	]:
+		_clear_combat_telegraphs()
+	else:
+		_set_combat_telegraphs_suspended(new_state == RunDirector.RunState.PAUSED)
 	if new_state == RunDirector.RunState.INITIALIZING:
 		phase_transition_presenter.clear()
 		audio_controller.set_presentation_phase(&"menu")
@@ -1516,6 +1529,7 @@ func _on_attack_telegraphed(
 			target_position,
 			attack.charge_distance
 		)
+		telegraph.bind_attack(attacker.attack_controller)
 	if attacker.is_boss():
 		_refresh_boss_presentation()
 

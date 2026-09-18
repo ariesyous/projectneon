@@ -11,6 +11,12 @@ Testing is milestone- and work-package-scoped. Milestones 0–6 retain their his
 - Visual acceptance requires a running-project check and screenshot when supported.
 - Test status must distinguish static inspection from a verified Godot launch.
 
+## 2026-09-18 playability repair verification
+
+The focused runner is `tests/run_playability_repairs.gd`; editor discovery uses `tests/test_playability_repairs.gd`. It covers an authored Bottle Thrower projectile followed by the real final-kill/reward/next-PLAN transitions, full-value exact-once final coin settlement, killed and interrupted warnings, live attack/projectile preservation across ordinary pause, and font-measured PLAN action fit. All five tests failed against the pre-repair build for the reproduced defects. The corrected fixtures do not touch the production profile. The pass record, configured screenshots, input checks, and disclosed platform limits are maintained in `docs/reviews/PLAYABILITY_REPAIRS_2026-09-18.md`. Historical timing and human-gate records below are unchanged; pacing acceptance is not inferred from this regression pass.
+
+The short-run continuation adds two tests: configured Resource/content preservation, and real approach/encounter spawning across pause/resume. The current timing runner is `tests/probes/short_run_pacing_probe.gd`; it resolves focused PLAN, exact reward/extraction tokens, and bounds total steps so an ineligible-time/modal regression cannot hang it. `--compare` uses unchanged historical Resources under the same policy; `--build` acquires offered gear and uses valid interventions; `--seed=N` and `--extract=1|2` select reproducible scenarios. Current distributions, outliers, exact policies, and verification live in `docs/reviews/SHORT_RUN_PACING_2026-09-18.md`. The historical WP02 long-form runner remains labelled as an old timing gate and now fails promptly for unsupported paused contexts instead of looping indefinitely. Its 8–12-minute result remains historical, not the current target.
+
 ## Status convention
 
 - **Passed** means the recorded check was actually executed against the stated build.

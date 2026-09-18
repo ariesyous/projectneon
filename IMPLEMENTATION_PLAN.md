@@ -2,6 +2,8 @@
 
 ## Current target
 
+**2026-09-18 playability repairs: owner-authorized local correction pass.** Stale projectiles, interrupted/finished warnings, frozen post-fight coin countdowns, decision-layer interference, clipped PLAN actions, cooling-shop copy, and selected-crew contrast are repaired on `codex/playability-repairs`. The owner then chose substantially shorter runs with the same card rules: the configured 4-second approaches and 1-second/4-second spawn pacing supersede the old duration goal prospectively. No human enjoyment gate, publication, or completed WP07 acceptance is claimed. Evidence: `docs/reviews/PLAYABILITY_REPAIRS_2026-09-18.md` and `docs/reviews/SHORT_RUN_PACING_2026-09-18.md`.
+
 **Milestone 0 — Project Foundation: complete**
 
 **Milestone 1 — Combat Lab: technical implementation complete**

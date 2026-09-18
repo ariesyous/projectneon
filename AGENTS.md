@@ -72,6 +72,8 @@ WP06 replaces release-visible debug arena communication with the owner-approved 
 
 ## Current scope boundary
 
+On 2026-09-18 the owner authorized the audit-driven cleanup/clarity repairs and then explicitly chose substantially shorter runs with the current card rules. `GameSpecifications.md` section 0.9 is the prospective timing authority: configured `data/pacing/short_run_*.tres` uses 4-second approaches and 1-second/4-second non-boss spawn pacing, while original route/encounter/cadence Resources remain historical fixtures. This bounded local repair changes no content identity, economy, permanent progression, or publication state; it does not establish full WP07 or participant acceptance. Evidence: `docs/reviews/SHORT_RUN_PACING_2026-09-18.md`.
+
 WP06 World, Combat, and Presentation Polish is the finalized `main`/GitHub Pages boundary at `224ed5c` / run 33295086207. Pending WP02/WP03/WP04 qualitative records remain unchanged. WP07 remains unauthorized.
 
 Procedural route generation; additional districts or broad card/crew/enemy/elite/boss content; multiplayer; controller support; localization; achievements; daily-run scheduling/rewards/leaderboards; permanent statistical progression or stat trees; mid-run saving/replays; equipment selling, salvage, rarity, uniques, affixes, or sets; a card currency/shop/economy; direct character control; and every other undocumented expansion remain out of scope. Future breadth content is a permitted progression category, not pre-authorized content.

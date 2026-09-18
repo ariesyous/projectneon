@@ -145,6 +145,7 @@ func _apply_wp01_visual_language() -> void:
 	_set_rect(tutorial_label, Rect2(12.0, 8.0, 596.0, 88.0))
 
 	for choice_button: Button in [jax_button, zoey_button, rex_button]:
+		choice_button.remove_theme_stylebox_override(&"pressed")
 		choice_button.theme_type_variation = &"ChoiceCard"
 	start_button.theme_type_variation = &"PrimaryButton"
 	settings_button.theme_type_variation = &"SecondaryButton"

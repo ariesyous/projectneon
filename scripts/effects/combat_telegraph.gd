@@ -31,6 +31,28 @@ var _kind: TelegraphKind = TelegraphKind.MELEE
 var _target_offset: Vector2 = Vector2(64.0, 0.0)
 var _charge_distance: float = 0.0
 var _intent_label: String = "THREAT"
+var _attack_timeline: AttackController
+var _bound_to_attack: bool = false
+
+
+## Observe the exact live attack. Signals retire interrupted/resolved warnings
+## even when the next state immediately stops the presentation clock.
+func bind_attack(timeline: AttackController) -> void:
+	_attack_timeline = timeline
+	_bound_to_attack = true
+	timeline.phase_changed.connect(_on_attack_phase_changed)
+	timeline.tree_exiting.connect(retire)
+
+
+func _on_attack_phase_changed(_previous_phase: int, new_phase: int) -> void:
+	if new_phase != AttackController.Phase.WINDUP:
+		retire()
+
+
+func retire() -> void:
+	_remaining_seconds = 0.0
+	hide()
+	queue_free()
 
 
 func present(
@@ -61,11 +83,20 @@ func present(
 func _process(delta: float) -> void:
 	if _suspended:
 		return
-	_remaining_seconds = maxf(_remaining_seconds - maxf(delta, 0.0), 0.0)
+	if _bound_to_attack:
+		if (
+			not is_instance_valid(_attack_timeline)
+			or _attack_timeline.current_phase != AttackController.Phase.WINDUP
+		):
+			retire()
+			return
+		_remaining_seconds = maxf(_attack_timeline.phase_remaining, 0.0)
+	else:
+		_remaining_seconds = maxf(_remaining_seconds - maxf(delta, 0.0), 0.0)
 	_update_label_position()
 	queue_redraw()
 	if _remaining_seconds <= 0.0:
-		queue_free()
+		retire()
 
 
 func set_suspended(suspended: bool) -> void:

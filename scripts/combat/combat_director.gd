@@ -165,6 +165,11 @@ func unregister_actor(actor: ActorController, unbind_actor: bool = true) -> bool
 	_ensure_reservation_registry()
 	_reservation_registry.release_actor(actor)
 	_actors.erase(actor)
+	# Source invalidation must complete before death listeners can open a modal
+	# and stop simulation. Otherwise these bottles never receive their next step.
+	for projectile: CombatProjectileType in _projectiles.duplicate():
+		if is_instance_valid(projectile) and projectile.source_actor == actor:
+			_remove_projectile(projectile, false)
 	for other: ActorController in _actors:
 		other.invalidate_target(actor)
 	_disconnect_actor_signals(actor)
@@ -493,11 +498,23 @@ func _remove_projectile(projectile: CombatProjectileType, resolved: bool) -> voi
 	if not resolved:
 		projectile_expired.emit(projectile)
 	if is_instance_valid(projectile):
+		projectile.hide()
 		projectile.queue_free()
 
 
 func get_live_projectile_count() -> int:
 	return _projectiles.size()
+
+
+## Ends only in-flight attacks, without changing actors, rewards, or RNG state.
+## Ordinary combat pause intentionally does not call this boundary cleanup.
+func clear_projectiles() -> void:
+	var pending: Array[CombatProjectileType] = _projectiles.duplicate()
+	_projectiles.clear()
+	for projectile: CombatProjectileType in pending:
+		if is_instance_valid(projectile):
+			projectile.hide()
+			projectile.queue_free()
 
 
 func get_projectile_snapshot() -> Array[Dictionary]:
@@ -840,11 +857,7 @@ func clear_all(queue_free_actors: bool = true) -> void:
 	_next_registration_order = 0
 	_equipment_proc_roll_count = 0
 	_next_projectile_order = 0
-	var projectiles_to_clear: Array[CombatProjectileType] = _projectiles.duplicate()
-	_projectiles.clear()
-	for projectile: CombatProjectileType in projectiles_to_clear:
-		if is_instance_valid(projectile):
-			projectile.queue_free()
+	clear_projectiles()
 	for actor: ActorController in actors_to_clear:
 		if not is_instance_valid(actor):
 			continue

@@ -1167,7 +1167,7 @@ static func focused_block_type(card: DistrictCardDefinition) -> String:
 		CardEffectDefinition.EffectKind.ADD_STANDARD_ENCOUNTER:
 			return "FIGHT + REWARD"
 		CardEffectDefinition.EffectKind.OPEN_ONE_PURCHASE_SHOP:
-			return "SHOP + RECOVERY"
+			return "SHOP + COOLING"
 		CardEffectDefinition.EffectKind.ADD_ELITE_ENCOUNTER:
 			return "ELITE + GEAR"
 		CardEffectDefinition.EffectKind.REROUTE_SKIP_STANDARD:
@@ -1181,15 +1181,15 @@ static func focused_special_rule(card: DistrictCardDefinition) -> String:
 	var effect: CardEffectDefinition = card.effect_definition
 	match effect.kind:
 		CardEffectDefinition.EffectKind.ADD_STANDARD_ENCOUNTER:
-			return "STANDARD FIGHT; REWARD QUALITY +%d TIER" % (
+			return "Fight for a better reward: +%d reward tier." % (
 				maxi(effect.reward_quality_tier_steps, 0)
 			)
 		CardEffectDefinition.EffectKind.OPEN_ONE_PURCHASE_SHOP:
-			return "ONE PURCHASE FROM EXISTING FINITE STOCK"
+			return "Optional cooling purchase. One purchase per visit; stock is shared across the run."
 		CardEffectDefinition.EffectKind.ADD_ELITE_ENCOUNTER:
-			return "VIPER ENFORCER; GUARANTEED GEAR CHOICE"
+			return "Face the Viper Enforcer for a guaranteed gear choice."
 		CardEffectDefinition.EffectKind.REROUTE_SKIP_STANDARD:
-			return "NO COMBAT; REPLACES ONE BASELINE FIGHT"
+			return "Skip one fight to cool down. No combat reward; uses no Reroute charge."
 	return "AUTHORED DISTRICT EFFECT"
 
 

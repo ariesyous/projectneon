@@ -114,7 +114,7 @@ static func _define_text(theme: Theme) -> void:
 static func _define_surfaces(theme: Theme) -> void:
 	_define_panel_variation(theme, &"SurfacePanel", SURFACE, BORDER_SOFT, BORDER_THIN, RADIUS_MEDIUM)
 	_define_panel_variation(theme, &"RaisedPanel", SURFACE_RAISED, BORDER, BORDER_THIN, RADIUS_MEDIUM)
-	_define_panel_variation(theme, &"DecisionPanel", Color("0d1424f7"), PRIMARY, BORDER_STRONG, RADIUS_LARGE)
+	_define_panel_variation(theme, &"DecisionPanel", Color("0d1424"), PRIMARY, BORDER_STRONG, RADIUS_LARGE)
 	_define_panel_variation(theme, &"SelectedPanel", SURFACE_SELECTED, PRIMARY, BORDER_STRONG, RADIUS_MEDIUM)
 	_define_panel_variation(theme, &"SafePanel", Color("102f2af5"), SAFE, BORDER_STRONG, RADIUS_MEDIUM)
 	_define_panel_variation(theme, &"WarningPanel", Color("312219f5"), WARNING, BORDER_STRONG, RADIUS_MEDIUM)
