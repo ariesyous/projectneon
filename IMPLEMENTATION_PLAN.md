@@ -2,7 +2,7 @@
 
 ## Current target
 
-**2026-09-18 playability repairs: owner-authorized local correction pass.** Stale projectiles, interrupted/finished warnings, frozen post-fight coin countdowns, decision-layer interference, clipped PLAN actions, cooling-shop copy, and selected-crew contrast are repaired on `codex/playability-repairs`. The owner then chose substantially shorter runs with the same card rules: the configured 4-second approaches and 1-second/4-second spawn pacing supersede the old duration goal prospectively. No human enjoyment gate, publication, or completed WP07 acceptance is claimed. Evidence: `docs/reviews/PLAYABILITY_REPAIRS_2026-09-18.md` and `docs/reviews/SHORT_RUN_PACING_2026-09-18.md`.
+**2026-09-18 playability repairs: published owner-authorized correction pass.** Stale projectiles, interrupted/finished warnings, frozen post-fight coin countdowns, decision-layer interference, clipped PLAN actions, cooling-shop copy, and selected-crew contrast are repaired. The owner chose substantially shorter runs with the same card rules: configured 4-second approaches and 1-second/4-second spawn pacing supersede the old duration goal prospectively. Commit `1875569` was pushed to `main`; Pages run 35390747882 exported/deployed successfully. Full post-deployment visual, human enjoyment, and WP07 acceptance are not claimed. Evidence: `docs/reviews/PLAYABILITY_REPAIRS_2026-09-18.md` and `docs/reviews/SHORT_RUN_PACING_2026-09-18.md`.
 
 **Milestone 0 — Project Foundation: complete**
 
@@ -30,7 +30,7 @@
 
 **WP03 — District Planning and Cards: implemented and technically evidenced on 2026-08-22; owner unbriefed first-use gate remains pending**
 
-**WP04 — Builds, Rewards, and Shop: implemented, technically evidenced, published from `782f7fe18fa434d47020f1d4bc837c9c05790dad`, and current browser-playtest boundary; owner five-person consequence/variety gate remains pending**
+**WP04 — Builds, Rewards, and Shop: implemented, technically evidenced, and historically published from `782f7fe18fa434d47020f1d4bc837c9c05790dad`; owner five-person consequence/variety gate remains pending**
 
 **WP05 — Interventions and Encounter Variety: complete, owner-accepted, merged, and published from `37ebc9d`; Pages run 32931503114 passed on 2026-08-26**
 
@@ -525,6 +525,6 @@ Working-tree provenance remains separate from gameplay authorship. The historica
 
 ## Scope gate
 
-WP06 is the finalized published boundary at `224ed5c` / Pages run 33295086207 on top of the preserved Milestone 6 content baseline and WP01–WP05 migrations. The Milestone 5 card planner remains an isolated compatibility surface, not the release flow. Procedural generation, additional districts/cards/crew/enemies/bosses, multiplayer, controller support, localization, achievements, daily scheduling/leaderboards/rewards, advanced meta-progression, permanent stat trees, mid-run saving/replay, broader equipment/card economies, and every undocumented system remain out of scope. Run-seed and named-stream infrastructure remains schema version 1 unless a later owning package proves and records an incompatible semantics change.
+The short-run repair `1875569` / Pages run 35390747882 is the current published gameplay boundary on top of the accepted WP06 `224ed5c` and preserved Milestone 6/WP01–WP05 content. The Milestone 5 card planner remains an isolated compatibility surface, not the release flow. Procedural generation, additional districts/cards/crew/enemies/bosses, multiplayer, controller support, localization, achievements, daily scheduling/leaderboards/rewards, advanced meta-progression, permanent stat trees, mid-run saving/replay, broader equipment/card economies, and every undocumented system remain out of scope. Run-seed and named-stream infrastructure remains schema version 1 unless a later owning package proves and records an incompatible semantics change.
 
 The owner-authorized Milestone 6, WP02, WP03, and WP04 publications remain historical playtest records. WP05 was owner-accepted, merged, pushed, and deployed from `37ebc9d`; Pages run 32931503114 succeeded on 2026-08-26. WP06 was owner-accepted and published from `224ed5c`; Pages run 33295086207 succeeded on 2026-08-30 and the live pointer/console smoke passed. Publication closes no pending WP02/WP03/WP04 human gate. WP07 remains gated and unauthorized.

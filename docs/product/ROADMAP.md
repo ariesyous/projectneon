@@ -3,7 +3,7 @@
 Status: WP01–WP06 implemented; WP06 owner-accepted for publication 2026-08-30; WP07 unauthorized
 Prepared: 2026-08-20
 
-2026-09-18 correction: the owner separately authorized the audit-driven playability repairs and chose substantially shorter runs while retaining the card rules. Current timing follows `GameSpecifications.md` section 0.9 and `docs/reviews/SHORT_RUN_PACING_2026-09-18.md`. Historical work-package gates below retain their recorded timing; the local repair does not claim full WP07 or participant acceptance.
+2026-09-18 correction: the owner separately authorized the audit-driven playability repairs, chose substantially shorter runs while retaining the card rules, and authorized their Pages publication. Commit `1875569` was exported/deployed by successful run 35390747882. Current timing follows `GameSpecifications.md` section 0.9 and `docs/reviews/SHORT_RUN_PACING_2026-09-18.md`. Historical work-package gates below retain their recorded timing; publication does not claim full WP07 or participant acceptance.
 
 ## Roadmap outcome
 

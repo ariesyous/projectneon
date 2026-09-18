@@ -7,7 +7,7 @@
 **Target platform:** Windows PC
 **Target display:** 16:9 desktop display
 **Internal design resolution:** 640 × 360
-**Current published boundary:** WP06 World, Combat, and Presentation Polish is implemented, technically verified, visually inspected, owner-accepted, and published from commit `224ed5cd863a48d66340ce0c62f3013bb422910b`; [Pages run 33295086207](https://github.com/ariesyous/projectneon/actions/runs/33295086207) succeeded on 2026-08-30. The live Web build passed crew/start input, a real District Plan selection/confirmation, authored-street rendering, release debug-marker exclusion, and an empty warning/error console. WP02/WP03/WP04 qualitative records remain pending and unchanged. WP07 is unstarted and unauthorized.
+**Current published boundary:** The owner-authorized playability repairs and short-run pacing are published from commit `187556935a69feeb77dea21a4f37a0d451785fd3`; [Pages run 35390747882](https://github.com/ariesyous/projectneon/actions/runs/35390747882) exported and deployed successfully on 2026-09-18. The page returned HTTP 200 with the new build. Full post-deployment interaction/visual acceptance is not claimed. This builds on the accepted WP06 publication `224ed5c` / run 33295086207; its historical pointer/console evidence remains unchanged. WP02/WP03/WP04 qualitative records remain pending. Full WP07 acceptance remains unauthorized.
 
 ---
 
@@ -132,7 +132,7 @@ After the project-state audit and initial cleanup/clarity repair, the owner expl
 - `data/pacing/short_run_*.tres` supplies the configured route, three existing non-boss encounter variants, and cadence definition. Stable route/encounter IDs and all non-timing content remain the same. Original route, encounter, and WP02 cadence Resources remain available to historical/isolated fixtures.
 - Preserve full passive coins, exact-once transactions, deterministic named streams/schema 1, safe boundaries, pause behavior, and the repaired encounter-to-decision cleanup. No global time multiplier is used. Same-seed reproduction continues to require the same content revision, policy, and authoritative timing.
 
-This is an authorized local playability/pacing repair. It does not authorize publication, catalogue expansion, a new economy, permanent power, or a claim that WP07/participant acceptance has passed. Current measurements and limits are recorded in `docs/reviews/SHORT_RUN_PACING_2026-09-18.md`.
+This playability/pacing repair was separately authorized for publication and deployed from `1875569` by successful Pages run 35390747882 on 2026-09-18. It authorizes no catalogue expansion, new economy, permanent power, or claim that WP07/participant acceptance has passed. Measurements, publication evidence, and remaining limits are recorded in `docs/reviews/SHORT_RUN_PACING_2026-09-18.md`.
 
 ---
 
@@ -2777,4 +2777,4 @@ WP00 is the documentation/decision gate and changes no runtime. WP01–WP06 are 
 6. **WP06 — World, Combat, and Presentation Polish:** implemented, technically verified, visually inspected, and owner-accepted for publication on 2026-08-30; release-visible debug communication is replaced by authored city-block depth and accessible feedback without changing gameplay authority.
 7. **WP07 — Integration, Balance, and Release:** unauthorized; when separately approved, validate the approved cadence, clarity, consequence, variety, replay desire, compatibility, platforms, and owner-led final acceptance.
 
-There is no Milestone 7. WP06 is owner-accepted and published from `224ed5c` / Pages run 33295086207. WP07 remains unauthorized. Procedural cities, direct character control, multiplayer, permanent statistical progression, large content expansion, controller support, localization, achievements, live-service systems, and other unapproved scope remain excluded.
+There is no Milestone 7. The accepted WP06 publication remains `224ed5c` / Pages run 33295086207; the subsequent owner-authorized short-run repair is published from `1875569` / Pages run 35390747882. Full WP07 acceptance remains unauthorized. Procedural cities, direct character control, multiplayer, permanent statistical progression, large content expansion, controller support, localization, achievements, live-service systems, and other unapproved scope remain excluded.

@@ -13,6 +13,7 @@ All notable changes to Neon Loop are documented here. Dates use the local projec
 - Added configured pacing/pause regression coverage and bounded the obsolete historical long-form runner against frozen modal clocks.
 - Local results and limits: `docs/reviews/SHORT_RUN_PACING_2026-09-18.md`. Publication and qualitative acceptance remain separate.
 - The owner subsequently authorized committing and pushing this exact repair/pacing boundary for a GitHub Pages playtest release. Pending visual/platform and participant limitations remain disclosed; deployment success is recorded separately after the workflow completes.
+- Published from `187556935a69feeb77dea21a4f37a0d451785fd3`; Pages run 35390747882 exported and deployed successfully on 2026-09-18. The live page returned HTTP 200 with the new 1,648,984-byte PCK configuration. No full browser interaction/visual or participant pass is inferred.
 
 ### 2026-09-18 — Playability repair pass
 
